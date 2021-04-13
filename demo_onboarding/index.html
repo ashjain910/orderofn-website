@@ -10,10 +10,11 @@
     <script src="Build/UnityLoader.js"></script>
     <script>
       var unityInstance = UnityLoader.instantiate("unityContainer", "Build/Build.json", {onProgress: UnityProgress});
-        var voices = window.speechSynthesis.getVoices();    
+       var voices = window.speechSynthesis.getVoices();    
           function VoiceOverFinished(){         
             unityInstance.SendMessage("GameManager","Callback");
       }
+
     </script>
   </head>
   <body>

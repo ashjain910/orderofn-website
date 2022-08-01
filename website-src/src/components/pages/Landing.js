@@ -447,13 +447,13 @@ export default class AboutUs extends Component {
                       </div>
                       <div className="timeline-panel">
                         <div className="timeline-heading">
-                          <h4 className="timeline-title txtRight">Feb 2020</h4>
+                          <h4 className="timeline-title txtRight">Apr 2020</h4>
                         </div>
                         <div className="timeline-body">
                           <p className="txtRight">
-                            Our project scale up and team expansion.
+                            Our pilot application go-live
                             <br />
-                            Bigger private office moment.
+                            100K user base milestone achieved.
                           </p>
                         </div>
                       </div>
@@ -464,13 +464,13 @@ export default class AboutUs extends Component {
                       </div>
                       <div className="timeline-panel">
                         <div className="timeline-heading">
-                          <h4 className="timeline-title txtLeft">Apr 2020</h4>
+                          <h4 className="timeline-title txtLeft">Jun 2021</h4>
                         </div>
                         <div className="timeline-body">
                           <p className="txtLeft">
-                            Our pilot application go-live.
+                            Successful delivery of projects in FinTech, EdTech and HRTech.
                             <br />
-                            100K user base milestone achieved.
+                            Overall client value projects over $25 million.
                           </p>
                         </div>
                       </div>
@@ -481,7 +481,7 @@ export default class AboutUs extends Component {
                       </div>
                       <div className="timeline-panel">
                         <div className="timeline-heading">
-                          <h4 className="timeline-title txtRight">Dec 2020</h4>
+                          <h4 className="timeline-title txtRight">Dec 2021</h4>
                         </div>
                         <div className="timeline-body">
                           <p className="txtRight">
@@ -633,62 +633,72 @@ export default class AboutUs extends Component {
                 </Col>
               </Row>
               <Row>
-              <Col xs={12} sm={12} md={6} lg={6}>
-              <Row className="mt-40">
-                <Col xs={2} sm={2} md={2} lg={2}>
-                  <i className="fa fa-map-marker" aria-hidden="true"></i>
+                <Col xs={12} sm={12} md={6} lg={6}>
+                  <Row className="mt-40">
+                    <Col xs={2} sm={2} md={2} lg={2}>
+                      <i className="fa fa-map-marker" aria-hidden="true"></i>
+                    </Col>
+                    <Col xs={10} sm={10} md={10} lg={10}>
+                      <h5 className="addressDetails">
+                        <b>Chennai</b>
+                      </h5>
+                      <p className="addressDetails">
+                        40/24, North Road, CIT Nagar West,
+                      </p>
+                      <p className="addressDetails">
+                        CIT Nagar, Chennai, Tamilnadu.
+                      </p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={2} sm={2} md={2} lg={2}>
+                      <i className="fa fa-phone" aria-hidden="true"></i>
+                    </Col>
+                    <Col xs={10} sm={10} md={10} lg={10}>
+                      <h5 className="addressDetails fnt-22">
+                        +91 98418 49536.
+                      </h5>
+                    </Col>
+                  </Row>
                 </Col>
-                <Col xs={10} sm={10} md={10} lg={10}>
-                  <h5 className="addressDetails">(Chennai)</h5>
-                  <p className="addressDetails">
-                    40/24, North Road, CIT Nagar West,
-                  </p>
-                  <p className="addressDetails">
-                    CIT Nagar, Chennai, Tamilnadu.
-                  </p>
+
+                <Col xs={12} sm={12} md={6} lg={6}>
+                  <Row className="mt-40">
+                    <Col xs={2} sm={2} md={2} lg={2}>
+                      <i className="fa fa-map-marker" aria-hidden="true"></i>
+                    </Col>
+                    <Col xs={10} sm={10} md={10} lg={10}>
+                      <h5 className="addressDetails">
+                        <b>Australia</b>
+                      </h5>
+                      <p className="addressDetails">
+                        8-9 Mildred Street, Wentworthville,
+                      </p>
+                      <p className="addressDetails">NSW 2145.</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={2} sm={2} md={2} lg={2}>
+                      <i className="fa fa-phone" aria-hidden="true"></i>
+                    </Col>
+                    <Col xs={10} sm={10} md={10} lg={10}>
+                      <h5 className="addressDetails fnt-22">
+                        + 61 416 353 838.
+                      </h5>
+                    </Col>
+                  </Row>
                 </Col>
-              </Row>
-              <Row>
-                <Col xs={2} sm={2} md={2} lg={2}>
-                  <i className="fa fa-phone" aria-hidden="true"></i>
-                </Col>
-                <Col xs={10} sm={10} md={10} lg={10}>
-                  <h5 className="addressDetails fnt-22">+91 98418 49536.</h5>
-                </Col>
-              </Row>
-            </Col>
-            
-            <Col xs={12} sm={12} md={6} lg={6}>
-            <Row className="mt-40">
-                <Col xs={2} sm={2} md={2} lg={2}>
-                  <i className="fa fa-map-marker" aria-hidden="true"></i>
-                </Col>
-                <Col xs={10} sm={10} md={10} lg={10}>
-                  <h5 className="addressDetails">(Australia)</h5>
-                  <p className="addressDetails">
-                    8-9 Mildred Street, Wentworthville,
-                  </p>
-                  <p className="addressDetails">NSW 2145.</p>
-                </Col>
-              </Row>
-              <Row>
-                <Col xs={2} sm={2} md={2} lg={2}>
-                  <i className="fa fa-phone" aria-hidden="true"></i>
-                </Col>
-                <Col xs={10} sm={10} md={10} lg={10}>
-                  <h5 className="addressDetails fnt-22">+ 61 416 353 838.</h5>
-                </Col>
-              </Row>
-            </Col>
-            </Row>
-              <Row className="mt-40">
-                <Col xs={2} sm={2} md={2} lg={2}>
-                  <i className="fa fa-envelope" aria-hidden="true"></i>
-                </Col>
-                <Col xs={10} sm={10} md={10} lg={10}>
-                  <h5 className="addressDetails fnt-22">
-                    marketing@orderofn.com
-                  </h5>
+                <Col xs={12} sm={12} md={6} lg={6}>
+                  <Row className="mt-40">
+                    <Col xs={2} sm={2} md={2} lg={2}>
+                      <i className="fa fa-envelope" aria-hidden="true"></i>
+                    </Col>
+                    <Col xs={10} sm={10} md={10} lg={10}>
+                      <h5 className="addressDetails fnt-22">
+                        marketing@orderofn.com
+                      </h5>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </Col>

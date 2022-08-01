@@ -1,0 +1,42 @@
+@media only screen and (max-width: 768px)    {
+    #aboutUs                                                                                            {   padding: 20px 10px 20px 10px !important;}
+    .logoHeadertran                                                                                     {   width: 200px;}
+    .paraContent                                                                                        {   padding: 0px 20px 0px 20px;}
+    .customerPara                                                                                       {   padding: 0px 20px 0px 20px;}
+    .horizontalTimeline                                                                                 {   padding: 0px 20px 0px 20px;}
+    .floating                                                                                           {   animation-name: none; } 
+    .OverLaytxt                                                                                         {   font-size: 24px !important;margin-left: -40px;margin-right: 10px;line-height: 50px;top: 150px;}
+    .svgBox #svgOne path                                                                                {   stroke-dasharray: 100;stroke-dashoffset: 100;animation: dash 30s linear alternate infinite;}
+    .svgBox #svgTwo path                                                                                {   stroke-dasharray: 800;stroke-dashoffset: 800;animation: dash 4s linear alternate infinite;}
+    .svgBox #svgThree path                                                                              {   stroke-dasharray: 800;stroke-dashoffset: 800;animation: dash 4s linear alternate infinite;}
+    .aboutLeftImg                                                                                       {   display: none}
+    .centered                                                                                           {   position: relative;top: 50%;left: 50%;transform: translate(-50%, -50%);}
+    #ContactForm                                                                                        {   padding: 30px !important;}
+    #header .testScroll                                                                                 {   background-color: #000033 !important;}
+    #header .nav-link,.clrBlue                                                                          {   margin: 6px;}
+    #aboutUs ul.timeline:before                                                                         {   left: 40px;}
+    #aboutUs ul.timeline > li > .timeline-panel                                                         {   width: calc(100% - 90px);width: -moz-calc(100% - 90px);width: -webkit-calc(100% - 90px);}
+    #aboutUs ul.timeline > li > .timeline-badge                                                         {   left: 15px;margin-left: 0;top: 16px;}
+    #aboutUs ul.timeline > li > .timeline-panel                                                         {   float: right;}
+    #aboutUs ul.timeline > li > .timeline-panel:before                                                  {   border-left-width: 0;border-right-width: 15px;left: -15px;right: auto;}
+    #aboutUs ul.timeline > li > .timeline-panel:after                                                   {   border-left-width: 0;border-right-width: 14px;left: -14px;right: auto;}
+    .flip-card-front img                                                                                {   height: 250px;}
+    .txtRight                                                                                           {   text-align: left;}
+    .txtLeft                                                                                            {   text-align: left;}
+    .col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8,
+    .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3,
+    .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md,
+    .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5,
+    .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10,
+    .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7,
+    .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12,
+    .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9,
+    .col-xl-auto                                                                                        {   padding-right: 0px !important; padding-left: 15px !important;}
+    .testDatatata                                                                                       {   font-size:40px !important;margin-top: 40px !important;}
+}
+
+
+@media only screen and (max-width: 568px)    {
+    .centered                                                                                           {   position: relative;top: 100%;left: 50%;transform: translate(-50%, -50%);}
+}
+

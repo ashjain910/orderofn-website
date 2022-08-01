@@ -1,0 +1,36 @@
+#fixedHeader                                                            {   position: fixed;top: 0px;left: 0px;right: 0px;z-index: 100;}
+#header .nav-link                                                       {   color: #ffffff;font-weight: 600;font-size: 14px;padding: 3px 20px 0px 20px;}
+#header .clrBlue                                                        {   color: #000033;font-weight: 600;font-size: 14px;padding: 3px 20px 0px 20px;}
+#header .navbar-nav                                                     {   padding-right: 10%;}
+#GradientSec                                                            {   padding: 100px 0px 0px 0px;width: 100%;}
+#header .testScroll                                                     {   background-color: transparent !important;    }
+#header .blue                                                           {   background-color: #ffffff !important;box-shadow: 0px 1px 12px 0px #c4c4c4;}
+#header .activeLink                                                     {   border-radius: 25px;background: #ffffff;color: #000033 !important;height: 26px;}
+.img_header_banner                                                      {   width: 100%;padding-bottom: 100px;}
+.headerToptxt                                                           {   text-align: left;font-weight: 800;font-size: 30px;line-height: 40px;letter-spacing: 0px;color: #FFFFFF;opacity: 1;}
+.pdHeaderLeft                                                           {   padding: 90px 0px 0px 80px;}
+.paraheadertxt                                                          {   text-align: left;font-weight: 400;font-size: 16px;line-height: 30px;letter-spacing: 0px;color: #FFFFFF;margin-top: 20px;}
+.btnHeader,.btnHeader:hover                                             {   color: #000033;background-color: #ffffff;border-color: #ffffff;border-radius: 20px;font-size: 14px;font-weight: 600;    padding: 6px 30px 6px 30px;}
+.floatLeft                                                              {   float: left;}
+.video                                                                  {   color:#ffffff;font-family: 'Source Code Pro', monospace !important;text-align: left;margin-top: 60px;width: 100%;position:relative;z-index:0;height: 650px;}
+.overlay                                                                {   position: absolute;top: 0;left: 0;z-index: 1;}
+.video span                                                             {   font-family: 'Source Code Pro', monospace;color: #ffffff;font-weight: 400;font-size: 16px;}
+/* Typed Code Designs */
+.TypedBg                                                                {   background-color: #191c33;padding: 20px;border-radius: 10px;height: 500px;}
+.numberOrder                                                            {   color: #aaaaa5 !important;font-weight: 400;font-size: 14px !important;margin-right: 14px;}
+.pink                                                                   {   color:#9430ad !important;}
+.blue                                                                   {   color:#2f79cb !important;}
+.green                                                                  {   color:#58bd2f !important;}
+.orange                                                                 {   color:#b18a0c !important;}
+.orangeDark                                                             {   color:#eecd62 !important;}
+.commandLine                                                            {   color:#439541 !important;}
+
+
+
+
+
+
+
+
+
+

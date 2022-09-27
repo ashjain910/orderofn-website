@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="333" height="351" viewBox="0 0 333 351">
+  <defs>
+    <filter id="Rectangle_1003" x="0" y="0" width="333" height="351" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_763" data-name="Group 763" transform="translate(-74 -2332)">
+    <g transform="matrix(1, 0, 0, 1, 74, 2332)" filter="url(#Rectangle_1003)">
+      <rect id="Rectangle_1003-2" data-name="Rectangle 1003" width="315" height="333" transform="translate(9 6)" fill="#fff"/>
+    </g>
+    <g id="Group_758" data-name="Group 758" transform="translate(-1067.074 -7)">
+      <path id="Path_4447" data-name="Path 4447" d="M112.234,104.9,86.526,149.4a5.056,5.056,0,0,1-4.382,2.528h-51.4a5.056,5.056,0,0,1-4.382-2.528L.673,104.9a5.056,5.056,0,0,1,0-5.056L26.381,55.328A5.056,5.056,0,0,1,30.763,52.8h51.4a5.056,5.056,0,0,1,4.382,2.528l23.82,41.287,1.879,3.261a5.056,5.056,0,0,1-.008,5.022Z" transform="translate(1255.076 2335.373)" fill="#4b9d26"/>
+      <path id="Path_4448" data-name="Path 4448" d="M118.765,107.66,93.057,152.166a5.056,5.056,0,0,1-4.382,2.528H52.444L41.49,143.74a5.056,5.056,0,0,0,1.913.371H82.558a5.056,5.056,0,0,0,4.382-2.528l19.565-33.9a5.055,5.055,0,0,0,0-5.056L87.892,70.35l29.019,28.994,1.879,3.261a5.056,5.056,0,0,1-.025,5.056Z" transform="translate(1248.545 2332.609)" fill="#1355e2"/>
+      <path id="Path_4449" data-name="Path 4449" d="M102.264,106.879,82.7,140.777a5.056,5.056,0,0,1-4.382,2.528H39.17a5.056,5.056,0,0,1-1.913-.371h0a5.056,5.056,0,0,1-2.452-2.14l-.421-.741L24.627,123.2l-9.4-16.321a5.056,5.056,0,0,1,0-5.056L34.789,67.918A5.056,5.056,0,0,1,39.17,65.39H78.317A5.056,5.056,0,0,1,82.7,67.918l.952,1.685,18.613,32.246A5.056,5.056,0,0,1,102.264,106.879Z" transform="translate(1252.785 2333.391)" fill="#fff"/>
+      <path id="Path_4450" data-name="Path 4450" d="M62.915,108.95a15.091,15.091,0,0,1-.843,5.056,12.386,12.386,0,0,1-2.2,3.96,9.929,9.929,0,0,1-15.251,0,12.369,12.369,0,0,1-2.233-3.977,16.068,16.068,0,0,1,0-10.061,12.386,12.386,0,0,1,2.233-3.977,10.389,10.389,0,0,1,3.37-2.629,9.985,9.985,0,0,1,8.51,0,10.339,10.339,0,0,1,3.37,2.629,12.4,12.4,0,0,1,2.233,3.977,15.082,15.082,0,0,1,.809,5.022Zm-5.586,0a11.745,11.745,0,0,0-.371-3.042,7.693,7.693,0,0,0-1.053-2.385,5,5,0,0,0-1.618-1.567,4.036,4.036,0,0,0-2.048-.539,4.112,4.112,0,0,0-2.09.539,5.056,5.056,0,0,0-1.618,1.534,7.693,7.693,0,0,0-1.053,2.385,11.712,11.712,0,0,0-.371,3.042,11.484,11.484,0,0,0,.371,3.025,7.718,7.718,0,0,0,1.053,2.359,5.005,5.005,0,0,0,1.618,1.533,4.1,4.1,0,0,0,2.09.539,4.027,4.027,0,0,0,2.048-.539A4.988,4.988,0,0,0,55.9,114.3a7.727,7.727,0,0,0,1.053-2.359,11.509,11.509,0,0,0,.371-2.991Z" transform="translate(1248.531 2328.514)" fill="#1355e2"/>
+      <path id="Path_4451" data-name="Path 4451" d="M88.361,116.27v5.013H71.509V116.27h5.9V103.724a4.491,4.491,0,0,1-1.18,1.011,16.008,16.008,0,0,1-1.761.969,12.41,12.41,0,0,1-1.963.741,6.656,6.656,0,0,1-1.8.286v-5.165a4.685,4.685,0,0,0,1.82-.472,15.707,15.707,0,0,0,2.115-1.138,17.371,17.371,0,0,0,1.8-1.306,4.4,4.4,0,0,0,.969-1.011h5.671v18.63Z" transform="translate(1243.947 2328.314)" fill="#1355e2"/>
+    </g>
+    <text id="Eligibility" transform="translate(241 2534)" fill="#344056" font-size="24" font-family="FuturaBT-Medium, Futura Md BT" font-weight="500" letter-spacing="0.024em"><tspan x="-51.407" y="0">Eligibility</tspan></text>
+    <text id="Sign_NDA_and_upload_basic_project_financing_documents_Change_AltScore_to_Rating" data-name="Sign NDA and upload basic
+project financing documents Change AltScore to Rating" transform="translate(87 2556)" fill="#344056" font-size="16" font-family="FuturaBT-Medium, Futura Md BT" font-weight="500"><tspan x="52.914" y="15">Sign NDA and upload basic</tspan><tspan x="19.559" y="45">project financing documents Change </tspan><tspan x="89.082" y="75">WelfundScore to Rating</tspan></text>
+  </g>
+</svg>

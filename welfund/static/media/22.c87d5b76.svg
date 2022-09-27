@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="333" height="351" viewBox="0 0 333 351">
+  <defs>
+    <filter id="Rectangle_1006" x="0" y="0" width="333" height="351" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_766" data-name="Group 766" transform="translate(-1154 -2332)">
+    <g transform="matrix(1, 0, 0, 1, 1154, 2332)" filter="url(#Rectangle_1006)">
+      <rect id="Rectangle_1006-2" data-name="Rectangle 1006" width="315" height="333" transform="translate(9 6)" fill="#fff"/>
+    </g>
+    <text id="Match" transform="translate(1321 2534)" fill="#344056" font-size="24" font-family="FuturaBT-Medium, Futura Md BT" font-weight="500" letter-spacing="0.024em"><tspan x="-34.632" y="0">Match</tspan></text>
+    <text id="Your_project_is_matched_with_multiple_investors_lenders_who_meet_project_criteria" data-name="Your project is matched with multiple investors/lenders who meet project criteria" transform="translate(1167 2556)" fill="#344056" font-size="16" font-family="FuturaBT-Medium, Futura Md BT" font-weight="500"><tspan x="18.145" y="15">Your project is matched with multiple </tspan><tspan x="26.031" y="45">investors/lenders who meet project </tspan><tspan x="128.75" y="75">criteria</tspan></text>
+    <g id="Group_761" data-name="Group 761" transform="translate(12.91 -2.047)">
+      <path id="Path_4396" data-name="Path 4396" d="M576.515,263.51l-25.728,44.524a5.06,5.06,0,0,1-4.385,2.53h-51.44a5.06,5.06,0,0,1-4.385-2.53l-25.7-44.524a5.059,5.059,0,0,1,0-5.06L490.6,213.91a5.06,5.06,0,0,1,4.385-2.53h51.44a5.06,5.06,0,0,1,4.385,2.53l23.839,41.32,1.88,3.263A5.059,5.059,0,0,1,576.515,263.51Z" transform="translate(786.895 2171.842)" fill="#4b9d26"/>
+      <path id="Path_4397" data-name="Path 4397" d="M583.017,266.263l-25.728,44.524a5.06,5.06,0,0,1-4.385,2.53H516.643L505.68,302.354a5.059,5.059,0,0,0,1.914.371h39.178a5.06,5.06,0,0,0,4.385-2.53l19.581-33.924a5.06,5.06,0,0,0,0-5.06L552.111,228.94l29.017,29.017,1.88,3.263A5.059,5.059,0,0,1,583.017,266.263Z" transform="translate(780.392 2169.089)" fill="#1355e2"/>
+      <path id="Path_4398" data-name="Path 4398" d="M566.524,265.488l-19.581,33.924a5.06,5.06,0,0,1-4.385,2.53H503.414a5.059,5.059,0,0,1-1.914-.371h0a5.06,5.06,0,0,1-2.454-2.142l-.422-.742-9.748-16.865-9.462-16.334a5.06,5.06,0,0,1,0-5.06l19.581-33.9A5.06,5.06,0,0,1,503.38,224h39.179a5.06,5.06,0,0,1,4.385,2.53l.953,1.687,18.628,32.272a5.06,5.06,0,0,1,0,5Z" transform="translate(784.615 2169.864)" fill="#fff"/>
+      <path id="Path_4399" data-name="Path 4399" d="M527.116,267.533a15.094,15.094,0,0,1-.843,5.06,12.4,12.4,0,0,1-2.235,3.98,9.937,9.937,0,0,1-15.263,0,12.393,12.393,0,0,1-2.235-3.98,16.072,16.072,0,0,1,0-10.069,12.394,12.394,0,0,1,2.235-3.98,10.4,10.4,0,0,1,3.373-2.631,9.993,9.993,0,0,1,8.517,0,10.347,10.347,0,0,1,3.373,2.631,12.411,12.411,0,0,1,2.235,3.98A15.1,15.1,0,0,1,527.116,267.533Zm-5.591,0a11.755,11.755,0,0,0-.371-3.044A7.691,7.691,0,0,0,520.1,262.1a5,5,0,0,0-1.619-1.535,4.039,4.039,0,0,0-2.049-.54,4.115,4.115,0,0,0-2.091.54,5.06,5.06,0,0,0-1.619,1.535,7.69,7.69,0,0,0-1.054,2.386,11.72,11.72,0,0,0-.371,3.044,11.476,11.476,0,0,0,.371,3.027,7.7,7.7,0,0,0,1.054,2.361,5.009,5.009,0,0,0,1.619,1.535,4.107,4.107,0,0,0,2.091.54,4.031,4.031,0,0,0,2.049-.54,5,5,0,0,0,1.619-1.535,7.708,7.708,0,0,0,1.054-2.361A11.511,11.511,0,0,0,521.525,267.533Z" transform="translate(780.384 2165.012)" fill="#1355e2"/>
+      <path id="Path_4400" data-name="Path 4400" d="M545.281,285.134v-6.173h-12.1v-4.933l13.88-17.818h3.769v17.776h3.643v4.975H550.83v6.173Zm-6.544-11.148H545.9v-9.36Z" transform="translate(776.081 2164.814)" fill="#1355e2"/>
+    </g>
+  </g>
+</svg>

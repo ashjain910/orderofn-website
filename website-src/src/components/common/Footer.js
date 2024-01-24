@@ -12,7 +12,7 @@ export default class Footer extends Component{
                 <Container fluid>
                     <Row>
                         <Col xs={12} sm={12} md={12} lg={12} id="copyrights">
-                            <center><p className="crFooter">Copyrights © 2022 OrderOfN</p></center>
+                            <center><p className="crFooter">Copyrights © {(new Date().getFullYear())} OrderOfN</p></center>
                         </Col>
                     </Row>
                 </Container>

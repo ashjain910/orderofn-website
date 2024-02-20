@@ -658,7 +658,6 @@
 });
 
 $('select').on('change', function (e) {
-  alert("called")
   var optionSelected = $("option:selected", this);
    var valueSelected = this.value;
   if($(this).attr('name') == 'product_type'){
@@ -689,13 +688,13 @@ $('select').on('change', function (e) {
 
 
     let changable_id = $(this).parent().parent().parent().parent().parent().find('.fa-plus').attr('class').split(' ')[2].split('-')[1];
-    $('.appendChildTbl' + changable_id + ' .sub-tbl-container').each(function(index, element){
-      if(valueSelected == $(element).find('select').val()){
-        alert("same data");
-        return;
-      }
+    //$('.appendChildTbl' + changable_id + ' .sub-tbl-container').each(function(index, element){
+      //if(valueSelected == $(element).find('select').val()){
+        //alert("same data");
+        //return;
+      //}
       
-    });
+    //});
     if(valueSelected == 'Bottom' && $('#appendParent .parent-form-' + changable_id).find('.productType').val() == 'Perforated'){
           $(this).parent().parent().find('input[name=InnerFlange]').prop("disabled", true)
         

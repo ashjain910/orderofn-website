@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- <link rel="stylesheet" href="index.css"> -->
+  <title>Document</title>
+</head>
+<style>
+  .table-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .table {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  /* .table-bordered{
+    border: 1px solid #000000;
+    padding: 5px;
+    border-left: #000000;
+    text-align: left;
+  } */
+  .table tbody tr {
+    border-bottom: none;
+  }
+
+  .table tbody td,
+  .table tbody th {
+    border: none;
+  }
+
+  .table-bordered {
+    padding: 5px;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+  th,
+  td {
+    border: 1px solid #000000;
+    padding: 5px;
+    text-align: left;
+  }
+
+  .Acc-details td {
+    border: none;
+
+  }
+
+  .steel-property td {
+    text-align: center;
+  }
+
+  .header {
+    text-align: center;
+    margin-top: 0px;
+  }
+
+  /* .addnew {
+    background-color: #0B5394;
+    padding: 3px;
+    border-radius: 8px;
+    color: whitesmoke;
+    cursor: pointer;
+    font-size: 14px;
+  } */
+
+  label {
+    font-size: 14px;
+    color: #000000;
+    font-weight: 600;
+  }
+
+  .print-action {
+    background-color: rgb(228, 224, 240);
+    margin-left: 10px;
+    margin-bottom: 6px;
+  }
+
+  .close {
+    color: #C9302C;
+  }
+
+  @media only screen and (max-width: 400) {
+    .form-control {
+      width: 100%;
+    }
+  }
+
+  @media only screen and (max-width: 600) {
+    .form-control {
+      width: 100%;
+    }
+  }
+
+  @media only screen and (max-width: 900) {
+    .form-control {
+      width: 100%;
+    }
+  }
+</style>
+
+<body>
+
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <!-- <li class="nav-item dropdown">
+                       <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                           Product Type
+                       </a>
+                       <div class="dropdown-menu">
+                           <a class="dropdown-item" href="#">Perforated Tary</a>
+                               <a class="dropdown-item" href="tray.html">Raceway Tray</a>
+                               <a class="dropdown-item" href="#">Ladder</a>                           
+                        
+                       </div>
+                   </li> -->
+            <li class="nav-link"><a href="" class="btn"></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="row" style="margin-top: 80px" ;>
+      <div class="col-lg-12">
+        <div class="d-flex justify-content-between" style="margin-bottom: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="addNew()"><i class="fa fa-plus"></i>Add product</button>
+          <!-- <a class="btn print-action" style="background-color: rgb(228, 224, 240); margin-left: 10px;">Generate
+            invoice</a> -->
+            <button style="display: none;" type="button" id="previewButton" class="btn btn-info" data-toggle="modal" data-target="#editInvoice">
+              Preview
+            </button>
+        </div>
+        <div id="appendParent">
+          <div class="table-container parent-form-1" id="invoice" cloned-form="1">
+            <div class="row">
+              <div class="col-lg-12">
+                <table class="table-bordered" id="originalTable">
+                  <tbody>
+                    <tr>
+                      <th scope="row" class="row-counter">1</th>
+                      <td>
+                        <form class="">
+                          <select name="product_type" id="Crd" class="form-control productType" style="width: 100px;">
+                            <option value="Perforated">Perforated</option>
+                            <option value="Raceway">Raceway</option>
+                            <!-- <option value="Ladder">Ladder</option> -->
+                          </select>
+                      </td>
+                      </form>
+                      <td>
+                        <!-- <form class=""> -->
+                        <label for="floatingInputValue">Width</label>
+                        <input type="number" class="form-control" id="floatingWidhthValue" name="Width" value="100">
+
+                        <!-- </form> -->
+                      </td>
+                      <td>
+                        <form class="">
+                          <label for="floatingInputValue">Height</label>
+                          <input type="number" class="form-control" id="floatingHeightValue" name="Height" value="50">
+
+                        </form>
+                      </td>
+                      <td>
+                        <form class="">
+                          <label for="floatingInputValue">Thickness</label>
+                          <input type="number" class="form-control" id="floatingThicknessValue" name="Thickness"
+                            value="1.2">
+
+                        </form>
+                      </td>
+                      <td>
+                        <form class="">
+                          <label for="floatingLenghtValue">Meter</label>
+                          <input type="number" class="form-control" id="floatingLenghtValue" name="Length" value="125">
+
+                        </form>
+                      </td>
+                      <td>
+                        <form class="">
+                          <label for="floatingInnerFlangeValue">Inner Flange</label>
+                          <input type="number" class="form-control" id="floatingInnerFlangeValue" name="InnerFlange"
+                            value="12">
+
+                        </form>
+                      </td>
+                      <td>
+                        <form class="">
+                          <label for="floatingSellingRateValue">Selling Rate</label>
+                          <input type="number" class="form-control" id="floatingSellingRateValue" name="SellingRate"
+                            value="95">
+
+                        </form>
+                      </td>
+                      <td>
+                        <form class="">
+                          <label for="floatingRatePerMeterValue">Rate per meter</label>
+                          <input type="number" class="form-control ratePerMeter" id="floatingRatePerMeterValue"
+                            value="">
+
+                        </form>
+                      </td>
+                      <td>
+                        <form class="">
+                          <label for="floatingAmountValue">Amount</label>
+                          <input type="number" class="form-control amounttxt" oninput="checkTotalAmnt(this)" id="floatingAmountValue" value=""
+                            name="amt">
+
+                        </form>
+                      </td>
+                      <td><button type="button" class="close" aria-label="Close" onclick="removeTableContainer(this)">
+                          <span aria-hidden="true">&times;</span>
+                        </button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
+                <table class="table appendChildTbl1" id="secondTable" cloned-sub-form="1">
+                  <i class="fa fa-plus addSubTBl-1" sub-form-click="1"
+                    style="background-color: #b6c3b4;margin-top: 2px;cursor: pointer;"></i>
+                  <tbody id="invoiceForm" class="sub-tbl-container">
+                    <tr class="">
+                      <th scope="row" class="sub-row-count">1</th>
+                      <td><select name="partsChange" id="partsChange" class="form-select partsType">
+                          <option value="Top">Top</option>
+                          <option value="Bottom">Bottom</option>
+                          <option value="Coating">Coating</option>
+                          <option value="Others">Others</option>
+                        </select></td>
+                      <td>
+                        <form class="form-floating" style="width: 100px;">
+                          <input type="number" class="form-control" id="floatingPartsThicknessValue" name="Thickness"
+                            value="1.2">
+                          <label for="floatingPartsThicknessValue">Thickness</label>
+                        </form>
+                      </td>
+                      <td>
+                        <form class="form-floating inner" style="width: 100px;">
+                          <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
+                            name="InnerFlange" value="12">
+                          <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
+                        </form>
+                      </td>
+                      <td style="display: none;" class="coatingVal">
+                        <form class="form-floating" style="width: 100px;">
+                          <input type="number" class="form-control sellingrateCls" id="floatingSellingRateValue"
+                            name="SellingRate" value="95">
+                          <label for="floatingSellingRateValue">Selling Rate</label>
+                        </form>
+                      </td>
+                      <td style="display: none;" class="fixedRate">
+                        <form class="form-floating" style="width: 100px;">
+                          <input type="number" class="form-control" id="floatingFixedRate"
+                            name="fixedRate" value="">
+                          <label for="floatingFixedRate">Fixed Rate </label>
+                        </form>
+                      </td>
+                      <td><button type="button" class="close" aria-label="Close"
+                          onclick="removeSubTableContainer(this)">
+                          <span aria-hidden="true">&times;</span>
+                        </button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="d-flex">
+              <a class="btn btn-tertiary pull-right save-action btn-calc-1"
+                style="background-color: rgb(228, 224, 240);margin-bottom: 5px;">Calculate</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+
+  </div>
+  </div>
+  <div class="row" style="display: none;">
+    <div class="col-lg-12">
+      <table>
+        <tbody class="sub-tbl-container-clone">
+          <tr class="">
+            <th scope="row" class="sub-row-count">1</th>
+            <td><select name="partsChange" id="partsChange" class="form-select partsType">
+                <option value="Top">Top</option>
+                <option value="Bottom">Bottom</option>
+                <option value="Coating">Coating</option>
+                <option value="Others">Others</option>
+              </select></td>
+            <td>
+              <form class="form-floating" style="width: 100px;">
+                <input type="number" class="form-control" id="floatingPartsThicknessValue" name="Thickness"
+                  value="1.2">
+                <label for="floatingPartsThicknessValue">Thickness</label>
+              </form>
+            </td>
+            <td>
+              <form class="form-floating inner" style="width: 100px;">
+                <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
+                  name="InnerFlange" value="12">
+                <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
+              </form>
+            </td>
+            <td style="display: none;" class="coatingVal">
+              <form class="form-floating" style="width: 100px;">
+                <input type="number" class="form-control sellingrateCls" id="floatingSellingRateValue"
+                  name="SellingRate" value="95">
+                <label for="floatingSellingRateValue">Selling Rate</label>
+              </form>
+            </td>
+            <td style="display: none;" class="fixedRate">
+              <form class="form-floating" style="width: 100px;">
+                <input type="number" class="form-control" id="floatingFixedRate"
+                  name="fixedRate" value="">
+                <label for="floatingFixedRate">Fixed</label>
+              </form>
+            </td>
+            <td><button type="button" class="close" aria-label="Close"
+                onclick="removeSubTableContainer(this)">
+                <span aria-hidden="true">&times;</span>
+              </button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<!-- modal -->
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="editInvoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <span class="modal-title" id="exampleModalLabel">Edit</h5> -->
+         <a class="btn print-action" style="background-color: rgb(228, 224, 240); margin-left: 10px;">Generate
+            invoice</a>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row" id="" style="">
+          <div class="col-lg-12">
+            <div id="invoiceTable">
+              <div class="d-flex justify-content-between mt-3">
+                <div class="left-column">
+                  <span>
+                    GST NO: 33AAICB3190P1ZC<br>
+                    TIN NO: 33270903207<br>
+                    CST NO: 764247/DT:7-3-2001<br>
+                    AREA CODE: 46
+                  </span>
+                </div>
+                <div class="right-column">
+                  <span>
+                    Phone: 044 4212 2382<br>
+                    Mobile: +91 9282126497<br>
+                    Mail ID: imai.bk@gmail.com<br>
+                    MSME UAM NO : TN02D0139034
+                  </span>
+                </div>
+              </div>
+              <div class="header">
+                <u>
+                  <p>PROFORMA INVOICE</p>
+                </u>
+                <p><b>KAYBLET PROMETALS PRIVATE LIMITED</b></p>
+                <p>(mrf of All types of cable trays,junction boxes & Foundation bolts)</p>
+                <p>FAc: # 88B, Tiny sector, Industrial Estate, <br> Ekkattuthangal, Chennai-600 032.</p>
+              </div>
+    
+              <table class="table-bordered">
+                <tr>
+                  <td colspan="2" rowspan="6">Buyer Name: <br>
+                    <b>M/S. BHAVANDHARA EXPORT PVT LTD,</b> <br>
+                    No. 75/210, 1st Floor, Arcot Road, <br>
+                    Porur, Chennai - 600116. <br>
+                    GST NO: 33AAICB3190P1ZC <br>
+                    Contact Person: +91 98844 43160 <br>
+                    <b>Delivery Address: <br>
+                      M/S. BHAVANDHARA EXPORT PVT LTD,</b> <br>
+                    No. 75/210, 1st Floor, Arcot Road, <br>
+                    Porur, Chennai - 600116. <br>
+                    GST NO: 33AAICB3190P1ZC <br>
+                    Contact Person: +91 98844 43160
+                  </td>
+                  <td colspan="3">Invoice No / Date</td>
+                  <td class="invoice_date" colspan="2"></td>
+    
+                </tr>
+                <tr>
+                  <td colspan="3">Delivery Note No / Date</td>
+                  <td colspan="2"><input type="date" id="deliveryDate" name="deliveryDate"
+                      style="border: none;outline: none;"></td>
+    
+                </tr>
+    
+                <tr>
+                  <td colspan="3">PO No</td>
+                  <td colspan="2"><input type="text" style="border: none;outline: none;"></td>
+    
+                </tr>
+                <tr>
+                  <td colspan="3">Date</td>
+                  <td colspan="2"><input type="date" id="dDate" name="dDate" style="border: none;outline: none;"></td>
+    
+                </tr>
+                <tr>
+                  <td colspan="3">Vehical No</td>
+                  <td colspan="2"><input type="text" style="border: none;outline: none;"></td>
+    
+                </tr>
+                <tr>
+                  <td colspan="3">E-way bill No</td>
+                  <td colspan="2"><input type="text" style="border: none;outline: none;"></td>
+    
+                </tr>
+    
+                <tr>
+                  <td>SI.No</td>
+                  <td>Description</td>
+                  <td>HSN<br>Code</td>
+                  <td>QTY</td>
+                  <td>UNIT</td>
+                  <td>UNIT<br>RATE</td>
+                  <td>AMOUNT</td>
+                </tr>
+                <tbody id="customSteelTable"></tbody>
+                <!-- <tr id="steelTable" class="steel-property">
+          <td id="rowno">1</td>
+          <td id="displayValues"></td>
+          <td>7308</td>
+          <td>25</td>
+          <td>Mtrs</td>
+          <td><input type="number"></td>
+          <td>13,12566.00</td>
+        </tr> -->
+    
+                <tr>
+                  <td class="" colspan="4" rowspan="5">
+    
+                    <b>Company's Bank Details:</b><br>
+                    <table class="Acc-details">
+                      <tr>
+                        <td>ACCOUNT NO</td>
+                        <td>765786787678</td>
+                      </tr>
+                      <tr>
+                        <td>BANK NAME</td>
+                        <td>CANARA BANK</td>
+                      </tr>
+                      <tr>
+                        <td>BRANCH NAME</td>
+                        <td>ASHOH NAGAR</td>
+                      </tr>
+                      <tr>
+                        <td>IFSC No</td>
+                        <td>CNRB0000975</td>
+                      </tr>
+    
+                    </table>
+    
+                  </td>
+                  <td colspan="2">SUB TOTAL</td>
+                  <td id="subTotal"></td>
+    
+                </tr>
+                <td colspan="2">SGST @ 9%</td>
+                <td id="sgst"></td>
+    
+                <tr>
+                  <td colspan="2">CGST @ 9%</td>
+                  <td id="cgst"></td>
+    
+                <tr>
+                  <td colspan="2">Round Off</td>
+                  <td id="roundOff"></td>
+    
+                <tr>
+                  <td colspan="2">GRAND TOTAL</td>
+                  <td id="grandTotal"></td>
+    
+                <tr>
+                  <td colspan="7"><b id="rupeeInWords"></b></td>
+    
+                </tr>
+              </table>
+              <div class="mt-3">
+                <p>Receiver Signature & Contact No</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+<input type="hidden" id="checkTotalAmnt" />
+</body>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- <script src="../../dist/html2pdf.bundle.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+  integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://unpkg.com/number-to-words"></script>
+
+<script>
+
+  let rowCounter = 1;
+  let partsCounter = 1;
+  // var subtotal = 0;
+  var rowInvoiceCounter = 1;
+  
+  function addNew() {
+    rowCounter++
+    // Clone the entire table-container
+    // var originalTableContainer = document.getElementById('invoice');
+    var clonedTableContainer = $('div.table-container:first').clone(true);
+    clonedTableContainer.find('#secondTable .sub-tbl-container').not(':first').remove();
+    let className = $('.table-container').length + 1;
+    clonedTableContainer.find('#secondTable').addClass('appendChildTbl' + className);
+    clonedTableContainer.find('#secondTable').removeClass('appendChildTbl1');
+    clonedTableContainer.find('.fa-plus').addClass('addSubTBl-' + className);
+    clonedTableContainer.find('.fa-plus').removeClass('addSubTBl-1');
+    clonedTableContainer.find('.save-action').addClass('btn-calc-' + className);
+    clonedTableContainer.find('.save-action').removeClass('btn-calc-1');
+    clonedTableContainer.addClass('parent-form-' + className);
+    clonedTableContainer.removeClass('parent-form-1');
+    clonedTableContainer.find('#secondTable').attr('cloned-sub-form', className);
+
+
+
+    // Reset input values in the cloned tables
+    var amountField = clonedTableContainer.find('#floatingAmountValue');
+    amountField.val('');
+    var Ratepermeter = clonedTableContainer.find('#floatingRatePerMeterValue');
+    Ratepermeter.val('');
+    var clonedRowCounterElements = clonedTableContainer.find('.row-counter');
+    clonedRowCounterElements.each(function (index, element) {
+      $(element).text(rowCounter);
+    });
+    // Append the cloned table-container to the parent container
+    // var parentContainer = originalTableContainer.parentNode;
+    // parentContainer.appendChild(clonedTableContainer);
+    $('#appendParent').append(clonedTableContainer);
+
+  }
+
+  
+
+  function removeTableContainer(button) {
+    var tableContainers = $('.table-container');
+    if (tableContainers.length > 1) {
+      var tableContainerToRemove = $(button).closest('.table-container');
+      tableContainerToRemove.remove();
+      var rowIndex = tableContainerToRemove.find('.row-counter').text();
+      $('#customSteelTable tr[data-row-index="' + rowIndex + '"]').remove();
+      updateRowNumbers();
+      updateRowNumbers1()
+    } else {
+      alert("cannot remove ");
+    }
+  }
+
+  function updateRowNumbers() {
+    var containers = $('.table-container');
+
+    containers.each(function (index) {
+      var rowCounterElement = $(this).find('.row-counter');
+      if (rowCounterElement.length) {
+        rowCounterElement.text(index + 1);
+      }
+    });
+
+    rowCounter = containers.length;
+  }
+ 
+  function checkTotalAmnt(e,){
+    console.log(e.value);
+    $("#checkTotalAmnt").val("true");
+  }
+
+  function updateRowNumbers1() {
+    var containers = $('#customSteelTable .steel-property');
+
+    $('.steel-property').each(function (index) {
+      console.log(index+1);
+      console.log($(this).find('.sl_no').text());
+      $(this).find('.sl_no').text(index+1);
+    });
+
+    rowCounter = containers.length;
+  }
+  $(document).ready(function () {
+    
+    $(".fa-plus").click(function () {
+      partsCounter++
+      var cloneId = $(this).attr('class').split(' ')[2].split('-')[1];
+      var clonedTableContainer = $('tbody.sub-tbl-container-clone').clone(true);
+      clonedTableContainer.addClass('sub-tbl-container');
+    clonedTableContainer.removeClass('sub-tbl-container-clone');
+    console.log(clonedTableContainer.find("select"));
+      var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
+       $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function(index){
+           if($(this).find('select').val() == 'Top'){
+            // $(".ct option[value='X']").remove();
+            clonedTableContainer.find("select option[value='Top']").remove();
+           }else if($(this).find('select').val() == 'Bottom'){
+            // $(".ct option[value='X']").remove();
+            clonedTableContainer.find("select option[value='Bottom']").remove();
+           }else if($(this).find('select').val() == 'Coating'){
+            // $(".ct option[value='X']").remove();
+            clonedTableContainer.find("select option[value='Coating']").remove();
+           }else if($(this).find('select').val() == 'Others'){
+            // $(".ct option[value='X']").remove();
+            clonedTableContainer.find("select option[value='Others']").remove();
+           }
+       });
+      clonedTableContainer.find('input').prop("disabled", false);
+      $('.appendChildTbl' + cloneId + '').append(clonedTableContainer);
+      $(clonedTableContainer).find('select').trigger("change");
+    });
+
+    $("body").on('DOMSubtreeModified', "#appendParent", function() {
+      getTotal();
+});
+
+$('select').on('change', function (e) {
+  alert("called")
+  var optionSelected = $("option:selected", this);
+   var valueSelected = this.value;
+  if($(this).attr('name') == 'product_type'){
+    let changable_id = $(this).parent().parent().parent().parent().parent().parent().parent().parent().find('.save-action').attr('class').split(' ')[4].split('-')[2];
+    if(valueSelected == 'Perforated'){
+      var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+
+      containers.each(function (index) {
+        if($(this).find('select').val() == 'Bottom'){
+          $(this).find('input[name=InnerFlange]').prop("disabled", true);
+        }else{
+          $(this).find('input[name=InnerFlange]').prop("disabled", false)
+        }
+      });
+    }
+
+    if(valueSelected == 'Raceway'){
+
+      var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+
+      containers.each(function (index) {
+        $(this).find('input[name=InnerFlange]').prop("disabled", false);
+      });
+    }
+  }
+
+  if($(this).attr('name') == 'partsChange'){
+
+
+    let changable_id = $(this).parent().parent().parent().parent().parent().find('.fa-plus').attr('class').split(' ')[2].split('-')[1];
+    $('.appendChildTbl' + changable_id + ' .sub-tbl-container').each(function(index, element){
+      if(valueSelected == $(element).find('select').val()){
+        alert("same data");
+        return;
+      }
+      
+    });
+    if(valueSelected == 'Bottom' && $('#appendParent .parent-form-' + changable_id).find('.productType').val() == 'Perforated'){
+          $(this).parent().parent().find('input[name=InnerFlange]').prop("disabled", true)
+        
+    }else{
+        $(this).parent().parent().find('input[name=InnerFlange]').prop("disabled", false)
+    }
+    if(valueSelected == 'Coating'){
+      $(this).parent().parent().find('.coatingVal').css("display", "block")
+      $(this).parent().parent().find('td:nth-child(3), td:nth-child(4), td:nth-child(6)').css("display", "none");
+
+    }
+  else if(valueSelected == 'Others'){
+    $(this).parent().parent().find('.fixedRate').css("display", "block");
+    $(this).parent().parent().find('td:nth-child(3), td:nth-child(4), td:nth-child(5)').css("display", "none");
+    }else{
+      $(this).parent().parent().find('.coatingVal, .fixedRate').css("display", "none")
+      $(this).parent().parent().find('td:nth-child(3), td:nth-child(4)').css("display", "table-cell");
+    }
+
+
+  //   else{
+  //     $(this).parent().parent().find('.coatingVal').css("display", "none")
+  //     $(this).parent().parent().find('td:nth-child(3), td:nth-child(4), td:nth-child(6)').css("display", "table-cell");
+  //     // $(this).parent().parent().find('input[name=InnerFlange]').css("display", "block");   
+  // }
+
+
+   }   // alert(valueSelected)
+});
+
+    //       function checkInnerFlangeVisibility(selectElement) {
+    //    var crdValue = document.getElementById('Crd').value;
+    //   var partsChangeValue = document.getElementById('partsChange').value;
+    //   var innerFlangeField = document.getElementById('floatingPartsInnerFlangeValue');
+
+    //   // Check if the selected options meet the condition to disable the Inner Flange field
+    //   if ((crdValue === 'Perforated') && partsChangeValue === 'Bottom') {
+    //     // Disable the Inner Flange field
+    //     innerFlangeField.disabled = true;
+    //   } else {
+    //     // Enable the Inner Flange field
+    //     innerFlangeField.disabled = false;
+    //   }
+    //  }
+
+    $(".sellingrateCls").on('change', function() {
+      console.log($(this).val());
+      $(this).parent().parent().parent().parent().parent().parent().parent().parent().find('input#floatingSellingRateValue[name="SellingRate"]').val($(this).val())
+    })
+    $(".save-action").click(function () {
+      $('.btn-info').css("display", "block");
+
+      let id = $(this).attr('class').split(' ')[4].split('-')[2];
+      console.log('#appendParent .parent-form-' + id);
+      var partsArr = {
+        bottom: [],
+        top: [],
+        parendVal: [],
+        finalAMount: [],
+        others:[],
+      };
+      var tableContainer = $('#appendParent .parent-form-' + id+'')
+      tableContainer.each(function (index) {
+        if ($(this).find('[name="Width"]')) {
+          let keyWidth = $(this).find('input#floatingWidhthValue[name="Width"]').attr('name');
+          let valWidth = parseFloat($(this).find('input#floatingWidhthValue[name="Width"]').val());
+          partsArr.parendVal.push({ [keyWidth]: valWidth });
+        }
+        if ($(this).find('[name="Height"]')) {
+          let keyHeight = $(this).find('input#floatingHeightValue[name="Height"]').attr('name');
+          let valHeight = parseFloat($(this).find('input#floatingHeightValue[name="Height"]').val());
+          partsArr.parendVal.push({ [keyHeight]: valHeight });
+        }
+        if ($(this).find('[name="Thickness"]')) {
+          let keyThickness = $(this).find('input#floatingThicknessValue[name="Thickness"]').attr('name');
+          let valThickness = parseFloat($(this).find('input#floatingThicknessValue[name="Thickness"]').val());
+          partsArr.parendVal.push({ [keyThickness]: valThickness });
+        }
+        if ($(this).find('[name="Length"]')) {
+          let keyLength = $(this).find('input#floatingLenghtValue[name="Length"]').attr('name');
+          let valLength = parseFloat($(this).find('input#floatingLenghtValue[name="Length"]').val());
+          partsArr.parendVal.push({ [keyLength]: valLength });
+        }
+        if ($(this).find('[name="InnerFlange"]')) {
+          let keyInnerFlange = $(this).find('input#floatingvalInnerFlangeValue[name="InnerFlange"]').attr('name');
+          let valInnerFlange = parseFloat($(this).find('input#floatingInnerFlangeValue[name="InnerFlange"]').val());
+          partsArr.parendVal.push({ [keyInnerFlange]: valInnerFlange });
+        }
+        if ($(this).find('[name="SellingRate"]')) {
+          let keySellingRate = $(this).find('input#floatingSellingRateValue[name="SellingRate"]').attr('name');
+          let valSellingRate = parseFloat($(this).find('input#floatingSellingRateValue[name="SellingRate"]').val());
+          partsArr.parendVal.push({ [keySellingRate]: valSellingRate });
+
+        }
+      });
+
+      $('.appendChildTbl' + id + ' tbody').each(function (index) {
+
+        if ($(this).find("select[name='partsChange']").find(':selected').text() == 'Bottom' && 'bottom' in partsArr) {
+          let keyBot = $(this).find('input#floatingPartsThicknessValue[name="Thickness"]').attr('name');
+          let valBot = parseFloat($(this).find('input#floatingPartsThicknessValue[name="Thickness"]').val());
+          let keyTop = $(this).find('input#floatingPartsInnerFlangeValue[name="InnerFlange"]').attr('name');
+          let valTop = parseFloat($(this).find('input#floatingPartsInnerFlangeValue[name="InnerFlange"]').val());
+          partsArr.bottom.push({ [keyBot]: valBot, [keyTop]: valTop });
+        }
+
+        if ($(this).find("select[name='partsChange']").find(':selected').text() == 'Top' && 'top' in partsArr) {
+          let keyBot = $(this).find('input#floatingPartsThicknessValue[name="Thickness"]').attr('name');
+          let valBot = parseFloat($(this).find('input#floatingPartsThicknessValue[name="Thickness"]').val());
+          let keyTop = $(this).find('input#floatingPartsInnerFlangeValue[name="InnerFlange"]').attr('name');
+          let valTop = parseFloat($(this).find('input#floatingPartsInnerFlangeValue[name="InnerFlange"]').val());
+          partsArr.top.push({ [keyBot]: valBot, [keyTop]: valTop });
+        }
+        if($(this).find("select[name='partsChange']").find(':selected').text() == 'Coating' && 'parendVal' in partsArr){
+          let keySellingRate = $(this).find('input[name="SellingRate"]').attr('name');
+
+          let valSellingRate = parseFloat($(this).find('input[name="SellingRate"]').val());
+          partsArr.parendVal.push({ [keySellingRate]: valSellingRate });
+        }
+        if($(this).find("select[name='partsChange']").find(':selected').text() == 'Others' && 'others' in partsArr){
+          let keyfixRate = $(this).find('input[name="fixedRate"]').attr('name');
+          let valfixRate = parseFloat($(this).find('input[name="fixedRate"]').val());
+          partsArr.others.push({ [keyfixRate]: valfixRate });
+        }
+      });
+      console.log(partsArr)
+
+      let width = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Width || 0), 0);
+      let height = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Height || 0), 0);
+      let thickness = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Thickness || 0), 0);
+      let totalThicknessBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.Thickness || 0), 0);
+      let totalThicknessTop = partsArr.top.reduce((acc, obj) => acc + (obj.Thickness || 0), 0);
+      let totalInnerFlangeBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
+      let totalInnerFlangeTop = partsArr.top.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
+      let no_of_meter = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Length || 0), 0);
+      let sellingRate = partsArr.parendVal.reduce((acc, obj) => acc + (obj.SellingRate || 0), 0);
+      let fixRate = partsArr.others.reduce((acc, obj) => acc + (obj.fixedRate || 0), 0);
+      // Calculations
+      let weight_per_meter_top = ((width + (totalInnerFlangeTop * 2)) * totalThicknessTop * 7.85) / 1000;
+      let weight_per_meter_bottom;
+      let valtype = document.getElementById('Crd').value;
+      if (valtype === 'Perforated') {
+        weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
+      } else {
+        weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 100;
+       
+      }
+      let weight_per_meter_total = weight_per_meter_top + weight_per_meter_bottom;
+      let rate_per_meter = Math.round(weight_per_meter_total * sellingRate);
+      let coatingValue = (((width + height + height)/ 254 * 8.25 * 2)/sellingRate)/2.5 ;
+      let final_amount = Math.round((rate_per_meter * no_of_meter) + fixRate);
+
+      // Set the original final amount in the amount field
+      let amountField = tableContainer.find('.amounttxt');
+      let totalAmount = $('#appendParent .parent-form-' + id).find('input#floatingAmountValue[name="amt"]').val();
+      let display_finalAmount;
+      tableContainer.find('.ratePerMeter').val(rate_per_meter);
+      if (totalAmount == final_amount || totalAmount === '') {
+        display_finalAmount = final_amount;
+      } else if (totalAmount !== final_amount) {
+          // amountField.val(totalAmount);
+          if($("#checkTotalAmnt").val() == "true"){
+
+            let percentageDifference = ((totalAmount - final_amount) / final_amount) * 100;
+            if (Math.abs(percentageDifference) <= 2) {
+                
+              display_finalAmount = totalAmount;
+            } else {
+              display_finalAmount= final_amount;
+              alert("Warning: The edited final amount deviates by more or less than 2% from the original amount. The original amount will be used.");
+            }
+          }else{
+            display_finalAmount= final_amount;
+            
+          }
+      }
+      amountField.val(display_finalAmount)
+      $("#checkTotalAmnt").val("false");
+      // invoice table append
+     
+      getTotal();
+      let isFind = false;
+      var currentForm = $(this).closest('#appendParent');
+      var rowIndex = currentForm.find('.table-container').attr('cloned-form');
+      $('#customSteelTable tr').each(function (i) {
+        let printTblIndex = $(this).attr('data-row-index');
+        console.log(printTblIndex);
+        console.log(id);
+        if (id == printTblIndex) {
+          isFind = true;
+          return
+        }
+      });
+
+      if (isFind) {
+        updateRow(id, height, width, thickness, no_of_meter, rate_per_meter,display_finalAmount);
+        console.log(isFind)
+      } else {
+        createNewRow(height, width, thickness, no_of_meter, rate_per_meter, display_finalAmount, currentForm, id);
+        console.log(isFind)
+      }
+
+      // Calculate SGST and CGST rates
+     
+      function capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
+      var rupeesInWords = capitalizeFirstLetter(numberToWords.toWords(subtotal));
+      document.getElementById('rupeeInWords').innerHTML = "Rupees in Words: " + rupeesInWords + " only/-";
+      function updateRow(rowIndex, height, width, thickness, no_of_meter,rate_per_meter, display_finalAmount) {
+        // Get form values
+        let targetRow = $('#customSteelTable tr[data-row-index="' + rowIndex + '"]');
+        targetRow.find('td:eq(1)').text(`${height} * ${width} * ${thickness} mm GI Perforated tray with Corner 1mm`);
+        targetRow.find('td:eq(3)').text(no_of_meter);
+        targetRow.find('td:eq(5)').text(rate_per_meter);
+        targetRow.find('td:eq(6)').text(display_finalAmount);
+
+      }
+      function createNewRow(height, width, thickness, no_of_meter, rate_per_meter, display_finalAmount, currentForm, rowIndex) {
+        // Create a new row for the steel table
+        let newRow = $('<tr data-row-index="' + rowIndex + '">').addClass('steel-property').data('row-index', rowIndex).append(
+          $('<td class="sl_no">').text(rowIndex),
+          $('<td>').text(`${height} * ${width} * ${thickness} mm GI Perforated tray with Corner 1mm`),
+          $('<td>').text('7308'),
+          $('<td>').text(no_of_meter),
+          $('<td>').text('Mtrs'),
+          $('<td>').text(rate_per_meter),
+          $('<td>').text(display_finalAmount)
+        );
+
+        $('#customSteelTable').append(newRow);
+        // rowInvoiceCounter++;
+      }
+      // tableContainer.find('.ratePerMeter').val(rate_per_meter);
+      // tableContainer.find('.amounttxt').val(final_amount);
+      
+      localStorage.setItem("calc" + id + "", JSON.stringify(partsArr));
+
+    });
+    
+  });
+  function removeSubTableContainer(button) {
+    var tableContainers = $('.sub-tbl-container');
+    if (tableContainers.length > 1) {
+      var tableContainerToRemove = $(button).closest('.sub-tbl-container');
+      tableContainerToRemove.remove();
+      updateSubRowNumbers();
+    } else {
+      alert("cannot remove ");
+    }
+  }
+
+  function updateSubRowNumbers() {
+    var containers = $('.sub-tbl-container');
+
+    containers.each(function (index) {
+      var rowCounterElement = $(this).find('.sub-row-count');
+      if (rowCounterElement.length) {
+        rowCounterElement.text(index + 1);
+      }
+    });
+
+    rowCounter = containers.length;
+  }
+  function getTotal() {
+    var sum = 0;
+    var amts = document.getElementsByName("amt");
+    console.log(amts.length)
+    for (let i = 0; i < amts.length; i++) {
+      console.log(i)
+      var amt = amts[i].value;
+      sum = +(sum) + +(amt);
+    }
+    document.getElementById("subTotal").innerHTML = sum;
+    const sgstRate = 9; // SGST rate (9%)
+      const cgstRate = 9; // CGST rate (9%)
+
+      // Calculate SGST and CGST amounts
+      const sgstAmount =Math.round((sum * sgstRate) / 100);
+      const cgstAmount =Math.round((sum * cgstRate) / 100);
+      document.getElementById("sgst").innerHTML = sgstAmount;
+      document.getElementById("cgst").innerHTML = cgstAmount;
+      // document.getElementById("subTotal").innerHTML = subtotal;
+      let RoundValue = sgstAmount + cgstAmount + sum;
+      document.getElementById("roundOff").innerHTML = Math.round(RoundValue);
+      document.getElementById("grandTotal").innerHTML = Math.round(RoundValue);
+
+  }
+
+
+</script>
+<script>
+  const date = new Date();
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  const withSlashes = [day, month, year].join('-');
+  $('.invoice_date').text(withSlashes);
+  $(document).on('click', 'a.print-action', function (e) {
+    e.preventDefault();
+
+    var element = document.getElementById('invoiceTable');
+
+    // Create the PDF using html2pdf
+    html2pdf(element, {
+      margin: [5.5, 4.5, 5.5, 4.5],
+      filename: 'invoice.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
+    });
+  });
+
+</script>
+
+</html>

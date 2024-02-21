@@ -837,7 +837,6 @@
       let totalThicknessBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
       let totalThicknessTop = partsArr.top.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
       let totalInnerFlangeBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
-      alert(totalInnerFlangeBottom)
       let totalInnerFlangeTop = partsArr.top.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
       let no_of_meter = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Length || 0), 0);
       let sellingRate = partsArr.parendVal.reduce((acc, obj) => acc + (obj.SellingRate || 0), 0);
@@ -849,10 +848,8 @@
       let valtype = document.getElementById('Crd').value;
       if (valtype === 'Perforated') {
         weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
-        alert(weight_per_meter_bottom)
       } else {
         weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
-        alert(weight_per_meter_bottom)
       }
       var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
       let weight_per_meter_total = weight_per_meter_top + weight_per_meter_bottom;

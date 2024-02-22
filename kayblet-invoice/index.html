@@ -22,7 +22,7 @@
     flex-direction: column;
     align-items: center;
   }
-
+ 
   .table {
     width: 100%;
     margin-bottom: 20px;
@@ -98,23 +98,7 @@
     color: #C9302C;
   }
 
-  @media only screen and (max-width: 400) {
-    .form-control {
-      width: 100%;
-    }
-  }
 
-  @media only screen and (max-width: 600) {
-    .form-control {
-      width: 100%;
-    }
-  }
-
-  @media only screen and (max-width: 900) {
-    .form-control {
-      width: 100%;
-    }
-  }
 </style>
 
 <body>
@@ -159,7 +143,7 @@
           <div class="table-container parent-form-1" id="invoice" cloned-form="1">
             <div class="row">
               <div class="col-lg-12">
-                <table class="table-bordered" id="originalTable">
+                                <table class="table-bordered" id="originalTable">
                   <tbody>
                     <tr>
                       <th scope="row" class="row-counter">1</th>
@@ -231,7 +215,7 @@
                         </button></td>
                     </tr>
                   </tbody>
-                </table>
+               </table>
               </div>
             </div>
             <div class="row">
@@ -285,8 +269,8 @@
               </div>
             </div>
             <div class="d-flex">
-              <a class="btn btn-tertiary pull-right save-action btn-calc-1"
-                style="background-color: rgb(228, 224, 240);margin-bottom: 5px;">Calculate</a>
+              <button class="btn btn-tertiary pull-right save-action btn-calc-1"
+                style="background-color: rgb(228, 224, 240);margin-bottom: 5px;">Calculate</button>
             </div>
           </div>
         </div>
@@ -318,7 +302,7 @@
               </div>
             </td>
             <td>
-              <div class="form-floating inner" style="width: 100px; display: none;">
+              <div class="form-floating inner" style="width: 100px; display: none;" >
                 <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
                   name="InnerFlange" value="15">
                 <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
@@ -562,7 +546,6 @@
   function addNew() {
     rowCounter++
     // Clone the entire table-container
-    // var originalTableContainer = document.getElementById('invoice');
     var clonedTableContainer = $('div.table-container:first').clone(true);
     clonedTableContainer.find('#secondTable .sub-tbl-container').not(':first').remove();
     let className = $('.table-container').length + 1;
@@ -606,7 +589,7 @@
       updateRowNumbers();
       updateRowNumbers1()
     } else {
-      alert("cannot remove ");
+      // alert("cannot remove ");
     }
   }
 
@@ -640,32 +623,45 @@
     rowCounter = containers.length;
   }
   $(document).ready(function () {
+    localStorage.removeItem('ratePerMeter');
 
     $(".fa-plus").click(function () {
-      partsCounter++
-      var cloneId = $(this).attr('class').split(' ')[2].split('-')[1];
-      var clonedTableContainer = $('tbody.sub-tbl-container-clone').clone(true);
-      clonedTableContainer.addClass('sub-tbl-container');
-      clonedTableContainer.removeClass('sub-tbl-container-clone');
-      console.log(clonedTableContainer.find("select"));
-      var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
-      $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
-        if ($(this).find('select').val() == 'Top') {
-          // $(".ct option[value='X']").remove();
-          clonedTableContainer.find("select option[value='Top']").remove();
-        } else if ($(this).find('select').val() == 'Bottom') {
-          // $(".ct option[value='X']").remove();
-          clonedTableContainer.find("select option[value='Bottom']").remove();
-        } else if ($(this).find('select').val() == 'Coating') {
-          // $(".ct option[value='X']").remove();
-          clonedTableContainer.find("select option[value='Coating']").remove();
+    var cloneId = $(this).attr('class').split(' ')[2].split('-')[1];   
+    // Check if all options are selected in the last container
+    var allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container:last-child select option:not(:disabled)').length === 0;
+
+    // If all options are selected, do not proceed with cloning
+    if (allOptionsSelected) {
+        console.log("Cannot clone, all options are selected.");
+        return;
+    }
+
+    partsCounter++;
+    var clonedTableContainer = $('tbody.sub-tbl-container-clone').clone(true);
+    clonedTableContainer.addClass('sub-tbl-container');
+    clonedTableContainer.removeClass('sub-tbl-container-clone');
+    console.log(clonedTableContainer.find("select"));
+    var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
+
+    var selectedValues = [];
+
+    $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function(index){
+        var selectedValue = $(this).find('select').val();
+        if(selectedValue){
+            selectedValues.push(selectedValue);
         }
-      });
-      clonedTableContainer.find('input').prop("disabled", false);
-      $('.appendChildTbl' + cloneId + '').append(clonedTableContainer);
-      $(clonedTableContainer).find('select').trigger("change");
-      setChildVal(cloneId);
     });
+
+    clonedTableContainer.find('select option').prop('disabled', function () {
+        return selectedValues.includes($(this).val());
+    });
+
+    clonedTableContainer.find('input').prop("disabled", false);
+    $('.appendChildTbl' + cloneId + '').append(clonedTableContainer);
+    $(clonedTableContainer).find('select').trigger("change");
+
+   
+});
 
     $("body").on('DOMSubtreeModified', "#appendParent", function () {
       getTotal();
@@ -674,25 +670,32 @@
     $('select').on('change', function (e) {
       var optionSelected = $("option:selected", this);
       var valueSelected = this.value;
-      if ($(this).attr('name') == 'product_type') {
-        let changable_id = $(this).parent().parent().parent().parent().parent().parent().parent().parent().find('.save-action').attr('class').split(' ')[4].split('-')[2];
-        // if (valueSelected == 'Perforated') {
-        //   var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
-        // }
+      if($(this).attr('name') == 'product_type'){
+    let changable_id = $(this).parent().parent().parent().parent().parent().parent().parent().find('.save-action').attr('class').split(' ')[4].split('-')[2];
+    if(valueSelected == 'Perforated'){
+      var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
 
-        // if(valueSelected == 'Raceway'){
-        // $('.InnerFlange').css("display", "block");
-        var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+      containers.each(function (index) {
+        if($(this).find('select').val() == 'Top'){
+          $(this).find('.inner').css("display", "block");
+        }else{
+          $(this).find('.inner').css("display", "none")
+        }
+      });
+    }
 
-        containers.each(function (index) {
-          if ($(this).find('select').val() == 'Bottom' && valueSelected == 'Raceway') {
-            $(this).find('.inner').css("display", "block");
-          } else if ($(this).find('select').val() == 'Bottom' && valueSelected != 'Raceway') {
-            $(this).find('.inner').css("display", "none");
-          }
-        });
-        // }
-      }
+    if(valueSelected == 'Raceway'){
+
+      var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+      containers.each(function (index) {
+        if($(this).find('select').val() == 'Top' || $(this).find('select').val() == 'Bottom'){
+          $(this).find('.inner').css("display", "block");
+        }else{
+          $(this).find('.inner').css("display", "none")
+        }
+      });
+    }
+  }
 
       if ($(this).attr('name') == 'partsChange') {
 
@@ -704,17 +707,19 @@
           }
 
         });
-        // if(valueSelected == 'Top' && $('#appendParent .parent-form-' + changable_id).find('.productType').val() == 'Perforated'){
-        //       $(this).parent().parent().find('input[name=InnerFlange]').css("display", "none")
-
-        // }else{
-        //     $(this).parent().parent().find('input[name=InnerFlange]').prop("display", "table-cell")
-        // }
-        if (valueSelected == 'Top') {
-          $(this).parent().parent().find('.coatingVal').css("display", "table-cell")
-          $(this).parent().parent().find('td:nth-child(4)').css("display", "none");
-
+        if(valueSelected == 'Top'){
+              $(this).parent().parent().find('.inner').css("display", "block")
+              $(this).parent().parent().find('.coatingVal').css("display", "table-cell");
+        }else{
+            $(this).parent().parent().find('.inner').css("display", "none");
+            $(this).parent().parent().find('.coatingVal').css("display", "none");
         }
+        // if (valueSelected == 'Bottom') {
+        //   // $(this).parent().parent().find('.coatingVal').css("display", "table-cell");
+        //   $(this).parent().parent().find('.inner').css("display", "none");
+        //   $(this).parent().parent().find('td:nth-child(4)').css("display", "none");
+
+        // }
         if (valueSelected == 'Coating') {
           $(this).parent().parent().find('.coatingVal').css("display", "table-cell")
           $(this).parent().parent().find('td:nth-child(3), td:nth-child(4)').css("display", "none");
@@ -729,26 +734,22 @@
         //   }
 
 
-        //   else{
-        //     $(this).parent().parent().find('.coatingVal').css("display", "none")
-        //     $(this).parent().parent().find('td:nth-child(3), td:nth-child(4), td:nth-child(6)').css("display", "table-cell");
-        //     // $(this).parent().parent().find('input[name=InnerFlange]').css("display", "block");   
-        // }
+          else{
+            // $(this).parent().parent().find('.coatingVal').css("display", "none")
+            $(this).parent().parent().find('td:nth-child(3), td:nth-child(4), td:nth-child(6)').css("display", "table-cell");
+            // $(this).parent().parent().find('input[name=InnerFlange]').css("display", "block");   
+        }
 
-
+        setChildVal(changable_id);
       }  
+      
     });
 
-
-    // $(".sellingrateCls").on('change', function() {
-    //   console.log($(this).val());
-    //   $(this).parent().parent().parent().parent().parent().parent().parent().parent().find('input#floatingSellingRateValue[name="SellingRate"]').val($(this).val())
-    // })
-    $(".save-action").click(function () {
+    $(".save-action").click(function (event) {
+      event.preventDefault();
       $('.btn-info').css("display", "block");
 
       let id = $(this).attr('class').split(' ')[4].split('-')[2];
-      console.log('#appendParent .parent-form-' + id);
       var partsArr = {
         bottom: [],
         top: [],
@@ -845,8 +846,8 @@
       // Calculations
       let weight_per_meter_top = ((width + (innerFlange * 2)) * totalThicknessTop * 7.85) / 1000;
       let weight_per_meter_bottom;
-      let valtype = document.getElementById('Crd').value;
-      if (valtype === 'Perforated') {
+      let valtype = tableContainer.find('.productType').val();
+      if (valtype == 'Perforated') {
         weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
       } else {
         weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
@@ -866,15 +867,8 @@
       let final_amount = Math.round((rate_per_meter * no_of_meter) + fixRate + coatingValue);
       let amountField = tableContainer.find('.amounttxt');
 
-
-
-      // amountField.val(final_amount);
-      let previous_final_amount = final_amount;
-
-      amountField.val(previous_final_amount);
-      removeLocalStorageRatePerMeter('parent-form-' + id);
-
-
+      amountField.val(final_amount);
+      // removeLocalStorageRatePerMeter('parent-form-' + id);
 
       getTotal();
       let isFind = false;
@@ -954,22 +948,22 @@
       tableContainerToRemove.remove();
       updateSubRowNumbers();
     } else {
-      alert("cannot remove ");
+      // alert("cannot remove ");
     }
   }
 
-  function removeLocalStorageRatePerMeter(formName) {
-    var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
-    const index = storedNames.indexOf(formName);
-    if (index > -1) { 
-      storedNames.splice(index, 1); 
-    }
+  // function removeLocalStorageRatePerMeter(formName) {
+  //   var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
+  //   const index = storedNames.indexOf(formName);
+  //   if (index > -1) { 
+  //     storedNames.splice(index, 1); 
+  //   }
 
-    localStorage.setItem("ratePerMeter", JSON.stringify(storedNames));
+  //   localStorage.setItem("ratePerMeter", JSON.stringify(storedNames));
 
 
 
-  }
+  // }
 
   function updateSubRowNumbers() {
     var containers = $('.sub-tbl-container');

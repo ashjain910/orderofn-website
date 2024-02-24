@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <!-- <link rel="stylesheet" href="index.css"> -->
   <title>Document</title>
 </head>
 <style>
@@ -28,12 +27,6 @@
     margin-bottom: 20px;
   }
 
-  /* .table-bordered{
-    border: 1px solid #000000;
-    padding: 5px;
-    border-left: #000000;
-    text-align: left;
-  } */
   .table tbody tr {
     border-bottom: none;
   }
@@ -67,20 +60,11 @@
   .steel-property td {
     text-align: center;
   }
- 
+
   .header {
     text-align: center;
     margin-top: 0px;
   }
-
-  /* .addnew {
-    background-color: #0B5394;
-    padding: 3px;
-    border-radius: 8px;
-    color: whitesmoke;
-    cursor: pointer;
-    font-size: 14px;
-  } */
 
   label {
     font-size: 14px;
@@ -98,18 +82,39 @@
     color: #C9302C;
   }
 
- #invoiceTable table{
-  width: 100%;
- }
- .subFields{
-  padding-top: 5px;
- }
- .modal-body{
-  overflow: overlay;
- }
- /* textarea {
-  resize: none;
-} */
+  #invoiceTable table {
+    width: 100%;
+  }
+
+  .subFields {
+    padding-top: 5px;
+  }
+
+  .modal-body {
+    overflow: overlay;
+  }
+
+  @media only screen and (max-width: 576px) {
+
+    .form-floating,
+    .form-select {
+      width: 100px;
+    }
+
+    .partsDsg {
+      margin-left: auto;
+    }
+
+  }
+
+  table .form-floating,
+  .form-select {
+    width: 100px;
+  }
+
+  .addSubTBl-1 {
+    margin-top: 10px;
+  }
 </style>
 
 <body>
@@ -167,26 +172,27 @@
                     </div>
                     <div class="col-lg-3 col-4">
                       <div class="form-floating">
-                      <select name="product_type" id="Crd" class="form-control productType">
-                        <option value="Perforated">Perforated</option>
-                        <option value="Raceway">Raceway</option>
-                        <!-- <option value="Ladder">Ladder</option> -->
-                      </select>
-                      <label for="floatingInputValue">Type</label>
-                    </div>
+                        <select name="product_type" id="Crd" class="form-control productType">
+                          <option value="Perforated">Perforated</option>
+                          <option value="Raceway">Raceway</option>
+                          <!-- <option value="Ladder">Ladder</option> -->
+                        </select>
+                        <label for="floatingInputValue">Type</label>
+                      </div>
                     </div>
 
                     <div class="col-lg-3 col-4">
                       <div class="form-floating">
-                        <input type="number" class="form-control widthval" id="floatingWidhthValue" name="Width" value="100">
+                        <input type="number" class="form-control widthval" id="floatingWidhthValue" name="Width"
+                          value="100">
                         <label for="floatingInputValue">Width</label>
                       </div>
                     </div>
                     <div class="col-lg-3 col-4">
                       <div class="form-floating">
-                      <input type="number" class="form-control" id="floatingHeightValue" name="Height" value="50">
-                      <label for="floatingInputValue">Height</label>
-                    </div>
+                        <input type="number" class="form-control" id="floatingHeightValue" name="Height" value="50">
+                        <label for="floatingInputValue">Height</label>
+                      </div>
                     </div>
                     <!-- <td>
                         <label for="floatingInputValue">Thickness</label>
@@ -242,7 +248,7 @@
                 </div>
               </div>
             </div>
-            <div class="row" style="background-color: #f4f4f4; margin-top: -10px;">
+            <div class="row partsDsg" style="background-color: #f4f4f4; margin-top: -10px;">
               <div class="col-lg-12">
                 <table class="table appendChildTbl1" id="secondTable" cloned-sub-form="1">
                   <i class="fa fa-plus addSubTBl-1" sub-form-click="1"
@@ -263,7 +269,7 @@
                         </div>
                       </td>
                       <td>
-                        <div class="form-floating inner" style="width: 100px; display: none;">
+                        <div class="form-floating inner" style="display: none;">
                           <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
                             name="InnerFlange" value="15">
                           <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
@@ -326,7 +332,7 @@
               </div>
             </td>
             <td>
-              <div class="form-floating inner" style="width: 100px; display: none;">
+              <div class="form-floating inner" style="display: none;">
                 <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
                   name="InnerFlange" value="15">
                 <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
@@ -361,7 +367,7 @@
   <!-- Modal -->
   <div class="modal fade" id="editInvoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document" >
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <!-- <span class="modal-title" id="exampleModalLabel">Edit</h5> -->
@@ -372,7 +378,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="row" id="" >
+          <div class="row">
             <div class="col-lg-12">
               <div id="invoiceTable">
                 <div class="d-flex justify-content-between mt-3">
@@ -404,7 +410,8 @@
 
                 <table class=>
                   <tr>
-                    <td colspan="2" rowspan="1">  <textarea style="border: none; outline: none; width: 100%;" rows="2" placeholder="Enter your address here"></textarea>
+                    <td colspan="2" rowspan="1"> <textarea style="border: none; outline: none; width: 100%;" rows="2"
+                        placeholder="Enter your address here"></textarea>
 
                       <!-- <b>M/S. BHAVANDHARA EXPORT PVT LTD,</b> <br>
                       No. 75/210, 1st Floor, Arcot Road, <br>
@@ -669,7 +676,7 @@
         let changable_id = $(this).parent().parent().parent().parent().parent().parent().parent().find('.save-action').attr('class').split(' ')[4].split('-')[2];
         if (valueSelected == 'Perforated') {
           var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
-         
+
           containers.each(function (index) {
             if ($(this).find('select').val() == 'Top') {
               $(this).find('.inner').css("display", "block");
@@ -811,7 +818,9 @@
           let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
           let keyTop = $(this).find('input[name="InnerFlange"]').attr('name');
           let valTop = parseFloat($(this).find('input[name="InnerFlange"]').val());
-          partsArr.top.push({ [keyBot]: valBot , [keyTop]: valTop });
+          let keyTopSellingRate = $(this).find('input[name="coatingSellingRate"]').attr('name');
+          let valTopSellingRate = parseFloat($(this).find('input[name="coatingSellingRate"]').val());
+          partsArr.top.push({ [keyBot]: valBot, [keyTop]: valTop, [keyTopSellingRate]: valTopSellingRate });
         }
         if ($(this).find("select[name='partsChange']").find(':selected').text() == 'Coating' && 'parendVal' in partsArr) {
           let keyCoatingSellingRate = $(this).find('input[name="coatingSellingRate"]').attr('name');
@@ -840,9 +849,10 @@
       let no_of_meter = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Length || 0), 0);
       let sellingRate = partsArr.parendVal.reduce((acc, obj) => acc + (obj.SellingRate || 0), 0);
       let coatingSellingVal = partsArr.parendVal.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
+      let TopSellRate = partsArr.top.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
       let fixRate = partsArr.others.reduce((acc, obj) => acc + (obj.fixedRate || 0), 0);
       // Calculations
-      
+
       let weight_per_meter_top = ((width + (totalInnerFlangeTop * 2)) * totalThicknessTop * 7.85) / 1000;
       let weight_per_meter_bottom;
       let valtype = tableContainer.find('.productType').val();
@@ -852,9 +862,9 @@
         weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
       }
       var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
-      let weight_per_meter_top_selRate = weight_per_meter_top * sellingRate;
+      let weight_per_meter_top_selRate = weight_per_meter_top * TopSellRate;
       let weight_per_meter_bottom_selRate = weight_per_meter_bottom * sellingRate;
-      let rate_per_meter = Math.round( weight_per_meter_top_selRate + weight_per_meter_bottom_selRate);
+      let rate_per_meter = Math.round(weight_per_meter_top_selRate + weight_per_meter_bottom_selRate);
 
       if (storedNames.includes('parent-form-' + id)) {
         tableContainer.find('.ratePerMeter').val(ratePerMeter);
@@ -866,21 +876,14 @@
       let final_amount = Math.round((rate_per_meter * no_of_meter) + fixRate + coatingValue);
       let amountField = tableContainer.find('.amounttxt');
 
-
-
-      // amountField.val(final_amount);
       let previous_final_amount = final_amount;
-
       amountField.val(previous_final_amount);
-      // removeLocalStorageRatePerMeter('parent-form-' + id);
-
-
 
       getTotal();
       let isFind = false;
       var currentForm = $(this).closest('#appendParent');
       var rowIndex = currentForm.find('.table-container').attr('cloned-form');
-      valtype = tableContainer.find('.productType').val();  
+      valtype = tableContainer.find('.productType').val();
       // let partsType = tableContainer.find('.partsType').val();  
       $('#customSteelTable tr').each(function (i) {
         let printTblIndex = $(this).attr('data-row-index');
@@ -898,22 +901,11 @@
         createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, id, valtype,);
       }
 
-      // Calculate SGST and CGST rates
-
-      function capitalizeFirstLetter(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-      }
-      var rupeesInWords = capitalizeFirstLetter(numberToWords.toWords(subtotal));
-      document.getElementById('rupeeInWords').innerHTML = "Rupees in Words: " + rupeesInWords + " only/-";
-    
-
-    
-
       function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype) {
 
-        let trayText = getTrayText(valtype,rowIndex);
+        let trayText = getTrayText(valtype, rowIndex);
 
-         // Create a new row for the steel table
+        // Create a new row for the steel table
         let newRow = $('<tr data-row-index="' + rowIndex + '">').addClass('steel-property').data('row-index', rowIndex).append(
           $('<td class="sl_no">').text(rowIndex),
           $('<td>').text(`${width}mm * ${height}mm ${trayText}`),
@@ -928,7 +920,7 @@
         // rowInvoiceCounter++;
       }
       function updateRow(rowIndex, height, width, no_of_meter, rate_per_meter, final_amount, valtype) {
-        let trayText = getTrayText(valtype,rowIndex);
+        let trayText = getTrayText(valtype, rowIndex);
         // Get form values
         let targetRow = $('#customSteelTable tr[data-row-index="' + rowIndex + '"]');
         targetRow.find('td:eq(1)').text(`${width}mm * ${height}mm ${trayText} `);
@@ -937,18 +929,10 @@
         targetRow.find('td:eq(6)').text(final_amount);
 
       }
-    
-    
 
-// createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype, partsType);
-
-// // For update, you can call the updateRow function with the same valtype and partsType
-// updateRow(rowIndex, height, width, no_of_meter, rate_per_meter, final_amount, valtype, partsType);
       localStorage.setItem("calc" + id + "", JSON.stringify(partsArr));
 
     });
-
-
 
     $('.ratePerMeter').on('input', function () {
       let formName = $(this).parent().parent().parent().parent().parent().parent().parent().attr('class').split(' ')[1];
@@ -958,8 +942,6 @@
         localStorage.setItem("ratePerMeter", JSON.stringify(storedNames));
       }
     });
-
-
   });
   function removeSubTableContainer(button) {
     var tableContainers = $('.sub-tbl-container');
@@ -971,19 +953,6 @@
       // alert("cannot remove ");
     }
   }
-
-  // function removeLocalStorageRatePerMeter(formName) {
-  //   var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
-  //   const index = storedNames.indexOf(formName);
-  //   if (index > -1) {
-  //     storedNames.splice(index, 1);
-  //   }
-
-  //   localStorage.setItem("ratePerMeter", JSON.stringify(storedNames));
-
-
-
-  // }
 
   function updateSubRowNumbers() {
     var containers = $('.sub-tbl-container');
@@ -1004,42 +973,43 @@
     containers.each(function (index, element) {
       if ($(this).find('select').val() == 'Top') {
         $(this).find('input[name="partThickness"]').val('1');
+        $(this).find('input[name="coatingSellingRate"]').val('95');
       }
     });
   }
-  function getTrayText(valtype,changable_id) {
+  function getTrayText(valtype, changable_id) {
     var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
     let trayText = '';
     let partsTypeArr = [];
     if (valtype == 'Perforated' || valtype == 'Raceway') {
-        containers.each(function (index) {
-            partsTypeArr.push($(this).find('select').val());
-            let cond1 = partsTypeArr.indexOf('Bottom') > -1 && !(partsTypeArr.indexOf('Top') > -1);
-            let cond2 = partsTypeArr.indexOf('Top') > -1 && !(partsTypeArr.indexOf('Bottom') > -1);
-            let cond3 = partsTypeArr.indexOf('Top') > -1 && partsTypeArr.indexOf('Top') > -1;
-            if (valtype == 'Perforated') {
-                if (cond1) {
-                    trayText = 'Perforated Tray';
-                } else if (cond2) {
-                    trayText = 'Perforated Only Cover';
-                } else if (cond3) {
-                    trayText = 'Perforated Tray with Cover';
-                }
-            } 
-            else if (valtype == 'Raceway') {
-                if (cond1) {
-                    trayText = 'Raceway Tray';
-                } else if (cond2) {
-                    trayText = 'Raceway Only Cover';
-                } else if (cond3) {
-                    trayText = 'Raceway tray with cover';
-                }
-            }
-        });
+      containers.each(function (index) {
+        partsTypeArr.push($(this).find('select').val());
+        let cond1 = partsTypeArr.indexOf('Bottom') > -1 && !(partsTypeArr.indexOf('Top') > -1);
+        let cond2 = partsTypeArr.indexOf('Top') > -1 && !(partsTypeArr.indexOf('Bottom') > -1);
+        let cond3 = partsTypeArr.indexOf('Top') > -1 && partsTypeArr.indexOf('Top') > -1;
+        if (valtype == 'Perforated') {
+          if (cond1) {
+            trayText = 'Perforated Tray';
+          } else if (cond2) {
+            trayText = 'Perforated Only Cover';
+          } else if (cond3) {
+            trayText = 'Perforated Tray with Cover';
+          }
+        }
+        else if (valtype == 'Raceway') {
+          if (cond1) {
+            trayText = 'Raceway Tray';
+          } else if (cond2) {
+            trayText = 'Raceway Only Cover';
+          } else if (cond3) {
+            trayText = 'Raceway tray with cover';
+          }
+        }
+      });
     }
     return trayText;
-    
-}
+
+  }
 
 
   function getTotal() {
@@ -1065,8 +1035,12 @@
     document.getElementById("roundOff").innerHTML = Math.round(RoundValue);
     document.getElementById("grandTotal").innerHTML = Math.round(RoundValue);
 
+    var rupeesInWords = capitalizeFirstLetter(numberToWords.toWords(RoundValue));
+    document.getElementById('rupeeInWords').innerHTML = "Rupees in Words: " + rupeesInWords + " only/-";
   }
-
+  function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 
 </script>
 <script>
@@ -1078,8 +1052,8 @@
 
   const withSlashes = [day, month, year].join('-');
   $('.invoice_date').text(withSlashes);
-var randomnum =Math.floor(1000 + Math.random() * 9000);
-$('.invoice_date').text(`${randomnum} / ${withSlashes}`);
+  var randomnum = Math.floor(1000 + Math.random() * 9000);
+  $('.invoice_date').text(`${randomnum} / ${withSlashes}`);
 
   $(document).on('click', 'a.print-action', function (e) {
     e.preventDefault();

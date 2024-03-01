@@ -268,8 +268,8 @@
                           <label for="floatingPartsThicknessValue">Thickness</label>
                         </div>
                       </td>
-                      <td>
-                        <div class="form-floating inner" style="display: none;">
+                      <td class="inner" style="display: none;">
+                        <div class="form-floating">
                           <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
                             name="InnerFlange" value="15">
                           <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
@@ -278,8 +278,15 @@
                       <td style="display: none;" class="coatingVal">
                         <div class="form-floating">
                           <input type="number" class="form-control sellingrateCls" id="floatingCoatingSellingRateValue"
-                            name="coatingSellingRate" value="30">
+                            name="coatingSellingRate" value="13">
                           <label for="floatingCoatingSellingRateValue">Selling Rate</label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="form-floating coatingFld" style="display: none;">
+                          <input type="number" class="form-control coatingAmountVal" id="floatingCoatValue"
+                            name="coatingField" disabled>
+                          <label for="floatingCoatValue">Coating value</label>
                         </div>
                       </td>
                       <!-- <td style="display: none;" class="fixedRate">
@@ -304,7 +311,7 @@
             </div>
           </div>
         </div>
-        <button type="button" class="btn btn-secondary" onclick="addNew()"><i class="fa fa-plus"></i>Add
+        <button type="button" class="btn btn-secondary addNew"><i class="fa fa-plus"></i>Add
           product</button>
 
       </div>
@@ -331,8 +338,8 @@
                 <label for="floatingPartsThicknessValue">Thickness</label>
               </div>
             </td>
-            <td>
-              <div class="form-floating inner" style="display: none;">
+            <td class="inner" style="display: none;">
+              <div class="form-floating">
                 <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
                   name="InnerFlange" value="15">
                 <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
@@ -341,8 +348,15 @@
             <td style="display: none;" class="coatingVal">
               <div class="form-floating">
                 <input type="number" class="form-control sellingrateCls" id="floatingCoatingSellingRateValue"
-                  name="coatingSellingRate" value="30">
+                  name="coatingSellingRate" value="13">
                 <label for="floatingCoatingSellingRateValue">Selling Rate</label>
+              </div>
+            </td>
+            <td>
+              <div class="form-floating coatingFld" style="display: none;">
+                <input type="number" class="form-control coatingAmountVal" id="floatingCoatValue" name="coatingField"
+                  disabled>
+                <label for="floatingCoatValue">Coating value</label>
               </div>
             </td>
             <!-- <td style="display: none;" class="fixedRate">
@@ -540,125 +554,88 @@
   integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
   crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://unpkg.com/number-to-words"></script>
+<script src="sweetalert.js"></script>
 
 <script>
 
   let rowCounter = 1;
   let partsCounter = 1;
-  // var subtotal = 0;
   var rowInvoiceCounter = 1;
-
-  function addNew() {
-    rowCounter++
-    // Clone the entire table-container
-    // var originalTableContainer = document.getElementById('invoice');
-    var clonedTableContainer = $('div.table-container:first').clone(true);
-    clonedTableContainer.find('#secondTable .sub-tbl-container').not(':first').remove();
-    let className = $('.table-container').length + 1;
-    clonedTableContainer.find('#secondTable').addClass('appendChildTbl' + className);
-    clonedTableContainer.find('#secondTable').removeClass('appendChildTbl1');
-    clonedTableContainer.find('.fa-plus').addClass('addSubTBl-' + className);
-    clonedTableContainer.find('.fa-plus').removeClass('addSubTBl-1');
-    clonedTableContainer.find('.save-action').addClass('btn-calc-' + className);
-    clonedTableContainer.find('.save-action').removeClass('btn-calc-1');
-    clonedTableContainer.addClass('parent-form-' + className);
-    clonedTableContainer.removeClass('parent-form-1');
-    clonedTableContainer.find('#secondTable').attr('cloned-sub-form', className);
-
-
-
-    // Reset input values in the cloned tables
-    var amountField = clonedTableContainer.find('#floatingAmountValue');
-    amountField.val('');
-    var Ratepermeter = clonedTableContainer.find('#floatingRatePerMeterValue');
-    Ratepermeter.val('');
-    var clonedRowCounterElements = clonedTableContainer.find('.row-counter');
-    clonedRowCounterElements.each(function (index, element) {
-      $(element).text(rowCounter);
-    });
-    // Append the cloned table-container to the parent container
-    // var parentContainer = originalTableContainer.parentNode;
-    // parentContainer.appendChild(clonedTableContainer);
-    $('#appendParent').append(clonedTableContainer);
-
-  }
-
-
-
-  function removeTableContainer(button) {
-    var tableContainers = $('.table-container');
-    if (tableContainers.length > 1) {
-      var tableContainerToRemove = $(button).closest('.table-container');
-      tableContainerToRemove.remove();
-      var rowIndex = tableContainerToRemove.find('.row-counter').text();
-      $('#customSteelTable tr[data-row-index="' + rowIndex + '"]').remove();
-      updateRowNumbers();
-      updateRowNumbers1()
-    } else {
-      // alert("cannot remove ");
-    }
-  }
-
-  function updateRowNumbers() {
-    var containers = $('.table-container');
-
-    containers.each(function (index) {
-      var rowCounterElement = $(this).find('.row-counter');
-      if (rowCounterElement.length) {
-        rowCounterElement.text(index + 1);
-      }
-    });
-
-    rowCounter = containers.length;
-  }
-
-  // function checkTotalAmnt(e,){
-  //   console.log(e.value);
-  //   $("#checkTotalAmnt").val("true");
-  // }
-
-  function updateRowNumbers1() {
-    var containers = $('#customSteelTable .steel-property');
-
-    $('.steel-property').each(function (index) {
-      console.log(index + 1);
-      console.log($(this).find('.sl_no').text());
-      $(this).find('.sl_no').text(index + 1);
-    });
-
-    rowCounter = containers.length;
-  }
   $(document).ready(function () {
-    localStorage.removeItem('ratePerMeter');
+    localStorage.clear();
+    $(".addNew").click(function () {
+
+      let arry_form = [];
+      $('.table-container').each(function (i) {
+        arry_form.push(Number($(this).attr('class').split('-')[3]));
+
+      });
+      let indexName = findMissingNumbers(arry_form);
+      console.log(indexName[0])
+
+      // Clone the entire table-container
+      var clonedTableContainer = $('div.table-container:first').clone(true);
+      clonedTableContainer.find('#secondTable .sub-tbl-container').not(':first').remove();
+      let className = $('.table-container').length + 1;
+      let setIndexClass = indexName[0] != undefined ? indexName[0] : className;
+      clonedTableContainer.find('#secondTable').addClass('appendChildTbl' + setIndexClass);
+      clonedTableContainer.find('#secondTable').removeClass('appendChildTbl1');
+      clonedTableContainer.find('.fa-plus').addClass('addSubTBl-' + setIndexClass);
+      clonedTableContainer.find('.fa-plus').removeClass('addSubTBl-1');
+      clonedTableContainer.find('.save-action').addClass('btn-calc-' + setIndexClass);
+      clonedTableContainer.find('.save-action').removeClass('btn-calc-1');
+      clonedTableContainer.addClass('parent-form-' + setIndexClass);
+      clonedTableContainer.removeClass('parent-form-1');
+      clonedTableContainer.find('#secondTable').attr('cloned-sub-form', setIndexClass);
+
+
+
+      // Reset input values in the cloned tables
+      var amountField = clonedTableContainer.find('#floatingAmountValue');
+      amountField.val('');
+      var Ratepermeter = clonedTableContainer.find('#floatingRatePerMeterValue');
+      Ratepermeter.val('');
+      var clonedRowCounterElements = clonedTableContainer.find('.row-counter');
+      clonedRowCounterElements.each(function (index, element) {
+        $(element).text(rowCounter);
+      });
+    
+      $('#appendParent').append(clonedTableContainer);
+      updateSubRowNumbers();
+    });
+
+
+
     $(".fa-plus").click(function () {
+      partsCounter++
       var cloneId = $(this).attr('class').split(' ')[2].split('-')[1];
-      var allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container:last-child select option:not(:disabled)').length === 0;
+
+      var clonedTableContainer = $('tbody.sub-tbl-container-clone').clone(true);
+      var allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 2;
 
       if (allOptionsSelected) {
         console.log("Cannot clone, all options are selected.");
         return;
       }
-
-      partsCounter++;
-      var clonedTableContainer = $('tbody.sub-tbl-container-clone').clone(true);
       clonedTableContainer.addClass('sub-tbl-container');
       clonedTableContainer.removeClass('sub-tbl-container-clone');
+      clonedTableContainer.find('td:empty').remove();
+
       console.log(clonedTableContainer.find("select"));
       var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
-
-      var selectedValues = [];
-
       $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
-        var selectedValue = $(this).find('select').val();
-        if (selectedValue) {
-          selectedValues.push(selectedValue);
+        if ($(this).find('select').val() == 'Top') {
+          clonedTableContainer.find("select option[value='Top']").remove();
+        } else if ($(this).find('select').val() == 'Bottom') {
+          clonedTableContainer.find("select option[value='Bottom']").remove();
+        } else if ($(this).find('select').val() == 'Coating') {
+          clonedTableContainer.find("select option[value='Coating']").remove();
         }
+        //  else if($(this).find('select').val() == 'Others'){
+        //   $(".ct option[value='X']").remove();
+        //   clonedTableContainer.find("select option[value='Others']").remove();
+        //  }
       });
-
-      clonedTableContainer.find('select option').prop('disabled', function () {
-        return selectedValues.includes($(this).val());
-      });
-
       clonedTableContainer.find('input').prop("disabled", false);
       $('.appendChildTbl' + cloneId + '').append(clonedTableContainer);
       $(clonedTableContainer).find('select').trigger("change");
@@ -669,7 +646,7 @@
       getTotal();
     });
 
-    $('select, .widthval').on('change', function (e) {
+    $('select').on('change', function (e) {
       var optionSelected = $("option:selected", this);
       var valueSelected = this.value;
       if ($(this).attr('name') == 'product_type') {
@@ -678,11 +655,13 @@
           var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
 
           containers.each(function (index) {
-            if ($(this).find('select').val() == 'Top') {
-              $(this).find('.inner').css("display", "block");
-            } else {
-              $(this).find('.inner').css("display", "none")
+            if ($(this).find('select').val() == 'Bottom') {
+              $(this).find('.inner').css("display", "none");
             }
+            // else {
+            //   $(this).find('.inner').css("display", "none");
+
+            // }
           });
         }
 
@@ -690,8 +669,11 @@
 
           var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
           containers.each(function (index) {
-            if ($(this).find('select').val() == 'Top' || $(this).find('select').val() == 'Bottom') {
-              $(this).find('.inner').css("display", "block");
+            // ($(this).find('select').val() == 'Top' || $(this).find('select').val() == 'Bottom')
+            if ($(this).find('select').val() == 'Bottom') {
+              $(this).find('.inner').css("display", "table-cell");
+              $(this).find('.coatingVal').css("display", "none");
+
             } else {
               $(this).find('.inner').css("display", "none")
             }
@@ -707,36 +689,29 @@
           }
 
         });
+
         if (valueSelected == 'Top') {
-          $(this).parent().parent().find('.inner').css("display", "block")
           $(this).parent().parent().find('.coatingVal').css("display", "table-cell");
+
         } else {
           $(this).parent().parent().find('.inner').css("display", "none");
           $(this).parent().parent().find('.coatingVal').css("display", "none");
         }
-        // if (valueSelected == 'Bottom') {
-        //   // $(this).parent().parent().find('.coatingVal').css("display", "table-cell");
-        //   $(this).parent().parent().find('.inner').css("display", "none");
-        //   $(this).parent().parent().find('td:nth-child(4)').css("display", "none");
-
-        // }
-        if (valueSelected == 'Coating') {
-          $(this).parent().parent().find('.coatingVal').css("display", "table-cell")
-          $(this).parent().parent().find('td:nth-child(3), td:nth-child(4)').css("display", "none");
+        if (valueSelected == 'Bottom' && $('#appendParent .parent-form-' + changable_id).find('.productType').val() == 'Raceway') {
+          $(this).parent().parent().find('.inner').css("display", "table-cell");
 
         }
-        // else if(valueSelected == 'Others'){
-        //   $(this).parent().parent().find('.fixedRate').css("display", "block");
-        //   $(this).parent().parent().find('td:nth-child(3), td:nth-child(4), td:nth-child(5)').css("display", "none");
-        //   }else{
-        //     $(this).parent().parent().find('.coatingVal, .fixedRate').css("display", "none")
-        //     $(this).parent().parent().find('td:nth-child(3), td:nth-child(4)').css("display", "table-cell");
-        //   }
+        if (valueSelected == 'Coating') {
+          $(this).parent().parent().find('.coatingVal').css("display", "table-cell");
+          $(this).parent().parent().find('.coatingFld').css("display", "table-cell");
+          $(this).parent().parent().find('td:nth-child(3), td:nth-child(4)').css("display", "none");
+          // $('.parent-form-' + changable_id).find('.save-action').trigger("click");
 
-
+        }
         else {
           // $(this).parent().parent().find('.coatingVal').css("display", "none")
-          $(this).parent().parent().find('td:nth-child(3), td:nth-child(4), td:nth-child(6)').css("display", "table-cell");
+          $(this).parent().parent().find('.coatingFld').css("display", "none");
+          $(this).parent().parent().find('td:nth-child(3), td:nth-child(6)').css("display", "table-cell");
           // $(this).parent().parent().find('input[name=InnerFlange]').css("display", "block");   
         }
 
@@ -745,16 +720,14 @@
 
     });
 
-
-    // $(".sellingrateCls").on('change', function() {
-    //   console.log($(this).val());
-    //   $(this).parent().parent().parent().parent().parent().parent().parent().parent().find('input#floatingSellingRateValue[name="SellingRate"]').val($(this).val())
-    // })
     $(".save-action").click(function () {
       $('.btn-info').css("display", "block");
-
       let id = $(this).attr('class').split(' ')[4].split('-')[2];
-      console.log('#appendParent .parent-form-' + id);
+      let checkBottom = trayCheck(id);
+      if (!checkBottom) {
+        return;
+      }
+
       var partsArr = {
         bottom: [],
         top: [],
@@ -762,6 +735,7 @@
         finalAMount: [],
         others: [],
       };
+      console.log(partsArr)
       var tableContainer = $('#appendParent .parent-form-' + id + '')
       tableContainer.each(function (index) {
         if ($(this).find('[name="Width"]')) {
@@ -796,9 +770,15 @@
 
         }
         if ($(this).find('[name="rateperMtr"]')) {
-          let keySellingRate = $(this).find('input[name="rateperMtr"]').attr('name');
-          let valSellingRate = parseFloat($(this).find('input[name="rateperMtr"]').val());
-          partsArr.parendVal.push({ [keySellingRate]: valSellingRate });
+          let keyRatePerMetr = $(this).find('input[name="rateperMtr"]').attr('name');
+          let valRatePerMetr = parseFloat($(this).find('input[name="rateperMtr"]').val());
+          partsArr.parendVal.push({ [keyRatePerMetr]: valRatePerMetr });
+
+        }
+        if ($(this).find('[name="amt"]')) {
+          let keyAmt = $(this).find('input[name="amt"]').attr('name');
+          let valAmt = parseFloat($(this).find('input[name="amt"]').val());
+          partsArr.parendVal.push({ [keyAmt]: valAmt });
 
         }
       });
@@ -834,12 +814,12 @@
           partsArr.others.push({ [keyfixRate]: valfixRate });
         }
       });
-      console.log(partsArr)
+
 
       let width = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Width || 0), 0);
       let height = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Height || 0), 0);
       // let thickness = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Thickness || 0), 0);
-      let innerFlange = partsArr.parendVal.reduce((acc, obj) => acc + (obj.innerFlangeParent || 0), 0);
+      let innerFlangepar = partsArr.parendVal.reduce((acc, obj) => acc + (obj.innerFlangeParent || 0), 0);
       let ratePerMeter = partsArr.parendVal.reduce((acc, obj) => acc + (obj.rateperMtr || 0), 0);
       let totalAmount = partsArr.parendVal.reduce((acc, obj) => acc + (obj.amt || 0), 0);
       let totalThicknessBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
@@ -853,11 +833,15 @@
       let fixRate = partsArr.others.reduce((acc, obj) => acc + (obj.fixedRate || 0), 0);
       // Calculations
 
-      let weight_per_meter_top = ((width + (totalInnerFlangeTop * 2)) * totalThicknessTop * 7.85) / 1000;
+      let weight_per_meter_top = ((width + (innerFlangepar * 2)) * totalThicknessTop * 7.85) / 1000;
       let weight_per_meter_bottom;
       let valtype = tableContainer.find('.productType').val();
-      if (valtype === 'Perforated') {
-        weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
+      if (valtype == 'Perforated') {
+        if (width > 50) {
+          weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
+        } else {
+          weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
+        }
       } else {
         weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
       }
@@ -872,12 +856,16 @@
       } else {
         tableContainer.find('.ratePerMeter').val(rate_per_meter);
       }
-      let coatingValue = (((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5;
-      let final_amount = Math.round((rate_per_meter * no_of_meter) + fixRate + coatingValue);
+      let coatingValue = Math.round((((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
+      let final_amount = Math.round((rate_per_meter * no_of_meter) + coatingValue);
       let amountField = tableContainer.find('.amounttxt');
 
       let previous_final_amount = final_amount;
       amountField.val(previous_final_amount);
+    
+      let coatingAmt = tableContainer.find('.coatingAmountVal');
+      coatingAmt.val(coatingValue);
+      coatingAmt.attr("disabled", true);
 
       getTotal();
       let isFind = false;
@@ -887,8 +875,6 @@
       // let partsType = tableContainer.find('.partsType').val();  
       $('#customSteelTable tr').each(function (i) {
         let printTblIndex = $(this).attr('data-row-index');
-        console.log(printTblIndex);
-        console.log(id);
         if (id == printTblIndex) {
           isFind = true;
           return
@@ -901,48 +887,54 @@
         createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, id, valtype,);
       }
 
-      function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype) {
-
-        let trayText = getTrayText(valtype, rowIndex);
-
-        // Create a new row for the steel table
-        let newRow = $('<tr data-row-index="' + rowIndex + '">').addClass('steel-property').data('row-index', rowIndex).append(
-          $('<td class="sl_no">').text(rowIndex),
-          $('<td>').text(`${width}mm * ${height}mm ${trayText}`),
-          $('<td>').text('7308'),
-          $('<td>').text(no_of_meter),
-          $('<td>').text('Mtrs'),
-          $('<td>').text(rate_per_meter),
-          $('<td>').text(final_amount)
-        );
-
-        $('#customSteelTable').append(newRow);
-        // rowInvoiceCounter++;
-      }
-      function updateRow(rowIndex, height, width, no_of_meter, rate_per_meter, final_amount, valtype) {
-        let trayText = getTrayText(valtype, rowIndex);
-        // Get form values
-        let targetRow = $('#customSteelTable tr[data-row-index="' + rowIndex + '"]');
-        targetRow.find('td:eq(1)').text(`${width}mm * ${height}mm ${trayText} `);
-        targetRow.find('td:eq(3)').text(no_of_meter);
-        targetRow.find('td:eq(5)').text(rate_per_meter);
-        targetRow.find('td:eq(6)').text(final_amount);
-
-      }
-
       localStorage.setItem("calc" + id + "", JSON.stringify(partsArr));
-
-    });
-
-    $('.ratePerMeter').on('input', function () {
-      let formName = $(this).parent().parent().parent().parent().parent().parent().parent().attr('class').split(' ')[1];
       var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
-      if (!storedNames.includes(formName)) {
-        storedNames.push(formName)
-        localStorage.setItem("ratePerMeter", JSON.stringify(storedNames));
-      }
+      storedNames.splice(storedNames.indexOf('parent-form-' + id), 1);
+      localStorage.setItem("ratePerMeter", JSON.stringify(storedNames));
     });
   });
+  $('.ratePerMeter').on("focusout", function () {
+    let formName = $(this).parent().parent().parent().parent().parent().parent().parent().attr('class').split(' ')[1];
+    var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
+    if (!storedNames.includes(formName)) {
+      storedNames.push(formName)
+      localStorage.setItem("ratePerMeter", JSON.stringify(storedNames));
+    }
+    $('.' + formName).find('.save-action').trigger("click");
+
+  });
+  function findMissingNumbers(arr) {
+    var min = Math.min(...arr);
+    var max = Math.max(...arr);
+    var all = Array.from(Array(max - min + 1), (e, i) => i + min)
+    return all.filter(e => !arr.includes(e))
+  }
+
+  function removeTableContainer(button) {
+    var tableContainers = $('.table-container');
+    if (tableContainers.length > 1) {
+      var tableContainerToRemove = $(button).closest('.table-container');
+      tableContainerToRemove.remove();
+      var rowIndex = tableContainerToRemove.find('.row-counter').text();
+      $('#customSteelTable tr[data-row-index="' + rowIndex + '"]').remove();
+      localStorage.removeItem("calc" + rowIndex);
+      updateSubRowNumbers();
+      updateRowNumbers1();
+    } else {
+      // alert("cannot remove ");
+    }
+  }
+
+  function updateRowNumbers1() {
+    var containers = $('#customSteelTable .steel-property');
+
+    $('.steel-property').each(function (index, element) {
+      var pdfRowCounter = $(element).find('.sl_no');
+      pdfRowCounter.text(index + 1);
+    });
+
+    rowCounter = containers.length;
+  }
   function removeSubTableContainer(button) {
     var tableContainers = $('.sub-tbl-container');
     if (tableContainers.length > 1) {
@@ -955,26 +947,54 @@
   }
 
   function updateSubRowNumbers() {
-    var containers = $('.sub-tbl-container');
-
-    containers.each(function (index) {
-      var rowCounterElement = $(this).find('.sub-row-count');
-      if (rowCounterElement.length) {
+    $(".table-container").each(function (index, element) {
+      var rowCounterElementMain = $(element).find('.row-counter');
+      rowCounterElementMain.text(index + 1);
+      $(element).find(".table .sub-tbl-container").each(function (index, element) {
+        var rowCounterElement = $(element).find('.sub-row-count');
+        // if (rowCounterElement.length) {
         rowCounterElement.text(index + 1);
+        // }
+      });
+    });
+  }
+  function trayCheck(changable_id) {
+    var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+
+    var isBottomSelected = false;
+
+    containers.each(function (index, element) {
+      if ($(this).find('select').val() == 'Bottom') {
+        isBottomSelected = true;
+        return;
       }
     });
 
-    rowCounter = containers.length;
+    if (!isBottomSelected) {
+      Swal.fire({
+        title: "Warning!",
+        text: "Please select 'Tray' as the part type before calculate. the button!",
+        icon: "warning"
+      }); return false;
+    } else {
+      return true;
+    }
+
   }
 
   function setChildVal(changable_id) {
     var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
-
     containers.each(function (index, element) {
       if ($(this).find('select').val() == 'Top') {
-        $(this).find('input[name="partThickness"]').val('1');
+        $(this).find('input[name="partThickness"]').val('1.0');
         $(this).find('input[name="coatingSellingRate"]').val('95');
+      } else if (($(this).find('select').val() == 'Bottom')) {
+        $(this).find('input[name="partThickness"]').val('1.2');
+      } else if ($(this).find('select').val() == 'Coating') {
+        $(this).find('input[name="coatingSellingRate"]').val('13');
+        $(this).find('input[name="coatingField"]').val('');
       }
+
     });
   }
   function getTrayText(valtype, changable_id) {
@@ -1011,13 +1031,41 @@
 
   }
 
+  function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype) {
 
+    let trayText = getTrayText(valtype, rowIndex);
+
+    // Create a new row for the steel table
+    let newRow = $('<tr data-row-index="' + rowIndex + '">').addClass('steel-property').data('row-index', rowIndex).append(
+      $('<td class="sl_no">').text(rowIndex),
+      $('<td>').text(`${width}mm * ${height}mm ${trayText}`),
+      $('<td>').text('7308'),
+      $('<td>').text(no_of_meter),
+      $('<td>').text('Mtrs'),
+      $('<td>').text(rate_per_meter),
+      $('<td>').text(final_amount)
+    );
+
+    $('#customSteelTable').append(newRow);
+    // rowInvoiceCounter++;
+    updateRowNumbers1();
+  }
+  function updateRow(rowIndex, height, width, no_of_meter, rate_per_meter, final_amount, valtype) {
+    let trayText = getTrayText(valtype, rowIndex);
+    // Get form values
+    let targetRow = $('#customSteelTable tr[data-row-index="' + rowIndex + '"]');
+    targetRow.find('td:eq(1)').text(`${width}mm * ${height}mm ${trayText} `);
+    targetRow.find('td:eq(3)').text(no_of_meter);
+    targetRow.find('td:eq(5)').text(rate_per_meter);
+    targetRow.find('td:eq(6)').text(final_amount);
+
+  }
   function getTotal() {
     var sum = 0;
     var amts = document.getElementsByName("amt");
-    console.log(amts.length)
+    // console.log(amts.length)
     for (let i = 0; i < amts.length; i++) {
-      console.log(i)
+      // console.log(i)
       var amt = amts[i].value;
       sum = +(sum) + +(amt);
     }

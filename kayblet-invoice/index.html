@@ -115,6 +115,10 @@
   .addSubTBl-1 {
     margin-top: 10px;
   }
+
+  .save-action {
+    pointer-events: auto !important;
+  }
 </style>
 
 <body>
@@ -175,7 +179,7 @@
                         <select name="product_type" id="Crd" class="form-control productType">
                           <option value="Perforated">Perforated</option>
                           <option value="Raceway">Raceway</option>
-                          <!-- <option value="Ladder">Ladder</option> -->
+                          <option value="Ladder">Ladder</option>
                         </select>
                         <label for="floatingInputValue">Type</label>
                       </div>
@@ -206,11 +210,19 @@
                       </div>
 
                     </div>
-                    <div class="col-lg-3 col-4 subFields">
+                    <!-- <div class="col-lg-3 col-4 subFields">
                       <div class="form-floating">
                         <input type="number" class="form-control" id="floatingInnerFlangeValue" name="innerFlangeParent"
                           value="15" disabled>
                         <label for="floatingInnerFlangeValue">Inner Flange</label>
+                      </div>
+
+                    </div> -->
+                    <div class="col-lg-3 col-4 run" style="display: none;">
+                      <div class="form-floating">
+                        <input type="number" class="form-control" id="floatingRunners" name="runners"
+                          value="9">
+                        <label for="floatingInnerFlangeValue">Runers</label>
                       </div>
 
                     </div>
@@ -306,8 +318,8 @@
               </div>
             </div>
             <div class="d-flex">
-              <a class="btn btn-tertiary pull-right save-action btn-calc-1"
-                style="background-color: rgb(228, 224, 240);margin-bottom: 5px;">Calculate</a>
+              <button class="btn btn-tertiary pull-right save-action btn-calc-1"
+                style="background-color: rgb(228, 224, 240);margin-bottom: 5px;">Calculate</button>
             </div>
           </div>
         </div>
@@ -320,15 +332,68 @@
 
     </div>
   </div>
-  <div class="row" style="display: none;">
+  <div class="row" style="display: none;" id="reg-clone">
     <div class="col-lg-12">
       <table>
-        <tbody class="sub-tbl-container-clone">
+        <tbody class="sub-tbl-container sub-tbl-container-clone">
           <tr class="">
             <th scope="row" class="sub-row-count">1</th>
             <td><select name="partsChange" id="partsChange" class="form-select partsType">
                 <option value="Bottom">Tray</option>
                 <option value="Top">Cover</option>
+                <option value="Coating">Coating</option>
+              </select></td>
+            <td>
+              <div class="form-floating">
+                <input type="number" class="form-control" id="floatingPartsThicknessValue" name="partThickness"
+                  value="1.2">
+                <label for="floatingPartsThicknessValue">Thickness</label>
+              </div>
+            </td>
+            <td class="inner" style="display: none;">
+              <div class="form-floating">
+                <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
+                  name="InnerFlange" value="15">
+                <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
+              </div>
+            </td>
+            <td style="display: none;" class="coatingVal">
+              <div class="form-floating">
+                <input type="number" class="form-control sellingrateCls" id="floatingCoatingSellingRateValue"
+                  name="coatingSellingRate" value="13">
+                <label for="floatingCoatingSellingRateValue">Selling Rate</label>
+              </div>
+            </td>
+            <td>
+              <div class="form-floating coatingFld" style="display: none;">
+                <input type="number" class="form-control coatingAmountVal" id="floatingCoatValue" name="coatingField"
+                  disabled>
+                <label for="floatingCoatValue">Coating value</label>
+              </div>
+            </td>
+            <!-- <td style="display: none;" class="fixedRate">
+              <form class="form-floating" >
+                <input type="number" class="form-control" id="floatingFixedRate"
+                  name="fixedRate" value="">
+                <label for="floatingFixedRate">Fixed</label>
+              
+            </td> -->
+            <td><button type="button" class="close" aria-label="Close" onclick="removeSubTableContainer(this)">
+                <span aria-hidden="true">&times;</span>
+              </button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" style="display: none;" id="ledder-clone">
+    <div class="col-lg-12">
+      <table>
+        <tbody class="sub-tbl-container sub-tbl-container-clone-ladder">
+          <tr class="">
+            <th scope="row" class="sub-row-count">1</th>
+            <td><select name="partsChange" id="partsChange" class="form-select partsType">
+                <option value="Ladder">Ladder</option>
                 <option value="Coating">Coating</option>
               </select></td>
             <td>
@@ -562,6 +627,8 @@
   let partsCounter = 1;
   var rowInvoiceCounter = 1;
   $(document).ready(function () {
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
     localStorage.clear();
     $(".addNew").click(function () {
 
@@ -576,6 +643,7 @@
       // Clone the entire table-container
       var clonedTableContainer = $('div.table-container:first').clone(true);
       clonedTableContainer.find('#secondTable .sub-tbl-container').not(':first').remove();
+      
       let className = $('.table-container').length + 1;
       let setIndexClass = indexName[0] != undefined ? indexName[0] : className;
       clonedTableContainer.find('#secondTable').addClass('appendChildTbl' + setIndexClass);
@@ -587,10 +655,25 @@
       clonedTableContainer.addClass('parent-form-' + setIndexClass);
       clonedTableContainer.removeClass('parent-form-1');
       clonedTableContainer.find('#secondTable').attr('cloned-sub-form', setIndexClass);
+     
+      let typeCheck= clonedTableContainer.find('#Crd').val();
+      if(typeCheck == 'Perforated'){
+        clonedTableContainer.find("#secondTable").empty();
+        clonedTableContainer.find("#secondTable").html($('#reg-clone .sub-tbl-container-clone').clone(true));
+      clonedTableContainer.find('td:empty').remove();
 
+      }else{
+        clonedTableContainer.find("#secondTable").empty();
+        clonedTableContainer.find("#secondTable").html($('#ledder-clone .sub-tbl-container-clone-ladder').clone(true));
+      clonedTableContainer.find('td:empty').remove();
 
-
+      }
       // Reset input values in the cloned tables
+      clonedTableContainer.find('#floatingWidhthValue').val('100');
+      clonedTableContainer.find('#floatingHeightValue').val('50')
+      clonedTableContainer.find('#floatingSellingRateValue').val('95')
+      clonedTableContainer.find('#floatingLenghtValue').val('125')
+
       var amountField = clonedTableContainer.find('#floatingAmountValue');
       amountField.val('');
       var Ratepermeter = clonedTableContainer.find('#floatingRatePerMeterValue');
@@ -599,29 +682,39 @@
       clonedRowCounterElements.each(function (index, element) {
         $(element).text(rowCounter);
       });
-    
+
       $('#appendParent').append(clonedTableContainer);
       updateSubRowNumbers();
     });
 
 
 
+
     $(".fa-plus").click(function () {
       partsCounter++
       var cloneId = $(this).attr('class').split(' ')[2].split('-')[1];
-
-      var clonedTableContainer = $('tbody.sub-tbl-container-clone').clone(true);
-      var allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 2;
-
-      if (allOptionsSelected) {
-        console.log("Cannot clone, all options are selected.");
-        return;
-      }
-      clonedTableContainer.addClass('sub-tbl-container');
+      var allOptionsSelected;
+      if ($('.parent-form-' + cloneId).find('#Crd').val() == "Ladder") {
+        var clonedTableContainer = $('#ledder-clone .sub-tbl-container-clone-ladder').clone(true);
+         allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 1;
+         clonedTableContainer.addClass('sub-tbl-container');
+      clonedTableContainer.removeClass('sub-tbl-container-clone-ladder');
+      clonedTableContainer.find('td:empty').remove();
+      var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
+      $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
+        if ($(this).find('select').val() == 'Ladder') {
+          clonedTableContainer.find("select option[value='Ladder']").remove();
+        } 
+        else if ($(this).find('select').val() == 'Coating') {
+          clonedTableContainer.find("select option[value='Coating']").remove();
+        }
+      });
+      } else {
+        var clonedTableContainer = $('#reg-clone .sub-tbl-container-clone').clone(true);
+        allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 2;
+        clonedTableContainer.addClass('sub-tbl-container');
       clonedTableContainer.removeClass('sub-tbl-container-clone');
       clonedTableContainer.find('td:empty').remove();
-
-      console.log(clonedTableContainer.find("select"));
       var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
       $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
         if ($(this).find('select').val() == 'Top') {
@@ -631,11 +724,14 @@
         } else if ($(this).find('select').val() == 'Coating') {
           clonedTableContainer.find("select option[value='Coating']").remove();
         }
-        //  else if($(this).find('select').val() == 'Others'){
-        //   $(".ct option[value='X']").remove();
-        //   clonedTableContainer.find("select option[value='Others']").remove();
-        //  }
       });
+      }
+      if (allOptionsSelected) {
+        console.log("Cannot clone, all options are selected.");
+        return;
+      }
+
+     
       clonedTableContainer.find('input').prop("disabled", false);
       $('.appendChildTbl' + cloneId + '').append(clonedTableContainer);
       $(clonedTableContainer).find('select').trigger("change");
@@ -646,42 +742,16 @@
       getTotal();
     });
 
-    $('select').on('change', function (e) {
+    $("select.partsType").on('focus', function () {
+      // Store the current value on focus and on change
+      previous = this.value;
+    }).change(function () {
+      // e.preventDefault();
+
       var optionSelected = $("option:selected", this);
       var valueSelected = this.value;
-      if ($(this).attr('name') == 'product_type') {
-        let changable_id = $(this).parent().parent().parent().parent().parent().parent().parent().find('.save-action').attr('class').split(' ')[4].split('-')[2];
-        if (valueSelected == 'Perforated') {
-          var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
 
-          containers.each(function (index) {
-            if ($(this).find('select').val() == 'Bottom') {
-              $(this).find('.inner').css("display", "none");
-            }
-            // else {
-            //   $(this).find('.inner').css("display", "none");
-
-            // }
-          });
-        }
-
-        if (valueSelected == 'Raceway') {
-
-          var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
-          containers.each(function (index) {
-            // ($(this).find('select').val() == 'Top' || $(this).find('select').val() == 'Bottom')
-            if ($(this).find('select').val() == 'Bottom') {
-              $(this).find('.inner').css("display", "table-cell");
-              $(this).find('.coatingVal').css("display", "none");
-
-            } else {
-              $(this).find('.inner').css("display", "none")
-            }
-          });
-        }
-      }
-
-      if ($(this).attr('name') == 'partsChange') {
+     if ($(this).attr('name') == 'partsChange') {
         let changable_id = $(this).parent().parent().parent().parent().parent().find('.fa-plus').attr('class').split(' ')[2].split('-')[1];
         $('.appendChildTbl' + changable_id + ' .sub-tbl-container').each(function (index, element) {
           if (valueSelected == $(element).find('select').val()) {
@@ -720,7 +790,76 @@
 
     });
 
+    $("select.productType").on('focus', function () {
+      // Store the current value on focus and on change
+      previous = this.value;
+    }).change(function () {
+      // e.preventDefault();
+
+      var optionSelected = $("option:selected", this);
+      var valueSelected = this.value;
+
+      if ($(this).attr('name') == 'product_type') {
+        var result = confirm("Want to change?");
+        if (result) {
+          let changable_id = $(this).parent().parent().parent().parent().parent().parent().parent().find('.save-action').attr('class').split(' ')[4].split('-')[2];
+          if (valueSelected == 'Perforated') {
+            $(".appendChildTbl" + changable_id).html($('#reg-clone .sub-tbl-container-clone').clone(true));
+            let width = $(this).closest('.table-container').find("input[name='Width']").val('100');
+            let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('95');
+            let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
+            let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
+
+
+            var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+
+            containers.each(function (index) {
+              if ($(this).find('select').val() == 'Bottom') {
+                $(this).find('.inner').css("display", "none");
+              }
+              // else {
+              //   $(this).find('.inner').css("display", "none");
+
+              // }
+            });
+          }
+
+          if (valueSelected == 'Raceway') {
+            $(".appendChildTbl" + changable_id).html($('#reg-clone .sub-tbl-container-clone').clone(true));
+            let width = $(this).closest('.table-container').find("input[name='Width']").val('100');
+            let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('95');
+            let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
+            let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
+            var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+            containers.each(function (index) {
+              // ($(this).find('select').val() == 'Top' || $(this).find('select').val() == 'Bottom')
+              if ($(this).find('select').val() == 'Bottom') {
+                $(this).find('.inner').css("display", "table-cell");
+                $(this).find('.coatingVal').css("display", "none");
+
+              } else {
+                $(this).find('.inner').css("display", "none")
+              }
+            });
+          }
+          if (valueSelected == 'Ladder') {
+            $(".appendChildTbl" + changable_id).empty();
+            $(".appendChildTbl" + changable_id).html($('#ledder-clone .sub-tbl-container-clone-ladder').clone(true));
+            let width = $(this).closest('.table-container').find("input[name='Width']").val('150');
+            let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('120');
+            let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
+            let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
+          }
+        } else {
+          $(this).val(previous)
+        }
+      }
+
+    });
+
     $(".save-action").click(function () {
+      // $(this).closest('.table-container').find("input[name='Width']").trigger('focusout'); 
+      // let getConfirm = checkWidth();
       $('.btn-info').css("display", "block");
       let id = $(this).attr('class').split(' ')[4].split('-')[2];
       let checkBottom = trayCheck(id);
@@ -763,6 +902,11 @@
           let valInnerFlange = parseFloat($(this).find('input[name="innerFlangeParent"]').val());
           partsArr.parendVal.push({ [keyInnerFlange]: valInnerFlange });
         }
+        if ($(this).find('[name="runners"]')) {
+          let keyRunner = $(this).find('input[name="runners"]').attr('name');
+          let valRunner = parseFloat($(this).find('input[name="runners"]').val());
+          partsArr.parendVal.push({ [keyRunner]: valRunner });
+        }
         if ($(this).find('[name="SellingRate"]')) {
           let keySellingRate = $(this).find('input#floatingSellingRateValue[name="SellingRate"]').attr('name');
           let valSellingRate = parseFloat($(this).find('input#floatingSellingRateValue[name="SellingRate"]').val());
@@ -785,7 +929,7 @@
 
       $('.appendChildTbl' + id + ' tbody').each(function (index) {
 
-        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Bottom' && 'bottom' in partsArr) {
+        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Bottom' || 'Ladder' && 'bottom' in partsArr) {
           let keyBot = $(this).find('input[name="partThickness"]').attr('name');
           let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
           let keyTop = $(this).find('input[name="InnerFlange"]').attr('name');
@@ -819,7 +963,8 @@
       let width = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Width || 0), 0);
       let height = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Height || 0), 0);
       // let thickness = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Thickness || 0), 0);
-      let innerFlangepar = partsArr.parendVal.reduce((acc, obj) => acc + (obj.innerFlangeParent || 0), 0);
+      // let innerFlangepar = partsArr.parendVal.reduce((acc, obj) => acc + (obj.innerFlangeParent || 0), 0);
+      let runners = partsArr.parendVal.reduce((acc, obj) => acc + (obj.runners || 0), 0);
       let ratePerMeter = partsArr.parendVal.reduce((acc, obj) => acc + (obj.rateperMtr || 0), 0);
       let totalAmount = partsArr.parendVal.reduce((acc, obj) => acc + (obj.amt || 0), 0);
       let totalThicknessBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
@@ -832,40 +977,77 @@
       let TopSellRate = partsArr.top.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
       let fixRate = partsArr.others.reduce((acc, obj) => acc + (obj.fixedRate || 0), 0);
       // Calculations
-
-      let weight_per_meter_top = ((width + (innerFlangepar * 2)) * totalThicknessTop * 7.85) / 1000;
-      let weight_per_meter_bottom;
       let valtype = tableContainer.find('.productType').val();
-      if (valtype == 'Perforated') {
-        if (width > 50) {
-          weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
-        } else {
-          weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
-        }
-      } else {
-        weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
-      }
-      var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
-      let weight_per_meter_top_selRate = weight_per_meter_top * TopSellRate;
-      let weight_per_meter_bottom_selRate = weight_per_meter_bottom * sellingRate;
-      let rate_per_meter = Math.round(weight_per_meter_top_selRate + weight_per_meter_bottom_selRate);
+      let rate_per_meter, final_amount;
+      var storedNames;
+    if( valtype == 'Perforated' || valtype == 'Raceway'){
+          let weight_per_meter_top = ((width + (15 * 2)) * totalThicknessTop * 7.85) / 1000;
+          let weight_per_meter_bottom;
+          
+          if (valtype == 'Perforated') {
+            if (height > 50) {
+              weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
+            } else {
+              weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
+            }
+          } else {
+            weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
+          }
+          storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
+          let weight_per_meter_top_selRate = weight_per_meter_top * TopSellRate;
+          let weight_per_meter_bottom_selRate = weight_per_meter_bottom * sellingRate;
+          let coatingValue = Math.round((((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
 
-      if (storedNames.includes('parent-form-' + id)) {
-        tableContainer.find('.ratePerMeter').val(ratePerMeter);
-        rate_per_meter = ratePerMeter;
-      } else {
-        tableContainer.find('.ratePerMeter').val(rate_per_meter);
-      }
-      let coatingValue = Math.round((((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
-      let final_amount = Math.round((rate_per_meter * no_of_meter) + coatingValue);
-      let amountField = tableContainer.find('.amounttxt');
+           rate_per_meter = Math.round((weight_per_meter_top_selRate + weight_per_meter_bottom_selRate) + coatingValue);
 
-      let previous_final_amount = final_amount;
-      amountField.val(previous_final_amount);
-    
-      let coatingAmt = tableContainer.find('.coatingAmountVal');
-      coatingAmt.val(coatingValue);
-      coatingAmt.attr("disabled", true);
+          if (storedNames.includes('parent-form-' + id)) {
+            tableContainer.find('.ratePerMeter').val(ratePerMeter);
+            rate_per_meter = ratePerMeter;
+          } else {
+            tableContainer.find('.ratePerMeter').val(rate_per_meter);
+          }
+          final_amount = Math.round(rate_per_meter * no_of_meter);
+          let amountField = tableContainer.find('.amounttxt');
+
+          let previous_final_amount = final_amount;
+          amountField.val(previous_final_amount);
+
+          let coatingAmt = tableContainer.find('.coatingAmountVal');
+          coatingAmt.val(coatingValue);
+          coatingAmt.attr("disabled", true);
+    }else if (valtype === 'Ladder') {
+    let ladderWidth = $(this).closest('.table-container').find("input[name='Width']").val();
+    let WeightOfWidth, WeightOfHeight;
+
+    if (ladderWidth <= 300) {
+        WeightOfWidth = (((height + 24) / 1000) * totalThicknessBottom * 7.85);
+        WeightOfHeight = ((60 / 1000) * totalThicknessBottom * 7.85);
+    } else if (ladderWidth > 300 && ladderWidth <= 750) {
+       $(this).closest('.table-container').find("input[name='partThickness']").val('1.6');
+        WeightOfWidth = (((height + 24) / 1000) * totalThicknessBottom * 7.85);
+        WeightOfHeight = ((70 / 1000) * totalThicknessBottom * 7.85);
+    } else if (ladderWidth >= 900 && ladderWidth <= 1200) {
+       $(this).closest('.table-container').find("input[name='partThickness']").val('1.6');
+        WeightOfWidth = (((height + 24) / 1000) * totalThicknessBottom * 7.85);
+        WeightOfHeight = ((80 / 1000) * totalThicknessBottom * 7.85);
+    }
+    storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
+
+    let a1 = ((WeightOfWidth * sellingRate) * 2.5 * 2);
+    let a2 = (((WeightOfHeight * sellingRate) * 2.5) / (2500 / width)) * (ladderWidth <= 750 ? 8 : runners);
+
+     rate_per_meter = Math.round((a1 + a2) / 2.5);
+     if (storedNames.includes('parent-form-' + id)) {
+            tableContainer.find('.ratePerMeter').val(ratePerMeter);
+            rate_per_meter = ratePerMeter;
+          } else {
+            tableContainer.find('.ratePerMeter').val(rate_per_meter);
+          }
+     final_amount = Math.round(rate_per_meter * no_of_meter);
+
+    tableContainer.find('.ratePerMeter').val(rate_per_meter);
+    tableContainer.find('.amounttxt').val(final_amount);
+}
 
       getTotal();
       let isFind = false;
@@ -880,11 +1062,10 @@
           return
         }
       });
-
-      if (isFind) {
-        updateRow(id, height, width, no_of_meter, rate_per_meter, final_amount, valtype);
+      if (isFind) {      
+        updateRow(id, height, width, no_of_meter, rate_per_meter, final_amount, valtype,runners);
       } else {
-        createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, id, valtype,);
+        createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, id, valtype,runners);
       }
 
       localStorage.setItem("calc" + id + "", JSON.stringify(partsArr));
@@ -903,6 +1084,33 @@
     $('.' + formName).find('.save-action').trigger("click");
 
   });
+  $(".widthval").on("focusout", function (e) {
+    let width = $(this).val()
+    let height = $(this).closest('.table-container').find("input[name='Height']").val();
+    let typeForRun = $(this).closest('.table-container').find("select[name='product_type']").val();
+    if (Number(width) < Number(height)) {
+      alert("Width should not be less than height!");
+      $(this).closest('.table-container').find(".save-action").prop("disabled", true);
+
+      $(this).closest('.table-container').find(".save-action").attr("title", "Width should not be less than height!").attr("data-toggle", "tooltip").attr('data-placement', 'top');
+      $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
+    } else {
+      $(this).closest('.table-container').find(".save-action").prop("disabled", false);
+      $(this).closest('.table-container').find(".save-action").attr("title", "").attr("data-toggle", "").attr('data-placement', '');
+
+    }
+    if(typeForRun == 'Ladder'){
+    if(width >= 900){
+      $(this).closest('.table-container').find(".run").css("display", "table-cell");
+
+    }else{
+      $(this).closest('.table-container').find(".run").css("display", "none");
+
+    }
+  }
+  });
+
   function findMissingNumbers(arr) {
     var min = Math.min(...arr);
     var max = Math.max(...arr);
@@ -936,7 +1144,8 @@
     rowCounter = containers.length;
   }
   function removeSubTableContainer(button) {
-    var tableContainers = $('.sub-tbl-container');
+    var cloneId = $(button).closest('.table-container').find('#secondTable').attr('cloned-sub-form');
+    var tableContainers = $(button).closest('.appendChildTbl' + cloneId + '').find('.sub-tbl-container');
     if (tableContainers.length > 1) {
       var tableContainerToRemove = $(button).closest('.sub-tbl-container');
       tableContainerToRemove.remove();
@@ -959,15 +1168,17 @@
     });
   }
   function trayCheck(changable_id) {
-    var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
-
+   
+    var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');   
     var isBottomSelected = false;
 
     containers.each(function (index, element) {
-      if ($(this).find('select').val() == 'Bottom') {
+      if ($(this).find('select').val() == 'Bottom' || $(this).find('select').val() =='Ladder') {
+        // alert(($(this).find('select').val())) 
         isBottomSelected = true;
         return;
       }
+    
     });
 
     if (!isBottomSelected) {
@@ -987,7 +1198,7 @@
     containers.each(function (index, element) {
       if ($(this).find('select').val() == 'Top') {
         $(this).find('input[name="partThickness"]').val('1.0');
-        $(this).find('input[name="coatingSellingRate"]').val('95');
+        $(this).find('input[name="coatingSellingRate"]').val('100');
       } else if (($(this).find('select').val() == 'Bottom')) {
         $(this).find('input[name="partThickness"]').val('1.2');
       } else if ($(this).find('select').val() == 'Coating') {
@@ -1001,12 +1212,14 @@
     var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
     let trayText = '';
     let partsTypeArr = [];
-    if (valtype == 'Perforated' || valtype == 'Raceway') {
+    if (valtype == 'Perforated' || valtype == 'Raceway' || valtype == 'Ladder') {
       containers.each(function (index) {
         partsTypeArr.push($(this).find('select').val());
         let cond1 = partsTypeArr.indexOf('Bottom') > -1 && !(partsTypeArr.indexOf('Top') > -1);
         let cond2 = partsTypeArr.indexOf('Top') > -1 && !(partsTypeArr.indexOf('Bottom') > -1);
         let cond3 = partsTypeArr.indexOf('Top') > -1 && partsTypeArr.indexOf('Top') > -1;
+        let cond4 = partsTypeArr.indexOf('Ladder') > -1 ;
+       
         if (valtype == 'Perforated') {
           if (cond1) {
             trayText = 'Perforated Tray';
@@ -1025,20 +1238,29 @@
             trayText = 'Raceway tray with cover';
           }
         }
+        else if(valtype == 'Ladder'){
+          if(cond4){
+          trayText = 'Ladder';
+        }
+      }
       });
     }
     return trayText;
 
   }
 
-  function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype) {
+  function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype,runners) {
 
     let trayText = getTrayText(valtype, rowIndex);
+    let setValLad = '';
+if(valtype == 'Ladder'){
+  setValLad = width <= 750 ? 8 + ' Runners'  : runners + ' Runners';
 
+}
     // Create a new row for the steel table
     let newRow = $('<tr data-row-index="' + rowIndex + '">').addClass('steel-property').data('row-index', rowIndex).append(
       $('<td class="sl_no">').text(rowIndex),
-      $('<td>').text(`${width}mm * ${height}mm ${trayText}`),
+      $('<td>').text(`${width}mm * ${height}mm ${setValLad} ${trayText}`),
       $('<td>').text('7308'),
       $('<td>').text(no_of_meter),
       $('<td>').text('Mtrs'),
@@ -1050,11 +1272,17 @@
     // rowInvoiceCounter++;
     updateRowNumbers1();
   }
-  function updateRow(rowIndex, height, width, no_of_meter, rate_per_meter, final_amount, valtype) {
+  function updateRow(rowIndex, height, width, no_of_meter, rate_per_meter, final_amount, valtype, runners) {
+
     let trayText = getTrayText(valtype, rowIndex);
+    let setValLad = '';
+      if(valtype == 'Ladder'){
+        setValLad = width <= 750 ? 8 + ' Runners'  : runners + ' Runners';
+
+      }
     // Get form values
     let targetRow = $('#customSteelTable tr[data-row-index="' + rowIndex + '"]');
-    targetRow.find('td:eq(1)').text(`${width}mm * ${height}mm ${trayText} `);
+    targetRow.find('td:eq(1)').text(`${width}mm * ${height}mm ${setValLad} ${trayText} `);
     targetRow.find('td:eq(3)').text(no_of_meter);
     targetRow.find('td:eq(5)').text(rate_per_meter);
     targetRow.find('td:eq(6)').text(final_amount);

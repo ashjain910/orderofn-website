@@ -870,6 +870,7 @@
       var partsArr = {
         bottom: [],
         top: [],
+        ladder:[],
         parendVal: [],
         finalAMount: [],
         others: [],
@@ -929,14 +930,20 @@
 
       $('.appendChildTbl' + id + ' tbody').each(function (index) {
 
-        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Bottom' || 'Ladder' && 'bottom' in partsArr) {
+        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Bottom' && 'bottom' in partsArr) {
           let keyBot = $(this).find('input[name="partThickness"]').attr('name');
           let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
           let keyTop = $(this).find('input[name="InnerFlange"]').attr('name');
           let valTop = parseFloat($(this).find('input[name="InnerFlange"]').val());
           partsArr.bottom.push({ [keyBot]: valBot, [keyTop]: valTop });
         }
+        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Ladder' && 'ladder' in partsArr) {
+          let keyLad = $(this).find('input[name="partThickness"]').attr('name');
+          let valLad = parseFloat($(this).find('input[name="partThickness"]').val());
+          partsArr.ladder.push({ [keyLad]: valLad });
 
+        }
+          let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
         if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Top' && 'top' in partsArr) {
           let keyBot = $(this).find('input[name="partThickness"]').attr('name');
           let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
@@ -969,6 +976,7 @@
       let totalAmount = partsArr.parendVal.reduce((acc, obj) => acc + (obj.amt || 0), 0);
       let totalThicknessBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
       let totalThicknessTop = partsArr.top.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
+      let ladderThickness = partsArr.ladder.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
       let totalInnerFlangeBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
       let totalInnerFlangeTop = partsArr.top.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
       let no_of_meter = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Length || 0), 0);
@@ -1020,16 +1028,14 @@
     let WeightOfWidth, WeightOfHeight;
 
     if (ladderWidth <= 300) {
-        WeightOfWidth = (((height + 24) / 1000) * totalThicknessBottom * 7.85);
-        WeightOfHeight = ((60 / 1000) * totalThicknessBottom * 7.85);
+        WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
+        WeightOfHeight = ((60 / 1000) * ladderThickness * 7.85);
     } else if (ladderWidth > 300 && ladderWidth <= 750) {
-       $(this).closest('.table-container').find("input[name='partThickness']").val('1.6');
-        WeightOfWidth = (((height + 24) / 1000) * totalThicknessBottom * 7.85);
-        WeightOfHeight = ((70 / 1000) * totalThicknessBottom * 7.85);
+        WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
+        WeightOfHeight = ((70 / 1000) * ladderThickness * 7.85);
     } else if (ladderWidth >= 900 && ladderWidth <= 1200) {
-       $(this).closest('.table-container').find("input[name='partThickness']").val('1.6');
-        WeightOfWidth = (((height + 24) / 1000) * totalThicknessBottom * 7.85);
-        WeightOfHeight = ((80 / 1000) * totalThicknessBottom * 7.85);
+        WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
+        WeightOfHeight = ((80 / 1000) * ladderThickness * 7.85);
     }
     storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
 
@@ -1106,6 +1112,10 @@
 
     }else{
       $(this).closest('.table-container').find(".run").css("display", "none");
+
+    }
+    if(width > 300){
+      $(this).closest('.table-container').find("input[name='partThickness']").val('1.6');
 
     }
   }

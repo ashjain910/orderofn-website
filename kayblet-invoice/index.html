@@ -48,17 +48,18 @@
   th,
   td {
     border: 1px solid #000000;
-    padding: 5px;
+    padding: 1px;
     text-align: left;
   }
 
   .Acc-details td {
     border: none;
-    padding-right: 70px;
+    font-size: 12px;
+    /* padding-right: 70px; */
   }
 
   .steel-property td {
-    text-align: center;
+    text-align: left;
   }
 
   .header {
@@ -119,6 +120,23 @@
   .save-action {
     pointer-events: auto !important;
   }
+
+  .totalTxt {
+    font-size: 12px;
+  }
+
+  .bg-header {
+    background-color: #f4f4f4;
+  }
+
+  .bg-header td {
+    text-align: center;
+  }
+  textarea{
+    border: none; 
+    outline: none; 
+    width: 100%;
+  }
 </style>
 
 <body>
@@ -150,15 +168,15 @@
     </nav>
     <div class="row" style="margin-top: 80px" ;>
       <div class="col-lg-12">
-        <div class="justify-content-end" style="margin-bottom: 10px;margin-left: auto;">
-          <!-- <button type="button" class="btn btn-secondary" onclick="addNew()"><i class="fa fa-plus"></i>Add product</button> -->
-          <!-- <a class="btn print-action" style="background-color: rgb(228, 224, 240); margin-left: 10px;">Generate
-            invoice</a> -->
+        <!-- <div class="justify-content-end" style="margin-bottom: 10px;margin-left: auto;">
+          <button type="button" class="btn btn-secondary" onclick="addNew()"><i class="fa fa-plus"></i>Add product</button>
+           <a class="btn print-action" style="background-color: rgb(228, 224, 240); margin-left: 10px;">Generate
+            invoice</a>
           <button style="display: none;" type="button" id="previewButton" class="btn btn-info ml-auto"
             data-toggle="modal" data-target="#editInvoice">
             Preview
           </button>
-        </div>
+        </div> -->
         <div id="appendParent">
           <div class="table-container parent-form-1" id="invoice" cloned-form="1">
             <div class="row">
@@ -174,25 +192,26 @@
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
-                    <div class="col-lg-3 col-4">
+                    <div class="col-lg-3 col-12">
                       <div class="form-floating">
                         <select name="product_type" id="Crd" class="form-control productType">
                           <option value="Perforated">Perforated</option>
                           <option value="Raceway">Raceway</option>
                           <option value="Ladder">Ladder</option>
+                          <option value="Others">Others</option>
                         </select>
                         <label for="floatingInputValue">Type</label>
                       </div>
                     </div>
 
-                    <div class="col-lg-3 col-4">
+                    <div class="col-lg-3 col-4 others-hide">
                       <div class="form-floating">
                         <input type="number" class="form-control widthval" id="floatingWidhthValue" name="Width"
                           value="100">
                         <label for="floatingInputValue">Width</label>
                       </div>
                     </div>
-                    <div class="col-lg-3 col-4">
+                    <div class="col-lg-3 col-4 others-hide">
                       <div class="form-floating">
                         <input type="number" class="form-control" id="floatingHeightValue" name="Height" value="50">
                         <label for="floatingInputValue">Height</label>
@@ -203,9 +222,9 @@
                         <input type="number" class="form-control" id="floatingThicknessValue" name="Thickness"
                           value="1.2">
                       </td> -->
-                    <div class="col-lg-3 col-4">
+                    <div class="col-lg-3 col-4 others-hide">
                       <div class="form-floating">
-                        <input type="number" class="form-control" id="floatingLenghtValue" name="Length" value="125">
+                        <input type="number" class="form-control" id="floatingLenghtValue" name="Length" value="10">
                         <label for="floatingLenghtValue">Meter</label>
                       </div>
 
@@ -220,8 +239,7 @@
                     </div> -->
                     <div class="col-lg-3 col-4 run" style="display: none;">
                       <div class="form-floating">
-                        <input type="number" class="form-control" id="floatingRunners" name="runners"
-                          value="9">
+                        <input type="number" class="form-control" id="floatingRunners" name="runners" value="9">
                         <label for="floatingInnerFlangeValue">Runers</label>
                       </div>
 
@@ -235,7 +253,14 @@
                       </div>
 
                     </div>
-                    <div class="col-lg-3 col-4 subFields">
+                    <div class="col-lg-4 col-8 OtherText mt-2" style="display: none;">
+                      <div class="form-floating" style="width: 100%;">
+                        <input type="text" class="form-control" id="floatingOtherMsg" name="OtherMsg">
+                        <label for="OtherMsg">Enter your msg</label>
+                      </div>
+
+                    </div>
+                    <div class="col-lg-3 col-4 subFields others-hide">
                       <div class="form-floating">
 
                         <input name="rateperMtr" type="number" class="form-control ratePerMeter"
@@ -244,7 +269,7 @@
                       </div>
 
                     </div>
-                    <div class="col-lg-3 col-4 subFields">
+                    <div class="col-lg-3 col-4 subFields others-hide">
                       <div class="form-floating">
 
                         <input type="" class="form-control amounttxt" id="floatingAmountValue" value="" name="amt"
@@ -260,7 +285,7 @@
                 </div>
               </div>
             </div>
-            <div class="row partsDsg" style="background-color: #f4f4f4; margin-top: -10px;">
+            <div class="row partsDsg others-hide" style="background-color: #f4f4f4; margin-top: -10px;">
               <div class="col-lg-12">
                 <table class="table appendChildTbl1" id="secondTable" cloned-sub-form="1">
                   <i class="fa fa-plus addSubTBl-1" sub-form-click="1"
@@ -323,11 +348,17 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="d-flex">
         <button type="button" class="btn btn-secondary addNew"><i class="fa fa-plus"></i>Add
           product</button>
-
+        <button style="display: none; margin-left: 5px;" type="button" id="previewButton" class="btn btn-info"
+          data-toggle="modal" data-target="#editInvoice">
+          Preview
+        </button>
       </div>
     </div>
+
     <div>
 
     </div>
@@ -371,11 +402,11 @@
                 <label for="floatingCoatValue">Coating value</label>
               </div>
             </td>
-            <!-- <td style="display: none;" class="fixedRate">
+            <!-- <td style="display: none;" class="fixedRateMsg">
               <form class="form-floating" >
-                <input type="number" class="form-control" id="floatingFixedRate"
+                <input type="text" class="form-control" id="floatingFixedRateMsg"
                   name="fixedRate" value="">
-                <label for="floatingFixedRate">Fixed</label>
+                <label for="floatingFixedRateMsg">Fixed</label>
               
             </td> -->
             <td><button type="button" class="close" aria-label="Close" onclick="removeSubTableContainer(this)">
@@ -394,7 +425,7 @@
             <th scope="row" class="sub-row-count">1</th>
             <td><select name="partsChange" id="partsChange" class="form-select partsType">
                 <option value="Ladder">Ladder</option>
-                <option value="Coating">Coating</option>
+                <!-- <option value="Coating">Coating</option> -->
               </select></td>
             <td>
               <div class="form-floating">
@@ -441,7 +472,173 @@
   </div>
   <!-- modal -->
   <!-- Button trigger modal -->
+  <div id="clonedSection" style="display: none;">
+    <div class="table-container" id="invoice" cloned-form="1">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="table-bordered" id="originalTable" style="margin-bottom: 5px;background-color: #f4f4f4;">
+            <div class="row" style="padding: 5px;">
+              <!-- <tbody> -->
+              <!-- <tr> -->
+              <div>
+                <span scope="row" class="row-counter badge badge-pill badge-secondary">1</span>
+                <button type="button" class="close" aria-label="Close" onclick="removeTableContainer(this)"
+                  style="margin-left: auto;">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="col-lg-3 col-12">
+                <div class="form-floating">
+                  <select name="product_type" id="Crd" class="form-control productType">
+                    <option value="Perforated">Perforated</option>
+                    <option value="Raceway">Raceway</option>
+                    <option value="Ladder">Ladder</option>
+                    <option value="Others">Others</option>
+                  </select>
+                  <label for="floatingInputValue">Type</label>
+                </div>
+              </div>
 
+              <div class="col-lg-3 col-4 others-hide">
+                <div class="form-floating">
+                  <input type="number" class="form-control widthval" id="floatingWidhthValue" name="Width" value="100">
+                  <label for="floatingInputValue">Width</label>
+                </div>
+              </div>
+              <div class="col-lg-3 col-4 others-hide">
+                <div class="form-floating">
+                  <input type="number" class="form-control" id="floatingHeightValue" name="Height" value="50">
+                  <label for="floatingInputValue">Height</label>
+                </div>
+              </div>
+              <!-- <td>
+                  <label for="floatingInputValue">Thickness</label>
+                  <input type="number" class="form-control" id="floatingThicknessValue" name="Thickness"
+                    value="1.2">
+                </td> -->
+              <div class="col-lg-3 col-4 others-hide">
+                <div class="form-floating">
+                  <input type="number" class="form-control" id="floatingLenghtValue" name="Length" value="125">
+                  <label for="floatingLenghtValue">Meter</label>
+                </div>
+
+              </div>
+              <!-- <div class="col-lg-3 col-4 subFields">
+                <div class="form-floating">
+                  <input type="number" class="form-control" id="floatingInnerFlangeValue" name="innerFlangeParent"
+                    value="15" disabled>
+                  <label for="floatingInnerFlangeValue">Inner Flange</label>
+                </div>
+  
+              </div> -->
+              <div class="col-lg-3 col-4 run" style="display: none;">
+                <div class="form-floating">
+                  <input type="number" class="form-control" id="floatingRunners" name="runners" value="9">
+                  <label for="floatingInnerFlangeValue">Runers</label>
+                </div>
+
+              </div>
+              <div class="col-lg-3 col-4 subFields">
+                <div class="form-floating">
+
+                  <input type="number" class="form-control" id="floatingSellingRateValue" name="SellingRate" value="95">
+                  <label for="floatingSellingRateValue">Selling Rate</label>
+                </div>
+
+              </div>
+              <div class="col-lg-4 col-8 OtherText mt-2" style="display: none;">
+                <div class="form-floating" style="width: 100%;">
+                  <input type="text" class="form-control" id="floatingOtherMsg" name="OtherMsg">
+                  <label for="OtherMsg">Enter your msg</label>
+                </div>
+
+              </div>
+              <div class="col-lg-3 col-4 subFields others-hide">
+                <div class="form-floating">
+
+                  <input name="rateperMtr" type="number" class="form-control ratePerMeter"
+                    id="floatingRatePerMeterValue" value="">
+                  <label for="floatingRatePerMeterValue">Rate per meter</label>
+                </div>
+
+              </div>
+              <div class="col-lg-3 col-4 subFields others-hide">
+                <div class="form-floating">
+
+                  <input type="" class="form-control amounttxt" id="floatingAmountValue" value="" name="amt" disabled>
+                  <label for="floatingAmountValue">Amount</label>
+                </div>
+
+              </div>
+
+              <!-- </tr> -->
+              <!-- </tbody> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row partsDsg others-hide" style="background-color: #f4f4f4; margin-top: -10px;">
+        <div class="col-lg-12">
+          <table class="table" id="secondTable" cloned-sub-form="1">
+            <i class="fa fa-plus addSubTBl-1" sub-form-click="1"
+              style="background-color: #b6c3b4;margin-top: 2px;cursor: pointer;"></i>
+            <tbody id="invoiceForm" class="sub-tbl-container">
+              <tr class="">
+                <th scope="row" class="sub-row-count">1</th>
+                <td><select name="partsChange" id="partsChange" class="form-select partsType">
+                    <option value="Bottom">Tray</option>
+                    <option value="Top">Cover</option>
+                    <option value="Coating">Coating</option>
+                  </select></td>
+                <td>
+                  <div class="form-floating">
+                    <input type="number" class="form-control" id="floatingPartsThicknessValue" name="partThickness"
+                      value="1.2">
+                    <label for="floatingPartsThicknessValue">Thickness</label>
+                  </div>
+                </td>
+                <td class="inner" style="display: none;">
+                  <div class="form-floating">
+                    <input type="number" class="form-control InnerFlange" id="floatingPartsInnerFlangeValue"
+                      name="InnerFlange" value="15">
+                    <label for="floatingPartsInnerFlangeValue">Inner Flange</label>
+                  </div>
+                </td>
+                <td style="display: none;" class="coatingVal">
+                  <div class="form-floating">
+                    <input type="number" class="form-control sellingrateCls" id="floatingCoatingSellingRateValue"
+                      name="coatingSellingRate" value="13">
+                    <label for="floatingCoatingSellingRateValue">Selling Rate</label>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-floating coatingFld" style="display: none;">
+                    <input type="number" class="form-control coatingAmountVal" id="floatingCoatValue"
+                      name="coatingField" disabled>
+                    <label for="floatingCoatValue">Coating value</label>
+                  </div>
+                </td>
+                <!-- <td style="display: none;" class="fixedRate">
+                  <form class="form-floating" >
+                    <input type="number" class="form-control" id="floatingFixedRate"
+                      name="fixedRate" value="">
+                    <label for="floatingFixedRate">Fixed Rate </label>
+                  
+                </td> -->
+                <td><button type="button" class="close" aria-label="Close" onclick="removeSubTableContainer(this)">
+                    <span aria-hidden="true">&times;</span>
+                  </button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="d-flex">
+        <button class="btn btn-tertiary pull-right save-action btn-calc-1"
+          style="background-color: rgb(228, 224, 240);margin-bottom: 5px;">Calculate</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal -->
   <div class="modal fade" id="editInvoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -450,8 +647,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <!-- <span class="modal-title" id="exampleModalLabel">Edit</h5> -->
-          <a class="btn print-action" style="background-color: rgb(228, 224, 240); margin-left: 10px;">Generate
-            invoice</a>
+          <button class="btn print-action" style="background-color: rgb(228, 224, 240); margin-left: 10px;">Generate
+            invoice</button>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -464,32 +661,35 @@
                   <div class="left-column">
                     <span>
                       GST NO: 33AAICB3190P1ZC<br>
-                      TIN NO: 33270903207<br>
+                      MSME UAM NO : TN02D0139034
+                      <!-- TIN NO: 33270903207<br>
                       CST NO: 764247/DT:7-3-2001<br>
-                      AREA CODE: 46
+                      AREA CODE: 46 -->
                     </span>
                   </div>
                   <div class="right-column">
                     <span>
-                      Phone: 044 4212 2382<br>
-                      Mobile: +91 9282126497<br>
-                      Mail ID: imai.bk@gmail.com<br>
-                      MSME UAM NO : TN02D0139034
+                      Phone: 044 4789 2544<br>
+                      Mobile: +91 9884498865 / 9884443160<br>
+                      Mail ID: kaybletprometals@gmail.com<br>
+
                     </span>
                   </div>
                 </div>
                 <div class="header">
                   <u>
-                    <p>PERFORMA INVOICE</p>
+                    <p>ESTIMATE / PROFORMA INVOICE</p>
                   </u>
                   <p><b>KAYBLET PROMETALS PRIVATE LIMITED</b></p>
-                  <p>(mrf of All types of cable trays,junction boxes & Foundation bolts)</p>
-                  <p>FAc: # 88B, Tiny sector, Industrial Estate, <br> Ekkattuthangal, Chennai-600 032.</p>
+                  <!-- <p>(mrf of All types of cable trays,junction boxes & Foundation bolts)</p> -->
+                  <p>FACTORY: old number 12A, K.M.A Garden, Kodungaiyur, Chennai-600118. <br>
+                    GODOWN: old number 226, Linghi Chetty Street, Chennai-600001.
+                  </p>
                 </div>
 
                 <table class=>
                   <tr>
-                    <td colspan="2" rowspan="1"> <textarea style="border: none; outline: none; width: 100%;" rows="2"
+                    <td colspan="2" rowspan="1"> <textarea rows="2"
                         placeholder="Enter your address here"></textarea>
 
                       <!-- <b>M/S. BHAVANDHARA EXPORT PVT LTD,</b> <br>
@@ -509,68 +709,69 @@
 
                   </tr>
 
-                  <tr>
+                  <tr class="bg-header">
                     <td>SI.No</td>
                     <td>Description</td>
-                    <td>HSN<br>Code</td>
+                    <td>HSN Code</td>
                     <td>QTY</td>
                     <td>UNIT</td>
                     <td>UNIT<br>RATE</td>
                     <td>AMOUNT</td>
                   </tr>
                   <tbody id="customSteelTable"></tbody>
-                  <!-- <tr id="steelTable" class="steel-property">
-          <td id="rowno">1</td>
-          <td id="displayValues"></td>
-          <td>7308</td>
-          <td>25</td>
-          <td>Mtrs</td>
-          <td><input type="number"></td>
-          <td>13,12566.00</td>
-        </tr> -->
 
                   <tr>
                     <td class="" colspan="4" rowspan="5">
 
-                      <b>Company's Bank Details:</b><br>
-                      <table class="Acc-details">
+                      <b>Company's Bank Details:</b>
+                      <table class="Acc-details" style="width: 55%;">
                         <tr>
                           <td>ACCOUNT NO</td>
-                          <td>765786787678</td>
+                          <td>50200037969084</td>
+
                         </tr>
                         <tr>
                           <td>BANK NAME</td>
-                          <td>CANARA BANK</td>
+                          <td>HDFC BANK</td>
                         </tr>
                         <tr>
                           <td>BRANCH NAME</td>
-                          <td>ASHOH NAGAR</td>
+                          <td>LAXMI NAGAR, ARCOT ROAD</td>
                         </tr>
                         <tr>
                           <td>IFSC No</td>
-                          <td>CNRB0000975</td>
+                          <td>HDFC0009440</td>
                         </tr>
 
                       </table>
 
                     </td>
-                    <td colspan="2">SUB TOTAL</td>
+                    <!-- <td class="" colspan="4" rowspan="5">
+                      <b class="mb-2">Company's Bank Details:</b>
+                      <p><span>ACCOUNT No</span><span class="ml-5">50200037969084</span></p>
+                      <p><span>BANK NAME</span><span class="ml-6">HDFC BANK</span></p>
+                      <p><span>BRANCH NAME</span><span class="test"> LAXMI NAGAR, ARCOT ROAD</span></p>
+                      <p><span>IFSC No</span><span class="test">HDFC0009440</span></p>
+
+                    </td>  -->
+
+                    <td colspan="2" class="totalTxt">SUB TOTAL</td>
                     <td id="subTotal"></td>
 
                   </tr>
-                  <td colspan="2">SGST @ 9%</td>
+                  <td colspan="2" class="totalTxt">SGST @ 9%</td>
                   <td id="sgst"></td>
 
                   <tr>
-                    <td colspan="2">CGST @ 9%</td>
+                    <td colspan="2" class="totalTxt">CGST @ 9%</td>
                     <td id="cgst"></td>
 
                   <tr>
-                    <td colspan="2">Round Off</td>
+                    <td colspan="2" class="totalTxt">Round Off</td>
                     <td id="roundOff"></td>
 
                   <tr>
-                    <td colspan="2">GRAND TOTAL</td>
+                    <td colspan="2" class="totalTxt">GRAND TOTAL</td>
                     <td id="grandTotal"></td>
 
                   <tr>
@@ -582,16 +783,12 @@
                   <div class="d-flex justify-content-between">
                     <div>
                       <p><b>Terms & Conditions</b></p>
-                      <span>Cable tray length would be 2.5 mtr</span><br>
-                      <span>Quality of Sheet (Make)- JSW</span><br>
-                      <span>Above rates are excluding GST of 18%</span><br>
-                      <!-- <span>Coupler plate included</span><br> -->
-                      <span>Nut and bolts not included</span><br>
-                      <!-- <span>Payment before dispatch</span><br>
-                    <span>Delivery period 3 days after mail confir</span> -->
+                      <Span>Immediate Payment</Span>
                     </div>
                     <div>
-                      <p>Receiver Signature & Contact No</p>
+                      <p>FOR KAYBLET PROMETALS PVT LTD <br>
+                        Authorised signatory
+                      </p>
                     </div>
 
                   </div>
@@ -615,11 +812,14 @@
   integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
   integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script> -->
+
 <script src="https://unpkg.com/number-to-words"></script>
 <script src="sweetalert.js"></script>
+<script src="html2pdf.js"></script>
 
 <script>
 
@@ -633,18 +833,21 @@
     $(".addNew").click(function () {
 
       let arry_form = [];
-      $('.table-container').each(function (i) {
+      $('#appendParent .table-container').each(function (i) {
         arry_form.push(Number($(this).attr('class').split('-')[3]));
 
       });
+      console.log(arry_form)
       let indexName = findMissingNumbers(arry_form);
       console.log(indexName[0])
 
       // Clone the entire table-container
-      var clonedTableContainer = $('div.table-container:first').clone(true);
+      // var clonedTableContainer = $('div.table-container:first').clone(true);
+      var clonedTableContainer = $('#clonedSection .table-container').clone(true);
+      // $('#clonedSection .table-container').addClass('parent-form-1')
       clonedTableContainer.find('#secondTable .sub-tbl-container').not(':first').remove();
-      
-      let className = $('.table-container').length + 1;
+
+      let className = $('#appendParent .table-container').length + 1;
       let setIndexClass = indexName[0] != undefined ? indexName[0] : className;
       clonedTableContainer.find('#secondTable').addClass('appendChildTbl' + setIndexClass);
       clonedTableContainer.find('#secondTable').removeClass('appendChildTbl1');
@@ -655,24 +858,24 @@
       clonedTableContainer.addClass('parent-form-' + setIndexClass);
       clonedTableContainer.removeClass('parent-form-1');
       clonedTableContainer.find('#secondTable').attr('cloned-sub-form', setIndexClass);
-     
-      let typeCheck= clonedTableContainer.find('#Crd').val();
-      if(typeCheck == 'Perforated'){
+
+      let typeCheck = clonedTableContainer.find('#Crd').val();
+      if (typeCheck == 'Perforated') {
         clonedTableContainer.find("#secondTable").empty();
         clonedTableContainer.find("#secondTable").html($('#reg-clone .sub-tbl-container-clone').clone(true));
-      clonedTableContainer.find('td:empty').remove();
+        clonedTableContainer.find('td:empty').remove();
 
-      }else{
+      } else {
         clonedTableContainer.find("#secondTable").empty();
         clonedTableContainer.find("#secondTable").html($('#ledder-clone .sub-tbl-container-clone-ladder').clone(true));
-      clonedTableContainer.find('td:empty').remove();
+        clonedTableContainer.find('td:empty').remove();
 
       }
       // Reset input values in the cloned tables
       clonedTableContainer.find('#floatingWidhthValue').val('100');
       clonedTableContainer.find('#floatingHeightValue').val('50')
       clonedTableContainer.find('#floatingSellingRateValue').val('95')
-      clonedTableContainer.find('#floatingLenghtValue').val('125')
+      clonedTableContainer.find('#floatingLenghtValue').val('10')
 
       var amountField = clonedTableContainer.find('#floatingAmountValue');
       amountField.val('');
@@ -696,42 +899,42 @@
       var allOptionsSelected;
       if ($('.parent-form-' + cloneId).find('#Crd').val() == "Ladder") {
         var clonedTableContainer = $('#ledder-clone .sub-tbl-container-clone-ladder').clone(true);
-         allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 1;
-         clonedTableContainer.addClass('sub-tbl-container');
-      clonedTableContainer.removeClass('sub-tbl-container-clone-ladder');
-      clonedTableContainer.find('td:empty').remove();
-      var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
-      $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
-        if ($(this).find('select').val() == 'Ladder') {
-          clonedTableContainer.find("select option[value='Ladder']").remove();
-        } 
-        else if ($(this).find('select').val() == 'Coating') {
-          clonedTableContainer.find("select option[value='Coating']").remove();
-        }
-      });
+        allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 0;
+        clonedTableContainer.addClass('sub-tbl-container');
+        clonedTableContainer.removeClass('sub-tbl-container-clone-ladder');
+        clonedTableContainer.find('td:empty').remove();
+        var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
+        $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
+          if ($(this).find('select').val() == 'Ladder') {
+            clonedTableContainer.find("select option[value='Ladder']").remove();
+          }
+          else if ($(this).find('select').val() == 'Coating') {
+            clonedTableContainer.find("select option[value='Coating']").remove();
+          }
+        });
       } else {
         var clonedTableContainer = $('#reg-clone .sub-tbl-container-clone').clone(true);
         allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 2;
         clonedTableContainer.addClass('sub-tbl-container');
-      clonedTableContainer.removeClass('sub-tbl-container-clone');
-      clonedTableContainer.find('td:empty').remove();
-      var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
-      $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
-        if ($(this).find('select').val() == 'Top') {
-          clonedTableContainer.find("select option[value='Top']").remove();
-        } else if ($(this).find('select').val() == 'Bottom') {
-          clonedTableContainer.find("select option[value='Bottom']").remove();
-        } else if ($(this).find('select').val() == 'Coating') {
-          clonedTableContainer.find("select option[value='Coating']").remove();
-        }
-      });
+        clonedTableContainer.removeClass('sub-tbl-container-clone');
+        clonedTableContainer.find('td:empty').remove();
+        var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
+        $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
+          if ($(this).find('select').val() == 'Top') {
+            clonedTableContainer.find("select option[value='Top']").remove();
+          } else if ($(this).find('select').val() == 'Bottom') {
+            clonedTableContainer.find("select option[value='Bottom']").remove();
+          } else if ($(this).find('select').val() == 'Coating') {
+            clonedTableContainer.find("select option[value='Coating']").remove();
+          }
+        });
       }
       if (allOptionsSelected) {
         console.log("Cannot clone, all options are selected.");
         return;
       }
 
-     
+
       clonedTableContainer.find('input').prop("disabled", false);
       $('.appendChildTbl' + cloneId + '').append(clonedTableContainer);
       $(clonedTableContainer).find('select').trigger("change");
@@ -751,7 +954,7 @@
       var optionSelected = $("option:selected", this);
       var valueSelected = this.value;
 
-     if ($(this).attr('name') == 'partsChange') {
+      if ($(this).attr('name') == 'partsChange') {
         let changable_id = $(this).parent().parent().parent().parent().parent().find('.fa-plus').attr('class').split(' ')[2].split('-')[1];
         $('.appendChildTbl' + changable_id + ' .sub-tbl-container').each(function (index, element) {
           if (valueSelected == $(element).find('select').val()) {
@@ -800,59 +1003,63 @@
       var valueSelected = this.value;
 
       if ($(this).attr('name') == 'product_type') {
-        var result = confirm("Want to change?");
-        if (result) {
-          let changable_id = $(this).parent().parent().parent().parent().parent().parent().parent().find('.save-action').attr('class').split(' ')[4].split('-')[2];
-          if (valueSelected == 'Perforated') {
-            $(".appendChildTbl" + changable_id).html($('#reg-clone .sub-tbl-container-clone').clone(true));
-            let width = $(this).closest('.table-container').find("input[name='Width']").val('100');
-            let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('95');
-            let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
-            let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
+        let changable_id = $(this).parent().parent().parent().parent().parent().parent().parent().find('.save-action').attr('class').split(' ')[4].split('-')[2];
+        if (valueSelected == 'Perforated') {
+          $(".appendChildTbl" + changable_id).html($('#reg-clone .sub-tbl-container-clone').clone(true));
+          let width = $(this).closest('.table-container').find("input[name='Width']").val('100');
+          let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('95');
+          let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
+          let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
 
 
-            var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+          var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
 
-            containers.each(function (index) {
-              if ($(this).find('select').val() == 'Bottom') {
-                $(this).find('.inner').css("display", "none");
-              }
-              // else {
-              //   $(this).find('.inner').css("display", "none");
+          containers.each(function (index) {
+            if ($(this).find('select').val() == 'Bottom') {
+              $(this).find('.inner').css("display", "none");
+            }
+            // else {
+            //   $(this).find('.inner').css("display", "none");
 
-              // }
-            });
-          }
-
-          if (valueSelected == 'Raceway') {
-            $(".appendChildTbl" + changable_id).html($('#reg-clone .sub-tbl-container-clone').clone(true));
-            let width = $(this).closest('.table-container').find("input[name='Width']").val('100');
-            let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('95');
-            let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
-            let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
-            var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
-            containers.each(function (index) {
-              // ($(this).find('select').val() == 'Top' || $(this).find('select').val() == 'Bottom')
-              if ($(this).find('select').val() == 'Bottom') {
-                $(this).find('.inner').css("display", "table-cell");
-                $(this).find('.coatingVal').css("display", "none");
-
-              } else {
-                $(this).find('.inner').css("display", "none")
-              }
-            });
-          }
-          if (valueSelected == 'Ladder') {
-            $(".appendChildTbl" + changable_id).empty();
-            $(".appendChildTbl" + changable_id).html($('#ledder-clone .sub-tbl-container-clone-ladder').clone(true));
-            let width = $(this).closest('.table-container').find("input[name='Width']").val('150');
-            let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('120');
-            let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
-            let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
-          }
-        } else {
-          $(this).val(previous)
+            // }
+          });
         }
+
+        if (valueSelected == 'Raceway') {
+          $(".appendChildTbl" + changable_id).html($('#reg-clone .sub-tbl-container-clone').clone(true));
+          let width = $(this).closest('.table-container').find("input[name='Width']").val('100');
+          let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('95');
+          let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
+          let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
+          var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
+          containers.each(function (index) {
+            // ($(this).find('select').val() == 'Top' || $(this).find('select').val() == 'Bottom')
+            if ($(this).find('select').val() == 'Bottom') {
+              $(this).find('.inner').css("display", "table-cell");
+              $(this).find('.coatingVal').css("display", "none");
+
+            } else {
+              $(this).find('.inner').css("display", "none")
+            }
+          });
+        }
+        if (valueSelected == 'Ladder') {
+          $(".appendChildTbl" + changable_id).empty();
+          $(".appendChildTbl" + changable_id).html($('#ledder-clone .sub-tbl-container-clone-ladder').clone(true));
+          let width = $(this).closest('.table-container').find("input[name='Width']").val('150');
+          let ladderSellingRate = $(this).closest('.table-container').find("input[name='SellingRate']").val('120');
+          let ratePerMet = $(this).closest('.table-container').find("input[name='rateperMtr']").val('');
+          let amountFinal = $(this).closest('.table-container').find("input[name='amt']").val('');
+        }
+        if (valueSelected == 'Others') {
+          let width = $(this).closest('.table-container').find(".others-hide").css('display', 'none');
+          let s = $(this).closest('.table-container').find(".OtherText").css('display', 'block');
+        } else {
+          let width = $(this).closest('.table-container').find(".others-hide").css('display', 'block');
+          $(this).closest('.table-container').find(".OtherText").css('display', 'none');
+
+        }
+
       }
 
     });
@@ -862,15 +1069,15 @@
       // let getConfirm = checkWidth();
       $('.btn-info').css("display", "block");
       let id = $(this).attr('class').split(' ')[4].split('-')[2];
-      let checkBottom = trayCheck(id);
-      if (!checkBottom) {
-        return;
-      }
-
+      // let checkBottom = trayCheck(id);
+      // if (!checkBottom) {
+      //   return;
+      // }
+      console.log(id)
       var partsArr = {
         bottom: [],
         top: [],
-        ladder:[],
+        ladder: [],
         parendVal: [],
         finalAMount: [],
         others: [],
@@ -926,6 +1133,12 @@
           partsArr.parendVal.push({ [keyAmt]: valAmt });
 
         }
+        if ($(this).find('[name="OtherMsg"]')) {
+          let keytxt = $(this).find('input[name="OtherMsg"]').attr('name');
+          let valtxt = $(this).find('input[name="OtherMsg"]').val();
+          partsArr.others.push({ [keytxt]: valtxt });
+
+        }
       });
 
       $('.appendChildTbl' + id + ' tbody').each(function (index) {
@@ -943,7 +1156,7 @@
           partsArr.ladder.push({ [keyLad]: valLad });
 
         }
-          let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
+        let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
         if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Top' && 'top' in partsArr) {
           let keyBot = $(this).find('input[name="partThickness"]').attr('name');
           let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
@@ -984,76 +1197,81 @@
       let coatingSellingVal = partsArr.parendVal.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
       let TopSellRate = partsArr.top.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
       let fixRate = partsArr.others.reduce((acc, obj) => acc + (obj.fixedRate || 0), 0);
+      let OthersMsg = partsArr.others.reduce((acc, obj) => acc + (obj.OtherMsg || ''), '');
       // Calculations
       let valtype = tableContainer.find('.productType').val();
       let rate_per_meter, final_amount;
       var storedNames;
-    if( valtype == 'Perforated' || valtype == 'Raceway'){
-          let weight_per_meter_top = ((width + (15 * 2)) * totalThicknessTop * 7.85) / 1000;
-          let weight_per_meter_bottom;
-          
-          if (valtype == 'Perforated') {
-            if (height > 50) {
-              weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
-            } else {
-              weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
-            }
-          } else {
+      if (valtype == 'Perforated' || valtype == 'Raceway') {
+        let weight_per_meter_top = ((width + (15 * 2)) * totalThicknessTop * 7.85) / 1000;
+        let weight_per_meter_bottom;
+
+        if (valtype == 'Perforated') {
+          if (height > 50) {
             weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
-          }
-          storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
-          let weight_per_meter_top_selRate = weight_per_meter_top * TopSellRate;
-          let weight_per_meter_bottom_selRate = weight_per_meter_bottom * sellingRate;
-          let coatingValue = Math.round((((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
-
-           rate_per_meter = Math.round((weight_per_meter_top_selRate + weight_per_meter_bottom_selRate) + coatingValue);
-
-          if (storedNames.includes('parent-form-' + id)) {
-            tableContainer.find('.ratePerMeter').val(ratePerMeter);
-            rate_per_meter = ratePerMeter;
           } else {
-            tableContainer.find('.ratePerMeter').val(rate_per_meter);
+            weight_per_meter_bottom = ((width + (height * 2)) * totalThicknessBottom * 7.85) / 1000;
           }
-          final_amount = Math.round(rate_per_meter * no_of_meter);
-          let amountField = tableContainer.find('.amounttxt');
+        } else {
+          weight_per_meter_bottom = (((width + (height * 2)) + (totalInnerFlangeBottom * 2)) * totalThicknessBottom * 7.85) / 1000;
+        }
+        storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
+        let weight_per_meter_top_selRate = weight_per_meter_top * TopSellRate;
+        let weight_per_meter_bottom_selRate = weight_per_meter_bottom * sellingRate;
+        let coatingValue = Math.round((((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
 
-          let previous_final_amount = final_amount;
-          amountField.val(previous_final_amount);
+        rate_per_meter = Math.round((weight_per_meter_top_selRate + weight_per_meter_bottom_selRate) + coatingValue);
 
-          let coatingAmt = tableContainer.find('.coatingAmountVal');
-          coatingAmt.val(coatingValue);
-          coatingAmt.attr("disabled", true);
-    }else if (valtype === 'Ladder') {
-    let ladderWidth = $(this).closest('.table-container').find("input[name='Width']").val();
-    let WeightOfWidth, WeightOfHeight;
+        if (storedNames.includes('parent-form-' + id)) {
+          tableContainer.find('.ratePerMeter').val(ratePerMeter);
+          rate_per_meter = ratePerMeter;
+        } else {
+          tableContainer.find('.ratePerMeter').val(rate_per_meter);
+        }
+        final_amount = Math.round(rate_per_meter * no_of_meter);
+        let amountField = tableContainer.find('.amounttxt');
 
-    if (ladderWidth <= 300) {
-        WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
-        WeightOfHeight = ((60 / 1000) * ladderThickness * 7.85);
-    } else if (ladderWidth > 300 && ladderWidth <= 750) {
-        WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
-        WeightOfHeight = ((70 / 1000) * ladderThickness * 7.85);
-    } else if (ladderWidth >= 900 && ladderWidth <= 1200) {
-        WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
-        WeightOfHeight = ((80 / 1000) * ladderThickness * 7.85);
-    }
-    storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
+        let previous_final_amount = final_amount;
+        amountField.val(previous_final_amount);
 
-    let a1 = ((WeightOfWidth * sellingRate) * 2.5 * 2);
-    let a2 = (((WeightOfHeight * sellingRate) * 2.5) / (2500 / width)) * (ladderWidth <= 750 ? 8 : runners);
+        let coatingAmt = tableContainer.find('.coatingAmountVal');
+        coatingAmt.val(coatingValue);
+        coatingAmt.attr("disabled", true);
+      } else if (valtype === 'Ladder') {
+        let ladderWidth = $(this).closest('.table-container').find("input[name='Width']").val();
+        let WeightOfWidth, WeightOfHeight;
 
-     rate_per_meter = Math.round((a1 + a2) / 2.5);
-     if (storedNames.includes('parent-form-' + id)) {
-            tableContainer.find('.ratePerMeter').val(ratePerMeter);
-            rate_per_meter = ratePerMeter;
-          } else {
-            tableContainer.find('.ratePerMeter').val(rate_per_meter);
-          }
-     final_amount = Math.round(rate_per_meter * no_of_meter);
+        if (ladderWidth <= 300) {
+          WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
+          WeightOfHeight = ((60 / 1000) * ladderThickness * 7.85);
+        } else if (ladderWidth > 300 && ladderWidth <= 750) {
+          WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
+          WeightOfHeight = ((70 / 1000) * ladderThickness * 7.85);
+        } else if (ladderWidth >= 900 && ladderWidth <= 1200) {
+          WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
+          WeightOfHeight = ((80 / 1000) * ladderThickness * 7.85);
+        }
+        storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
 
-    tableContainer.find('.ratePerMeter').val(rate_per_meter);
-    tableContainer.find('.amounttxt').val(final_amount);
-}
+        let a1 = ((WeightOfWidth * sellingRate) * 2.5 * 2);
+        let a2 = (((WeightOfHeight * sellingRate) * 2.5) / (2500 / width)) * (ladderWidth <= 750 ? 8 : runners);
+
+        rate_per_meter = Math.round((a1 + a2) / 2.5);
+        if (storedNames.includes('parent-form-' + id)) {
+          tableContainer.find('.ratePerMeter').val(ratePerMeter);
+          rate_per_meter = ratePerMeter;
+        } else {
+          tableContainer.find('.ratePerMeter').val(rate_per_meter);
+        }
+        final_amount = Math.round(rate_per_meter * no_of_meter);
+
+        tableContainer.find('.ratePerMeter').val(rate_per_meter);
+        tableContainer.find('.amounttxt').val(final_amount);
+      } else if (valtype == 'Others') {
+        final_amount = sellingRate;
+        tableContainer.find('.amounttxt').val(final_amount);
+
+      }
 
       getTotal();
       let isFind = false;
@@ -1068,10 +1286,10 @@
           return
         }
       });
-      if (isFind) {      
-        updateRow(id, height, width, no_of_meter, rate_per_meter, final_amount, valtype,runners);
+      if (isFind) {
+        updateRow(id, height, width, no_of_meter, rate_per_meter, final_amount, valtype, runners, OthersMsg);
       } else {
-        createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, id, valtype,runners);
+        createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, id, valtype, runners, OthersMsg);
       }
 
       localStorage.setItem("calc" + id + "", JSON.stringify(partsArr));
@@ -1083,6 +1301,7 @@
   $('.ratePerMeter').on("focusout", function () {
     let formName = $(this).parent().parent().parent().parent().parent().parent().parent().attr('class').split(' ')[1];
     var storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
+    console.log(storedNames)
     if (!storedNames.includes(formName)) {
       storedNames.push(formName)
       localStorage.setItem("ratePerMeter", JSON.stringify(storedNames));
@@ -1106,19 +1325,21 @@
       $(this).closest('.table-container').find(".save-action").attr("title", "").attr("data-toggle", "").attr('data-placement', '');
 
     }
-    if(typeForRun == 'Ladder'){
-    if(width >= 900){
-      $(this).closest('.table-container').find(".run").css("display", "table-cell");
+    if (typeForRun == 'Ladder') {
+      if (width >= 900) {
+        $(this).closest('.table-container').find(".run").css("display", "table-cell");
 
-    }else{
-      $(this).closest('.table-container').find(".run").css("display", "none");
+      } else {
+        $(this).closest('.table-container').find(".run").css("display", "none");
 
+      }
+      if (width > 300) {
+        $(this).closest('.table-container').find("input[name='partThickness']").val('1.6');
+
+      } else {
+        $(this).closest('.table-container').find("input[name='partThickness']").val('1.2');
+      }
     }
-    if(width > 300){
-      $(this).closest('.table-container').find("input[name='partThickness']").val('1.6');
-
-    }
-  }
   });
 
   function findMissingNumbers(arr) {
@@ -1129,7 +1350,7 @@
   }
 
   function removeTableContainer(button) {
-    var tableContainers = $('.table-container');
+    var tableContainers = $('#appendParent').find('.table-container');
     if (tableContainers.length > 1) {
       var tableContainerToRemove = $(button).closest('.table-container');
       tableContainerToRemove.remove();
@@ -1177,31 +1398,31 @@
       });
     });
   }
-  function trayCheck(changable_id) {
-   
-    var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');   
-    var isBottomSelected = false;
+  // function trayCheck(changable_id) {
 
-    containers.each(function (index, element) {
-      if ($(this).find('select').val() == 'Bottom' || $(this).find('select').val() =='Ladder') {
-        // alert(($(this).find('select').val())) 
-        isBottomSelected = true;
-        return;
-      }
-    
-    });
+  //   var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');   
+  //   var isBottomSelected = false;
 
-    if (!isBottomSelected) {
-      Swal.fire({
-        title: "Warning!",
-        text: "Please select 'Tray' as the part type before calculate. the button!",
-        icon: "warning"
-      }); return false;
-    } else {
-      return true;
-    }
+  //   containers.each(function (index, element) {
+  //     if ($(this).find('select').val() == 'Bottom' || $(this).find('select').val() =='Ladder') {
+  //       // alert(($(this).find('select').val())) 
+  //       isBottomSelected = true;
+  //       return;
+  //     }
 
-  }
+  //   });
+
+  //   if (!isBottomSelected) {
+  //     Swal.fire({
+  //       title: "Warning!",
+  //       text: "Please select 'Tray' as the part type before calculate. the button!",
+  //       icon: "warning"
+  //     }); return false;
+  //   } else {
+  //     return true;
+  //   }
+
+  // }
 
   function setChildVal(changable_id) {
     var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
@@ -1225,78 +1446,108 @@
     if (valtype == 'Perforated' || valtype == 'Raceway' || valtype == 'Ladder') {
       containers.each(function (index) {
         partsTypeArr.push($(this).find('select').val());
-        let cond1 = partsTypeArr.indexOf('Bottom') > -1 && !(partsTypeArr.indexOf('Top') > -1);
-        let cond2 = partsTypeArr.indexOf('Top') > -1 && !(partsTypeArr.indexOf('Bottom') > -1);
-        let cond3 = partsTypeArr.indexOf('Top') > -1 && partsTypeArr.indexOf('Top') > -1;
-        let cond4 = partsTypeArr.indexOf('Ladder') > -1 ;
-       
+        let cond1 = partsTypeArr.indexOf('Bottom') > -1 && !(partsTypeArr.indexOf('Top') > -1) && !(partsTypeArr.indexOf('Coating') > -1);
+        let cond2 = partsTypeArr.indexOf('Top') > -1 && !(partsTypeArr.indexOf('Bottom') > -1) && !(partsTypeArr.indexOf('Coating') > -1);
+        let cond3 = partsTypeArr.indexOf('Top') > -1 && partsTypeArr.indexOf('Top') > -1 && !(partsTypeArr.indexOf('Coating') > -1);
+        let cond4 = partsTypeArr.indexOf('Ladder') > -1;
+        let cond5 = partsTypeArr.indexOf('Bottom') > -1 && partsTypeArr.indexOf('Coating') > -1 && !(partsTypeArr.indexOf('Top') > -1);
+        let cond6 = partsTypeArr.indexOf('Top') > -1 && partsTypeArr.indexOf('Coating') > -1 && !(partsTypeArr.indexOf('Bottom') > -1);
+        let cond7 = partsTypeArr.indexOf('Top') > -1 && partsTypeArr.indexOf('Coating') > -1 && partsTypeArr.indexOf('Bottom') > -1;
+
         if (valtype == 'Perforated') {
           if (cond1) {
             trayText = 'Perforated Tray';
           } else if (cond2) {
-            trayText = 'Perforated Only Cover';
+            trayText = 'Cover';
           } else if (cond3) {
             trayText = 'Perforated Tray with Cover';
+          } else if (cond5) {
+            trayText = 'Powder Coated Perforated Tray';
+          } else if (cond6) {
+            trayText = 'Powder Coated Perforated Cover';
+          } else if (cond7) {
+            trayText = 'Powder Coated Perforated Tray with Cover';
           }
+
         }
         else if (valtype == 'Raceway') {
           if (cond1) {
             trayText = 'Raceway Tray';
           } else if (cond2) {
-            trayText = 'Raceway Only Cover';
+            trayText = 'Cover';
           } else if (cond3) {
-            trayText = 'Raceway tray with cover';
+            trayText = 'Raceway with cover';
+          } else if (cond5) {
+            trayText = 'Powder Coated Raceway Tray';
+          } else if (cond6) {
+            trayText = 'Powder Coated Raceway Cover';
+          } else if (cond7) {
+            trayText = 'Powder Coated Raceway Tray with Cover';
           }
         }
-        else if(valtype == 'Ladder'){
-          if(cond4){
-          trayText = 'Ladder';
+        else if (valtype == 'Ladder') {
+          if (cond4) {
+            trayText = 'Ladder Tray';
+          }
         }
-      }
       });
     }
     return trayText;
 
   }
 
-  function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype,runners) {
-
+  function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype, runners, OthersMsg) {
     let trayText = getTrayText(valtype, rowIndex);
     let setValLad = '';
-if(valtype == 'Ladder'){
-  setValLad = width <= 750 ? 8 + ' Runners'  : runners + ' Runners';
+    // if(valtype == 'Ladder'){
+    //   setValLad = width <= 750 ? 8 + ' Runners'  : runners + ' Runners';
 
-}
+    // }
     // Create a new row for the steel table
+    var trData = '';
+    if (valtype == 'Others') {
+      trData += '<td class="sl_no">' + rowIndex + '</td>';
+      trData += '<td>' + OthersMsg + '</td>';
+      trData += '<td></td>';
+      trData += '<td></td>';
+      trData += '<td></td>';
+      trData += '<td></td>';
+      trData += '<td>' + final_amount + '</td>';
+    } else {
+      trData += '<td class="sl_no">' + rowIndex + '</td>';
+      trData += '<td>' + `Pre-Gal ${width}mm * ${height}mm ${trayText}` + '</td>';
+      trData += '<td>' + '73089090' + '</td>';
+      trData += '<td>' + no_of_meter + '</td>';
+      trData += '<td>' + 'Mtrs' + '</td>';
+      trData += '<td>' + rate_per_meter + '</td>';
+      trData += '<td>' + final_amount + '</td>';
+
+    }
+    console.log(trData)
     let newRow = $('<tr data-row-index="' + rowIndex + '">').addClass('steel-property').data('row-index', rowIndex).append(
-      $('<td class="sl_no">').text(rowIndex),
-      $('<td>').text(`${width}mm * ${height}mm ${setValLad} ${trayText}`),
-      $('<td>').text('7308'),
-      $('<td>').text(no_of_meter),
-      $('<td>').text('Mtrs'),
-      $('<td>').text(rate_per_meter),
-      $('<td>').text(final_amount)
+      trData
     );
 
     $('#customSteelTable').append(newRow);
     // rowInvoiceCounter++;
     updateRowNumbers1();
   }
-  function updateRow(rowIndex, height, width, no_of_meter, rate_per_meter, final_amount, valtype, runners) {
+  function updateRow(rowIndex, height, width, no_of_meter, rate_per_meter, final_amount, valtype, runners, OthersMsg) {
 
     let trayText = getTrayText(valtype, rowIndex);
-    let setValLad = '';
-      if(valtype == 'Ladder'){
-        setValLad = width <= 750 ? 8 + ' Runners'  : runners + ' Runners';
 
-      }
     // Get form values
     let targetRow = $('#customSteelTable tr[data-row-index="' + rowIndex + '"]');
-    targetRow.find('td:eq(1)').text(`${width}mm * ${height}mm ${setValLad} ${trayText} `);
-    targetRow.find('td:eq(3)').text(no_of_meter);
-    targetRow.find('td:eq(5)').text(rate_per_meter);
-    targetRow.find('td:eq(6)').text(final_amount);
+    if (valtype == 'Others') {
+      targetRow.find('td:eq(1)').text(OthersMsg);
+      targetRow.find('td:eq(6)').text(final_amount);
 
+    } else {
+      targetRow.find('td:eq(1)').text(`Pre-Gal ${width}mm * ${height}mm  ${trayText} `);
+      targetRow.find('td:eq(3)').text(no_of_meter);
+      targetRow.find('td:eq(5)').text(rate_per_meter);
+      targetRow.find('td:eq(6)').text(final_amount);
+    }
   }
   function getTotal() {
     var sum = 0;
@@ -1312,13 +1563,13 @@ if(valtype == 'Ladder'){
     const cgstRate = 9; // CGST rate (9%)
 
     // Calculate SGST and CGST amounts
-    const sgstAmount = Math.round((sum * sgstRate) / 100);
-    const cgstAmount = Math.round((sum * cgstRate) / 100);
+    const sgstAmount = (sum * sgstRate) / 100;
+    const cgstAmount = (sum * cgstRate) / 100;
     document.getElementById("sgst").innerHTML = sgstAmount;
     document.getElementById("cgst").innerHTML = cgstAmount;
     // document.getElementById("subTotal").innerHTML = subtotal;
     let RoundValue = sgstAmount + cgstAmount + sum;
-    document.getElementById("roundOff").innerHTML = Math.round(RoundValue);
+    document.getElementById("roundOff").innerHTML = RoundValue;
     document.getElementById("grandTotal").innerHTML = Math.round(RoundValue);
 
     var rupeesInWords = capitalizeFirstLetter(numberToWords.toWords(RoundValue));
@@ -1341,12 +1592,12 @@ if(valtype == 'Ladder'){
   var randomnum = Math.floor(1000 + Math.random() * 9000);
   $('.invoice_date').text(`${randomnum} / ${withSlashes}`);
 
-  $(document).on('click', 'a.print-action', function (e) {
+  $(document).on('click', 'button.print-action', function (e) {
+    debugger;
     e.preventDefault();
 
     var element = document.getElementById('invoiceTable');
 
-    // Create the PDF using html2pdf
     html2pdf(element, {
       margin: [5.5, 4.5, 5.5, 4.5],
       filename: 'invoice.pdf',
@@ -1354,7 +1605,9 @@ if(valtype == 'Ladder'){
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
     });
+
   });
+ 
 
 </script>
 

@@ -15,6 +15,16 @@
     margin-bottom: 0;
   }
 
+  .divtext {
+    border: none;
+    padding: 5px;
+    overflow: auto;
+    min-height: 60px;
+    /* width: 100%; */
+    width: 20em;
+
+  }
+
   .table-container {
     width: 100%;
     display: flex;
@@ -59,7 +69,7 @@
   }
 
   .steel-property td {
-    text-align: left;
+    text-align: center;
   }
 
   .header {
@@ -132,10 +142,13 @@
   .bg-header td {
     text-align: center;
   }
-  textarea{
-    border: none; 
-    outline: none; 
-    width: 100%;
+
+  .pos-rgh {
+    text-align: right;
+  }
+
+  :focus-visible {
+    outline: none;
   }
 </style>
 
@@ -682,15 +695,16 @@
                   </u>
                   <p><b>KAYBLET PROMETALS PRIVATE LIMITED</b></p>
                   <!-- <p>(mrf of All types of cable trays,junction boxes & Foundation bolts)</p> -->
-                  <p>FACTORY: old number 12A, K.M.A Garden, Kodungaiyur, Chennai-600118. <br>
-                    GODOWN: old number 226, Linghi Chetty Street, Chennai-600001.
+                  <p>Reg Off: old number 12A, K.M.A Garden, Kodungaiyur, Chennai-600118. <br>
+                    WAREHOUSE: old number 226, Linghi Chetty Street, Chennai-600001.
                   </p>
                 </div>
 
                 <table class=>
                   <tr>
-                    <td colspan="2" rowspan="1"> <textarea rows="2"
-                        placeholder="Enter your address here"></textarea>
+                    <td colspan="2" rowspan="1">
+                      <div class="divtext" contentEditable></div>
+
 
                       <!-- <b>M/S. BHAVANDHARA EXPORT PVT LTD,</b> <br>
                       No. 75/210, 1st Floor, Arcot Road, <br>
@@ -756,23 +770,23 @@
                     </td>  -->
 
                     <td colspan="2" class="totalTxt">SUB TOTAL</td>
-                    <td id="subTotal"></td>
+                    <td id="subTotal" class="pos-rgh"></td>
 
                   </tr>
                   <td colspan="2" class="totalTxt">SGST @ 9%</td>
-                  <td id="sgst"></td>
+                  <td id="sgst" class="pos-rgh"></td>
 
                   <tr>
                     <td colspan="2" class="totalTxt">CGST @ 9%</td>
-                    <td id="cgst"></td>
+                    <td id="cgst" class="pos-rgh"></td>
 
                   <tr>
                     <td colspan="2" class="totalTxt">Round Off</td>
-                    <td id="roundOff"></td>
+                    <td id="roundOff" class="pos-rgh"></td>
 
                   <tr>
                     <td colspan="2" class="totalTxt">GRAND TOTAL</td>
-                    <td id="grandTotal"></td>
+                    <td id="grandTotal" class="pos-rgh"></td>
 
                   <tr>
                     <td colspan="7"><b id="rupeeInWords"></b></td>
@@ -815,9 +829,11 @@
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
   integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
   crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script> -->
 
-<script src="https://unpkg.com/number-to-words"></script>
+<!-- <script src="https://unpkg.com/number-to-words"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/number-to-words"></script>
+
 <script src="sweetalert.js"></script>
 <script src="html2pdf.js"></script>
 
@@ -965,6 +981,7 @@
 
         if (valueSelected == 'Top') {
           $(this).parent().parent().find('.coatingVal').css("display", "table-cell");
+          setChildVal(changable_id, 'Top');
 
         } else {
           $(this).parent().parent().find('.inner').css("display", "none");
@@ -972,6 +989,7 @@
         }
         if (valueSelected == 'Bottom' && $('#appendParent .parent-form-' + changable_id).find('.productType').val() == 'Raceway') {
           $(this).parent().parent().find('.inner').css("display", "table-cell");
+          setChildVal(changable_id);
 
         }
         if (valueSelected == 'Coating') {
@@ -979,6 +997,7 @@
           $(this).parent().parent().find('.coatingFld').css("display", "table-cell");
           $(this).parent().parent().find('td:nth-child(3), td:nth-child(4)').css("display", "none");
           // $('.parent-form-' + changable_id).find('.save-action').trigger("click");
+          setChildVal(changable_id);
 
         }
         else {
@@ -986,9 +1005,10 @@
           $(this).parent().parent().find('.coatingFld').css("display", "none");
           $(this).parent().parent().find('td:nth-child(3), td:nth-child(6)').css("display", "table-cell");
           // $(this).parent().parent().find('input[name=InnerFlange]').css("display", "block");   
+          setChildVal(changable_id);
+
         }
 
-        setChildVal(changable_id);
       }
 
     });
@@ -1218,7 +1238,29 @@
         storedNames = JSON.parse(localStorage.getItem("ratePerMeter")) || [];
         let weight_per_meter_top_selRate = weight_per_meter_top * TopSellRate;
         let weight_per_meter_bottom_selRate = weight_per_meter_bottom * sellingRate;
-        let coatingValue = Math.round((((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
+
+        var PartContainers = $('.appendChildTbl' + id + ' .sub-tbl-container');
+        let coatingValue;
+        let TypeArr = [];
+        PartContainers.each(function (index) {
+          TypeArr.push($(this).find('select').val());
+
+        });
+        let part1 = TypeArr.indexOf('Bottom') > -1 && !(TypeArr.indexOf('Top') > -1);
+        let part2 = TypeArr.indexOf('Top') > -1 && !(TypeArr.indexOf('Bottom') > -1);
+        let part3 = TypeArr.indexOf('Top') > -1 && TypeArr.indexOf('Bottom') > -1;
+
+
+        if (part1) {
+          coatingValue = Math.round((((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
+        } else if (part2) {
+          coatingValue = Math.round((((width + 15 + 15) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
+        } else if (part3) {
+          coatingValue_1 = ((((width + height + height) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
+          coatingValue_2 = ((((width + 15 + 15) / 254 * 8.25 * 2) * coatingSellingVal) / 2.5);
+          coatingValue = Math.round(coatingValue_1 + coatingValue_2);
+        }
+
 
         rate_per_meter = Math.round((weight_per_meter_top_selRate + weight_per_meter_bottom_selRate) + coatingValue);
 
@@ -1424,12 +1466,20 @@
 
   // }
 
-  function setChildVal(changable_id) {
+  function setChildVal(changable_id, from) {
     var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
     containers.each(function (index, element) {
       if ($(this).find('select').val() == 'Top') {
-        $(this).find('input[name="partThickness"]').val('1.0');
-        $(this).find('input[name="coatingSellingRate"]').val('100');
+        var partThicknessVal = $(this).find('input[name="partThickness"]').val();
+        var coatingSellingRateVal = $(this).find('input[name="coatingSellingRate"]').val();
+        if (from == 'Top') {
+          $(this).find('input[name="partThickness"]').val('1.0');
+          $(this).find('input[name="coatingSellingRate"]').val('100');
+        }
+        else {
+          $(this).find('input[name="partThickness"]').val(partThicknessVal);
+          $(this).find('input[name="coatingSellingRate"]').val(coatingSellingRateVal);
+        }
       } else if (($(this).find('select').val() == 'Bottom')) {
         $(this).find('input[name="partThickness"]').val('1.2');
       } else if ($(this).find('select').val() == 'Coating') {
@@ -1507,26 +1557,23 @@
     var trData = '';
     if (valtype == 'Others') {
       trData += '<td class="sl_no">' + rowIndex + '</td>';
-      trData += '<td>' + OthersMsg + '</td>';
+      trData += '<td style="text-align: left;">' + OthersMsg + '</td>';
       trData += '<td></td>';
       trData += '<td></td>';
       trData += '<td></td>';
       trData += '<td></td>';
-      trData += '<td>' + final_amount + '</td>';
+      trData += '<td style="text-align: right;">' + final_amount + '</td>';
     } else {
       trData += '<td class="sl_no">' + rowIndex + '</td>';
-      trData += '<td>' + `Pre-Gal ${width}mm * ${height}mm ${trayText}` + '</td>';
+      trData += '<td style="text-align: left;">' + `Pre - Gal ${width}mm * ${height}mm ${trayText}` + '</td>';
       trData += '<td>' + '73089090' + '</td>';
       trData += '<td>' + no_of_meter + '</td>';
       trData += '<td>' + 'Mtrs' + '</td>';
-      trData += '<td>' + rate_per_meter + '</td>';
-      trData += '<td>' + final_amount + '</td>';
+      trData += '<td style="text-align: right;">' + rate_per_meter + '</td>';
+      trData += '<td style="text-align: right;">' + final_amount + '</td>';
 
     }
-    console.log(trData)
-    let newRow = $('<tr data-row-index="' + rowIndex + '">').addClass('steel-property').data('row-index', rowIndex).append(
-      trData
-    );
+    let newRow = $('<tr data-row-index="' + rowIndex + '">').addClass('steel-property').data('row-index', rowIndex).append(trData);
 
     $('#customSteelTable').append(newRow);
     // rowInvoiceCounter++;
@@ -1568,17 +1615,35 @@
     document.getElementById("sgst").innerHTML = sgstAmount;
     document.getElementById("cgst").innerHTML = cgstAmount;
     // document.getElementById("subTotal").innerHTML = subtotal;
-    let RoundValue = sgstAmount + cgstAmount + sum;
-    document.getElementById("roundOff").innerHTML = RoundValue;
-    document.getElementById("grandTotal").innerHTML = Math.round(RoundValue);
+    let RoundOffValue = sgstAmount + cgstAmount + sum;
+    let decimalPart = RoundOffValue - Math.floor(RoundOffValue);
+document.getElementById("roundOff").innerHTML = decimalPart.toFixed(2);
+    // document.getElementById("roundOff").innerHTML = RoundOffValue;
+    let grandTotalValue = Math.round(sgstAmount + cgstAmount + sum)
+    document.getElementById("grandTotal").innerHTML = grandTotalValue;
 
-    var rupeesInWords = capitalizeFirstLetter(numberToWords.toWords(RoundValue));
+    var words = convertToIndianWords(grandTotalValue); // Convert number to words
+    var rupeesInWords = capitalizeFirstLetter(words);
     document.getElementById('rupeeInWords').innerHTML = "Rupees in Words: " + rupeesInWords + " only/-";
   }
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+  function convertToIndianWords(number) {
+    var lakhs = Math.floor(number / 100000);
+    var remainder = number % 100000;
+    var words = "";
 
+    if (lakhs > 0) {
+      words += numberToWords.toWords(lakhs) + " Lakh ";
+    }
+
+    if (remainder > 0) {
+      words += numberToWords.toWords(remainder);
+    }
+
+    return words.trim();
+  }
 </script>
 <script>
   const date = new Date();
@@ -1593,21 +1658,22 @@
   $('.invoice_date').text(`${randomnum} / ${withSlashes}`);
 
   $(document).on('click', 'button.print-action', function (e) {
-    debugger;
+    // debugger;
+    $('.divtext').css('width', '30em');
     e.preventDefault();
 
     var element = document.getElementById('invoiceTable');
 
     html2pdf(element, {
       margin: [5.5, 4.5, 5.5, 4.5],
-      filename: 'invoice.pdf',
+      filename: 'Proforma invoice.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
     });
 
   });
- 
+
 
 </script>
 

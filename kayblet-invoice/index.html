@@ -9,6 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <title>Document</title>
+  <link rel="stylesheet" href="history.html">
 </head>
 <style>
   p {
@@ -150,6 +151,35 @@
   :focus-visible {
     outline: none;
   }
+
+  .loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -25px;
+    margin-left: -25px;
+    z-index: 9999;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loader.hide {
+    display: none;
+  }
 </style>
 
 <body>
@@ -163,17 +193,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
-            <!-- <li class="nav-item dropdown">
-                       <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                           Product Type
-                       </a>
-                       <div class="dropdown-menu">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="history.html" role="button" aria-haspopup="true"
+                aria-expanded="false">
+                View History
+              </a>
+              <!-- <div class="dropdown-menu">
                            <a class="dropdown-item" href="#">Perforated Tary</a>
                                <a class="dropdown-item" href="tray.html">Raceway Tray</a>
                                <a class="dropdown-item" href="#">Ladder</a>                           
                         
-                       </div>
-                   </li> -->
+                       </div> -->
+            </li>
             <li class="nav-link"><a href="" class="btn"></a></li>
           </ul>
         </div>
@@ -652,6 +683,7 @@
       </div>
     </div>
   </div>
+  <div class="loader"></div>
 
   <!-- Modal -->
   <div class="modal fade" id="editInvoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -819,6 +851,7 @@
     </div>
   </div>
   <input type="hidden" id="checkTotalAmnt" />
+  <!-- <button class="googlesheet">googlesheet</button> -->
 </body>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <!-- <script src="../../dist/html2pdf.bundle.js"></script> -->
@@ -826,12 +859,6 @@
   integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-  integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script> -->
-
-<!-- <script src="https://unpkg.com/number-to-words"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/number-to-words"></script>
 
 <script src="sweetalert.js"></script>
@@ -843,6 +870,8 @@
   let partsCounter = 1;
   var rowInvoiceCounter = 1;
   $(document).ready(function () {
+
+    $('.loader').addClass('hide');
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 
     localStorage.clear();
@@ -1095,6 +1124,7 @@
       // }
       console.log(id)
       var partsArr = {
+        parendVal: [],
         bottom: [],
         top: [],
         ladder: [],
@@ -1102,18 +1132,36 @@
         finalAMount: [],
         others: [],
       };
-      console.log(partsArr)
+      var Product = {
+        product: {
+          productList: [],
+
+        }
+      }
       var tableContainer = $('#appendParent .parent-form-' + id + '')
+      let data = [];
+      let parent = {
+        id: id,
+      };
+
       tableContainer.each(function (index) {
+        if ($(this).find('[name="product_type"]')) {
+          let keyProductType = $(this).find('select[name="product_type"]').attr('name');
+          let valProductType = ($(this).find('select[name="product_type"] option:selected').val());
+          // partsArr.parendVal.push({ [keyWidth]: valWidth });
+          parent[keyProductType] = valProductType;
+        }
         if ($(this).find('[name="Width"]')) {
           let keyWidth = $(this).find('input#floatingWidhthValue[name="Width"]').attr('name');
           let valWidth = parseFloat($(this).find('input#floatingWidhthValue[name="Width"]').val());
-          partsArr.parendVal.push({ [keyWidth]: valWidth });
+          // partsArr.parendVal.push({ [keyWidth]: valWidth });
+          parent[keyWidth] = valWidth;
         }
         if ($(this).find('[name="Height"]')) {
           let keyHeight = $(this).find('input#floatingHeightValue[name="Height"]').attr('name');
           let valHeight = parseFloat($(this).find('input#floatingHeightValue[name="Height"]').val());
-          partsArr.parendVal.push({ [keyHeight]: valHeight });
+          // partsArr.parendVal.push({ [keyHeight]: valHeight });
+          parent[keyHeight] = valHeight;
         }
         // if ($(this).find('[name="Thickness"]')) {
         //   let keyThickness = $(this).find('input#floatingThicknessValue[name="Thickness"]').attr('name');
@@ -1123,101 +1171,122 @@
         if ($(this).find('[name="Length"]')) {
           let keyLength = $(this).find('input#floatingLenghtValue[name="Length"]').attr('name');
           let valLength = parseFloat($(this).find('input#floatingLenghtValue[name="Length"]').val());
-          partsArr.parendVal.push({ [keyLength]: valLength });
+          // partsArr.parendVal.push({ [keyLength]: valLength });
+          parent[keyLength] = valLength;
+
         }
         if ($(this).find('[name="innerFlangeParent"]')) {
           let keyInnerFlange = $(this).find('input[name="innerFlangeParent"]').attr('name');
           let valInnerFlange = parseFloat($(this).find('input[name="innerFlangeParent"]').val());
-          partsArr.parendVal.push({ [keyInnerFlange]: valInnerFlange });
+          // partsArr.parendVal.push({ [keyInnerFlange]: valInnerFlange });
+          parent[keyInnerFlange] = valInnerFlange;
         }
         if ($(this).find('[name="runners"]')) {
           let keyRunner = $(this).find('input[name="runners"]').attr('name');
           let valRunner = parseFloat($(this).find('input[name="runners"]').val());
-          partsArr.parendVal.push({ [keyRunner]: valRunner });
+          // partsArr.parendVal.push({ [keyRunner]: valRunner });
+          parent[keyRunner] = valRunner;
         }
         if ($(this).find('[name="SellingRate"]')) {
           let keySellingRate = $(this).find('input#floatingSellingRateValue[name="SellingRate"]').attr('name');
           let valSellingRate = parseFloat($(this).find('input#floatingSellingRateValue[name="SellingRate"]').val());
-          partsArr.parendVal.push({ [keySellingRate]: valSellingRate });
-
+          // partsArr.parendVal.push({ [keySellingRate]: valSellingRate });
+          parent[keySellingRate] = valSellingRate;
         }
+        // if ($(this).find('[name="rateperMtr"]')) {
+        //   let keyRatePerMetr = $(this).find('input[name="rateperMtr"]').attr('name');     
+        //   let valRatePerMetr = parseFloat($(this).find('input[name="rateperMtr"]').val());
+        //   // partsArr.parendVal.push({ [keyRatePerMetr]: valRatePerMetr });
+        //   parent[keyRatePerMetr] = valRatePerMetr;
+        // }
         if ($(this).find('[name="rateperMtr"]')) {
           let keyRatePerMetr = $(this).find('input[name="rateperMtr"]').attr('name');
           let valRatePerMetr = parseFloat($(this).find('input[name="rateperMtr"]').val());
-          partsArr.parendVal.push({ [keyRatePerMetr]: valRatePerMetr });
-
+          parent[keyRatePerMetr] = valRatePerMetr;
         }
         if ($(this).find('[name="amt"]')) {
           let keyAmt = $(this).find('input[name="amt"]').attr('name');
           let valAmt = parseFloat($(this).find('input[name="amt"]').val());
-          partsArr.parendVal.push({ [keyAmt]: valAmt });
-
+          parent[keyAmt] = valAmt;
         }
         if ($(this).find('[name="OtherMsg"]')) {
           let keytxt = $(this).find('input[name="OtherMsg"]').attr('name');
           let valtxt = $(this).find('input[name="OtherMsg"]').val();
-          partsArr.others.push({ [keytxt]: valtxt });
-
+          // partsArr.others.push({ [keytxt]: valtxt });
+          parent[keytxt] = valtxt;
         }
       });
-
+      console.log(parent.Width)
+      let child = {
+        bottom: [],
+        top: [],
+        coating: [],
+        ladder: [],
+        others: []
+      };
       $('.appendChildTbl' + id + ' tbody').each(function (index) {
 
-        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Bottom' && 'bottom' in partsArr) {
+        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Bottom' && 'bottom' in child) {
           let keyBot = $(this).find('input[name="partThickness"]').attr('name');
           let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
           let keyTop = $(this).find('input[name="InnerFlange"]').attr('name');
           let valTop = parseFloat($(this).find('input[name="InnerFlange"]').val());
-          partsArr.bottom.push({ [keyBot]: valBot, [keyTop]: valTop });
+          child.bottom.push({ [keyBot]: valBot, [keyTop]: valTop });
         }
-        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Ladder' && 'ladder' in partsArr) {
+        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Ladder' && 'ladder' in child) {
           let keyLad = $(this).find('input[name="partThickness"]').attr('name');
           let valLad = parseFloat($(this).find('input[name="partThickness"]').val());
-          partsArr.ladder.push({ [keyLad]: valLad });
+          child.ladder.push({ [keyLad]: valLad });
 
         }
         let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
-        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Top' && 'top' in partsArr) {
+        if ($(this).find("select[name='partsChange']").find(':selected').val() == 'Top' && 'top' in child) {
           let keyBot = $(this).find('input[name="partThickness"]').attr('name');
           let valBot = parseFloat($(this).find('input[name="partThickness"]').val());
           let keyTop = $(this).find('input[name="InnerFlange"]').attr('name');
           let valTop = parseFloat($(this).find('input[name="InnerFlange"]').val());
           let keyTopSellingRate = $(this).find('input[name="coatingSellingRate"]').attr('name');
           let valTopSellingRate = parseFloat($(this).find('input[name="coatingSellingRate"]').val());
-          partsArr.top.push({ [keyBot]: valBot, [keyTop]: valTop, [keyTopSellingRate]: valTopSellingRate });
+          child.top.push({ [keyBot]: valBot, [keyTop]: valTop, [keyTopSellingRate]: valTopSellingRate });
         }
-        if ($(this).find("select[name='partsChange']").find(':selected').text() == 'Coating' && 'parendVal' in partsArr) {
+        if ($(this).find("select[name='partsChange']").find(':selected').text() == 'Coating' && 'coating' in child) {
           let keyCoatingSellingRate = $(this).find('input[name="coatingSellingRate"]').attr('name');
 
           let valCoatingSellingRate = parseFloat($(this).find('input[name="coatingSellingRate"]').val());
-          partsArr.parendVal.push({ [keyCoatingSellingRate]: valCoatingSellingRate });
+          child.coating.push({ [keyCoatingSellingRate]: valCoatingSellingRate });
         }
-        if ($(this).find("select[name='partsChange']").find(':selected').text() == 'Others' && 'others' in partsArr) {
+        if ($(this).find("select[name='partsChange']").find(':selected').text() == 'Others' && 'others' in child) {
           let keyfixRate = $(this).find('input[name="fixedRate"]').attr('name');
           let valfixRate = parseFloat($(this).find('input[name="fixedRate"]').val());
-          partsArr.others.push({ [keyfixRate]: valfixRate });
+          child.others.push({ [keyfixRate]: valfixRate });
         }
+
+
       });
 
 
-      let width = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Width || 0), 0);
-      let height = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Height || 0), 0);
+      let width = parent["Width"] || 0;
+      let height = parent["Height"] || 0;
       // let thickness = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Thickness || 0), 0);
       // let innerFlangepar = partsArr.parendVal.reduce((acc, obj) => acc + (obj.innerFlangeParent || 0), 0);
-      let runners = partsArr.parendVal.reduce((acc, obj) => acc + (obj.runners || 0), 0);
-      let ratePerMeter = partsArr.parendVal.reduce((acc, obj) => acc + (obj.rateperMtr || 0), 0);
-      let totalAmount = partsArr.parendVal.reduce((acc, obj) => acc + (obj.amt || 0), 0);
-      let totalThicknessBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
-      let totalThicknessTop = partsArr.top.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
-      let ladderThickness = partsArr.ladder.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
-      let totalInnerFlangeBottom = partsArr.bottom.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
-      let totalInnerFlangeTop = partsArr.top.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
-      let no_of_meter = partsArr.parendVal.reduce((acc, obj) => acc + (obj.Length || 0), 0);
-      let sellingRate = partsArr.parendVal.reduce((acc, obj) => acc + (obj.SellingRate || 0), 0);
-      let coatingSellingVal = partsArr.parendVal.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
-      let TopSellRate = partsArr.top.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
-      let fixRate = partsArr.others.reduce((acc, obj) => acc + (obj.fixedRate || 0), 0);
-      let OthersMsg = partsArr.others.reduce((acc, obj) => acc + (obj.OtherMsg || ''), '');
+      let runners = parent["runners"] || 0;
+      let no_of_meter = parent["Length"] || 0;
+      let sellingRate = parent["SellingRate"] || 0;
+      let ratePerMeter = parent["rateperMtr"] || 0;
+      let totalAmount = parent["amt"] || 0;
+      let OthersMsg = parent["OtherMsg"] || '';
+      let totalThicknessBottom = child.bottom.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
+      let totalThicknessTop = child.top.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
+      let ladderThickness = child.ladder.reduce((acc, obj) => acc + (obj.partThickness || 0), 0);
+      let totalInnerFlangeBottom = child.bottom.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
+      let totalInnerFlangeTop = child.top.reduce((acc, obj) => acc + (obj.InnerFlange || 0), 0);
+      let coatingSellingVal = child.coating.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
+      let TopSellRate = child.top.reduce((acc, obj) => acc + (obj.coatingSellingRate || 0), 0);
+      let fixRate = child.others.reduce((acc, obj) => acc + (obj.fixedRate || 0), 0);
+
+      // tableContainer.each(function (index) {
+
+      // });
       // Calculations
       let valtype = tableContainer.find('.productType').val();
       let rate_per_meter, final_amount;
@@ -1286,7 +1355,7 @@
         if (ladderWidth <= 300) {
           WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
           WeightOfHeight = ((60 / 1000) * ladderThickness * 7.85);
-        } else if (ladderWidth > 300 && ladderWidth <= 750) {
+        } else if (ladderWidth > 300 && ladderWidth < 900) {
           WeightOfWidth = (((height + 24) / 1000) * ladderThickness * 7.85);
           WeightOfHeight = ((70 / 1000) * ladderThickness * 7.85);
         } else if (ladderWidth >= 900 && ladderWidth <= 1200) {
@@ -1314,6 +1383,28 @@
         tableContainer.find('.amounttxt').val(final_amount);
 
       }
+      tableContainer.each(function (index) {
+        if ($(this).find('[name="rateperMtr"]')) {
+          let keyRatePerMetr = $(this).find('input[name="rateperMtr"]').attr('name');
+          let valRatePerMetr = parseFloat($(this).find('input[name="rateperMtr"]').val());
+          parent[keyRatePerMetr] = valRatePerMetr;
+        }
+        if ($(this).find('[name="amt"]')) {
+          let keyAmt = $(this).find('input[name="amt"]').attr('name');
+          let valAmt = parseFloat($(this).find('input[name="amt"]').val());
+          parent[keyAmt] = valAmt;
+        }
+      });
+      data = { ['parentVal']: parent, ['childVal']: child };
+      var storedProduct = JSON.parse(localStorage.getItem("product")) || { product: { productList: [] } };
+      let existingIndex = storedProduct.product.productList.findIndex(item => item.parentVal.id == id || item.childVal.id == id);
+      if (existingIndex > -1) {
+        storedProduct.product.productList[existingIndex] = data;
+      } else {
+        storedProduct.product.productList.push(data);
+      }
+
+      localStorage.setItem("product", JSON.stringify(storedProduct));
 
       getTotal();
       let isFind = false;
@@ -1395,10 +1486,19 @@
     var tableContainers = $('#appendParent').find('.table-container');
     if (tableContainers.length > 1) {
       var tableContainerToRemove = $(button).closest('.table-container');
+      // var containerIndex = $('.sub-tbl-container').index(tableContainerToRemove);
       tableContainerToRemove.remove();
       var rowIndex = tableContainerToRemove.find('.row-counter').text();
+      var rowIndex2 = parseInt(tableContainerToRemove.find('.row-counter').text()) - 1;
+
       $('#customSteelTable tr[data-row-index="' + rowIndex + '"]').remove();
       localStorage.removeItem("calc" + rowIndex);
+      // Remove the corresponding item from local storage
+      var storedProduct = JSON.parse(localStorage.getItem("product")) || { product: { productList: [] } };
+      if (rowIndex2 >= 0 && rowIndex2 < storedProduct.product.productList.length) {
+        storedProduct.product.productList.splice(rowIndex2, 1);
+        localStorage.setItem("product", JSON.stringify(storedProduct));
+      }
       updateSubRowNumbers();
       updateRowNumbers1();
     } else {
@@ -1440,32 +1540,7 @@
       });
     });
   }
-  // function trayCheck(changable_id) {
-
-  //   var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');   
-  //   var isBottomSelected = false;
-
-  //   containers.each(function (index, element) {
-  //     if ($(this).find('select').val() == 'Bottom' || $(this).find('select').val() =='Ladder') {
-  //       // alert(($(this).find('select').val())) 
-  //       isBottomSelected = true;
-  //       return;
-  //     }
-
-  //   });
-
-  //   if (!isBottomSelected) {
-  //     Swal.fire({
-  //       title: "Warning!",
-  //       text: "Please select 'Tray' as the part type before calculate. the button!",
-  //       icon: "warning"
-  //     }); return false;
-  //   } else {
-  //     return true;
-  //   }
-
-  // }
-
+ 
   function setChildVal(changable_id, from) {
     var containers = $('.appendChildTbl' + changable_id + ' .sub-tbl-container');
     containers.each(function (index, element) {
@@ -1549,11 +1624,7 @@
   function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype, runners, OthersMsg) {
     let trayText = getTrayText(valtype, rowIndex);
     let setValLad = '';
-    // if(valtype == 'Ladder'){
-    //   setValLad = width <= 750 ? 8 + ' Runners'  : runners + ' Runners';
-
-    // }
-    // Create a new row for the steel table
+   
     var trData = '';
     if (valtype == 'Others') {
       trData += '<td class="sl_no">' + rowIndex + '</td>';
@@ -1606,6 +1677,7 @@
       sum = +(sum) + +(amt);
     }
     document.getElementById("subTotal").innerHTML = sum;
+    localStorage.setItem('subTotal', sum);
     const sgstRate = 9; // SGST rate (9%)
     const cgstRate = 9; // CGST rate (9%)
 
@@ -1616,12 +1688,13 @@
     document.getElementById("cgst").innerHTML = cgstAmount;
     // document.getElementById("subTotal").innerHTML = subtotal;
     let RoundOffValue = sgstAmount + cgstAmount + sum;
-    let decimalPart = RoundOffValue - Math.floor(RoundOffValue);
-document.getElementById("roundOff").innerHTML = decimalPart.toFixed(2);
+    let decimalPart = (RoundOffValue - Math.floor(RoundOffValue)).toFixed(2);
+    document.getElementById("roundOff").innerHTML = decimalPart;
+    localStorage.setItem("roundOff", decimalPart)
     // document.getElementById("roundOff").innerHTML = RoundOffValue;
     let grandTotalValue = Math.round(sgstAmount + cgstAmount + sum)
     document.getElementById("grandTotal").innerHTML = grandTotalValue;
-
+    localStorage.setItem("grandTotal", grandTotalValue)
     var words = convertToIndianWords(grandTotalValue); // Convert number to words
     var rupeesInWords = capitalizeFirstLetter(words);
     document.getElementById('rupeeInWords').innerHTML = "Rupees in Words: " + rupeesInWords + " only/-";
@@ -1649,31 +1722,104 @@ document.getElementById("roundOff").innerHTML = decimalPart.toFixed(2);
   const date = new Date();
 
   const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const day = ('0' + date.getDate()).slice(-2);
   const withSlashes = [day, month, year].join('-');
   $('.invoice_date').text(withSlashes);
   var randomnum = Math.floor(1000 + Math.random() * 9000);
   $('.invoice_date').text(`${randomnum} / ${withSlashes}`);
 
-  $(document).on('click', 'button.print-action', function (e) {
-    // debugger;
-    $('.divtext').css('width', '30em');
-    e.preventDefault();
-
-    var element = document.getElementById('invoiceTable');
-
-    html2pdf(element, {
-      margin: [5.5, 4.5, 5.5, 4.5],
-      filename: 'Proforma invoice.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
+  // Function to retrieve the last sequence number
+  function getLastSequenceNumber() {
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=read&table=history',
+        type: 'GET',
+        success: function (response) {
+          if (response.success && Array.isArray(response.data) && response.data.length > 0) {
+            resolve(response.data[response.data.length - 1].id);
+          } else {
+            resolve(0); // Resolve with default value 1 if no data found
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("AJAX request failed:", status, error);
+          reject(error);
+        }
+      });
     });
+  }
 
+
+  function submitDataToGoogleSheets(data) {
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=insert&table=history&data=' + data,
+        type: 'GET',
+        success: resolve,
+        error: function (xhr, status, error) {
+          console.error("Error submitting data:", error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  function generatePDF() {
+    return new Promise(function (resolve, reject) {
+      var element = document.getElementById('invoiceTable');
+
+      html2pdf(element, {
+        margin: [5.5, 4.5, 5.5, 4.5],
+        filename: 'Proforma invoice.pdf',
+        image: { type: 'jpeg', quality: 0.20 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
+      }).then(resolve).catch(reject);
+    });
+  }
+
+  $(document).on('click', 'button.print-action', function (e) {
+
+    let address = $('.divtext').text();
+    let json = JSON.parse(localStorage.getItem("product")) || [];
+    let len = json.product.productList.length;
+
+    let date = new Date();
+    let action = "insert";
+
+    getLastSequenceNumber().then(function (id) {
+      let sequenceNumber = id + 1;
+
+      let data = JSON.stringify({
+        "id": sequenceNumber,
+        "Date": withSlashes,
+        "name": JSON.stringify(json),
+        "No_of_Product": len,
+        "subTotal": localStorage.getItem("subTotal"),
+        "Address": address,
+        "RoundOff": localStorage.getItem("roundOff"),
+        "GrandTotal": localStorage.getItem("grandTotal")
+      });
+
+      submitDataToGoogleSheets(data).then(function () {
+        console.log("Data submitted successfully.");
+
+        // Generate PDF
+        generatePDF().then(function () {
+          $('.loader').addClass('hide');
+          window.location.href = 'index.html';
+        }).catch(function () {
+          $('.loader').addClass('hide');
+          alert("Error generating PDF.");
+        });
+      }).catch(function () {
+        $('.loader').addClass('hide');
+        alert("Error submitting data to Google Sheets.");
+      });
+    });
+    $('.loader').removeClass('hide');
   });
-
 
 </script>
 

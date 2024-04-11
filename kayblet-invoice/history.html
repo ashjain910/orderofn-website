@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 </head>
 
 <body>
@@ -241,13 +243,13 @@
                     <div class="form-row">
                         <div class="col-lg-3">
                             <div class="form-group rounded-0">
-                                <input type="text" id="byName" class="form-control rounded-3 byName"
+                                <input type="text" id="byName" class="form-control rounded-3 byName" autocomplete="off"
                                     placeholder="Search by name">
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group rounded-0">
-                                <input type="text" id="byDate" class="form-control rounded-3 byDate"
+                                <input type="text" id="byDate" class="form-control rounded-3 byDate" autocomplete="off"
                                     placeholder="Search by date">
                             </div>
                         </div>
@@ -387,7 +389,7 @@
                                             <td colspan="2" class="totalTxt">GRAND TOTAL</td>
                                             <td id="grandTotal" class="pos-rgh"></td>
 
-                                        <!-- <tr>
+                                            <!-- <tr>
                                             <td colspan="7"><b id="rupeeInWords"></b></td>
 
                                         </tr> -->
@@ -425,14 +427,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function () {
             $(function () {
-                $("#byDate").datepicker({
-                    dateFormat: "dd-mm-yy"
+                $('#byDate').daterangepicker({
+                    startDate: moment(),
+                    endDate: moment(),
+                    locale: {
+                        format: 'DD-MM-YYYY',
+                        cancelLabel: 'Clear'
+                    }
                 });
+                $('#byDate').val('');
 
             });
             function getDetailsById(response, id) {
@@ -441,7 +450,7 @@
                     if (row.id == id) {
                         var productName = row.name;
                         document.getElementById("divName").innerHTML = row.Address;
-                        document.getElementById("in_date").innerHTML =  moment(row.Date).format("DD-MM-YYYY") ;
+                        document.getElementById("in_date").innerHTML = moment(row.Date).format("DD-MM-YYYY") ;
                         document.getElementById("subTotal").innerHTML = row.subTotal;
                         const sgstRate = 9;
                         const cgstRate = 9;
@@ -531,34 +540,34 @@
                     $('.loader').addClass('hide');
                     var noDate = '';
                     if (response.success) {
-                        console.log(response.data.length );
-                        if(response.data.length > 0){
-                        response.data.forEach(function (row) {
-                            var tdData = '';
-                            tdData += '<tr>';
-                            tdData += '<td>' + row.id + '</td>';
-                            tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
-                            tdData += '<td>' + row.Address + '</td>';
-                            tdData += '<td>' + row.No_of_Product + '</td>';
-                            tdData += '<td>' + row.GrandTotal + '</td>';
-                            tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
-                            tdData += '</tr>';
-                            $('.history-tb').append(tdData);
-                        });
-                    }else{
-                        noDate += '<tr><td  colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
+                        console.log(response.data.length);
+                        if (response.data.length > 0) {
+                            response.data.forEach(function (row) {
+                                var tdData = '';
+                                tdData += '<tr>';
+                                tdData += '<td>' + row.id + '</td>';
+                                tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
+                                tdData += '<td>' + row.Address + '</td>';
+                                tdData += '<td>' + row.No_of_Product + '</td>';
+                                tdData += '<td>' + row.GrandTotal + '</td>';
+                                tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
+                                tdData += '</tr>';
+                                $('.history-tb').append(tdData);
+                            });
+                        } else {
+                            noDate += '<tr><td  colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
                             $('.history-tb').append(noDate);
-                    }
+                        }
                     } else {
                         console.error("Failed to fetch data:", response.error);
-                        
+
                     }
                 },
                 error: function (xhr, status, error) {
                     $('.loader').addClass('hide');
                     console.error("Error fetching data:", error);
                 }
-                
+
             });
 
             $(document).on('click', '.viewMore', function (e) {
@@ -602,19 +611,22 @@
         });
         function filterRows() {
             var searchName = $('.byName').val().toLowerCase();
-            var searchDate = $('.byDate').datepicker("getDate");
+            var searchDateRange = $('.byDate').val();
+            var dates = searchDateRange.split(" - ");
+            var startDate = moment(dates[0], "DD-MM-YYYY");
+            var endDate = moment(dates[1], "DD-MM-YYYY");
             $('.history-tb tr').each(function () {
                 var name = $(this).find('td:eq(2)').text().toLowerCase();
                 var date = $(this).find('td:eq(1)').text();
 
                 var parts = date.split('-');
-                var formattedDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                // var formattedDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                var formattedDate = moment(parts[2] + '-' + parts[1] + '-' + parts[0], 'YYYY-MM-DD');
 
                 var nameMatch = name.includes(searchName);
-                var dateMatch = (searchDate === null) || (formattedDate.getTime() === searchDate.getTime());
+                var dateMatch = formattedDate.isBetween(startDate, endDate, null, '[]'); 
                 if (nameMatch && dateMatch) {
                     $(this).show();
-                    return;
                 } else {
                     $(this).hide();
                 }

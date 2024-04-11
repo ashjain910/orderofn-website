@@ -1784,6 +1784,7 @@
   }
 
   $(document).on('click', 'button.print-action', function (e) {
+    $('.print-action').prop("disabled", true);
 
     let address = $('.divtext').text();
     let json = JSON.parse(localStorage.getItem("product")) || [];

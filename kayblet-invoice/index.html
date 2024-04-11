@@ -894,14 +894,14 @@
 
       let className = $('#appendParent .table-container').length + 1;
       let setIndexClass = indexName[0] != undefined ? indexName[0] : className;
-      clonedTableContainer.find('#secondTable').addClass('appendChildTbl' + setIndexClass);
       clonedTableContainer.find('#secondTable').removeClass('appendChildTbl1');
-      clonedTableContainer.find('.fa-plus').addClass('addSubTBl-' + setIndexClass);
+      clonedTableContainer.find('#secondTable').addClass('appendChildTbl' + setIndexClass);
       clonedTableContainer.find('.fa-plus').removeClass('addSubTBl-1');
-      clonedTableContainer.find('.save-action').addClass('btn-calc-' + setIndexClass);
+      clonedTableContainer.find('.fa-plus').addClass('addSubTBl-' + setIndexClass);
       clonedTableContainer.find('.save-action').removeClass('btn-calc-1');
-      clonedTableContainer.addClass('parent-form-' + setIndexClass);
+      clonedTableContainer.find('.save-action').addClass('btn-calc-' + setIndexClass);
       clonedTableContainer.removeClass('parent-form-1');
+      clonedTableContainer.addClass('parent-form-' + setIndexClass);
       clonedTableContainer.find('#secondTable').attr('cloned-sub-form', setIndexClass);
 
       let typeCheck = clonedTableContainer.find('#Crd').val();
@@ -945,8 +945,8 @@
       if ($('.parent-form-' + cloneId).find('#Crd').val() == "Ladder") {
         var clonedTableContainer = $('#ledder-clone .sub-tbl-container-clone-ladder').clone(true);
         allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 0;
-        clonedTableContainer.addClass('sub-tbl-container');
         clonedTableContainer.removeClass('sub-tbl-container-clone-ladder');
+        clonedTableContainer.addClass('sub-tbl-container');
         clonedTableContainer.find('td:empty').remove();
         var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
         $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
@@ -960,8 +960,8 @@
       } else {
         var clonedTableContainer = $('#reg-clone .sub-tbl-container-clone').clone(true);
         allOptionsSelected = $('.appendChildTbl' + cloneId + ' .sub-tbl-container').length > 2;
-        clonedTableContainer.addClass('sub-tbl-container');
         clonedTableContainer.removeClass('sub-tbl-container-clone');
+        clonedTableContainer.addClass('sub-tbl-container');
         clonedTableContainer.find('td:empty').remove();
         var sub_counter = clonedTableContainer.find('.sub-row-count').html($('.appendChildTbl' + cloneId + ' .sub-tbl-container').length + 1);
         $('.appendChildTbl' + cloneId + ' .sub-tbl-container').each(function (index) {
@@ -1475,13 +1475,16 @@
     }
   });
 
+  // function findMissingNumbers(arr) {
+  //   var min = Math.min(...arr);
+  //   var max = Math.max(...arr);
+  //   var all = Array.from(Array(max - min + 1), (e, i) => i + min)
+  //   return all.filter(e => !arr.includes(e))
+  // }
   function findMissingNumbers(arr) {
-    var min = Math.min(...arr);
-    var max = Math.max(...arr);
-    var all = Array.from(Array(max - min + 1), (e, i) => i + min)
-    return all.filter(e => !arr.includes(e))
-  }
-
+    var sparse = arr.reduce((sparse, i) => (sparse[i]=1,sparse), []);
+    return [...sparse.keys()].filter(i => i && !sparse[i]);
+}
   function removeTableContainer(button) {
     var tableContainers = $('#appendParent').find('.table-container');
     if (tableContainers.length > 1) {
@@ -1725,7 +1728,8 @@
   const month = ('0' + (date.getMonth() + 1)).slice(-2);
   const day = ('0' + date.getDate()).slice(-2);
   const withSlashes = [day, month, year].join('-');
-  $('.invoice_date').text(withSlashes);
+  let generated_date = [month, day, year].join('/');
+  // $('.invoice_date').text(moment(gerated_date).format("DD-MM-YYYY"));
   var randomnum = Math.floor(1000 + Math.random() * 9000);
   $('.invoice_date').text(`${randomnum} / ${withSlashes}`);
 
@@ -1793,7 +1797,7 @@
 
       let data = JSON.stringify({
         "id": sequenceNumber,
-        "Date": withSlashes,
+        "Date": generated_date,
         "name": JSON.stringify(json),
         "No_of_Product": len,
         "subTotal": localStorage.getItem("subTotal"),

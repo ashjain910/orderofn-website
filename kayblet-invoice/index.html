@@ -1769,40 +1769,20 @@
     });
   }
 
-  // function generatePDF() {
-  //   return new Promise(function (resolve, reject) {
-  //     var element = document.getElementById('invoiceTable');
-
-  //     html2pdf(element, {
-  //       margin: [5.5, 4.5, 5.5, 4.5],
-  //       filename: 'Proforma invoice.pdf',
-  //       image: { type: 'jpeg', quality: 0.20 },
-  //       html2canvas: { scale: 2 },
-  //       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
-  //     }).then(resolve).catch(reject);
-  //   });
-  // }
   function generatePDF() {
-  return new Promise(function (resolve, reject) {
-    var element = document.getElementById('invoiceTable');
-    html2pdf(element, {
-      margin: [5.5, 4.5, 5.5, 4.5],
-      filename: 'Proforma invoice.pdf',
-      image: { type: 'jpeg', quality: 0.20 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).then(function(pdf) {
-      var blob = new Blob([pdf.output('blob')], { type: 'application/pdf' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'Proforma invoice.pdf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      resolve();
-    }).catch(reject);
-  });
-}
+    return new Promise(function (resolve, reject) {
+      var element = document.getElementById('invoiceTable');
+
+      html2pdf(element, {
+        margin: [5.5, 4.5, 5.5, 4.5],
+        filename: 'Proforma invoice.pdf',
+        image: { type: 'jpeg', quality: 0.20 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
+      }).then(resolve).catch(reject);
+    });
+  }
+  
 
   $(document).on('click', 'button.print-action', function (e) {
     $('.print-action').prop("disabled", true);

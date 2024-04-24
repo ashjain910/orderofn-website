@@ -1813,7 +1813,7 @@
         // Generate PDF
         generatePDF().then(function () {
           $('.loader').addClass('hide');
-          window.location.href = 'index.html';
+          // window.location.href = 'index.html';
         }).catch(function () {
           $('.loader').addClass('hide');
           alert("Error generating PDF.");

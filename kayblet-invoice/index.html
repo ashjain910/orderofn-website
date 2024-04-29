@@ -1786,7 +1786,7 @@
 
   $(document).on('click', 'button.print-action', function (e) {
     $('.print-action').prop("disabled", true);
-    generatePDF()
+  
     let address = $('.divtext').text();
     let json = JSON.parse(localStorage.getItem("product")) || [];
     let len = json.product.productList.length;
@@ -1812,13 +1812,13 @@
         console.log("Data submitted successfully.");
         $('.loader').addClass('hide');
         // Generate PDF
-        // generatePDF().then(function () {
-        //     $('.loader').addClass('hide');
-        //     window.location.href = 'index.html';
-        // }).catch(function () {
-        //     $('.loader').addClass('hide');
-        //     alert("Error generating PDF.");
-        // });
+        generatePDF().then(function () {
+            $('.loader').addClass('hide');
+            window.location.href = 'index.html';
+        }).catch(function () {
+            $('.loader').addClass('hide');
+            alert("Error generating PDF.");
+        });
     }).catch(function () {
         $('.loader').addClass('hide');
         alert("Error submitting data to Google Sheets.");

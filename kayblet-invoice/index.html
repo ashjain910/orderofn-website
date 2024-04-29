@@ -1773,42 +1773,20 @@
   return new Promise(function (resolve, reject) {
     var element = document.getElementById('invoiceTable');
 
-    html2pdf()
-      .from(element)
-      .set({
+    html2pdf(element, {
         margin: [5.5, 4.5, 5.5, 4.5],
         filename: 'Proforma invoice.pdf',
         image: { type: 'jpeg', quality: 0.20 },
         html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      })
-      .toPdf()
-      .get('pdf')
-      .then(function (pdf) {
-        
-        const blob = pdf.output('blob');
-        
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'Proforma invoice.pdf';
-
-        link.click();
-
-        URL.revokeObjectURL(url);
-
-        resolve();
-      })
-      .catch(reject);
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
+      }).then(resolve).catch(reject);
   });
 }
-
-
   
 
   $(document).on('click', 'button.print-action', function (e) {
     $('.print-action').prop("disabled", true);
-
+    generatePDF()
     let address = $('.divtext').text();
     let json = JSON.parse(localStorage.getItem("product")) || [];
     let len = json.product.productList.length;
@@ -1832,15 +1810,15 @@
 
     submitDataToGoogleSheets(data).then(function () {
         console.log("Data submitted successfully.");
-
+        $('.loader').addClass('hide');
         // Generate PDF
-        generatePDF().then(function () {
-            $('.loader').addClass('hide');
-            // window.location.href = 'index.html';
-        }).catch(function () {
-            $('.loader').addClass('hide');
-            // alert("Error generating PDF.");
-        });
+        // generatePDF().then(function () {
+        //     $('.loader').addClass('hide');
+        //     window.location.href = 'index.html';
+        // }).catch(function () {
+        //     $('.loader').addClass('hide');
+        //     alert("Error generating PDF.");
+        // });
     }).catch(function () {
         $('.loader').addClass('hide');
         alert("Error submitting data to Google Sheets.");

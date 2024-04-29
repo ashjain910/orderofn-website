@@ -1770,18 +1770,40 @@
   }
 
   function generatePDF() {
-    return new Promise(function (resolve, reject) {
-      var element = document.getElementById('invoiceTable');
+  return new Promise(function (resolve, reject) {
+    var element = document.getElementById('invoiceTable');
 
-      html2pdf(element, {
+    html2pdf()
+      .from(element)
+      .set({
         margin: [5.5, 4.5, 5.5, 4.5],
         filename: 'Proforma invoice.pdf',
         image: { type: 'jpeg', quality: 0.20 },
         html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
-      }).then(resolve).catch(reject);
-    });
-  }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
+      .toPdf()
+      .get('pdf')
+      .then(function (pdf) {
+        
+        const blob = pdf.output('blob');
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Proforma invoice.pdf';
+
+        link.click();
+
+        URL.revokeObjectURL(url);
+
+        resolve();
+      })
+      .catch(reject);
+  });
+}
+
+
   
 
   $(document).on('click', 'button.print-action', function (e) {
@@ -1814,7 +1836,7 @@
         // Generate PDF
         generatePDF().then(function () {
             $('.loader').addClass('hide');
-            window.location.href = 'index.html';
+            // window.location.href = 'index.html';
         }).catch(function () {
             $('.loader').addClass('hide');
             // alert("Error generating PDF.");

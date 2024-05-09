@@ -245,14 +245,14 @@
                     <div class="form-row">
                         <div class="col-lg-3">
                             <div class="form-group rounded-0">
-                                <input type="text" id="byName" class="form-control rounded-3 byName" autocomplete="off"
-                                    placeholder="Search by name">
+                                <input type="text" id="byName" class="form-control rounded-3 byName input"
+                                    autocomplete="off" placeholder="Search by name">
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group rounded-0">
-                                <input type="text" id="byDate" class="form-control rounded-3 byDate" autocomplete="off"
-                                    placeholder="Search by date">
+                                <input type="text" id="byDate" class="form-control rounded-3 byDate input"
+                                    autocomplete="off" placeholder="Search by date">
                             </div>
                         </div>
                         <div class="col-lg-3 mt-1">
@@ -434,10 +434,17 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <!-- <script src="auth.js"></script> -->
+    <script src="auth.js"></script>
     <script>
         $(document).ready(function () {
-           
+
+            $('.input').on('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    $('.applyFilter').click();
+                }
+            });
+
             // $(function () {
             $('#byDate').daterangepicker({
                 startDate: moment(),
@@ -449,7 +456,7 @@
             }).on('cancel.daterangepicker', function (ev, picker) {
                 $(this).val('');
             });;
-           
+
             $('#byDate').val('');
             // });
             function getDetailsById(response, id) {
@@ -636,11 +643,11 @@
                                 $('.history-tb').append(tdData);
                             });
                             updatePagination(response.totalPages, pageNum);
-                            console.log(response.totalPages)
-
+                            $('.pagination').show();
                         } else {
                             noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
                             $('.history-tb').append(noData);
+                            $('.pagination').hide();
                         }
                     }
                 },
@@ -676,12 +683,12 @@
                             });
 
                             updatePagination(response.totalPages, pageNum);
-                            console.log(response.totalPages)
-
+                            $('.pagination').show();
                         }
                         else {
                             noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
                             $('.history-tb').append(noData);
+                            $('.pagination').hide();
                         }
                     }
                 },
@@ -705,7 +712,7 @@
 
             $(".pagination").html(paginationHtml);
         }
-        
+
     </script>
 </body>
 

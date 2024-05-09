@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.5/pagination.css">
 
 </head>
 
@@ -227,7 +228,8 @@
         .back {
             align-items: center;
         }
-        .noData{
+
+        .noData {
             text-align: center;
             font-size: 16px;
         }
@@ -280,6 +282,7 @@
             <tbody class="history-tb">
             </tbody>
         </table>
+        <div class="pagination mb-5 pagination-sm"></div>
         <!-- modal -->
         <div class="modal fade" id="historyInvoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
@@ -419,7 +422,6 @@
             </div>
         </div>
     </div>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -427,30 +429,37 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.5/pagination.min.js"></script>
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- <script src="auth.js"></script> -->
     <script>
         $(document).ready(function () {
-            $(function () {
-                $('#byDate').daterangepicker({
-                    startDate: moment(),
-                    endDate: moment(),
-                    locale: {
-                        format: 'DD-MM-YYYY',
-                        cancelLabel: 'Clear'
-                    }
-                });
-                $('#byDate').val('');
-
-            });
+           
+            // $(function () {
+            $('#byDate').daterangepicker({
+                startDate: moment(),
+                endDate: moment(),
+                locale: {
+                    format: 'DD-MM-YYYY',
+                    cancelLabel: 'Clear'
+                }
+            }).on('cancel.daterangepicker', function (ev, picker) {
+                $(this).val('');
+            });;
+           
+            $('#byDate').val('');
+            // });
             function getDetailsById(response, id) {
+                console.log(response)
                 var productDetails = '';
                 response.forEach(function (row) {
                     if (row.id == id) {
                         var productName = row.name;
                         document.getElementById("divName").innerHTML = row.Address;
-                        document.getElementById("in_date").innerHTML = moment(row.Date).format("DD-MM-YYYY") ;
+                        document.getElementById("in_date").innerHTML = moment(row.Date).format("DD-MM-YYYY");
                         document.getElementById("subTotal").innerHTML = row.subTotal;
                         const sgstRate = 9;
                         const cgstRate = 9;
@@ -533,55 +542,21 @@
                 return productDetails;
             }
 
-            $.ajax({
-                url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=read&table=history',
-                type: "GET",
-                success: function (response) {
-                    $('.loader').addClass('hide');
-                    var noDate = '';
-                    if (response.success) {
-                        console.log(response.data.length);
-                        if (response.data.length > 0) {
-                            response.data.forEach(function (row) {
-                                var tdData = '';
-                                tdData += '<tr>';
-                                tdData += '<td>' + row.id + '</td>';
-                                tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
-                                tdData += '<td>' + row.Address + '</td>';
-                                tdData += '<td>' + row.No_of_Product + '</td>';
-                                tdData += '<td>' + row.GrandTotal + '</td>';
-                                tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
-                                tdData += '</tr>';
-                                $('.history-tb').append(tdData);
-                            });
-                        } else {
-                            noDate += '<tr><td  colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
-                            $('.history-tb').append(noDate);
-                        }
-                    } else {
-                        console.error("Failed to fetch data:", response.error);
-
-                    }
-                },
-                error: function (xhr, status, error) {
-                    $('.loader').addClass('hide');
-                    console.error("Error fetching data:", error);
-                }
-
-            });
-
             $(document).on('click', '.viewMore', function (e) {
+
                 e.preventDefault();
                 var id = $(this).data('id');
+
                 $('.loader').removeClass('hide');
                 $.ajax({
-                    url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=read&table=history',
+                    url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=viewmore&table=history&id=' + id,
                     type: "GET",
-
                     success: function (response) {
                         $('.loader').addClass('hide');
                         if (response.success) {
+                            console.log(response.data)
                             var details = getDetailsById(response.data, id);
+                            // console.log(response.data)
                             $('#customSteelTable').html(details);
                             $('#historyInvoice').modal('show');
                         } else {
@@ -595,47 +570,142 @@
                 })
 
             });
+
             $('.modal-close').on('click', function () {
                 $('.modal').modal('hide');
 
             });
             // filterRows();
             $('.applyFilter').on('click', function () {
-                filterRows();
+                $('.loader').removeClass('hide');
+                var pageNums = $(".pagination .current").data("page") || 1;
+                filterRows(pageNums);
             });
             $('.resetFilter').on('click', function () {
                 $('.byName').val('');
                 $('.byDate').val('');
-                filterRows();
+                $('.loader').removeClass('hide');
+                // var pageNum = $(".pagination .current").data("page");
+                var pageNum = 1;
+                loadData(pageNum);
             });
         });
-        function filterRows() {
-            var searchName = $('.byName').val().toLowerCase();
+        $(".pagination").on("click", "li", function (e) {
+            e.preventDefault();
+            if ($(this).hasClass('disabled')) {
+                return;
+            }
+            var pageNum = $(this).find('a').data("page");
+            var name = $('.byName').val();
+            var date = $('.byDate').val();
+            currentPage = pageNum;
+            if (name == '' && date == '') {
+                loadData(pageNum);
+            } else {
+                filterRows(pageNum)
+            }
+        });
+        var currentPage = 1;
+        var itemsPerPage = 10;
+        function filterRows(pageNum) {
+            var searchName = $('.byName').val() ? $('.byName').val().toLowerCase() : '';
             var searchDateRange = $('.byDate').val();
             var dates = searchDateRange.split(" - ");
-            var startDate = moment(dates[0], "DD-MM-YYYY");
-            var endDate = moment(dates[1], "DD-MM-YYYY");
-            $('.history-tb tr').each(function () {
-                var name = $(this).find('td:eq(2)').text().toLowerCase();
-                var date = $(this).find('td:eq(1)').text();
+            var startDate = dates[0] ? moment(dates[0], "DD-MM-YYYY").format("MM/DD/YYYY") : '';
+            var endDate = dates[1] ? moment(dates[1], "DD-MM-YYYY").format("MM/DD/YYYY") : '';
+            $.ajax({
+                url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=filter&table=history&page=' + pageNum + '&perPage=' + itemsPerPage + '&name=' + searchName + '&startDate=' + startDate + '&endDate=' + endDate,
+                type: "GET",
+                success: function (response) {
+                    $('.loader').addClass('hide');
+                    var noData = '';
+                    if (response.success) {
+                        $('.history-tb').empty();
+                        if (response.data.length > 0) {
+                            console.log(response.data)
+                            response.data.forEach(function (row) {
+                                var tdData = '';
+                                tdData += '<tr>';
+                                tdData += '<td>' + row.id + '</td>';
+                                tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
+                                tdData += '<td>' + row.Address + '</td>';
+                                tdData += '<td>' + row.No_of_Product + '</td>';
+                                tdData += '<td>' + row.GrandTotal + '</td>';
+                                tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
+                                tdData += '</tr>';
+                                $('.history-tb').append(tdData);
+                            });
+                            updatePagination(response.totalPages, pageNum);
+                            console.log(response.totalPages)
 
-                var parts = date.split('-');
-                // var formattedDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                var formattedDate = moment(parts[2] + '-' + parts[1] + '-' + parts[0], 'YYYY-MM-DD');
-
-                var nameMatch = name.includes(searchName);
-                var dateMatch = formattedDate.isBetween(startDate, endDate, null, '[]'); 
-                if (nameMatch && dateMatch) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
+                        } else {
+                            noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
+                            $('.history-tb').append(noData);
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('.loader').addClass('hide');
+                    console.error("Error fetching data:", error);
                 }
             });
         }
 
+        function loadData(pageNum) {
+            $('.loader').removeClass('hide');
+            $.ajax({
+                url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=read&table=history&page=' + pageNum + '&perPage=' + itemsPerPage,
+                type: "GET",
+                success: function (response) {
+                    $('.loader').addClass('hide');
+                    var noData = '';
+                    if (response.success) {
+                        $('.history-tb').empty();
+                        if (response.data.length > 0) {
+                            response.data.forEach(function (row) {
+                                var tdData = '';
+                                tdData += '<tr>';
+                                tdData += '<td>' + row.id + '</td>';
+                                tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
+                                tdData += '<td>' + row.Address + '</td>';
+                                tdData += '<td>' + row.No_of_Product + '</td>';
+                                tdData += '<td>' + row.GrandTotal + '</td>';
+                                tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
+                                tdData += '</tr>';
+                                $('.history-tb').append(tdData);
+                            });
 
+                            updatePagination(response.totalPages, pageNum);
+                            console.log(response.totalPages)
 
+                        }
+                        else {
+                            noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
+                            $('.history-tb').append(noData);
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('.loader').addClass('hide');
+                    console.error("Error fetching data:", error);
+                }
+            });
+        }
 
+        loadData(currentPage);
+
+        function updatePagination(totalPages, currentPage) {
+            var paginationHtml = '<li class="page-item' + (currentPage == 1 ? ' disabled' : '') + '"><a class="page-link" href="#" tabindex="-1" aria-disabled="true" data-page="' + (currentPage - 1) + '"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
+
+            for (var i = 1; i <= totalPages; i++) {
+                paginationHtml += '<li class="page-item' + (i == currentPage ? ' active' : '') + '"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+            }
+
+            paginationHtml += '<li class="page-item' + (currentPage >= totalPages ? ' disabled' : '') + '" ><a class="page-link" href="#" data-page="' + (currentPage + 1) + '"> <span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
+
+            $(".pagination").html(paginationHtml);
+        }
+        
     </script>
 </body>
 

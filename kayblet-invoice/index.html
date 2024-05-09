@@ -56,10 +56,9 @@
         type: "GET",
         success: function (response) {
           console.log(response.data);
-          console.log(response.data.userId);
 
-          if (response.success && response.data.userId != null) {
-            setCookie("userId", response.data.userId, 30);
+          if (response.success && response.data.role != null) {
+            setCookie("roletype", response.data.role, 30);
             var path = window.location.pathname;
             var page = path.split("/").pop();
             if (page != "invoice.html") {
@@ -76,11 +75,11 @@
     });
     $(document).ready(function () {
       $('.loader').addClass('hide');
-      var userId = getCookie("userId");
+      var role = getCookie("roletype");
       var sessionExpiration = getCookie("sessionExpiration");
       console.log(sessionExpiration && new Date().getTime() > parseInt(sessionExpiration))
 
-      if (userId || (sessionExpiration && new Date().getTime() > parseInt(sessionExpiration))) {
+      if (role || (sessionExpiration && new Date().getTime() > parseInt(sessionExpiration))) {
         var path = window.location.pathname;
         var page = path.split("/").pop();
         if (page != "invoice.html") {

@@ -1,10 +1,10 @@
 $(document).ready(function () {
 
-    var userId = getCookie("userId");
+    var role = getCookie("roletype");
     var sessionExpiration = getCookie("sessionExpiration");
     console.log(sessionExpiration && new Date().getTime() > parseInt(sessionExpiration))
 
-    if (!userId || (sessionExpiration && new Date().getTime() > parseInt(sessionExpiration))) {
+    if (!role || (sessionExpiration && new Date().getTime() > parseInt(sessionExpiration))) {
         var path = window.location.pathname;
         var page = path.split("/").pop();
         if (page != "index.html") {

@@ -870,8 +870,8 @@
   let partsCounter = 1;
   var rowInvoiceCounter = 1;
   $(document).ready(function () {
-    var userId = getCookie("userId");
-    if(userId == 1){
+    var role = getCookie("roletype");
+    if(role == "admin"){
       document.getElementById("historyLinkContainer").innerHTML = '<a class="nav-link dropdown-toggle" href="history.html" role="button" aria-haspopup="true" aria-expanded="false">View History</a>';
 
     }
@@ -1741,7 +1741,7 @@
   function getLastSequenceNumber() {
     return new Promise(function (resolve, reject) {
       $.ajax({
-        url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=read&table=history',
+        url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=lastrow&table=history',
         type: 'GET',
         success: function (response) {
           if (response.success && Array.isArray(response.data) && response.data.length > 0) {
@@ -1800,7 +1800,6 @@
 
     getLastSequenceNumber().then(function (id) {
     let sequenceNumber = id + 1;
-
     let data = JSON.stringify({
         "id": sequenceNumber,
         "Date": generated_date,

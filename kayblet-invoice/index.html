@@ -59,7 +59,7 @@
           console.log(response.data.userId);
 
           if (response.success && response.data.userId != null) {
-            setCookie("userId", response.data.userId, 5);
+            setCookie("userId", response.data.userId, 30);
             var path = window.location.pathname;
             var page = path.split("/").pop();
             if (page != "invoice.html") {

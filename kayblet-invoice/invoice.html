@@ -1631,7 +1631,7 @@
   function createNewRow(height, width, no_of_meter, rate_per_meter, final_amount, currentForm, rowIndex, valtype, runners, OthersMsg) {
     let trayText = getTrayText(valtype, rowIndex);
     let setValLad = '';
-   
+    
     var trData = '';
     if (valtype == 'Others') {
       trData += '<td class="sl_no">' + rowIndex + '</td>';
@@ -1643,7 +1643,11 @@
       trData += '<td style="text-align: right;">' + final_amount + '</td>';
     } else {
       trData += '<td class="sl_no">' + rowIndex + '</td>';
+      if(trayText == "Cover" || trayText == "Powder Coated Perforated Cover" ||  trayText == "Powder Coated Raceway Cover"){
+      trData += '<td style="text-align: left;">' + `Pre - Gal ${width}mm ${trayText}` + '</td>';
+      }else{
       trData += '<td style="text-align: left;">' + `Pre - Gal ${width}mm * ${height}mm ${trayText}` + '</td>';
+      }
       trData += '<td>' + '73089090' + '</td>';
       trData += '<td>' + no_of_meter + '</td>';
       trData += '<td>' + 'Mtrs' + '</td>';
@@ -1668,7 +1672,11 @@
       targetRow.find('td:eq(6)').text(final_amount);
 
     } else {
+      if(trayText == "Cover" || trayText == "Powder Coated Perforated Cover" ||  trayText == "Powder Coated Raceway Cover"){
+      targetRow.find('td:eq(1)').text(`Pre-Gal ${width}mm ${trayText} `);
+      }else{
       targetRow.find('td:eq(1)').text(`Pre-Gal ${width}mm * ${height}mm  ${trayText} `);
+      }
       targetRow.find('td:eq(3)').text(no_of_meter);
       targetRow.find('td:eq(5)').text(rate_per_meter);
       targetRow.find('td:eq(6)').text(final_amount);

@@ -57,7 +57,7 @@
         var password = $('#inputPassword').val();
 
         $.ajax({
-          url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=login&table=Login&username=' + username + '&password=' + password,
+          url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=login&table=Login&username=' + username + '&password=' + password,
           type: "GET",
           success: function (response) {
             console.log(response.data);

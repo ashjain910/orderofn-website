@@ -1749,7 +1749,7 @@
   function getLastSequenceNumber() {
     return new Promise(function (resolve, reject) {
       $.ajax({
-        url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=lastrow&table=history',
+        url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=lastrow&table=history',
         type: 'GET',
         success: function (response) {
           if (response.success && Array.isArray(response.data) && response.data.length > 0) {
@@ -1770,7 +1770,7 @@
   function submitDataToGoogleSheets(data) {
     return new Promise(function (resolve, reject) {
       $.ajax({
-        url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=insert&table=history&data=' + data,
+        url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=insert&table=history&data=' + data,
         type: 'GET',
         success: resolve,
         error: function (xhr, status, error) {

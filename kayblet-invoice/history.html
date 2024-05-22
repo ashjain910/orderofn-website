@@ -556,7 +556,7 @@
 
                 $('.loader').removeClass('hide');
                 $.ajax({
-                    url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=viewmore&table=history&id=' + id,
+                    url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=viewmore&table=history&id=' + id,
                     type: "GET",
                     success: function (response) {
                         $('.loader').addClass('hide');
@@ -621,7 +621,7 @@
             var startDate = dates[0] ? moment(dates[0], "DD-MM-YYYY").format("MM/DD/YYYY") : '';
             var endDate = dates[1] ? moment(dates[1], "DD-MM-YYYY").format("MM/DD/YYYY") : '';
             $.ajax({
-                url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=filter&table=history&page=' + pageNum + '&perPage=' + itemsPerPage + '&name=' + searchName + '&startDate=' + startDate + '&endDate=' + endDate,
+                url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=filter&table=history&page=' + pageNum + '&perPage=' + itemsPerPage + '&name=' + searchName + '&startDate=' + startDate + '&endDate=' + endDate,
                 type: "GET",
                 success: function (response) {
                     $('.loader').addClass('hide');
@@ -661,7 +661,7 @@
         function loadData(pageNum) {
             $('.loader').removeClass('hide');
             $.ajax({
-                url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=read&table=history&page=' + pageNum + '&perPage=' + itemsPerPage,
+                url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=read&table=history&page=' + pageNum + '&perPage=' + itemsPerPage,
                 type: "GET",
                 success: function (response) {
                     $('.loader').addClass('hide');

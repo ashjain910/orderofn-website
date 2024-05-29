@@ -1781,20 +1781,44 @@
     });
   }
 
-  function generatePDF() {
+//   function generatePDF() {
+//   return new Promise(function (resolve, reject) {
+//     var element = document.getElementById('invoiceTable');
+
+//     html2pdf(element, {
+//         margin: [5.5, 4.5, 5.5, 4.5],
+//         filename: 'Proforma invoice.pdf',
+//         image: { type: 'jpeg', quality: 0.20 },
+//         html2canvas: { scale: 2 },
+//         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
+//       }).then(resolve).catch(reject);
+//   });
+// }
+function generatePDF() {
   return new Promise(function (resolve, reject) {
     var element = document.getElementById('invoiceTable');
 
-    html2pdf(element, {
-        margin: [5.5, 4.5, 5.5, 4.5],
-        filename: 'Proforma invoice.pdf',
-        image: { type: 'jpeg', quality: 0.20 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', }
-      }).then(resolve).catch(reject);
+    html2pdf().from(element).set({
+      margin: [5.5, 4.5, 5.5, 4.5],
+      filename: 'Proforma invoice.pdf',
+      image: { type: 'jpeg', quality: 0.20 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).outputPdf('blob').then(function (blob) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'Proforma invoice.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Open the Blob URL in a new tab
+      window.open(url, '_blank');
+      resolve();
+    }).catch(reject);
   });
 }
-  
 
   $(document).on('click', 'button.print-action', function (e) {
     $('.print-action').prop("disabled", true);
@@ -1825,7 +1849,7 @@
         // Generate PDF
         generatePDF().then(function () {
             $('.loader').addClass('hide');
-            window.location.href = 'index.html';
+            // window.location.href = 'index.html';
         }).catch(function () {
             $('.loader').addClass('hide');
             alert("Error generating PDF.");

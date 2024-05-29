@@ -1798,25 +1798,20 @@ function generatePDF() {
   return new Promise(function (resolve, reject) {
     var element = document.getElementById('invoiceTable');
 
-    html2pdf().from(element).set({
+    html2pdf().from(element)
+    .set({
       margin: [5.5, 4.5, 5.5, 4.5],
       filename: 'Proforma invoice.pdf',
       image: { type: 'jpeg', quality: 0.20 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).outputPdf('blob').then(function (blob) {
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = 'Proforma invoice.pdf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      // Open the Blob URL in a new tab
-      window.open(url, '_blank');
-      resolve();
-    }).catch(reject);
+    })
+  .outputPdf()  // add this to replace implicite .save() method, which triggers file download
+  .get('pdf')
+  .then(function (pdfObj) {
+    // pdfObj.autoPrint();
+    window.open(pdfObj.output("bloburl"), "F")
+  });
   });
 }
 

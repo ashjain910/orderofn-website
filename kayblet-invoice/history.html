@@ -271,7 +271,7 @@
         <table class="table table-striped mt-3">
             <thead class="table-light">
                 <tr class="th-field">
-                    <th scope="col">Id</th>
+                    <!-- <th scope="col">Id</th> -->
                     <th scope="col">Date</th>
                     <th scope="col">Name</th>
                     <th scope="col">No of products</th>
@@ -447,7 +447,7 @@
 
             // $(function () {
             $('#byDate').daterangepicker({
-                startDate: moment(),
+                startDate: moment().subtract(30, 'days'),
                 endDate: moment(),
                 locale: {
                     format: 'DD-MM-YYYY',
@@ -457,7 +457,10 @@
                 $(this).val('');
             });;
 
-            $('#byDate').val('');
+            $('#byDate').val(moment().subtract(30, 'days').format('DD-MM-YYYY') + ' - ' + moment().format('DD-MM-YYYY'));
+            setTimeout(function(){
+            $(".applyFilter").trigger('click'); 
+            }, 2000);
             // });
             function getDetailsById(response, id) {
                 console.log(response)
@@ -590,11 +593,11 @@
             });
             $('.resetFilter').on('click', function () {
                 $('.byName').val('');
-                $('.byDate').val('');
+                $('#byDate').val(moment().subtract(30, 'days').format('DD-MM-YYYY') + ' - ' + moment().format('DD-MM-YYYY'));
                 $('.loader').removeClass('hide');
                 // var pageNum = $(".pagination .current").data("page");
                 var pageNum = 1;
-                loadData(pageNum);
+                filterRows(pageNum);
             });
         });
         $(".pagination").on("click", "li", function (e) {
@@ -602,18 +605,16 @@
             if ($(this).hasClass('disabled')) {
                 return;
             }
+            $('.loader').removeClass('hide');
             var pageNum = $(this).find('a').data("page");
             var name = $('.byName').val();
             var date = $('.byDate').val();
             currentPage = pageNum;
-            if (name == '' && date == '') {
-                loadData(pageNum);
-            } else {
-                filterRows(pageNum)
-            }
+
+            filterRows(pageNum)
         });
         var currentPage = 1;
-        var itemsPerPage = 10;
+        var itemsPerPage = 25;
         function filterRows(pageNum) {
             var searchName = $('.byName').val() ? $('.byName').val().toLowerCase() : '';
             var searchDateRange = $('.byDate').val();
@@ -633,7 +634,7 @@
                             response.data.forEach(function (row) {
                                 var tdData = '';
                                 tdData += '<tr>';
-                                tdData += '<td>' + row.id + '</td>';
+                                // tdData += '<td>' + row.id + '</td>';
                                 tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
                                 tdData += '<td>' + row.Address + '</td>';
                                 tdData += '<td>' + row.No_of_Product + '</td>';
@@ -646,8 +647,9 @@
                             $('.pagination').show();
                         } else {
                             noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
-                            $('.history-tb').append(noData);
                             $('.pagination').hide();
+                            $('.history-tb').append(noData);
+                            
                         }
                     }
                 },
@@ -658,48 +660,48 @@
             });
         }
 
-        function loadData(pageNum) {
-            $('.loader').removeClass('hide');
-            $.ajax({
-                url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=read&table=history&page=' + pageNum + '&perPage=' + itemsPerPage,
-                type: "GET",
-                success: function (response) {
-                    $('.loader').addClass('hide');
-                    var noData = '';
-                    if (response.success) {
-                        $('.history-tb').empty();
-                        if (response.data.length > 0) {
-                            response.data.forEach(function (row) {
-                                var tdData = '';
-                                tdData += '<tr>';
-                                tdData += '<td>' + row.id + '</td>';
-                                tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
-                                tdData += '<td>' + row.Address + '</td>';
-                                tdData += '<td>' + row.No_of_Product + '</td>';
-                                tdData += '<td>' + row.GrandTotal + '</td>';
-                                tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
-                                tdData += '</tr>';
-                                $('.history-tb').append(tdData);
-                            });
+        // function loadData(pageNum) {
+        //     $('.loader').removeClass('hide');
+        //     $.ajax({
+        //         url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=read&table=history&page=' + pageNum + '&perPage=' + itemsPerPage,
+        //         type: "GET",
+        //         success: function (response) {
+        //             $('.loader').addClass('hide');
+        //             var noData = '';
+        //             if (response.success) {
+        //                 $('.history-tb').empty();
+        //                 if (response.data.length > 0) {
+        //                     response.data.forEach(function (row) {
+        //                         var tdData = '';
+        //                         tdData += '<tr>';
+        //                         tdData += '<td>' + row.id + '</td>';
+        //                         tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
+        //                         tdData += '<td>' + row.Address + '</td>';
+        //                         tdData += '<td>' + row.No_of_Product + '</td>';
+        //                         tdData += '<td>' + row.GrandTotal + '</td>';
+        //                         tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
+        //                         tdData += '</tr>';
+        //                         $('.history-tb').append(tdData);
+        //                     });
 
-                            updatePagination(response.totalPages, pageNum);
-                            $('.pagination').show();
-                        }
-                        else {
-                            noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
-                            $('.history-tb').append(noData);
-                            $('.pagination').hide();
-                        }
-                    }
-                },
-                error: function (xhr, status, error) {
-                    $('.loader').addClass('hide');
-                    console.error("Error fetching data:", error);
-                }
-            });
-        }
+        //                     updatePagination(response.totalPages, pageNum);
+        //                     $('.pagination').show();
+        //                 }
+        //                 else {
+        //                     noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
+        //                     $('.history-tb').append(noData);
+        //                     $('.pagination').hide();
+        //                 }
+        //             }
+        //         },
+        //         error: function (xhr, status, error) {
+        //             $('.loader').addClass('hide');
+        //             console.error("Error fetching data:", error);
+        //         }
+        //     });
+        // }
 
-        loadData(currentPage);
+        // loadData(currentPage);
 
         function updatePagination(totalPages, currentPage) {
             var paginationHtml = '<li class="page-item' + (currentPage == 1 ? ' disabled' : '') + '"><a class="page-link" href="#" tabindex="-1" aria-disabled="true" data-page="' + (currentPage - 1) + '"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';

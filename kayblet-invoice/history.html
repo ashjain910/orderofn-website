@@ -301,7 +301,7 @@
                                         <div class="left-column">
                                             <span>
                                                 GST NO: 33AAICB3190P1ZC<br>
-                                                MSME UAM NO : TN02D0139034
+                                                MSME UAM NO : TN-02-0035904
 
                                             </span>
                                         </div>
@@ -357,15 +357,15 @@
                                                     </tr>
                                                     <tr>
                                                         <td>BANK NAME</td>
-                                                        <td>HDFC BANK</td>
+                                                        <td>HDFC BANK - 9084</td>
                                                     </tr>
                                                     <tr>
                                                         <td>BRANCH NAME</td>
-                                                        <td>LAXMI NAGAR, ARCOT ROAD</td>
+                                                        <td>VEPERY</td>
                                                     </tr>
                                                     <tr>
                                                         <td>IFSC No</td>
-                                                        <td>HDFC0009440</td>
+                                                        <td>HDFC0001073</td>
                                                     </tr>
 
                                                 </table>
@@ -401,7 +401,7 @@
                                         <div class="d-flex justify-content-between">
                                             <div>
                                                 <p><b>Terms & Conditions</b></p>
-                                                <Span>Immediate Payment</Span>
+                                                <Span>Advance 30% balance before delivery</Span>
                                             </div>
                                             <div>
                                                 <p>FOR KAYBLET PROMETALS PVT LTD <br>
@@ -459,7 +459,7 @@
 
             $('#byDate').val(moment().subtract(30, 'days').format('DD-MM-YYYY') + ' - ' + moment().format('DD-MM-YYYY'));
             setTimeout(function(){
-            $(".applyFilter").trigger('click'); 
+                $(".applyFilter").trigger('click');
             }, 2000);
             // });
             function getDetailsById(response, id) {
@@ -532,16 +532,36 @@
                                             trayText = 'Ladder Tray';
                                         }
                                     }
-
-                                    productDetails += '<tr>'
+                                   
+                                    productDetails += '<tr>';
                                     productDetails += '<td class="sl_no">' + ProductId + '</td>';
-                                    productDetails += '<td style="text-align: left;">' + `Pre - Gal ${width}mm * ${height}mm ${trayText}` + '</td>';
-                                    productDetails += '<td>' + '73089090' + '</td>';
-                                    productDetails += '<td>' + length + '</td>';
-                                    productDetails += '<td>' + 'Mtrs' + '</td>';
-                                    productDetails += '<td style="text-align: right;">' + rateperMtr + '</td>';
-                                    productDetails += '<td style="text-align: right;">' + amt + '</td>';
-                                    productDetails += '</tr>'
+
+                                    if (["Perforated", "Raceway", "Ladder"].includes(productType)) {
+                                        productDetails += '<td style="text-align: left;">' + `Pre - Gal ${width}mm * ${height}mm ${trayText}` + '</td>';
+                                        productDetails += '<td>73089090</td>';
+                                    } else if (["Nut-bolt", "Thread", "C-channel"].includes(productType)) {
+                                        if (productType === "Nut-bolt") {
+                                            productDetails += '<td style="text-align: left;">' + `Nut bolt${otherMsg ? ' - ' + otherMsg : ''}` + '</td>';
+                                        } else if (productType === "Thread") {
+                                            productDetails += '<td style="text-align: left;">' + `Thread rod${otherMsg ? ' - ' + otherMsg : ''}` + '</td>';
+                                        } else if (productType === "C-channel") {
+                                            productDetails += '<td style="text-align: left;">' + `C-channel${otherMsg ? ' - ' + otherMsg : ''}` + '</td>';
+                                        }
+                                        productDetails += '<td></td>';
+                                    }
+
+                                    productDetails += '<td>' + (length || '') + '</td>';
+                                    if(productType == "Nut-bolt"){
+                                        productDetails += '<td>' + "qty(no's)" + '</td>';
+                                    }else{
+                                        productDetails += '<td>' + 'Mtrs' + '</td>';
+                                    }
+                                    productDetails += '<td style="text-align: right;">' + (["Perforated", "Raceway", "Ladder"].includes(productType) ? rateperMtr : '') + '</td>';
+                                    productDetails += '<td style="text-align: right;">' + (amt || '') + '</td>';
+                                    productDetails += '</tr>';
+
+
+
                                 });
                             }
                         } catch (error) {
@@ -649,7 +669,7 @@
                             noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
                             $('.pagination').hide();
                             $('.history-tb').append(noData);
-                            
+
                         }
                     }
                 },

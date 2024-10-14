@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.5/pagination.css">
+
+</head>
+
+<body>
+    <style>
+        p {
+            margin-bottom: 0;
+        }
+
+        .divtext {
+            border: none;
+            padding: 5px;
+            overflow: auto;
+            min-height: 60px;
+            /* width: 100%; */
+            width: 20em;
+
+        }
+
+        .table-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .table tbody tr {
+            border-bottom: none;
+        }
+
+        .table tbody td,
+        .table tbody th {
+            border: none;
+        }
+
+        .table-bordered {
+            padding: 5px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000000;
+            padding: 1px;
+            text-align: left;
+        }
+
+        .Acc-details td {
+            border: none;
+            font-size: 12px;
+            /* padding-right: 70px; */
+        }
+
+        .steel-property td {
+            text-align: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 0px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .print-action {
+            background-color: rgb(228, 224, 240);
+            margin-left: 10px;
+            margin-bottom: 6px;
+        }
+
+        .close {
+            color: #C9302C;
+        }
+
+        #invoiceTable table {
+            width: 100%;
+        }
+
+        .subFields {
+            padding-top: 5px;
+        }
+
+        .modal-body {
+            overflow: overlay;
+        }
+
+        @media only screen and (max-width: 576px) {
+
+            .form-floating,
+            .form-select {
+                width: 100px;
+            }
+
+            .partsDsg {
+                margin-left: auto;
+            }
+
+        }
+
+        table .form-floating,
+        .form-select {
+            width: 100px;
+        }
+
+        .addSubTBl-1 {
+            margin-top: 10px;
+        }
+
+        .save-action {
+            pointer-events: auto !important;
+        }
+
+        .totalTxt {
+            font-size: 12px;
+        }
+
+        .bg-header {
+            background-color: #f4f4f4;
+        }
+
+        .bg-header td {
+            text-align: center;
+        }
+
+        .pos-rgh {
+            text-align: right;
+        }
+
+        :focus-visible {
+            outline: none;
+        }
+
+        .form-control:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        button {
+            outline: none;
+            padding: 3px 10px;
+            color: #fff;
+            background-color: #4EBBBB;
+            border: none;
+            border-radius: 15px;
+        }
+
+        a {
+            color: #000000;
+            text-decoration: none;
+            font-size: 12px;
+            padding-left: 2px;
+        }
+
+        .applyFilter {
+            padding: 7px 10px;
+            margin-right: 14px;
+            background-color: #7E5898;
+            color: #fff;
+        }
+
+        .resetFilter {
+            padding: 7px 10px;
+            background-color: #919192;
+            color: #fff;
+        }
+
+        .th-field th {
+            border: none;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            /* Light grey */
+            border-top: 8px solid #3498db;
+            /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -25px;
+            margin-left: -25px;
+            z-index: 9999;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader.hide {
+            display: none;
+        }
+
+        .back {
+            align-items: center;
+        }
+
+        .noData {
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
+    <div class="container mt-3">
+        <div class="d-flex back">
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            <a href="invoice.html">Back</a>
+        </div>
+        <div class="row">
+            <div class="card card-outline-secondary border-0 rounded-0 mt-2 pt-3">
+                <div class="col-lg-12">
+                    <div class="form-row">
+                        <div class="col-lg-3">
+                            <div class="form-group rounded-0">
+                                <input type="text" id="byName" class="form-control rounded-3 byName input"
+                                    autocomplete="off" placeholder="Search by name">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group rounded-0">
+                                <input type="text" id="byDate" class="form-control rounded-3 byDate input"
+                                    autocomplete="off" placeholder="Search by date">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 mt-1">
+                            <div class="">
+                                <button class="applyFilter">Apply filter</button>
+                                <button class="resetFilter">Reset filter</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="loader"></div>
+
+        <table class="table table-striped mt-3">
+            <thead class="table-light">
+                <tr class="th-field">
+                    <!-- <th scope="col">Id</th> -->
+                    <th scope="col">Date</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">No of products</th>
+                    <th scope="col">GrandTotal</th>
+                    <th scope="col">View Details</th>
+                </tr>
+            </thead>
+            <tbody class="history-tb">
+            </tbody>
+        </table>
+        <div class="pagination mb-5 pagination-sm"></div>
+        <!-- modal -->
+        <div class="modal fade" id="historyInvoice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div id="invoiceTable">
+                                    <div class="d-flex justify-content-between mt-3">
+                                        <div class="left-column">
+                                            <span>
+                                                GST NO: 33AAICB3190P1ZC<br>
+                                                MSME UAM NO : TN-02-0035904
+
+                                            </span>
+                                        </div>
+                                        <div class="right-column">
+                                            <span>
+                                                Phone: 044 4789 2544<br>
+                                                Mobile: +91 9884498865 / 9884443160<br>
+                                                Mail ID: kaybletprometals@gmail.com<br>
+
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="header">
+                                        <u>
+                                            <p>ESTIMATE / PROFORMA INVOICE</p>
+                                        </u>
+                                        <p><b>KAYBLET PROMETALS PRIVATE LIMITED</b></p>
+                                        <p>Reg Off: old number 12A, K.M.A Garden, Kodungaiyur, Chennai-600118. <br>
+                                            WAREHOUSE: old number 226, Linghi Chetty Street, Chennai-600001.
+                                        </p>
+                                    </div>
+                                    <!-- <div class="modalTable"></div> -->
+                                    <table class=>
+                                        <tr>
+                                            <td colspan="2" rowspan="1">
+                                                <div class="divtext" id="divName" contentEditable></div>
+                                            </td>
+                                            <td colspan="3" class="text-center">Date</td>
+                                            <td class="invoice_date text-center" id="in_date" colspan="2"></td>
+
+                                        </tr>
+
+                                        <tr class="bg-header">
+                                            <td>SI.No</td>
+                                            <td>Description</td>
+                                            <td>HSN Code</td>
+                                            <td>QTY</td>
+                                            <td>UNIT</td>
+                                            <td>UNIT<br>RATE</td>
+                                            <td>AMOUNT</td>
+                                        </tr>
+                                        <tbody id="customSteelTable"></tbody>
+
+                                        <tr>
+                                            <td class="" colspan="4" rowspan="5">
+
+                                                <b>Company's Bank Details:</b>
+                                                <table class="Acc-details" style="width: 55%;">
+                                                    <tr>
+                                                        <td>ACCOUNT NO</td>
+                                                        <td>50200037969084</td>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td>BANK NAME</td>
+                                                        <td>HDFC BANK - 9084</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>BRANCH NAME</td>
+                                                        <td>VEPERY</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>IFSC No</td>
+                                                        <td>HDFC0001073</td>
+                                                    </tr>
+
+                                                </table>
+
+                                            </td>
+
+
+                                            <td colspan="2" class="totalTxt">SUB TOTAL</td>
+                                            <td id="subTotal" class="pos-rgh"></td>
+
+                                        </tr>
+                                        <td colspan="2" class="totalTxt">SGST @ 9%</td>
+                                        <td id="sgst" class="pos-rgh"></td>
+
+                                        <tr>
+                                            <td colspan="2" class="totalTxt">CGST @ 9%</td>
+                                            <td id="cgst" class="pos-rgh"></td>
+
+                                        <tr>
+                                            <td colspan="2" class="totalTxt">Round Off</td>
+                                            <td id="roundOff" class="pos-rgh"></td>
+
+                                        <tr>
+                                            <td colspan="2" class="totalTxt">GRAND TOTAL</td>
+                                            <td id="grandTotal" class="pos-rgh"></td>
+
+                                            <!-- <tr>
+                                            <td colspan="7"><b id="rupeeInWords"></b></td>
+
+                                        </tr> -->
+                                    </table>
+                                    <div class="mt-3">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <p><b>Terms & Conditions</b></p>
+                                                <Span>Advance 30% balance before delivery</Span>
+                                            </div>
+                                            <div>
+                                                <p>FOR KAYBLET PROMETALS PVT LTD <br>
+                                                    Authorised signatory
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary modal-close" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.5/pagination.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('.input').on('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    $('.applyFilter').click();
+                }
+            });
+
+            // $(function () {
+            $('#byDate').daterangepicker({
+                startDate: moment().subtract(30, 'days'),
+                endDate: moment(),
+                locale: {
+                    format: 'DD-MM-YYYY',
+                    cancelLabel: 'Clear'
+                }
+            }).on('cancel.daterangepicker', function (ev, picker) {
+                $(this).val('');
+            });;
+
+            $('#byDate').val(moment().subtract(30, 'days').format('DD-MM-YYYY') + ' - ' + moment().format('DD-MM-YYYY'));
+            setTimeout(function(){
+                $(".applyFilter").trigger('click');
+            }, 2000);
+            // });
+            function getDetailsById(response, id) {
+                console.log(response)
+                var productDetails = '';
+                response.forEach(function (row) {
+                    if (row.id == id) {
+                        var productName = row.name;
+                        document.getElementById("divName").innerHTML = row.Address;
+                        document.getElementById("in_date").innerHTML = moment(row.Date).format("DD-MM-YYYY");
+                        document.getElementById("subTotal").innerHTML = row.subTotal;
+                        const sgstRate = 9;
+                        const cgstRate = 9;
+
+                        const sgstAmount = ((row.subTotal) * sgstRate) / 100;
+                        const cgstAmount = ((row.subTotal) * cgstRate) / 100;
+                        document.getElementById("sgst").innerHTML = sgstAmount;
+                        document.getElementById("cgst").innerHTML = cgstAmount;
+
+                        document.getElementById("roundOff").innerHTML = row.RoundOff;
+                        document.getElementById("grandTotal").innerHTML = row.GrandTotal;
+
+                        try {
+                            var productData = JSON.parse(productName);
+                            if (productData.product.productList.length > 0) {
+                                productData.product.productList.forEach(function (item) {
+                                    // Retrieve product details
+                                    var productType = item.parentVal.product_type;
+                                    var ProductId = item.parentVal.id;
+                                    var childBottom = item.childVal.bottom;
+                                    var childTop = item.childVal.top;
+                                    var childCoating = item.childVal.coating;
+                                    var childLadder = item.childVal.ladder;
+                                    var width = item.parentVal.Width;
+                                    var height = item.parentVal.Height;
+                                    var length = item.parentVal.Length;
+                                    var runners = item.parentVal.runners;
+                                    var sellingRate = item.parentVal.SellingRate;
+                                    var rateperMtr = item.parentVal.rateperMtr;
+                                    var amt = item.parentVal.amt;
+                                    var otherMsg = item.parentVal.OtherMsg;
+
+                                    var trayText = ''
+                                    if (productType == "Perforated") {
+                                        if (childBottom.length > 0 && childTop.length == 0 && childCoating.length == 0) {
+                                            trayText = 'Perforated Tray';
+                                        } else if (childBottom.length > 0 && childTop.length > 0 && childCoating.length == 0) {
+                                            trayText = 'Perforated Tray with cover';
+                                        } else if (childBottom.length > 0 && childTop.length == 0 && childCoating.length > 0) {
+                                            trayText = 'Powder Coated Perforated Tray';
+                                        } else if (childBottom.length == 0 && childTop.length > 0 && childCoating.length > 0) {
+                                            trayText = 'Powder Coated Perforated Cover';
+                                        } else if (childBottom.length > 0 && childTop.length > 0 && childCoating.length > 0) {
+                                            trayText = 'Powder Coated Perforated Tray with Cover';
+                                        }
+                                    } else if (productType == "Raceway") {
+                                        if (childBottom.length > 0 && childTop.length == 0 && childCoating.length == 0) {
+                                            trayText = 'Raceway Tray';
+                                        } else if (childBottom.length > 0 && childTop.length > 0 && childCoating.length == 0) {
+                                            trayText = 'Raceway Tray with cover';
+                                        } else if (childBottom.length > 0 && childTop.length == 0 && childCoating.length > 0) {
+                                            trayText = 'Powder Coated Raceway Tray';
+                                        } else if (childBottom.length == 0 && childTop.length > 0 && childCoating.length > 0) {
+                                            trayText = 'Powder Coated Raceway Cover';
+                                        } else if (childBottom.length > 0 && childTop.length > 0 && childCoating.length > 0) {
+                                            trayText = 'Powder Coated Raceway Tray with Cover';
+                                        }
+                                    } else if (productType == "Ladder") {
+                                        if (childLadder.length > 0) {
+                                            trayText = 'Ladder Tray';
+                                        }
+                                    }
+                                   
+                                    productDetails += '<tr>';
+                                    productDetails += '<td class="sl_no">' + ProductId + '</td>';
+
+                                    if (["Perforated", "Raceway", "Ladder"].includes(productType)) {
+                                        productDetails += '<td style="text-align: left;">' + `Pre - Gal ${width}mm * ${height}mm ${trayText}` + '</td>';
+                                        productDetails += '<td>73089090</td>';
+                                    } else if (["Nut-bolt", "Thread", "C-channel"].includes(productType)) {
+                                        if (productType === "Nut-bolt") {
+                                            productDetails += '<td style="text-align: left;">' + `Nut bolt${otherMsg ? ' - ' + otherMsg : ''}` + '</td>';
+                                        } else if (productType === "Thread") {
+                                            productDetails += '<td style="text-align: left;">' + `Thread rod${otherMsg ? ' - ' + otherMsg : ''}` + '</td>';
+                                        } else if (productType === "C-channel") {
+                                            productDetails += '<td style="text-align: left;">' + `C-channel${otherMsg ? ' - ' + otherMsg : ''}` + '</td>';
+                                        }
+                                        productDetails += '<td></td>';
+                                    }
+
+                                    productDetails += '<td>' + (length || '') + '</td>';
+                                    if(productType == "Nut-bolt"){
+                                        productDetails += '<td>' + "qty(no's)" + '</td>';
+                                    }else{
+                                        productDetails += '<td>' + 'Mtrs' + '</td>';
+                                    }
+                                    productDetails += '<td style="text-align: right;">' + (["Perforated", "Raceway", "Ladder"].includes(productType) ? rateperMtr : '') + '</td>';
+                                    productDetails += '<td style="text-align: right;">' + (amt || '') + '</td>';
+                                    productDetails += '</tr>';
+
+
+
+                                });
+                            }
+                        } catch (error) {
+                            console.error("Error parsing product details:", error);
+                        }
+                    }
+                });
+                return productDetails;
+            }
+
+            $(document).on('click', '.viewMore', function (e) {
+
+                e.preventDefault();
+                var id = $(this).data('id');
+
+                $('.loader').removeClass('hide');
+                $.ajax({
+                    url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=viewmore&table=history&id=' + id,
+                    type: "GET",
+                    success: function (response) {
+                        $('.loader').addClass('hide');
+                        if (response.success) {
+                            console.log(response.data)
+                            var details = getDetailsById(response.data, id);
+                            // console.log(response.data)
+                            $('#customSteelTable').html(details);
+                            $('#historyInvoice').modal('show');
+                        } else {
+                            console.error("Failed to fetch data:", response.error);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('.loader').addClass('hide');
+                        console.error("Error fetching data:", error);
+                    }
+                })
+
+            });
+
+            $('.modal-close').on('click', function () {
+                $('.modal').modal('hide');
+
+            });
+            // filterRows();
+            $('.applyFilter').on('click', function () {
+                $('.loader').removeClass('hide');
+                var pageNums = $(".pagination .current").data("page") || 1;
+                filterRows(pageNums);
+            });
+            $('.resetFilter').on('click', function () {
+                $('.byName').val('');
+                $('#byDate').val(moment().subtract(30, 'days').format('DD-MM-YYYY') + ' - ' + moment().format('DD-MM-YYYY'));
+                $('.loader').removeClass('hide');
+                // var pageNum = $(".pagination .current").data("page");
+                var pageNum = 1;
+                filterRows(pageNum);
+            });
+        });
+        $(".pagination").on("click", "li", function (e) {
+            e.preventDefault();
+            if ($(this).hasClass('disabled')) {
+                return;
+            }
+            $('.loader').removeClass('hide');
+            var pageNum = $(this).find('a').data("page");
+            var name = $('.byName').val();
+            var date = $('.byDate').val();
+            currentPage = pageNum;
+
+            filterRows(pageNum)
+        });
+        var currentPage = 1;
+        var itemsPerPage = 25;
+        function filterRows(pageNum) {
+            var searchName = $('.byName').val() ? $('.byName').val().toLowerCase() : '';
+            var searchDateRange = $('.byDate').val();
+            var dates = searchDateRange.split(" - ");
+            var startDate = dates[0] ? moment(dates[0], "DD-MM-YYYY").format("MM/DD/YYYY") : '';
+            var endDate = dates[1] ? moment(dates[1], "DD-MM-YYYY").format("MM/DD/YYYY") : '';
+            $.ajax({
+                url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=filter&table=history&page=' + pageNum + '&perPage=' + itemsPerPage + '&name=' + searchName + '&startDate=' + startDate + '&endDate=' + endDate,
+                type: "GET",
+                success: function (response) {
+                    $('.loader').addClass('hide');
+                    var noData = '';
+                    if (response.success) {
+                        $('.history-tb').empty();
+                        if (response.data.length > 0) {
+                            console.log(response.data)
+                            response.data.forEach(function (row) {
+                                var tdData = '';
+                                tdData += '<tr>';
+                                // tdData += '<td>' + row.id + '</td>';
+                                tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
+                                tdData += '<td>' + row.Address + '</td>';
+                                tdData += '<td>' + row.No_of_Product + '</td>';
+                                tdData += '<td>' + row.GrandTotal + '</td>';
+                                tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
+                                tdData += '</tr>';
+                                $('.history-tb').append(tdData);
+                            });
+                            updatePagination(response.totalPages, pageNum);
+                            $('.pagination').show();
+                        } else {
+                            noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
+                            $('.pagination').hide();
+                            $('.history-tb').append(noData);
+
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('.loader').addClass('hide');
+                    console.error("Error fetching data:", error);
+                }
+            });
+        }
+
+        // function loadData(pageNum) {
+        //     $('.loader').removeClass('hide');
+        //     $.ajax({
+        //         url: 'https://script.google.com/macros/s/AKfycbyv4azZ2w6T90_-52a2-HvkmZTYLUtAR1ogdDFkhhFPGWlqoEUqosz9PSoMws5lBkrO4w/exec?action=read&table=history&page=' + pageNum + '&perPage=' + itemsPerPage,
+        //         type: "GET",
+        //         success: function (response) {
+        //             $('.loader').addClass('hide');
+        //             var noData = '';
+        //             if (response.success) {
+        //                 $('.history-tb').empty();
+        //                 if (response.data.length > 0) {
+        //                     response.data.forEach(function (row) {
+        //                         var tdData = '';
+        //                         tdData += '<tr>';
+        //                         tdData += '<td>' + row.id + '</td>';
+        //                         tdData += '<td>' + moment(row.Date).format("DD-MM-YYYY") + '</td>';
+        //                         tdData += '<td>' + row.Address + '</td>';
+        //                         tdData += '<td>' + row.No_of_Product + '</td>';
+        //                         tdData += '<td>' + row.GrandTotal + '</td>';
+        //                         tdData += '<td><button class="viewMore" type="button" data-id="' + row.id + '">View more</button></td>';
+        //                         tdData += '</tr>';
+        //                         $('.history-tb').append(tdData);
+        //                     });
+
+        //                     updatePagination(response.totalPages, pageNum);
+        //                     $('.pagination').show();
+        //                 }
+        //                 else {
+        //                     noData += '<tr><td colspan="6" rowspan="1"><p class="noData">No data found </p></td></tr>';
+        //                     $('.history-tb').append(noData);
+        //                     $('.pagination').hide();
+        //                 }
+        //             }
+        //         },
+        //         error: function (xhr, status, error) {
+        //             $('.loader').addClass('hide');
+        //             console.error("Error fetching data:", error);
+        //         }
+        //     });
+        // }
+
+        // loadData(currentPage);
+
+        function updatePagination(totalPages, currentPage) {
+            var paginationHtml = '<li class="page-item' + (currentPage == 1 ? ' disabled' : '') + '"><a class="page-link" href="#" tabindex="-1" aria-disabled="true" data-page="' + (currentPage - 1) + '"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>';
+
+            for (var i = 1; i <= totalPages; i++) {
+                paginationHtml += '<li class="page-item' + (i == currentPage ? ' active' : '') + '"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+            }
+
+            paginationHtml += '<li class="page-item' + (currentPage >= totalPages ? ' disabled' : '') + '" ><a class="page-link" href="#" data-page="' + (currentPage + 1) + '"> <span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>';
+
+            $(".pagination").html(paginationHtml);
+        }
+
+    </script>
+</body>
+
+</html>

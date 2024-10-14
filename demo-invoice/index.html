@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="./style.css" rel="stylesheet">
+  <!-- <title>Login Form</title> -->
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="mx-auto form-box">
+      <h5 class="text-center">Admin Login</h5>
+      <form id="loginForm">
+        <div class="mb-3 mt-5">
+          <label for="exampleInputEmail1" class="form-label">Mobile No</label>
+          <input type="number" class="form-control rounded-3 input" autocomplete="off" id="inputEmail"
+            aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">Password</label>
+          <input type="password" class="form-control rounded-3 input" autocomplete="off" id="inputPassword">
+          <div id="error" class="form-text mt-3"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-5 loginbtn">Login</button>
+      </form>
+    </div>
+    <div class="loader"></div>
+  </div>
+
+
+  <!-- Option 1: Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <!-- <script src="../../dist/html2pdf.bundle.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+     
+      $('#loginForm').on('submit', function (e) {
+        e.preventDefault();
+        $('.loader').removeClass('hide');
+        var username = $('#inputEmail').val();
+        var password = $('#inputPassword').val();
+
+        $.ajax({
+          url: 'https://script.google.com/macros/s/AKfycbweixl-Z-D5CbpPDqOZiKiaXUmnJP3trdNJqcP0McUNbJZynhKf-njCmV8yHCZ1VcucJw/exec?action=login&table=Login&username=' + username + '&password=' + password,
+          type: "GET",
+          success: function (response) {
+            console.log(response.data);
+
+            if (response.success && response.data.role != null) {
+              setCookie("roletype", response.data.role, 30);
+              var path = window.location.pathname;
+              var page = path.split("/").pop();
+              if (page != "invoice.html") {
+                window.location.href = 'invoice.html';
+              }
+              $('.loader').addClass('hide');
+            } else {
+              $('#error').text(response.data.error);
+              $('.loader').addClass('hide');
+              return;
+            }
+          }
+        });
+      });
+
+      $('.loader').addClass('hide');
+      var role = getCookie("roletype");
+      var sessionExpiration = getCookie("sessionExpiration");
+      console.log(sessionExpiration && new Date().getTime() > parseInt(sessionExpiration))
+
+      if (role || (sessionExpiration && new Date().getTime() > parseInt(sessionExpiration))) {
+        var path = window.location.pathname;
+        var page = path.split("/").pop();
+        if (page != "invoice.html") {
+          window.location.href = 'invoice.html';
+        }
+        setCookie("sessionExpiration", new Date().getTime() + (30 * 24 * 60 * 60 * 1000), 30);
+      }
+    });
+
+    function setCookie(name, value, expirationDays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+      var expires = "expires=" + d.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    function getCookie(name) {
+      var cookieArr = document.cookie.split(';');
+      for (var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+        if (name == cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    }
+  </script>
+</body>
+
+</html>

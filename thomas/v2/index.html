@@ -1,129 +1,1087 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thomas Grozier & Son | Industrial Lubricants Since 1940</title>
-    <meta name="description" content="Premium industrial lubricants for over 80 years. ISO certified pipe jointing, graphites, and high-temperature solutions for demanding applications." />
-    <meta name="author" content="Thomas Grozier & Son Pty Ltd" />
-    <meta name="keywords" content="industrial lubricants, pipe jointing, graphites, high temperature lubricants, oven chain lubricants, WRAS approved, bactericidal lubricants" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thomas Grozier - Industrial Lubricants</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <meta property="og:title" content="Thomas Grozier & Son | Industrial Lubricants Since 1940" />
-    <meta property="og:description" content="Premium industrial lubricants for over 80 years. ISO certified solutions for demanding applications." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d1889b15-bf31-4af7-bda0-a0701365c81d/id-preview-844555c0--3d4c73b5-04c2-4a1d-8832-9d2c997ed2df.lovable.app-1762231617454.png" />
+        :root {
+            --primary-color: #84cc16;
+            --dark-bg: #111827;
+            --darker-bg: #0f172a;
+            --card-bg: #1f2937;
+            --text-light: #f3f4f6;
+            --text-muted: #d1d5db;
+            --text-gray: #9ca3af;
+            --border-color: #374151;
+        }
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d1889b15-bf31-4af7-bda0-a0701365c81d/id-preview-844555c0--3d4c73b5-04c2-4a1d-8832-9d2c997ed2df.lovable.app-1762231617454.png" />
-    <script type="module" crossorigin src="assets/index-PrbBlpfi.js"></script>
-    <link rel="stylesheet" crossorigin href="assets/index-CyQ9JHvo.css">
-  
-<style>
-	#lovable-badge {
-		position: fixed;
-		bottom: 10px;
-		right: 10px;
-		width: 141px;
-		padding: 5px 13px;
-		background-color: #000;
-		color: #fff;
-		font-size: 12px;
-		border-radius: 5px;
-		font-family: sans-serif;
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		z-index: 1000000;
-		text-transform: none !important;
-		font-feature-settings: normal !important;
-		font-weight: 400 !important;
-	}
-</style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background-color: var(--dark-bg);
+        }
 
-  <body>
-    <div id="root"></div>
-  
-<a id="lovable-badge" target="_blank" href="https://lovable.dev/projects/3d4c73b5-04c2-4a1d-8832-9d2c997ed2df?utm_source=lovable-badge">
-	<span style="color: #A1A1AA;">Edit with</span> <svg width="60" height="12" viewBox="0 0 116 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M109.108 21.115C107.649 21.115 106.381 20.8369 105.306 20.2807C104.23 19.7154 103.391 18.8675 102.789 17.7369C102.196 16.6063 101.9 15.2068 101.9 13.5382C101.9 11.9518 102.21 10.5841 102.83 9.4353C103.45 8.27736 104.307 7.3975 105.401 6.79574C106.495 6.19398 107.74 5.89309 109.135 5.89309C110.475 5.89309 111.665 6.18486 112.705 6.76839C113.744 7.35192 114.551 8.19986 115.125 9.31221C115.709 10.4246 116.001 11.7557 116.001 13.3057C116.001 13.8619 115.996 14.3041 115.987 14.6324H105.087V11.7603H113.347L111.788 12.2937C111.788 11.546 111.679 10.9215 111.46 10.42C111.25 9.90941 110.94 9.52647 110.53 9.27118C110.12 9.01588 109.623 8.88824 109.039 8.88824C108.428 8.88824 107.89 9.03868 107.425 9.33956C106.97 9.63133 106.614 10.069 106.359 10.6525C106.112 11.236 105.989 11.9381 105.989 12.7587V14.1674C105.989 15.0062 106.117 15.7174 106.372 16.3009C106.628 16.8844 106.992 17.3266 107.466 17.6275C107.941 17.9193 108.501 18.0651 109.149 18.0651C109.86 18.0651 110.448 17.8828 110.913 17.5181C111.378 17.1443 111.67 16.62 111.788 15.9453H115.932C115.805 17.0029 115.444 17.9193 114.852 18.6943C114.268 19.4693 113.489 20.0665 112.513 20.4859C111.537 20.9053 110.402 21.115 109.108 21.115Z" fill="#FCFBF8"/>
-<path d="M96.5167 1.1061H100.661V20.7181H96.5167V1.1061Z" fill="#FCFBF8"/>
-<path d="M89.4649 21.1148C88.6808 21.1148 87.9788 20.978 87.3588 20.7045C86.7479 20.4309 86.2282 20.0207 85.7996 19.4736C85.3711 18.9174 85.052 18.2336 84.8423 17.4221L85.2799 17.5452V20.7182H81.177V6.28948H85.321V9.51713L84.856 9.59919C85.0657 8.82419 85.3848 8.16316 85.8133 7.6161C86.251 7.05992 86.7844 6.63595 87.4135 6.34419C88.0426 6.04331 88.7492 5.89287 89.5333 5.89287C90.7095 5.89287 91.7307 6.19831 92.5968 6.80919C93.463 7.42007 94.1286 8.29992 94.5936 9.44875C95.0586 10.5885 95.2911 11.9424 95.2911 13.5107C95.2911 15.0698 95.054 16.4237 94.5799 17.5726C94.1058 18.7123 93.4265 19.5876 92.5421 20.1984C91.6668 20.8093 90.6411 21.1148 89.4649 21.1148ZM88.1794 17.9555C88.7994 17.9555 89.3191 17.7732 89.7385 17.4084C90.167 17.0437 90.4861 16.5286 90.6958 15.863C90.9146 15.1974 91.0241 14.4133 91.0241 13.5107C91.0241 12.608 90.9146 11.8239 90.6958 11.1583C90.4861 10.4927 90.167 9.97757 89.7385 9.61286C89.3191 9.23904 88.7994 9.05213 88.1794 9.05213C87.5685 9.05213 87.0442 9.23904 86.6066 9.61286C86.178 9.97757 85.8544 10.4973 85.6355 11.172C85.4167 11.8376 85.3073 12.6171 85.3073 13.5107C85.3073 14.4133 85.4167 15.1974 85.6355 15.863C85.8544 16.5286 86.178 17.0437 86.6066 17.4084C87.0442 17.7732 87.5685 17.9555 88.1794 17.9555ZM81.177 1.1061H85.321V6.28948H81.177V1.1061Z" fill="#FCFBF8"/>
-<path d="M70.7749 21.115C69.8723 21.115 69.0608 20.9372 68.3405 20.5816C67.6293 20.226 67.0686 19.72 66.6583 19.0635C66.2571 18.3979 66.0565 17.6229 66.0565 16.7385C66.0565 15.3891 66.4531 14.3588 67.2464 13.6476C68.0396 12.9274 69.1839 12.4578 70.6792 12.239L73.182 11.8834C73.6834 11.8104 74.08 11.7193 74.3718 11.6099C74.6636 11.5004 74.8778 11.3546 75.0146 11.1722C75.1514 10.9807 75.2197 10.7391 75.2197 10.4474C75.2197 10.1465 75.1377 9.87294 74.9736 9.62677C74.8186 9.37147 74.5815 9.17088 74.2624 9.025C73.9524 8.87 73.574 8.7925 73.1272 8.7925C72.4161 8.7925 71.8462 8.97941 71.4177 9.35324C70.9892 9.71794 70.7567 10.2194 70.7202 10.8576H66.4395C66.4759 9.89118 66.7677 9.03412 67.3148 8.28647C67.8709 7.52971 68.6414 6.94162 69.6261 6.52221C70.6108 6.1028 71.7505 5.89309 73.0452 5.89309C74.4037 5.89309 75.5525 6.11648 76.4917 6.56324C77.4308 7.00089 78.1374 7.63 78.6115 8.45059C79.0947 9.27118 79.3364 10.2513 79.3364 11.391V17.4087C79.3364 18.056 79.382 18.6578 79.4731 19.214C79.5734 19.761 79.7147 20.1075 79.8971 20.2534V20.7184H75.589C75.4887 20.3263 75.4112 19.8841 75.3565 19.3918C75.3018 18.8994 75.2699 18.3797 75.2608 17.8326L75.9309 17.5454C75.7577 18.1928 75.4386 18.79 74.9736 19.3371C74.5177 19.875 73.9296 20.3081 73.2093 20.6363C72.4981 20.9554 71.6867 21.115 70.7749 21.115ZM72.3067 18.0788C72.8902 18.0788 73.4053 17.9512 73.8521 17.6959C74.2989 17.4315 74.6408 17.0668 74.8778 16.6018C75.124 16.1368 75.2471 15.6079 75.2471 15.0153V13.1279L75.589 13.3194C75.3702 13.6112 75.0967 13.8346 74.7684 13.9896C74.4493 14.1446 74.0162 14.2768 73.4692 14.3862L72.4161 14.5913C71.714 14.7281 71.1852 14.9378 70.8296 15.2204C70.4831 15.5031 70.3099 15.8997 70.3099 16.4103C70.3099 16.9209 70.4968 17.3266 70.8706 17.6275C71.2445 17.9284 71.7231 18.0788 72.3067 18.0788Z" fill="#FCFBF8"/>
-<path d="M51.962 6.28958H56.3659L60.1542 18.6668H58.8276L62.4656 6.28958H66.7463L61.7544 20.7182H57.1454L51.962 6.28958Z" fill="#FCFBF8"/>
-<path d="M45.4846 21.115C44.0531 21.115 42.7949 20.805 41.7099 20.185C40.634 19.565 39.7997 18.6806 39.2071 17.5318C38.6236 16.3829 38.3318 15.0381 38.3318 13.4972C38.3318 11.9563 38.6236 10.616 39.2071 9.47633C39.7997 8.3275 40.634 7.44309 41.7099 6.82309C42.7949 6.20309 44.0531 5.89309 45.4846 5.89309C46.916 5.89309 48.1697 6.20309 49.2456 6.82309C50.3215 7.44309 51.1512 8.3275 51.7347 9.47633C52.3274 10.616 52.6237 11.9563 52.6237 13.4972C52.6237 15.0381 52.3274 16.3829 51.7347 17.5318C51.1512 18.6806 50.3215 19.565 49.2456 20.185C48.1697 20.805 46.916 21.115 45.4846 21.115ZM45.4846 17.9421C46.0863 17.9421 46.6015 17.7779 47.03 17.4497C47.4585 17.1123 47.7868 16.6154 48.0147 15.959C48.2427 15.2934 48.3566 14.4728 48.3566 13.4972C48.3566 12.0475 48.1059 10.9488 47.6044 10.2012C47.103 9.44441 46.3963 9.06603 45.4846 9.06603C44.8828 9.06603 44.3631 9.23471 43.9255 9.57206C43.4969 9.9003 43.1687 10.3972 42.9408 11.0628C42.7128 11.7193 42.5988 12.5307 42.5988 13.4972C42.5988 14.4637 42.7128 15.2797 42.9408 15.9453C43.1687 16.6109 43.4969 17.1123 43.9255 17.4497C44.3631 17.7779 44.8828 17.9421 45.4846 17.9421Z" fill="#FCFBF8"/>
-<path d="M26.2195 1.10631H30.514V17.6623L29.7481 16.7734C29.7481 16.7734 31.8751 16.7734 35.534 16.7734C39.1928 16.7734 38.6925 20.7184 38.6925 20.7184H26.2195V1.10631Z" fill="#FCFBF8"/>
-<mask id="mask0_19703_15608" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="21">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M5.90405 0.885124C9.16477 0.885124 11.8081 3.53543 11.8081 6.80474V9.05456H13.773C17.0337 9.05456 19.677 11.7049 19.677 14.9742C19.677 18.2435 17.0337 20.8938 13.773 20.8938H0V6.80474C0 3.53543 2.64333 0.885124 5.90405 0.885124Z" fill="url(#paint0_linear_19703_15608)"/>
-</mask>
-<g mask="url(#mask0_19703_15608)">
-<g filter="url(#filter0_f_19703_15608)">
-<circle cx="8.63157" cy="11.5658" r="13.3199" fill="#4B73FF"/>
-</g>
-<g filter="url(#filter1_f_19703_15608)">
-<ellipse cx="10.0949" cy="4.25612" rx="17.0591" ry="13.3199" fill="#FF66F4"/>
-</g>
-<g filter="url(#filter2_f_19703_15608)">
-<ellipse cx="12.8775" cy="1.74957" rx="13.3199" ry="11.6977" fill="#FF0105"/>
-</g>
-<g filter="url(#filter3_f_19703_15608)">
-<circle cx="10.3319" cy="4.25254" r="8.01052" fill="#FE7B02"/>
-</g>
-</g>
-<defs>
-<filter id="filter0_f_19703_15608" x="-10.6577" y="-7.72354" width="38.5786" height="38.5786" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="2.98472" result="effect1_foregroundBlur_19703_15608"/>
-</filter>
-<filter id="filter1_f_19703_15608" x="-12.9337" y="-15.0332" width="46.057" height="38.5786" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="2.98472" result="effect1_foregroundBlur_19703_15608"/>
-</filter>
-<filter id="filter2_f_19703_15608" x="-6.41182" y="-15.9176" width="38.5786" height="35.3342" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="2.98472" result="effect1_foregroundBlur_19703_15608"/>
-</filter>
-<filter id="filter3_f_19703_15608" x="-3.64803" y="-9.72742" width="27.9599" height="27.9599" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="2.98472" result="effect1_foregroundBlur_19703_15608"/>
-</filter>
-<linearGradient id="paint0_linear_19703_15608" x1="6.62168" y1="4.40129" x2="12.6165" y2="20.8863" gradientUnits="userSpaceOnUse">
-<stop offset="0.025" stop-color="#FF8E63"/>
-<stop offset="0.56" stop-color="#FF7EB0"/>
-<stop offset="0.95" stop-color="#4B73FF"/>
-</linearGradient>
-</defs>
-</svg>
+        /* Header */
+        header {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
 
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+        }
 
-	<button id="lovable-badge-close" style="position: absolute; top: -2px; right: 5px; cursor: pointer; font-size: 14px; color: #A1A1AA;">&times;</button>
-</a>
-<script>
-	// Don't show the lovable-badge if the page is in an iframe or if it's being rendered by puppeteer (screenshot service)
-	if (window.self !== window.top || navigator.userAgent.includes('puppeteer')) {
-		// the page is in an iframe
-		var badge = document.getElementById('lovable-badge');
-		if (badge) {
-			badge.style.display = 'none';
-		}
-	}
+        .nav-left, .nav-right {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
 
-	// Add click event listener to close button
-	var closeButton = document.getElementById('lovable-badge-close');
-	if (closeButton) {
-		closeButton.addEventListener('click', function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-			var badge = document.getElementById('lovable-badge');
-			if (badge) {
-				badge.style.display = 'none';
-			}
-		});
-	}
-</script>
+        .nav-left a, .nav-right a {
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .nav-left a:hover, .nav-right a:hover {
+            color: var(--primary-color);
+        }
+
+        .logo-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(to bottom, #a3e635, #65a30d);
+            border: 4px solid #4d7c0f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+        }
+
+        .logo-text {
+            margin-top: 0.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            .nav-left, .nav-right {
+                display: none;
+            }
+            .header-container {
+                gap: 1rem;
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-slide-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 700px;
+            padding: 0 1rem;
+        }
+
+        .hero-label {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #e5e7eb;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .hero-controls {
+            position: absolute;
+            z-index: 20;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .hero-btn {
+            pointer-events: all;
+            background-color: var(--primary-color);
+            color: #111827;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+            font-size: 1.2rem;
+        }
+
+        .hero-btn:hover {
+            background-color: #a3e635;
+        }
+
+        .hero-dots {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background-color: var(--primary-color);
+            width: 32px;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+        }
+
+        /* Products Section */
+        .products {
+            background-color: white;
+            padding: 4rem 1rem;
+        }
+
+        .products-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .products-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .products-label {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .products h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 1.5rem;
+        }
+
+        .products-header p {
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-card h3 {
+            text-align: center;
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.95rem;
+        }
+
+        /* Features Section */
+        .features {
+            background-color: #111827;
+            padding: 4rem 1rem;
+            position: relative;
+        }
+
+        .features-grid {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-item {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .feature-item h3 {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .feature-item p {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Certificates Section */
+        .certificates {
+            background-color: #030712;
+            padding: 4rem 1rem;
+        }
+
+        .certificates-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .certificates h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .certificates-subtitle {
+            color: #9ca3af;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .cert-card {
+            background-color: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: border-color 0.3s;
+        }
+
+        .cert-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .cert-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cert-icon {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .cert-card h3 {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .cert-card p {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        /* Resource Library */
+        .resource-library {
+            background-color: #111827;
+            padding: 1.5rem 1rem;
+        }
+
+        .library-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .library-header {
+            margin-bottom: 1rem;
+        }
+
+        .library-header h2 {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .library-header p {
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-btn {
+            padding: 0.3rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #1f2937;
+            color: #9ca3af;
+        }
+
+        .filter-btn:hover {
+            background-color: #374151;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: #111827;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .doc-card {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+
+        .doc-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 15px -3px rgba(132, 204, 22, 0.1);
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .doc-icon {
+            font-size: 1.25rem;
+        }
+
+        .doc-download {
+            color: #6b7280;
+            transition: color 0.3s;
+        }
+
+        .doc-card:hover .doc-download {
+            color: var(--primary-color);
+        }
+
+        .doc-card h3 {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            transition: color 0.3s;
+        }
+
+        .doc-card:hover h3 {
+            color: var(--primary-color);
+        }
+
+        .doc-card p {
+            color: #9ca3af;
+            font-size: 0.75rem;
+        }
+
+        /* Contact Section */
+        .contact {
+            background-color: #111827;
+            padding: 4rem 1rem;
+        }
+
+        .contact-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .contact-header h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .contact-header p {
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        .contact-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .info-card {
+            background-color: #1f2937;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #374151;
+            transition: border-color 0.3s;
+        }
+
+        .info-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .info-icon {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+        }
+
+        .info-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .info-card p {
+            color: #d1d5db;
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+
+        .info-card .label {
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        .contact-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .map-container {
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #374151;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.5rem;
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 0.375rem;
+            color: white;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: #111827;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #a3e635;
+        }
+
+        .success-message {
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1f2937;
+            color: #9ca3af;
+            padding: 2rem 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .contact-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                height: 350px;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <nav class="nav-left">
+                <a href="#products">OUR PRODUCTS</a>
+                <a href="#services">SERVICES</a>
+            </nav>
+            <div class="logo-center">
+                <div class="logo-circle">TG</div>
+                <div class="logo-text">THOMAS GROZIER</div>
+            </div>
+            <nav class="nav-right">
+                <a href="#about">ABOUT US</a>
+                <a href="#contact">CONTACT US</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-slide active">
+            <div class="hero-slide-bg" style="background-image: url('public/product-pipe-jointing-lubricants.jpg')"></div>
+        </div>
+        <div class="hero-slide">
+            <div class="hero-slide-bg" style="background-image: url('public/product-graphite-lubricants.jpg')"></div>
+        </div>
+        <div class="hero-slide">
+            <div class="hero-slide-bg" style="background-image: url('public/product-high-temperature-lubricants.jpg')"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-label">Four Generations of Excellence</div>
+            <h1>80+ Years in Operation</h1>
+            <p>Committed to Clean Water and Quality Products. Delivered On Time, Every Time.</p>
+        </div>
+
+        <div class="hero-controls">
+            <button class="hero-btn" onclick="prevSlide()">‹</button>
+            <button class="hero-btn" onclick="nextSlide()">›</button>
+        </div>
+
+        <div class="hero-dots" id="heroDots"></div>
+
+        <svg class="wave" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z" fill="white"></path>
+        </svg>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products" id="products">
+        <div class="products-container">
+            <div class="products-header">
+                <div class="products-label">Unique Solutions Inspired by Your Unique Challenges</div>
+                <h2>Pioneering new technologies to accomplish your goals</h2>
+                <p>Cadillac Oil's highly experienced chemists, engineers and technicians have been solving customers' challenges for nearly 100 years — and we're just getting started.</p>
+            </div>
+
+            <div class="products-grid">
+                <div class="product-card">
+                    <img src="public/product-industrial-lubricants.jpg" alt="Industrial Lubricants" class="product-image">
+                    <h3>Industrial Lubricants</h3>
+                </div>
+                <div class="product-card">
+                    <img src="public/product-metalworking-fluids.jpg" alt="Metalworking Fluids" class="product-image">
+                    <h3>Metalworking Fluids</h3>
+                </div>
+                <div class="product-card">
+                    <img src="public/product-metalforming-fluids.jpg" alt="Metalforming Fluids" class="product-image">
+                    <h3>Metalforming Fluids</h3>
+                </div>
+                <div class="product-card">
+                    <img src="public/product-food-grade-lubricants.jpg" alt="Food-Grade Lubricants" class="product-image">
+                    <h3>Food-Grade Lubricants</h3>
+                </div>
+                <div class="product-card">
+                    <img src="public/product-greases-gear.jpg" alt="Greases & Gear-Making Compound" class="product-image">
+                    <h3>Greases & Gear-Making Compound</h3>
+                </div>
+                <div class="product-card">
+                    <img src="public/product-rust-preventatives.jpg" alt="Rust Preventatives" class="product-image">
+                    <h3>Rust Preventatives</h3>
+                </div>
+                <div class="product-card">
+                    <img src="public/product-cutting-oils.jpg" alt="Cutting Oils" class="product-image">
+                    <h3>Cutting Oils</h3>
+                </div>
+                <div class="product-card">
+                    <img src="public/product-cleaners.jpg" alt="Cleaners" class="product-image">
+                    <h3>Cleaners</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">🌍</div>
+                <h3>Deeply Experienced</h3>
+                <p>A century of formulating and troubleshooting has taught us a lot — and we'd like to share it with you.</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">→</div>
+                <h3>Flexible</h3>
+                <p>Our willingness to customize products and meet strict lead-times far exceeds our larger peers.</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <h3>Technology Driven</h3>
+                <p>Innovation is at the core of everything we do — and our passion is solving customer challenges.</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔧</div>
+                <h3>Specialized</h3>
+                <p>We create highly specialized, highly engineered products within eight focused product families.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certificates Section -->
+    <section class="certificates">
+        <div class="certificates-container">
+            <h2>Certifications & Approvals</h2>
+            <p class="certificates-subtitle">Our commitment to quality and safety standards</p>
+
+            <div class="certificates-grid">
+                <div class="cert-card">
+                    <div class="cert-header">
+                        <div class="cert-icon">✓</div>
+                        <div>
+                            <h3>AS/NZS ISO 9001:2015</h3>
+                            <p>Quality Management System</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cert-card">
+                    <div class="cert-header">
+                        <div class="cert-icon">✓</div>
+                        <div>
+                            <h3>WRAS BS 6920</h3>
+                            <p>Water Regulations Advisory Scheme</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cert-card">
+                    <div class="cert-header">
+                        <div class="cert-icon">✓</div>
+                        <div>
+                            <h3>ACS</h3>
+                            <p>Approvals for Chemicals Scheme</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resource Library -->
+    <section class="resource-library">
+        <div class="library-container">
+            <div class="library-header">
+                <h2>Resource Library</h2>
+                <p>Download certifications, technical data, and safety information</p>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterDocs('all')">All Documents</button>
+                <button class="filter-btn" onclick="filterDocs('certifications')">Certifications</button>
+                <button class="filter-btn" onclick="filterDocs('specs')">Technical Data</button>
+                <button class="filter-btn" onclick="filterDocs('sds')">Safety Data Sheets</button>
+            </div>
+
+            <div class="documents-grid" id="documentsGrid">
+                <!-- Documents will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="contact-container">
+            <div class="contact-header">
+                <h2>Get In Touch</h2>
+                <p>We're here to help. Contact us for product inquiries, technical support, or partnerships.</p>
+            </div>
+
+            <div class="contact-info-grid">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="info-icon">📍</div>
+                        <h3>Address</h3>
+                    </div>
+                    <p>Cadillac Oil Co.</p>
+                    <p class="label">123 Industrial Park Drive</p>
+                    <p class="label">Manufacturing City, State 12345</p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="info-icon">📞</div>
+                        <h3>Phone</h3>
+                    </div>
+                    <p>+1 (555) 123-4567</p>
+                    <p class="label">Sales & General Inquiries</p>
+                    <p style="margin-top: 1rem;">+1 (555) 987-6543</p>
+                    <p class="label">Technical Support</p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <div class="info-icon">🕐</div>
+                        <h3>Business Hours</h3>
+                    </div>
+                    <p>Monday - Friday</p>
+                    <p class="label">8:00 AM - 6:00 PM (EST)</p>
+                    <p style="margin-top: 1rem;">Saturday</p>
+                    <p class="label">9:00 AM - 2:00 PM (EST)</p>
+                </div>
+            </div>
+
+            <div class="contact-main">
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.1234567890!2d-74.0060!3d40.7128!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3855555%3A0x1c6b829b5b5b5b5b!2s123%20Industrial%20Park%20Dr!5e0!3m2!1sen!2sus!4v1234567890" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Cadillac Oil Co. Location"></iframe>
+                </div>
+
+                <form class="contact-form" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="Your name">
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" name="company" placeholder="Your company">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" required placeholder="Tell us about your inquiry..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Send Inquiry</button>
+                    <div class="success-message" id="successMessage">Thank you! We'll be in touch soon.</div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Thomas Grozier - Industrial Lubricants. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Hero Carousel
+        let currentSlide = 0;
+        const slides = 3;
+
+        function initCarousel() {
+            const container = document.getElementById('heroDots');
+            for (let i = 0; i < slides; i++) {
+                const dot = document.createElement('button');
+                dot.className = `dot ${i === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(i);
+                container.appendChild(dot);
+            }
+            setInterval(autoSlide, 5000);
+        }
+
+        function updateSlide() {
+            const heroSlides = document.querySelectorAll('.hero-slide');
+            const dots = document.querySelectorAll('.dot');
+            heroSlides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentSlide);
+            });
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides) % slides;
+            updateSlide();
+        }
+
+        function goToSlide(n) {
+            currentSlide = n;
+            updateSlide();
+        }
+
+        function autoSlide() {
+            nextSlide();
+        }
+
+        // Resource Library Filter
+        const documents = [
+            { category: 'certifications', title: 'AS/NZS ISO 9001:2015 Certificate', description: 'Quality Management System Certification', icon: '📋' },
+            { category: 'certifications', title: 'WRAS BS 6920 Approval', description: 'Water Regulations Advisory Scheme', icon: '📋' },
+            { category: 'certifications', title: 'ACS Approvals Document', description: 'Approvals for Chemicals Scheme', icon: '📋' },
+            { category: 'specs', title: 'Pipe Jointing Lubricants - Technical Data', description: 'Complete specifications and properties', icon: '📊' },
+            { category: 'specs', title: 'Graphite Lubricants - Data Sheet', description: 'Performance characteristics and applications', icon: '📊' },
+            { category: 'specs', title: 'High-Temperature Lubricants - Tech Specs', description: 'Operating ranges and performance data', icon: '📊' },
+            { category: 'sds', title: 'Industrial Lubricants - SDS', description: 'Safety Data Sheet - Complete hazard information', icon: '⚠️' },
+            { category: 'sds', title: 'Metalworking Fluids - SDS', description: 'Safety Data Sheet - Handling and storage', icon: '⚠️' },
+            { category: 'sds', title: 'Cutting Oils - SDS', description: 'Safety Data Sheet - Emergency procedures', icon: '⚠️' },
+        ];
+
+        let currentFilter = 'all';
+
+        function renderDocuments() {
+            const grid = document.getElementById('documentsGrid');
+            grid.innerHTML = '';
+            const filtered = currentFilter === 'all' ? documents : documents.filter(doc => doc.category === currentFilter);
+            
+            filtered.forEach(doc => {
+                const card = document.createElement('a');
+                card.href = '#';
+                card.className = 'doc-card';
+                card.innerHTML = `
+                    <div class="doc-header">
+                        <div class="doc-icon">${doc.icon}</div>
+                        <div class="doc-download">📥</div>
+                    </div>
+                    <h3>${doc.title}</h3>
+                    <p>${doc.description}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterDocs(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderDocuments();
+        }
+
+        // Contact Form
+        function handleSubmit(event) {
+            event.preventDefault();
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('show');
+            event.target.reset();
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCarousel();
+            renderDocuments();
+        });
+    </script>
 </body>
 </html>

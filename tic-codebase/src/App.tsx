@@ -15,7 +15,7 @@ function App() {
   // const [count, setCount] = useState(0);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/tic">
       <ScrollToTop />
       <Routes>
         {/* 👇 DEFAULT ROUTE (Login page will load on app start) */}

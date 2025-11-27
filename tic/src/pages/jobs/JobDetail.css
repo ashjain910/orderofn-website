@@ -1,0 +1,35 @@
+.upload-box__ {
+  border: 1px dashed #000000;
+  border-radius: 12px;
+  padding: 32px;
+  background: #D8ECFF;
+  min-height: 150px;
+  position: relative;
+  width: 100%;
+}
+.upload-label__ {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.upload-icon__ {
+  font-size: 40px;
+  color: #888;
+  margin-bottom: 8px;
+}
+.upload-text__ {
+  font-weight: 500;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 4px;
+}
+.upload-note__ {
+  font-size: 13px;
+  color: #888;
+}
+.upload-input__ {
+  display: none;
+}

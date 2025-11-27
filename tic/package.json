@@ -1,6 +1,6 @@
 {
   "name": "jobs-app",
-  "homepage": "https://orderofn.com/tic/jobs-list",
+  "homepage": "https://orderofn.com/tic/jobs/",
   "private": true,
   "version": "0.0.0",
   "type": "module",

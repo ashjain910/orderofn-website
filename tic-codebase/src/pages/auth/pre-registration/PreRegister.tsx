@@ -160,6 +160,11 @@ export default function PreRegister() {
                 />
               )}
             </div>
+            <div className="text-center mt-3">
+              <span className="text-muted txt__small__">
+                Have an account? <a href="/tic/">Login</a>
+              </span>
+            </div>
           </div>
 
           {/* RIGHT SIDE — STATIC IMAGE */}

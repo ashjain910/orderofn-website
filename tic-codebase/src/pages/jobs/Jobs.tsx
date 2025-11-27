@@ -20,7 +20,7 @@ const initialJobsData = [
     description: longDescription,
     status: "all",
     job_status: "active",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 2,
@@ -31,7 +31,7 @@ const initialJobsData = [
     description: "Teach history classes for middle school students.",
     status: "all",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ const initialJobsData = [
     description: "Full-time biology teacher for high school.",
     status: "all",
     job_status: "active",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 4,
@@ -53,7 +53,7 @@ const initialJobsData = [
     description: "Online chemistry tutoring for college students.",
     status: "all",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 5,
@@ -64,7 +64,7 @@ const initialJobsData = [
     description: "Remote physics lectures for college students.",
     status: "all",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 6,
@@ -75,7 +75,7 @@ const initialJobsData = [
     description: "Casual geography teacher for weekend classes.",
     status: "all",
     job_status: "expired",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 7,
@@ -86,7 +86,7 @@ const initialJobsData = [
     description: "Part-time art instructor for summer camp.",
     status: "all",
     job_status: "active",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 8,
@@ -97,7 +97,7 @@ const initialJobsData = [
     description: "Full-time music teacher for elementary school.",
     status: "all",
     job_status: "expired",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 9,
@@ -108,7 +108,7 @@ const initialJobsData = [
     description: "Casual PE coach for after-school program.",
     status: "all",
     job_status: "active",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 10,
@@ -119,7 +119,7 @@ const initialJobsData = [
     description: "Remote computer science teacher for coding bootcamp.",
     status: "all",
     job_status: "expired",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   // Saved Jobs
   {
@@ -131,7 +131,7 @@ const initialJobsData = [
     description: "Part-time science instructor for weekend workshops.",
     status: "saved",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 12,
@@ -142,7 +142,7 @@ const initialJobsData = [
     description: "Remote math tutoring for high school students.",
     status: "saved",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 13,
@@ -153,7 +153,7 @@ const initialJobsData = [
     description: "Full-time English teacher for middle school.",
     status: "saved",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 14,
@@ -164,7 +164,7 @@ const initialJobsData = [
     description: "Online history tutoring for college students.",
     status: "saved",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 15,
@@ -175,7 +175,7 @@ const initialJobsData = [
     description: "Casual physics instructor for weekend classes.",
     status: "saved",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 16,
@@ -186,7 +186,7 @@ const initialJobsData = [
     description: "Full-time chemistry teacher for high school.",
     status: "saved",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 17,
@@ -197,7 +197,7 @@ const initialJobsData = [
     description: "Part-time art tutor for summer camp.",
     status: "saved",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 18,
@@ -208,7 +208,7 @@ const initialJobsData = [
     description: "Full-time music instructor for elementary school.",
     status: "saved",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 19,
@@ -219,7 +219,7 @@ const initialJobsData = [
     description: "Casual PE coach for after-school program.",
     status: "saved",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 20,
@@ -230,7 +230,7 @@ const initialJobsData = [
     description: "Remote computer science tutor for coding bootcamp.",
     status: "saved",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   // Applied Jobs
   {
@@ -242,7 +242,7 @@ const initialJobsData = [
     description: "Online English tutoring for international students.",
     status: "applied",
     job_status: "active",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 22,
@@ -253,7 +253,7 @@ const initialJobsData = [
     description: "Full-time math instructor for high school.",
     status: "applied",
     job_status: "expired",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 23,
@@ -264,7 +264,7 @@ const initialJobsData = [
     description: "Casual science teacher for weekend workshops.",
     status: "applied",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 24,
@@ -275,7 +275,7 @@ const initialJobsData = [
     description: "Remote history instructor for college students.",
     status: "applied",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 25,
@@ -286,7 +286,7 @@ const initialJobsData = [
     description: "Casual physics tutor for weekend classes.",
     status: "applied",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 26,
@@ -297,7 +297,7 @@ const initialJobsData = [
     description: "Full-time chemistry instructor for high school.",
     status: "applied",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 27,
@@ -308,7 +308,7 @@ const initialJobsData = [
     description: "Part-time art teacher for summer camp.",
     status: "applied",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 28,
@@ -319,7 +319,7 @@ const initialJobsData = [
     description: "Full-time music tutor for elementary school.",
     status: "applied",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 29,
@@ -330,7 +330,7 @@ const initialJobsData = [
     description: "Casual PE instructor for after-school program.",
     status: "applied",
     job_status: "active",
-    avatar: "/assets/avatar2.png",
+    avatar: "/tic/school_image.png",
   },
   {
     id: 30,
@@ -341,7 +341,7 @@ const initialJobsData = [
     description: "Remote computer science teacher for coding bootcamp.",
     status: "applied",
     job_status: "expired",
-    avatar: "/assets/avatar1.png",
+    avatar: "/tic/school_image.png",
   },
 ];
 
@@ -627,7 +627,7 @@ function Jobs() {
               <div className="card-body d-flex justify-content-between align-items-center">
                 <div className="d-flex" style={{ width: "100%" }}>
                   <img
-                    src={job.avatar || "/assets/default-avatar.png"}
+                    src={job.avatar || "/tic/school_image.png"}
                     alt="Profile"
                     className="job-avatar me-3"
                   />

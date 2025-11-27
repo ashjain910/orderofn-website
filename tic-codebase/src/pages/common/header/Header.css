@@ -1,0 +1,10 @@
+.header-nav-links {
+	gap: 2rem;
+}
+.dropdown-menu {
+	min-width: 180px;
+	z-index: 2000 !important;
+}
+.header-nav-links {
+	gap: 2rem;
+}

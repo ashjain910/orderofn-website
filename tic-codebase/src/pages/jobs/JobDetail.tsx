@@ -9,7 +9,6 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import "./JobDetail.css";
-// import { right } from "@popperjs/core";
 
 function JobDetail({ jobsData }: { jobsData: any[] }) {
   const { id } = useParams();

@@ -27,6 +27,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -74,7 +76,7 @@ button:focus-visible {
   position: fixed !important;
   top: 0;
   width: 100%;
-  z-index: 1000;
+  z-index: 9999;
   left: 0;
   right: 0;
   background-color: #0d3b85 !important;
@@ -82,13 +84,56 @@ button:focus-visible {
   height: 60px;
 }
 
+.navbar .container-fluid {
+  padding: 0px !important;
+}
+
+.navbar-nav {
+  background-color: #0d3b85 !important;
+  width: 100% !important;
+  margin-right: 20px !important;
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link.show {
+  font-weight: 400 !important;
+}
+
+.dropdown .nav-link.show {
+  font-weight: 400 !important;
+}
+
+.navbar-nav .dropdown-toggle::after {
+  display: none !important;
+}
+
+.navbar-expand-lg .navbar-collapse {
+  display: flex !important;
+  flex-basis: auto;
+  justify-content: end;
+}
+
+.navbar-brand {
+  margin-left: 20px;
+}
+
 .navbar .nav-link {
   color: #ffffff !important;
-  margin-left: 20px;
   font-size: 16px;
   padding-left: 3px !important;
   padding-right: 3px !important;
+  /* margin-right: 20px; */
 }
+.mr-20{
+  margin-right: 20px !important;
+}
+
+.navbar-expand-lg .navbar-nav {
+  flex-direction: row;
+  justify-content: end;
+}
+
+
 
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link.show {
@@ -174,11 +219,12 @@ ul {
   margin-bottom: 2px !important;
   color: #000000 !important;
 }
+
 .registration__card__ .form-label {
-    font-size: 14px !important;
-    margin-top: 20px;
-    font-weight: 400 !important;
-    margin-bottom: 3px !important;
+  font-size: 14px !important;
+  margin-top: 20px;
+  font-weight: 400 !important;
+  margin-bottom: 3px !important;
 }
 
 .form-control {
@@ -214,150 +260,187 @@ ul {
   height: 42px !important;
   padding: 10px 20px !important;
 }
-.form-check-label{
+
+.form-check-label {
   font-size: 16px !important;
   font-weight: 600 !important;
   color: #828282 !important;
 }
-.form-switch  .form-check-input {
-    width: 34px !important;
-    height: 20px !important;
-    margin-top: 2px !important;
-    border: 1px solid #9ea8b9 !important;
+
+.form-switch .form-check-input {
+  width: 34px !important;
+  height: 20px !important;
+  margin-top: 2px !important;
+  border: 1px solid #9ea8b9 !important;
 }
-.form-check  .form-check-input {
-    width: 18px !important;
-    height: 18px !important;
-    margin-top: 2px !important;
-    border: 1px solid #BDBDBD !important;
+
+.form-check .form-check-input {
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: 2px !important;
+  border: 1px solid #BDBDBD !important;
 }
-.form-check .form-check-label{
+
+.form-check .form-check-label {
   font-size: 14px !important;
   font-weight: 400 !important;
   color: #828282 !important;
 }
+
 .form-check-input:checked {
-    background-color: #0d3b85 !important;
-    border-color: #0d3b85 !important;
+  background-color: #0d3b85 !important;
+  border-color: #0d3b85 !important;
 }
+
 .form-check-input:checked[type=radio] {
   background-color: #0d3b85 !important;
-    border-color: #0d3b85 !important;
-      font-size: 14px !important;
+  border-color: #0d3b85 !important;
+  font-size: 14px !important;
 }
+
 .form-check-input:checked[type=radio] {
   background-color: #0d3b85 !important;
-    border-color: #0d3b85 !important;
-    
+  border-color: #0d3b85 !important;
+
 }
-.pl_rem-8{
+
+.pl_rem-8 {
   padding-left: 8rem !important;
 }
-.pr_rem-8{
+
+.pr_rem-8 {
   padding-right: 8rem !important;
 }
-.txt__regular__{
-    font-weight: 400 !important;
-    font-size: 14px !important;
+
+.txt__regular__ {
+  font-weight: 400 !important;
+  font-size: 14px !important;
 }
-.txt__regular__sub__{
-    font-weight: 400 !important;
-    font-size: 12px !important;
+
+.txt__regular__sub__ {
+  font-weight: 400 !important;
+  font-size: 12px !important;
 }
-h2{
-    font-weight: 600 !important;
+
+h2 {
+  font-weight: 600 !important;
 }
-h3{
+
+h3 {
   font-size: 25px !important;
-    font-weight: 600 !important;
+  font-weight: 600 !important;
 }
-.progress-title{
+
+.progress-title {
   display: flex;
   align-items: center;
   font-size: 16px;
   font-weight: 500;
   color: #313131;
 }
-.stepNumber{
-    background-color: #0F3F93;
-    color: #FFFFFF;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 5px;
-    margin-right: 10px;
+
+.stepNumber {
+  background-color: #0F3F93;
+  color: #FFFFFF;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin-right: 10px;
 }
-.progress, .progress-stacked{
-    height: 6px !important;
-    border-radius: 5px !important;
-    margin-top: 12px;
+
+.progress,
+.progress-stacked {
+  height: 6px !important;
+  border-radius: 5px !important;
+  margin-top: 12px;
 }
+
 .progress-bar {
-    display: flex;
-    flex-direction: column;
-    height: 6px !important;
-    justify-content: center;
-    overflow: hidden;
-    color: var(--bs-progress-bar-color);
-    text-align: center;
-    white-space: nowrap;
-    background-color: #0F3F93 !important;
+  display: flex;
+  flex-direction: column;
+  height: 6px !important;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--bs-progress-bar-color);
+  text-align: center;
+  white-space: nowrap;
+  background-color: #0F3F93 !important;
 }
-.step-count{
+
+.step-count {
   font-size: 14px;
 }
-.registration__card__{
-    border: none !important;
-    border-radius: 20px !important;
-    padding: 25px 35px !important;
-    box-shadow: 2.72px 8px 24px 0px rgba(0, 0, 0, 0.15);
+
+.registration__card__ {
+  border: none !important;
+  border-radius: 20px !important;
+  padding: 25px 35px !important;
+  box-shadow: 2.72px 8px 24px 0px rgba(0, 0, 0, 0.15);
 }
 
 .pl-6 {
-    padding-left: 5rem !important;
+  padding-left: 5rem !important;
 }
+
 .pr-6 {
-    padding-right: 5rem !important;
+  padding-right: 5rem !important;
 }
+
 .pt_rem-3 {
-    padding-top: 3rem !important;
+  padding-top: 3rem !important;
 }
 
-.login-full-bg{
-    min-height: max-content !important;
+.login-full-bg {
+  min-height: max-content !important;
 }
 
-.ml-2{
-    margin-left: 0.5rem !important;
+.ml-2 {
+  margin-left: 0.5rem !important;
 }
+
 .form-check-input[type=radio] {
-    border-radius: 50%;
-    width: 18px !important;
-    height: 18px !important;
+  border-radius: 50%;
+  width: 18px !important;
+  height: 18px !important;
 }
-.pb_rem-5{
-    padding-bottom: 5rem !important;
+
+.pb_rem-5 {
+  padding-bottom: 5rem !important;
 }
-.job__headings__{
+
+.job__headings__ {
   font-size: 13px !important;
   font-weight: 600 !important;
   color: #313131 !important;
 }
-.list-item{
-    list-style-type: disc !important;
+
+.list-item {
+  list-style-type: disc !important;
 }
-.px-20{
+
+.px-20 {
   padding: 20px;
 }
-.pl-1{
+
+.pl-1 {
   padding-left: 10px !important;
 }
-.list_number__{
-    list-style-type: decimal !important;
+
+.list_number__ {
+  list-style-type: decimal !important;
 }
-.list_none_{
-    list-style-type: none !important;
-    padding: 0px !important;
+
+.list_none_ {
+  list-style-type: none !important;
+  padding: 0px !important;
+}
+
+.dropdown-menu[data-bs-popper] {
+  top: 100%;
+  right: 0 !important;
+  left: auto !important;
+  margin-top: var(--bs-dropdown-spacer);
 }

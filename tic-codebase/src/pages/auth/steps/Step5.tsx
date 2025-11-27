@@ -1,5 +1,3 @@
-// import React from "react";
-
 interface Step5Props {
   formData: any;
   setFormData: (data: any) => void;

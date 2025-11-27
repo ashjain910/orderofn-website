@@ -19,7 +19,7 @@ function NavScrollExample() {
             style={{ cursor: "pointer" }}
             onClick={() => navigate("/dashboard")}
           >
-            <img src="/src/assets/image_logo.png" alt="Logo" height={60} />
+            <img src="/tic/image_logo.png" alt="Logo" height={60} />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">

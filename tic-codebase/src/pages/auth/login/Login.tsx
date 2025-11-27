@@ -18,7 +18,7 @@ export default function Login() {
           <div className="col-md-6 d-flex flex-column login__section__ pl_rem-8 pr_rem-8 position-relative">
             {/* Logo */}
             <img
-              src="/src/assets/tic_logo.png"
+              src="/tic/tic_logo.png"
               alt="TIC Logo"
               style={{
                 width: "200px",
@@ -98,7 +98,7 @@ export default function Login() {
           {/* RIGHT SIDE IMAGE */}
           <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center position-relative">
             <img
-              src="/src/assets/login_img/Group_2.png"
+              src="/tic/login_img/Group_2.png"
               alt="Illustration"
               className="img-fluid w-100"
               style={{ position: "relative" }}

@@ -43,11 +43,11 @@ export default function PreRegister() {
 
   const stepImages = [
     "",
-    "/src/assets/login_img/Group_1.png",
-    "/src/assets/login_img/Group_3.png",
-    "/src/assets/login_img/Group_4.png",
-    "/src/assets/login_img/Group_5.png",
-    "/src/assets/login_img/Group_6.png",
+    "/tic/login_img/Group_1.png",
+    "/tic/login_img/Group_3.png",
+    "/tic/login_img/Group_4.png",
+    "/tic/login_img/Group_5.png",
+    "/tic/login_img/Group_6.png",
   ];
   const stepTexts = [
     "",
@@ -105,7 +105,7 @@ export default function PreRegister() {
           >
             {/* Logo */}
             <img
-              src="/src/assets/tic_logo.png"
+              src="/tic/tic_logo.png"
               alt="TIC Logo"
               style={{
                 width: "200px",

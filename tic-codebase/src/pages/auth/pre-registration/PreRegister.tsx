@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import api from "../../../services/api";
 import Step1 from "../steps/Step1";
 import Step2 from "../steps/Step2";
 import Step3 from "../steps/Step3";
@@ -11,7 +12,7 @@ export default function PreRegister() {
 
   const [formData, setFormData] = useState<any>({
     // Step1
-    fullName: "",
+    email: "",
     qualified: "", // <-- add this
     english: "", // <-- add this
     position: "", // <-- add this
@@ -82,10 +83,15 @@ export default function PreRegister() {
   const nextStep = () => setStep((s) => Math.min(s + 1, 5));
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
-  const submitAll = () => {
-    console.log("Submitting formData:", formData);
-    console.log("All form values:", JSON.stringify(formData, null, 2));
-    // TODO: Call API here
+  const submitAll = async () => {
+    try {
+      const response = await api.post("/pre-register", formData);
+      console.log("API response:", response.data);
+      // You can show a success message or redirect here
+    } catch (error) {
+      console.error("API error:", error);
+      // You can show an error message here
+    }
   };
 
   return (

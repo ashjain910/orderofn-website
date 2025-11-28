@@ -21,14 +21,14 @@ export default function Step1({ formData, setFormData, nextStep }: Step1Props) {
         <span className="step-count txt__regular__ mt-1">Step 1 of 5</span>
 
         <div className="">
-          <label className="form-label">What is your first name?</label>
+          <label className="form-label">What is your email?</label>
           <input
             type="text"
-            placeholder="What is your first name"
+            placeholder="What is your email"
             className="form-control"
-            value={formData.fullName}
+            value={formData.email}
             onChange={(e) =>
-              setFormData({ ...formData, fullName: e.target.value })
+              setFormData({ ...formData, email: e.target.value })
             }
           />
 

@@ -1,15 +1,31 @@
 import { useNavigate } from "react-router-dom";
 import "./login.css";
+import api from "../../../services/api";
+
+import { useState } from "react";
+
 export default function Login() {
   const navigate = useNavigate();
-  const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    navigate("/jobs");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const response = await api.post("/login", { email, password });
+      // Handle success (e.g., save token, redirect)
+      console.log(response.data);
+    } catch (error) {
+      // Handle error
+      console.error(error);
+      navigate("/jobs");
+    }
   };
+
   const handlePreRegister = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     navigate("/pre-register");
   };
+
   return (
     <div className="login-full-bg">
       <div className="container-fluid login-container bg-white p-0 m-0">
@@ -28,18 +44,13 @@ export default function Login() {
                 marginRight: "auto",
               }}
             />
-
-            <h2 className="mb-2">Login</h2>
-            <p className="text-muted mb-4">
-              Enter your email and password to access your account.
-            </p>
-
-            {/* Email */}
             <label className="form-label">Email</label>
             <input
               type="email"
               className="form-control mb-3"
               placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             {/* Password */}
@@ -48,6 +59,8 @@ export default function Login() {
               type="password"
               className="form-control mb-2"
               placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
 
             {/* Remember + Forgot */}

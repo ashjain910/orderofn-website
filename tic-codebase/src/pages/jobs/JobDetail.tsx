@@ -1,4 +1,5 @@
 import React from "react";
+import api from "../../services/api";
 import { useParams, useLocation } from "react-router-dom";
 import {
   FaShareAlt,
@@ -20,6 +21,24 @@ function JobDetail({ jobsData }: { jobsData: any[] }) {
   // State for uploaded files
   const [resumeFile, setResumeFile] = React.useState<File | null>(null);
   const [coverFile, setCoverFile] = React.useState<File | null>(null);
+
+  // Handler for job application
+  const handleApplyJob = async () => {
+    if (!job) return;
+    const formData = new FormData();
+    formData.append("jobId", job.id);
+    if (resumeFile) formData.append("resume", resumeFile);
+    if (coverFile) formData.append("coverLetter", coverFile);
+    try {
+      await api.post("/apply-job", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Application submitted successfully!");
+    } catch (error) {
+      alert("Failed to submit application.");
+      console.error(error);
+    }
+  };
 
   if (!job) {
     return (
@@ -260,7 +279,10 @@ function JobDetail({ jobsData }: { jobsData: any[] }) {
                 share your TIC profile with this school.
               </li>
               <div className="d-flex justify-content-end">
-                <button className="btn btn-primary mt-3 mb-3 px-4 ">
+                <button
+                  className="btn btn-primary mt-3 mb-3 px-4 "
+                  onClick={handleApplyJob}
+                >
                   <FaArrowRight style={{ marginRight: 10 }} />
                   Apply job
                 </button>

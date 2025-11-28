@@ -44,6 +44,10 @@ export default function Login() {
                 marginRight: "auto",
               }}
             />
+            <h3 className="mb-3">Login</h3>
+            <p className="text-muted mb-4">
+              Enter your email and password to access your account.
+            </p>
             <label className="form-label">Email</label>
             <input
               type="email"

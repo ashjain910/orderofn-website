@@ -474,9 +474,10 @@ function Jobs() {
 
   const navigate = useNavigate();
 
-  // Fetch all jobs on initial page load
+  // Fetch all jobs on initial page load (only once)
   useEffect(() => {
     fetchJobsForTab("all");
+    // Only runs once due to []
   }, []);
 
   // Filter jobs based on active tab
@@ -541,7 +542,7 @@ function Jobs() {
     if (activeTab === tabKey) return; // Prevent duplicate call
     setActiveTab(tabKey);
     setPage(1);
-    await fetchJobsForTab(tabKey);
+    fetchJobsForTab(tabKey);
   };
 
   // Lazy load and call saveJob
@@ -805,7 +806,7 @@ function Jobs() {
                         </span>
                       )}
                     </h5>
-                    <p className="job-school">{job.title}</p>
+                    <p className="job-school  mb-1">{job.school}</p>
 
                     <p className="job-school mb-1">
                       <FaLocationArrow style={{ marginRight: 4 }} /> Auckland,

@@ -17,7 +17,10 @@ urlpatterns = [
     path('admin/candidates', views.admin_candidates_list, name='admin-candidates-list'),
     path('admin/candidates/<int:candidate_id>', views.admin_candidate_detail, name='admin-candidate-detail'),
     path('admin/jobs', views.admin_jobs_list, name='admin-jobs-list'),
+    path('admin/jobs/create', views.admin_create_job, name='admin-create-job'),
     path('admin/jobs/<int:job_id>', views.admin_job_detail, name='admin-job-detail'),
+    path('admin/jobs/<int:job_id>/update', views.admin_update_job, name='admin-update-job'),
+    path('admin/jobs/<int:job_id>/delete', views.admin_delete_job, name='admin-delete-job'),
     path('admin/applications/<int:application_id>/status', views.admin_update_application_status, name='admin-update-application-status'),
     path('admin/dashboard/stats', views.admin_dashboard_stats, name='admin-dashboard-stats'),
 ]

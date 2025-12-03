@@ -971,3 +971,216 @@ GET /api/admin/jobs?page=1&search=teacher&status=active
   }
 }
 ```
+
+---
+
+### 7. Create Job (Admin)
+
+**Endpoint:** `POST /api/admin/jobs/create`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Create a new job posting
+
+**Request Body:**
+```json
+{
+  "title": "Mathematics Teacher",
+  "school_name": "International School of Excellence",
+  "school_avatar": "https://example.com/avatar.jpg",
+  "location": "Dubai, UAE",
+  "job_type": "full-time",
+  "school_type": "international",
+  "status": "active",
+  "gender_preference": "any",
+  "summary": "Looking for an experienced mathematics teacher...",
+  "description": "Full job description here...",
+  "requirements": "Bachelor's degree in Mathematics...",
+  "level": "High School",
+  "subjects": ["Mathematics", "Physics"],
+  "closing_date": "2024-03-20"
+}
+```
+
+**Success Response (201 Created):**
+```json
+{
+  "message": "Job created successfully",
+  "job": {
+    "id": 15,
+    "title": "Mathematics Teacher",
+    "school_name": "International School of Excellence",
+    "status": "active",
+    ...
+  }
+}
+```
+
+---
+
+### 8. Update Job (Admin)
+
+**Endpoint:** `PUT /api/admin/jobs/<job_id>/update` or `PATCH /api/admin/jobs/<job_id>/update`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Update an existing job posting. Use PUT for full update, PATCH for partial update.
+
+**Request Body (PATCH - partial update):**
+```json
+{
+  "status": "closed",
+  "closing_date": "2024-12-31"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Job updated successfully",
+  "job": {
+    "id": 15,
+    "status": "closed",
+    ...
+  }
+}
+```
+
+---
+
+### 9. Delete Job (Admin)
+
+**Endpoint:** `DELETE /api/admin/jobs/<job_id>/delete`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Delete a job posting (will also delete all related applications)
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Job deleted successfully",
+  "applications_deleted": 12
+}
+```
+
+---
+
+## Job Management Examples
+
+### Create a New Job
+
+```javascript
+const createJob = async (jobData) => {
+  const response = await fetch('http://localhost:8000/api/admin/jobs/create', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(jobData)
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.title?.[0] || 'Failed to create job');
+  }
+
+  return await response.json();
+};
+
+// Usage
+const newJob = await createJob({
+  title: "Physics Teacher",
+  school_name: "British International School",
+  location: "Abu Dhabi, UAE",
+  job_type: "full-time",
+  school_type: "international",
+  status: "active",
+  gender_preference: "any",
+  description: "We are looking for...",
+  requirements: "PhD in Physics preferred",
+  subjects: ["Physics"],
+  closing_date: "2024-06-30"
+});
+```
+
+### Update Job Status (Close/Expire)
+
+```javascript
+const updateJobStatus = async (jobId, newStatus) => {
+  const response = await fetch(`http://localhost:8000/api/admin/jobs/${jobId}/update`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ status: newStatus })
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update job status');
+  }
+
+  return await response.json();
+};
+
+// Close a job
+await updateJobStatus(15, 'closed');
+
+// Mark as expired
+await updateJobStatus(15, 'expired');
+
+// Reactivate a job
+await updateJobStatus(15, 'active');
+```
+
+### Edit Job Details
+
+```javascript
+const editJob = async (jobId, updates) => {
+  const response = await fetch(`http://localhost:8000/api/admin/jobs/${jobId}/update`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(updates)
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update job');
+  }
+
+  return await response.json();
+};
+
+// Update title and description
+await editJob(15, {
+  title: "Senior Mathematics Teacher",
+  description: "Updated description..."
+});
+```
+
+### Delete a Job
+
+```javascript
+const deleteJob = async (jobId) => {
+  const response = await fetch(`http://localhost:8000/api/admin/jobs/${jobId}/delete`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete job');
+  }
+
+  return await response.json();
+};
+
+// Usage
+const result = await deleteJob(15);
+console.log(`Job deleted. ${result.applications_deleted} applications removed.`);
+```

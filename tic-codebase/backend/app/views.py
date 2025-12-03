@@ -10,7 +10,8 @@ from .models import Job, JobApplication, SavedJob, User
 from .serializers import (
     LoginSerializer, UserSerializer, PreRegisterSerializer, TeacherProfileSerializer,
     JobSerializer, JobApplicationSerializer, UpdatePasswordSerializer, SavedJobSerializer,
-    AdminCandidateSerializer, AdminJobSerializer, AdminJobApplicationSerializer
+    AdminCandidateSerializer, AdminJobSerializer, AdminJobApplicationSerializer,
+    AdminJobCreateUpdateSerializer
 )
 
 
@@ -77,6 +78,13 @@ class JobPagination(PageNumberPagination):
 def job_list(request):
     # Start with all active jobs
     jobs = Job.objects.all()
+
+    # Optimize queries if user is authenticated
+    if request.user.is_authenticated:
+        jobs = jobs.prefetch_related(
+            'applications',
+            'saved_by'
+        )
 
     # Filter by title (search)
     title = request.query_params.get('title', None)
@@ -441,3 +449,62 @@ def admin_dashboard_stats(request):
         'recent_applications': recent_applications,
         'recent_candidates': recent_candidates
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def admin_create_job(request):
+    """Create a new job posting"""
+    serializer = AdminJobCreateUpdateSerializer(data=request.data)
+
+    if serializer.is_valid():
+        job = serializer.save()
+        return Response({
+            'message': 'Job created successfully',
+            'job': AdminJobSerializer(job).data
+        }, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAdminUser])
+def admin_update_job(request, job_id):
+    """Update an existing job posting"""
+    try:
+        job = Job.objects.get(id=job_id)
+    except Job.DoesNotExist:
+        return Response({'error': 'Job not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Use partial=True for PATCH requests
+    partial = request.method == 'PATCH'
+    serializer = AdminJobCreateUpdateSerializer(job, data=request.data, partial=partial)
+
+    if serializer.is_valid():
+        job = serializer.save()
+        return Response({
+            'message': 'Job updated successfully',
+            'job': AdminJobSerializer(job).data
+        }, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def admin_delete_job(request, job_id):
+    """Delete a job posting"""
+    try:
+        job = Job.objects.get(id=job_id)
+
+        # Check if there are applications
+        applications_count = job.applications.count()
+
+        job.delete()
+
+        return Response({
+            'message': 'Job deleted successfully',
+            'applications_deleted': applications_count
+        }, status=status.HTTP_200_OK)
+    except Job.DoesNotExist:
+        return Response({'error': 'Job not found'}, status=status.HTTP_404_NOT_FOUND)

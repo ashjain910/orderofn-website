@@ -489,3 +489,53 @@ class AdminJobSerializer(serializers.ModelSerializer):
 
     def get_applications_count(self, obj):
         return obj.applications.count()
+
+
+class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for creating and updating jobs (admin only)"""
+
+    class Meta:
+        model = Job
+        fields = [
+            'id', 'title', 'school_name', 'school_avatar', 'location',
+            'job_type', 'school_type', 'status', 'gender_preference',
+            'summary', 'description', 'requirements', 'level', 'subjects',
+            'closing_date', 'date_posted', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
+
+    def validate_status(self, value):
+        """Validate job status"""
+        valid_statuses = ['active', 'expired', 'closed']
+        if value not in valid_statuses:
+            raise serializers.ValidationError(
+                f"Status must be one of: {', '.join(valid_statuses)}"
+            )
+        return value
+
+    def validate_job_type(self, value):
+        """Validate job type"""
+        valid_types = ['remote', 'casual', 'full-time', 'part-time']
+        if value not in valid_types:
+            raise serializers.ValidationError(
+                f"Job type must be one of: {', '.join(valid_types)}"
+            )
+        return value
+
+    def validate_school_type(self, value):
+        """Validate school type"""
+        valid_types = ['public', 'private', 'charter', 'international']
+        if value not in valid_types:
+            raise serializers.ValidationError(
+                f"School type must be one of: {', '.join(valid_types)}"
+            )
+        return value
+
+    def validate_gender_preference(self, value):
+        """Validate gender preference"""
+        valid_preferences = ['any', 'male', 'female', 'other']
+        if value not in valid_preferences:
+            raise serializers.ValidationError(
+                f"Gender preference must be one of: {', '.join(valid_preferences)}"
+            )
+        return value

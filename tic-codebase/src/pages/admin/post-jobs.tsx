@@ -48,9 +48,9 @@ function AdminPostJob() {
   //   };
 
   // CKEditor handler
-  const handleDescriptionChange = (_event: any, editor: any) => {
-    setForm({ ...form, description: editor.getData() });
-  };
+  //   const handleDescriptionChange = (_event: any, editor: any) => {
+  //     setForm({ ...form, description: editor.getData() });
+  //   };
 
   const validate = () => {
     const newErrors: any = {};

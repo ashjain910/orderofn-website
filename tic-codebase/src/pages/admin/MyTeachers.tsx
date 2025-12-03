@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import AdminBaseApi from "../../services/admin-base";
 const initialTeachers = [

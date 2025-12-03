@@ -19,8 +19,7 @@ function getRandomColor(str: string) {
 import React, { useState } from "react";
 import AdminBaseApi from "../../services/admin-base";
 import { useParams } from "react-router-dom";
-import Cookies from "js-cookie";
-import { MdOutlineFileDownload } from "react-icons/md";
+
 import { RxDropdownMenu } from "react-icons/rx";
 function AdminJobDetail() {
   // Sample teacher data for table view
@@ -99,8 +98,6 @@ function AdminJobDetail() {
       "Teach high school math classes. Help students succeed in mathematics.",
   };
   const [job, setJob] = React.useState<any | null>(defaultSampleJob);
-  const [resumeFile, setResumeFile] = React.useState<File | null>(null);
-  const [coverFile, setCoverFile] = React.useState<File | null>(null);
 
   const hasFetched = React.useRef(false);
   React.useEffect(() => {

@@ -269,6 +269,17 @@ export default function PreRegister() {
                   nextStep={submitAll}
                 />
               )}
+
+              {/* Show validation errors below the form steps */}
+              {formErrors.length > 0 && (
+                <div className="alert alert-danger mt-3">
+                  <ul className="mb-0">
+                    {formErrors.map((err, idx) => (
+                      <li key={idx}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
             <div className="text-center mt-3">
               <span className="text-muted txt__small__">

@@ -91,7 +91,7 @@ button:focus-visible {
 .navbar-nav {
   background-color: #0d3b85 !important;
   width: 100% !important;
-  margin-right: 20px !important;
+  padding-right: 30px !important;
 }
 
 .navbar-nav .nav-link.active,
@@ -107,11 +107,7 @@ button:focus-visible {
   display: none !important;
 }
 
-.navbar-expand-lg .navbar-collapse {
-  display: flex !important;
-  flex-basis: auto;
-  justify-content: end;
-}
+
 
 .navbar-brand {
   margin-left: 20px;
@@ -124,13 +120,9 @@ button:focus-visible {
   padding-right: 3px !important;
   /* margin-right: 20px; */
 }
-.mr-20{
-  margin-right: 20px !important;
-}
 
-.navbar-expand-lg .navbar-nav {
-  flex-direction: row;
-  justify-content: end;
+.mr-20 {
+  margin-right: 20px !important;
 }
 
 
@@ -443,4 +435,125 @@ h3 {
   right: 0 !important;
   left: auto !important;
   margin-top: var(--bs-dropdown-spacer);
+}
+
+.txt__danger__ {
+  font-size: 13px !important;
+  color: #d32f2f !important;
+}
+
+.pt_rem-1 {
+  padding-top: 1rem !important;
+}
+
+.list__none__ {
+  list-style-type: none !important;
+}
+
+.job__headings__admin {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #213547 !important;
+}
+
+.job__description__ad {
+  font-size: 14px !important;
+  color: #616161 !important;
+}
+
+.teacher-applicants-table a {
+  color: #0F3F93 !important;
+  text-decoration: none;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.table-hover>tbody>tr:hover>* {
+  --bs-table-color-state: var(--bs-table-hover-color);
+  --bs-table-bg-state: rgb(243 248 255) !important;
+}
+
+.table {
+  margin-bottom: 0px !important;
+}
+
+.status__subscribed {
+  font-size: 13px !important;
+  color: #ffffff !important;
+  font-weight: 500;
+  padding: 4px 14px;
+  background: green;
+  width: fit-content;
+  border-radius: 56px;
+}
+
+.status__not__subscribed {
+  font-size: 13px !important;
+  color: #ffffff !important;
+  font-weight: 500;
+  padding: 4px 14px;
+  background: green;
+  width: fit-content;
+  border-radius: 56px;
+}
+
+textarea.form-control {
+  min-height: fit-content !important;
+}
+
+.ck.ck-editor__editable_inline {
+  height: auto;
+  min-height: 200px;
+}
+
+.css-13cymwt-control {
+  min-height: 42px !important;
+  border-color: #acacac !important;
+  border-radius: 10px !important;
+}
+.css-t3ipsp-control{
+    min-height: 42px !important;
+}
+.css-v7duua:hover {
+    background-color: #deebff !important;
+    color: #0d3b85 !important;
+}
+.css-1p3m7a8-multiValue {
+    border-radius: 6px !important;
+}
+.react-datepicker-wrapper {
+    display: block !important;
+    padding: 0;
+    border: 0;
+}
+.react-datepicker {
+    font-family: poppins, sans-serif;
+    font-size: 13px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #aeaeae;
+    border-radius: 0.3rem;
+    display: inline-block;
+    position: relative;
+    line-height: unset;
+}
+.react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-selecting-range, .react-datepicker__year-text--in-range{
+  background-color: #0F3F93 !important;
+}
+.react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover {
+    background-color:#0F3F93 !important;
+    color: #fff;
+}
+.react-datepicker__close-icon::after {
+    cursor: pointer;
+    background-color: #0F3F93 !important;
+    color: #fff;
+    border-radius: 50%;
+    height: 20px !important;
+    width: 20px !important;
+    padding: 2px;
+}
+.css-1jqq78o-placeholder {
+    font-size: 14px !important;
+    color: hsl(0, 0%, 50%);
 }

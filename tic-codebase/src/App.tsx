@@ -10,7 +10,15 @@ import ManageJobAlert from "./pages/settings/manage-job-alert/ManageJobAlert";
 import PreRegister from "./pages/auth/pre-registration/PreRegister";
 import Header from "./pages/common/header/Header";
 import ScrollToTop from "./pages/common/ScrollToTop";
-
+import PrivateRoute from "./components/common/PrivateRoute";
+import PrivateAdminRoute from "./components/common/adminRouteAuth";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminHeader from "./pages/admin/AdminHeader";
+import AdminJobs from "./pages/admin/AdminJobs";
+import MyTeachers from "./pages/admin/MyTeachers";
+import AdminJobDetail from "./pages/admin/AdminJobDetail";
+import PostJob from "./pages/admin/post-jobs";
 function App() {
   // const [count, setCount] = useState(0);
 
@@ -21,19 +29,27 @@ function App() {
         {/* 👇 DEFAULT ROUTE (Login page will load on app start) */}
         <Route path="/" element={<Login />} />
         <Route path="/pre-register" element={<PreRegister />} />
-        {/* All other routes wrapped with Header */}
-        <Route
-          element={
-            <>
-              <Header />
-            </>
-          }
-        >
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/jobs/:id" element={<JobDetail jobsData={[]} />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/manage-job-alert" element={<ManageJobAlert />} />
+        {/* User routes */}
+        <Route element={<PrivateRoute />}>
+          <Route element={<Header />}>
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/jobs/:id" element={<JobDetail />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/manage-job-alert" element={<ManageJobAlert />} />
+          </Route>
+        </Route>
+
+        <Route path="/admin" element={<AdminLogin />} />
+        {/* Admin routes - use AdminHeader as layout */}
+        <Route element={<PrivateAdminRoute />}>
+          <Route element={<AdminHeader />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/jobs" element={<AdminJobs />} />
+            <Route path="/admin/teachers" element={<MyTeachers />} />
+            <Route path="/admin/job-details/:id" element={<AdminJobDetail />} />
+            <Route path="/admin/post-job" element={<PostJob />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

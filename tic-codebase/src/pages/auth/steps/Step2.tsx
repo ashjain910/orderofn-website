@@ -24,7 +24,14 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
         <span className="step-count">Step 2 of 5</span>
         <div className="step-card">
           {/* FIRST NAME */}
-          <label className="form-label">First name *</label>
+          <label className="form-label">
+            First name{" "}
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+          </label>
           <input
             type="text"
             className="form-control"
@@ -36,7 +43,14 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           />
 
           {/* LAST NAME */}
-          <label className="form-label">Last name *</label>
+          <label className="form-label">
+            Last name{" "}
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+          </label>
           <input
             type="text"
             className="form-control"
@@ -48,7 +62,14 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           />
 
           {/* GENDER */}
-          <label className="form-label">Gender *</label>
+          <label className="form-label">
+            Gender{" "}
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+          </label>
           <div className="d-flex gap-3">
             <div className="form-check">
               <input
@@ -101,7 +122,14 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </div>
 
           {/* NATIONALITY */}
-          <label className="form-label">Nationality *</label>
+          <label className="form-label">
+            Nationality{" "}
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+          </label>
           <select
             className="form-control"
             value={formData.nationality}
@@ -135,7 +163,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </div>
 
           {/* CV UPLOAD */}
-          <label className="form-label">CV Upload *</label>
+          <label className="form-label">CV Upload</label>
           <input
             type="file"
             className="form-control"
@@ -145,7 +173,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           />
 
           {/* WHERE DID YOU HEAR ABOUT US */}
-          <label className="form-label">Where did you hear about us? *</label>
+          <label className="form-label">Where did you hear about us?</label>
           <select
             className="form-control"
             value={formData.hearFrom}

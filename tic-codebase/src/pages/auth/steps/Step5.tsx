@@ -8,18 +8,18 @@ interface Step5Props {
 function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    { label: "January", value: "01" },
+    { label: "February", value: "02" },
+    { label: "March", value: "03" },
+    { label: "April", value: "04" },
+    { label: "May", value: "05" },
+    { label: "June", value: "06" },
+    { label: "July", value: "07" },
+    { label: "August", value: "08" },
+    { label: "September", value: "09" },
+    { label: "October", value: "10" },
+    { label: "November", value: "11" },
+    { label: "December", value: "12" },
   ];
   const years = Array.from({ length: 60 }, (_, i) => 2025 - i);
 
@@ -40,7 +40,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
         <span className="step-count">Step 5 of 5</span>
         <div className="step-container">
           <div className="left-section">
-            <label className="form-label">Please send me job alerts*</label>
+            <label className="form-label">Please send me job alerts</label>
             <div className="radio-group d-flex gap-3 mb-3">
               <div className="form-check">
                 <input
@@ -75,9 +75,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
                 </label>
               </div>
             </div>
-            <label className="form-label w-100">
-              I will be available from*
-            </label>
+            <label className="form-label w-100">I will be available from</label>
             <div className="date-row d-flex gap-3">
               <select
                 className="form-select"
@@ -103,8 +101,8 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
               >
                 <option value="">Month</option>
                 {months.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
+                  <option key={m.value} value={m.value}>
+                    {m.label}
                   </option>
                 ))}
               </select>

@@ -1,6 +1,7 @@
 import React from "react";
 import api from "../../services/api";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import Cookies from "js-cookie";
 import {
   FaShareAlt,
   FaRegBookmark,
@@ -11,27 +12,41 @@ import {
 } from "react-icons/fa";
 import "./JobDetail.css";
 
-function JobDetail({ jobsData }: { jobsData: any[] }) {
+function JobDetail() {
   const { id } = useParams();
-  const location = useLocation();
-  const job =
-    location.state?.job ||
-    (jobsData && jobsData.find((j) => String(j.id) === id));
-
-  // State for uploaded files
+  const [job, setJob] = React.useState<any | null>(null);
   const [resumeFile, setResumeFile] = React.useState<File | null>(null);
   const [coverFile, setCoverFile] = React.useState<File | null>(null);
+
+  const hasFetched = React.useRef(false);
+  React.useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    const fetchJob = async () => {
+      try {
+        const response = await api.get(`/jobs/${id}`);
+        setJob(response.data);
+      } catch (error) {
+        setJob(null);
+        console.error(error);
+      }
+    };
+    fetchJob();
+  }, [id]);
 
   // Handler for job application
   const handleApplyJob = async () => {
     if (!job) return;
     const formData = new FormData();
-    formData.append("jobId", job.id);
     if (resumeFile) formData.append("resume", resumeFile);
-    if (coverFile) formData.append("coverLetter", coverFile);
+    if (coverFile) formData.append("cover_letter", coverFile);
     try {
-      await api.post("/apply-job", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const accessToken = Cookies.get("access");
+      await api.post(`jobs/${job.id}/apply`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
       });
       alert("Application submitted successfully!");
     } catch (error) {
@@ -42,7 +57,16 @@ function JobDetail({ jobsData }: { jobsData: any[] }) {
 
   if (!job) {
     return (
-      <div className="container mt-5">
+      <div
+        className="container"
+        style={{
+          minHeight: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <h2>Job not found</h2>
       </div>
     );
@@ -58,7 +82,7 @@ function JobDetail({ jobsData }: { jobsData: any[] }) {
                 <div className="col-lg-9 col-md-9 col-sm-9 col-12">
                   <div className="d-flex" style={{ width: "100%" }}>
                     <img
-                      src={job.avatar || "/assets/default-avatar.png"}
+                      src={job.school_avatar || "/school_image.png"}
                       alt="Profile"
                       className="job-avatar me-3"
                     />
@@ -74,7 +98,7 @@ function JobDetail({ jobsData }: { jobsData: any[] }) {
                         >
                           {job.badge}
                         </span>
-                        {job.job_status === "expired" && (
+                        {job.is_expired && (
                           <span className="expired__badge__ ms-2">Expired</span>
                         )}
                         {/* Applied status for all jobs tab */}
@@ -84,10 +108,10 @@ function JobDetail({ jobsData }: { jobsData: any[] }) {
                           </span>
                         )}
                       </h5>
-                      <p className="job-school">{job.title}</p>
+                      <p className="job-school">{job.school_name}</p>
                       <p className="job-school mb-1">
-                        <FaLocationArrow style={{ marginRight: 4 }} /> Auckland,
-                        55 Mountain Road, Epsom
+                        <FaLocationArrow style={{ marginRight: 4 }} />{" "}
+                        {job.location}
                       </p>
                       {/* <div className="text-muted small mb-1">
                            <FaLocationArrow style={{ marginRight: 4 }} />
@@ -118,26 +142,26 @@ function JobDetail({ jobsData }: { jobsData: any[] }) {
               <div className="row px-20">
                 <div className="col-lg-3 col-md-3 col-sm-4 col-6 list-item">
                   <li>
-                    <h4 className="job__headings__ mt-3">Job summary</h4>
-                    <p className="job-description mb-0">{job.job_status}</p>
+                    <h4 className="job__headings__ mt-3">Job type</h4>
+                    <p className="job-description mb-0">{job.job_type}</p>
                   </li>
                 </div>
                 <div className="col-lg-3 col-md-3 col-sm-4 col-6 list-item">
                   <li>
                     <h4 className="job__headings__ mt-3">Level</h4>
-                    <p className="job-description mb-0">{job.job_status}</p>
+                    <p className="job-description mb-0">{job.level}</p>
                   </li>
                 </div>
                 <div className="col-lg-3 col-md-3 col-sm-4 col-6 list-item">
                   <li>
                     <h4 className="job__headings__ mt-3">Closing Date</h4>
-                    <p className="job-description mb-0">{job.job_status}</p>
+                    <p className="job-description mb-0">{job.closing_date}</p>
                   </li>
                 </div>
                 <div className="col-lg-3 col-md-3 col-sm-4 col-6 list-item">
                   <li>
                     <h4 className="job__headings__ mt-3">Subjects</h4>
-                    <p className="job-description mb-0">{job.job_status}</p>
+                    <p className="job-description mb-0">{job.subjects}</p>
                   </li>
                 </div>
                 <div className="col-lg-12 col-md-12 col-sm-12 col-12 list-item">

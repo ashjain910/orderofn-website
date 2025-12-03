@@ -28,7 +28,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }: Step4Props) {
 
           <Form className="">
             <Form.Group className="">
-              <Form.Label>Role*</Form.Label>
+              <Form.Label>Role</Form.Label>
               <Form.Select
                 value={formData.leadershipRole}
                 onChange={(e) =>

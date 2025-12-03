@@ -4,9 +4,26 @@ import { useLocation } from "react-router-dom";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import Cookies from "js-cookie";
+
 function NavScrollExample() {
   const navigate = useNavigate();
   const location = useLocation();
+  // Get user from sessionStorage
+  const user = (() => {
+    try {
+      return JSON.parse(sessionStorage.getItem("user") || "null");
+    } catch {
+      return null;
+    }
+  })();
+
+  const logout = () => {
+    Cookies.remove("access");
+    Cookies.remove("refresh");
+    sessionStorage.clear();
+    navigate("/");
+  };
   return (
     <>
       <Navbar expand="lg" className="" collapseOnSelect>
@@ -54,8 +71,11 @@ function NavScrollExample() {
                     marginRight: "5px",
                   }}
                 />
-                <NavDropdown title="john williams" id="navbarScrollingDropdown">
-                  <NavDropdown.Item onClick={() => navigate("/")}>
+                <NavDropdown
+                  title={user?.full_name || "User"}
+                  id="navbarScrollingDropdown"
+                >
+                  <NavDropdown.Item onClick={() => logout()}>
                     Logout
                   </NavDropdown.Item>
                 </NavDropdown>

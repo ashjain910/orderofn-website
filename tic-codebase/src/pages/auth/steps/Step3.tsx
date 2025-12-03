@@ -52,7 +52,7 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
         <span className="step-count">Step 3 of 5</span>
         <div className="step-card">
           {/* ROLE */}
-          <label className="form-label">Role *</label>
+          <label className="form-label">Role</label>
           <select
             className="form-control"
             value={formData.role}
@@ -65,7 +65,7 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </select>
 
           {/* SUBJECT */}
-          <label className="form-label">Subject *</label>
+          <label className="form-label">Subject</label>
           <select
             className="form-control"
             value={formData.subject}
@@ -81,7 +81,7 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </select>
 
           {/* AGE GROUP */}
-          <label className="form-label">Age group *</label>
+          <label className="form-label">Age group</label>
           <select
             className="form-control"
             value={formData.ageGroup}
@@ -97,7 +97,7 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </select>
 
           {/* CURRICULUM EXPERIENCE */}
-          <label className="form-label">Curriculum experience *</label>
+          <label className="form-label">Curriculum experience</label>
 
           <div className="row form-check d-flex align-items-center">
             {curriculumList.map((item) => (

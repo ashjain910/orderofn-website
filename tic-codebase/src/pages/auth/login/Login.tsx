@@ -3,21 +3,96 @@ import "./login.css";
 import api from "../../../services/api";
 
 import { useState } from "react";
+import Cookies from "js-cookie";
+import { ToastContainer, toast } from "react-toastify";
+import type { ToastPosition } from "react-toastify";
+
+const toastOptions: {
+  position: ToastPosition;
+  autoClose: number;
+  hideProgressBar: boolean;
+  closeOnClick: boolean;
+  pauseOnHover: boolean;
+  draggable: boolean;
+  progress: undefined;
+} = {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+};
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
+  // Login
+  interface LoginResponse {
+    access: string;
+    refresh: string;
+    user?: any;
+  }
+
+  interface RefreshResponse {
+    access: string;
+  }
+
+  const handleLogin = async (
+    email: string,
+    password: string
+  ): Promise<void> => {
     try {
-      const response = await api.post("/login", { email, password });
-      // Handle success (e.g., save token, redirect)
-      console.log(response.data);
-    } catch (error) {
-      // Handle error
-      console.error(error);
-      navigate("/jobs");
+      const response = await api.post<LoginResponse>("/login", {
+        email,
+        password,
+      });
+      if (
+        response.status === 200 &&
+        response.data.access &&
+        response.data.refresh
+      ) {
+        Cookies.set("access", response.data.access, { secure: true });
+        Cookies.set("refresh", response.data.refresh, { secure: true });
+        if (response.status === 200 && response.data.user) {
+          sessionStorage.setItem("user", JSON.stringify(response.data.user));
+        }
+        navigate("/jobs");
+        // Redirect to dashboard
+      }
+    } catch (error: any) {
+      // If access token expired, use refresh token
+      if (error.response?.status === 401 && Cookies.get("refresh")) {
+        const refreshResponse = await api.post<RefreshResponse>(
+          "/token/refresh",
+          {
+            refresh: Cookies.get("refresh"),
+          }
+        );
+        if (refreshResponse.data.access) {
+          Cookies.set("access", refreshResponse.data.access, { secure: true });
+          // Retry login or redirect
+        }
+      } else {
+        if (error?.response?.data && typeof error.response.data === "object") {
+          const data = error.response.data;
+          Object.entries(data).forEach(([field, errors]) => {
+            if (Array.isArray(errors)) {
+              errors.forEach((err: string, idx: number) => {
+                setTimeout(() => {
+                  toast.error(`${field}: ${err}`, toastOptions);
+                }, idx * 500);
+              });
+            } else {
+              toast.error(`${field}: ${errors}`, toastOptions);
+            }
+          });
+        }
+        console.error("Login error:", error);
+      }
     }
   };
 
@@ -44,6 +119,7 @@ export default function Login() {
                 marginRight: "auto",
               }}
             />
+            <ToastContainer />
             <h3 className="mb-3">Login</h3>
             <p className="text-muted mb-4">
               Enter your email and password to access your account.
@@ -91,7 +167,7 @@ export default function Login() {
             {/* Login Button */}
             <button
               className="btn btn-primary w-100 py-2"
-              onClick={handleLogin}
+              onClick={() => handleLogin(email, password)}
             >
               Login
             </button>

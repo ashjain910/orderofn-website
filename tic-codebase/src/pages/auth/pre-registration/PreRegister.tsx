@@ -5,14 +5,39 @@ import Step2 from "../steps/Step2";
 import Step3 from "../steps/Step3";
 import Step4 from "../steps/Step4";
 import Step5 from "../steps/Step5";
+import Cookies from "js-cookie";
+import { ToastContainer, toast } from "react-toastify";
+import type { ToastPosition } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+const toastOptions: {
+  position: ToastPosition;
+  autoClose: number;
+  hideProgressBar: boolean;
+  closeOnClick: boolean;
+  pauseOnHover: boolean;
+  draggable: boolean;
+  progress: undefined;
+} = {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+};
 
 export default function PreRegister() {
+  const navigate = useNavigate();
+
   const [step, setStep] = useState<number>(1);
   const formRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState<any>({
     // Step1
     email: "",
+    password: "",
     qualified: "", // <-- add this
     english: "", // <-- add this
     position: "", // <-- add this
@@ -42,6 +67,25 @@ export default function PreRegister() {
     year: "",
   });
 
+  // Step-specific validation
+  const validateStep = (step: number) => {
+    const errors: string[] = [];
+    if (step === 1) {
+      if (!formData.email) errors.push("Email is required");
+      if (!formData.password) errors.push("Password is required");
+      if (!formData.qualified) errors.push("Qualified is required");
+      if (!formData.english) errors.push("English is required");
+      if (!formData.position) errors.push("Position is required");
+    }
+    if (step === 2) {
+      if (!formData.firstName) errors.push("First name is required");
+      if (!formData.lastName) errors.push("Last name is required");
+      if (!formData.gender) errors.push("Gender is required");
+      if (!formData.nationality) errors.push("Nationality is required");
+    }
+    // Add more for other steps if needed
+    return errors;
+  };
   const stepImages = [
     "",
     "/tic/login_img/Group_1.png",
@@ -80,17 +124,75 @@ export default function PreRegister() {
     }
   }, [step]);
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, 5));
+  const nextStep = () => {
+    const errors = validateStep(step);
+    if (errors.length > 0) {
+      setFormErrors(errors);
+      errors.forEach((err, idx) => {
+        setTimeout(() => {
+          toast.error(err, toastOptions);
+        }, idx * 500); // stagger toasts by 500ms
+      });
+      return;
+    }
+    setFormErrors([]);
+    setStep((s) => Math.min(s + 1, 5));
+  };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
+  const [formErrors, setFormErrors] = useState<string[]>([]);
 
+  // Registration
   const submitAll = async () => {
+    setFormErrors([]);
     try {
-      const response = await api.post("/pre-register", formData);
-      console.log("API response:", response.data);
-      // You can show a success message or redirect here
-    } catch (error) {
+      const form = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((v) => form.append(key, v));
+        } else {
+          if (value instanceof Blob || typeof value === "string") {
+            form.append(key, value);
+          } else if (value !== null && value !== undefined) {
+            form.append(key, String(value));
+          }
+        }
+      });
+      const response = await api.post("/pre-register", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (
+        response.status === 201 &&
+        response.data.access &&
+        response.data.refresh
+      ) {
+        Cookies.set("access", response.data.access, { secure: true });
+        Cookies.set("refresh", response.data.refresh, { secure: true });
+        navigate("/jobs");
+        // Redirect to dashboard or login
+      }
+    } catch (error: any) {
+      let message = "Registration failed. Please try again.";
+      if (error?.response?.data && typeof error.response.data === "object") {
+        const data = error.response.data;
+        Object.entries(data).forEach(([field, errors]) => {
+          if (Array.isArray(errors)) {
+            errors.forEach((err: string, idx: number) => {
+              setTimeout(() => {
+                toast.error(`${field}: ${err}`, toastOptions);
+              }, idx * 500);
+            });
+          } else {
+            toast.error(`${field}: ${errors}`, toastOptions);
+          }
+        });
+      } else if (error?.response?.data) {
+        toast.error(error.response.data, toastOptions);
+      } else if (error?.message) {
+        toast.error(error.message, toastOptions);
+      } else {
+        toast.error(message, toastOptions);
+      }
       console.error("API error:", error);
-      // You can show an error message here
     }
   };
 
@@ -103,7 +205,7 @@ export default function PreRegister() {
         <div className="row" style={{ height: "100vh" }}>
           {/* LEFT SIDE — FORMS + STEPS */}
           <div
-            className="col-md-6 pl-6 pr-6 pt_rem-3 pb_rem-5"
+            className="col-md-6 pl-6 pr-6 pt_rem-1 pb_rem-5"
             style={{
               height: "100vh",
               overflowY: step === 2 || step === 3 ? "auto" : "hidden",
@@ -119,8 +221,10 @@ export default function PreRegister() {
                 display: "block",
               }}
             />
+
             <h3 className="text-center mb-3">Pre-Registration</h3>
 
+            <ToastContainer />
             <div className="card registration__card__">
               {step === 1 && (
                 <Step1

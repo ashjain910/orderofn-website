@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const api = axios.create({
-    baseURL: "https://api.jobsapp.com/api", // Example backend base URL
+const BaseApi = axios.create({
+    baseURL: "http://3.26.114.105:8000/api", // Example backend base URL
     headers: {
         "Content-Type": "application/json",
     },
 });
 
-export default api;
+export default BaseApi;

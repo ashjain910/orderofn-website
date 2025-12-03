@@ -21,19 +21,26 @@ function NavScrollExample() {
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
             <Nav className="ms-auto my-2 my-lg-0 header-nav-links">
-              <Nav.Link
+              {/* <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/dashboard"}
                 onClick={() => navigate("/dashboard")}
               >
                 Dashboard
-              </Nav.Link>
+              </Nav.Link> */}
               <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/jobs"}
                 onClick={() => navigate("/jobs")}
               >
                 Jobs
+              </Nav.Link>
+              <Nav.Link
+                className="mr-20"
+                active={location.pathname === "/settings"}
+                onClick={() => navigate("/settings")}
+              >
+                My settings
               </Nav.Link>
               <div className="d-flex">
                 <img

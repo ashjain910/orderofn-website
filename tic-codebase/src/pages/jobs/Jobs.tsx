@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../../services/api";
 import {
   FaShareAlt,
   FaRegBookmark,
@@ -14,334 +15,424 @@ const initialJobsData = [
   {
     id: 1,
     title: "Math Teacher",
+    school: "Lincoln High School",
     datePosted: "2025-11-20",
     location: "New York, NY",
-    badge: "Remote",
+    JobType: "Remote",
     description: longDescription,
-    status: "all",
+    tabStatus: "all",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "10:00 AM",
   },
   {
     id: 2,
     title: "History Teacher",
+    school: "Chicago High School",
     datePosted: "2025-11-19",
     location: "Chicago, IL",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Teach history classes for middle school students.",
-    status: "all",
+    tabStatus: "all",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "11:00 AM",
   },
   {
     id: 3,
     title: "Biology Teacher",
+    school: "Houston High School",
     datePosted: "2025-11-18",
     location: "Houston, TX",
-    badge: "Full-time",
+    JobType: "Full-time",
     description: "Full-time biology teacher for high school.",
-    status: "all",
+    tabStatus: "all",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "12:00 PM",
   },
   {
     id: 4,
     title: "Chemistry Tutor",
+    school: "Remote College",
     datePosted: "2025-11-17",
     location: "Remote",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Online chemistry tutoring for college students.",
-    status: "all",
+    tabStatus: "all",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "01:00 PM",
   },
   {
     id: 5,
     title: "Physics Lecturer",
+    school: "Boston College",
     datePosted: "2025-11-16",
     location: "Boston, MA",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Remote physics lectures for college students.",
-    status: "all",
+    tabStatus: "all",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "02:00 PM",
   },
   {
     id: 6,
     title: "Geography Teacher",
+    school: "San Diego School",
     datePosted: "2025-11-15",
     location: "San Diego, CA",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Casual geography teacher for weekend classes.",
-    status: "all",
+    tabStatus: "all",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "03:00 PM",
   },
   {
     id: 7,
     title: "Art Instructor",
+    school: "Miami Art Camp",
     datePosted: "2025-11-14",
     location: "Miami, FL",
-    badge: "Part-time",
+    JobType: "Part-time",
     description: "Part-time art instructor for summer camp.",
-    status: "all",
+    tabStatus: "all",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "04:00 PM",
   },
   {
     id: 8,
     title: "Music Teacher",
+    school: "Seattle Elementary",
     datePosted: "2025-11-13",
     location: "Seattle, WA",
-    badge: "Full-time",
+    JobType: "Full-time",
     description: "Full-time music teacher for elementary school.",
-    status: "all",
+    tabStatus: "all",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "05:00 PM",
   },
   {
     id: 9,
     title: "Physical Education Coach",
+    school: "Denver After School",
     datePosted: "2025-11-12",
     location: "Denver, CO",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Casual PE coach for after-school program.",
-    status: "all",
+    tabStatus: "all",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "06:00 PM",
   },
   {
     id: 10,
     title: "Computer Science Teacher",
+    school: "Austin Bootcamp",
     datePosted: "2025-11-11",
     location: "Austin, TX",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Remote computer science teacher for coding bootcamp.",
-    status: "all",
+    tabStatus: "all",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "07:00 PM",
   },
   // Saved Jobs
   {
     id: 11,
     title: "Science Instructor",
+    school: "San Francisco Workshops",
     datePosted: "2025-11-18",
     location: "San Francisco, CA",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Part-time science instructor for weekend workshops.",
-    status: "saved",
+    tabStatus: "saved",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "08:00 PM",
   },
   {
     id: 12,
     title: "Math Tutor",
+    school: "Remote High School",
     datePosted: "2025-11-17",
     location: "Remote",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Remote math tutoring for high school students.",
-    status: "saved",
-    job_status: "expired",
+    tabStatus: "saved",
+    job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "09:00 PM",
   },
   {
     id: 13,
     title: "English Teacher",
+    school: "Chicago Middle School",
     datePosted: "2025-11-16",
     location: "Chicago, IL",
-    badge: "Full-time",
+    JobType: "Full-time",
     description: "Full-time English teacher for middle school.",
-    status: "saved",
-    job_status: "active",
+    tabStatus: "saved",
+    job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "10:00 PM",
   },
   {
     id: 14,
     title: "History Tutor",
+    school: "Remote College",
     datePosted: "2025-11-15",
     location: "Remote",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Online history tutoring for college students.",
-    status: "saved",
+    tabStatus: "saved",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "11:00 PM",
   },
   {
     id: 15,
     title: "Physics Instructor",
+    school: "Boston Weekend Classes",
     datePosted: "2025-11-14",
     location: "Boston, MA",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Casual physics instructor for weekend classes.",
-    status: "saved",
+    tabStatus: "saved",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "12:00 AM",
   },
   {
     id: 16,
     title: "Chemistry Teacher",
+    school: "Houston High School",
     datePosted: "2025-11-13",
     location: "Houston, TX",
-    badge: "Full-time",
+    JobType: "Full-time",
     description: "Full-time chemistry teacher for high school.",
-    status: "saved",
-    job_status: "expired",
+    tabStatus: "saved",
+    job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "01:00 AM",
   },
   {
     id: 17,
     title: "Art Tutor",
+    school: "Miami Summer Camp",
     datePosted: "2025-11-12",
     location: "Miami, FL",
-    badge: "Part-time",
+    JobType: "Part-time",
     description: "Part-time art tutor for summer camp.",
-    status: "saved",
-    job_status: "active",
+    tabStatus: "saved",
+    job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "02:00 AM",
   },
   {
     id: 18,
     title: "Music Instructor",
+    school: "Seattle Elementary",
     datePosted: "2025-11-11",
     location: "Seattle, WA",
-    badge: "Full-time",
+    JobType: "Full-time",
     description: "Full-time music instructor for elementary school.",
-    status: "saved",
+    tabStatus: "saved",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "03:00 AM",
   },
   {
     id: 19,
     title: "PE Coach",
+    school: "Denver After School",
     datePosted: "2025-11-10",
     location: "Denver, CO",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Casual PE coach for after-school program.",
-    status: "saved",
-    job_status: "active",
+    tabStatus: "saved",
+    job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "04:00 AM",
   },
   {
     id: 20,
     title: "Computer Science Tutor",
+    school: "Austin Bootcamp",
     datePosted: "2025-11-09",
     location: "Austin, TX",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Remote computer science tutor for coding bootcamp.",
-    status: "saved",
+    tabStatus: "saved",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "05:00 AM",
   },
   // Applied Jobs
   {
     id: 21,
     title: "English Tutor",
+    school: "Remote International",
     datePosted: "2025-11-15",
     location: "Remote",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Online English tutoring for international students.",
-    status: "applied",
+    tabStatus: "applied",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "06:00 AM",
   },
   {
     id: 22,
     title: "Math Instructor",
+    school: "New York High School",
     datePosted: "2025-11-14",
     location: "New York, NY",
-    badge: "Full-time",
+    JobType: "Full-time",
     description: "Full-time math instructor for high school.",
-    status: "applied",
-    job_status: "expired",
+    tabStatus: "applied",
+    job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "07:00 AM",
   },
   {
     id: 23,
     title: "Science Teacher",
+    school: "San Francisco Workshops",
     datePosted: "2025-11-13",
     location: "San Francisco, CA",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Casual science teacher for weekend workshops.",
-    status: "applied",
-    job_status: "active",
+    tabStatus: "applied",
+    job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "08:00 AM",
   },
   {
     id: 24,
     title: "History Instructor",
+    school: "Remote College",
     datePosted: "2025-11-12",
     location: "Chicago, IL",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Remote history instructor for college students.",
-    status: "applied",
+    tabStatus: "applied",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "09:00 AM",
   },
   {
     id: 25,
     title: "Physics Tutor",
+    school: "Boston Weekend Classes",
     datePosted: "2025-11-11",
     location: "Boston, MA",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Casual physics tutor for weekend classes.",
-    status: "applied",
+    tabStatus: "applied",
     job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "10:00 AM",
   },
   {
     id: 26,
     title: "Chemistry Instructor",
+    school: "Houston High School",
     datePosted: "2025-11-10",
     location: "Houston, TX",
-    badge: "Full-time",
+    JobType: "Full-time",
     description: "Full-time chemistry instructor for high school.",
-    status: "applied",
-    job_status: "expired",
+    tabStatus: "applied",
+    job_status: "active",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "11:00 AM",
   },
   {
     id: 27,
     title: "Art Teacher",
+    school: "Miami Summer Camp",
     datePosted: "2025-11-09",
     location: "Miami, FL",
-    badge: "Part-time",
+    JobType: "Part-time",
     description: "Part-time art teacher for summer camp.",
-    status: "applied",
-    job_status: "active",
+    tabStatus: "applied",
+    job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "12:00 PM",
   },
   {
     id: 28,
     title: "Music Tutor",
+    school: "Seattle Elementary",
     datePosted: "2025-11-08",
     location: "Seattle, WA",
-    badge: "Full-time",
+    JobType: "Full-time",
     description: "Full-time music tutor for elementary school.",
-    status: "applied",
+    tabStatus: "applied",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "01:00 PM",
   },
   {
     id: 29,
     title: "PE Instructor",
+    school: "Denver After School",
     datePosted: "2025-11-07",
     location: "Denver, CO",
-    badge: "Casual",
+    JobType: "Casual",
     description: "Casual PE instructor for after-school program.",
-    status: "applied",
-    job_status: "active",
+    tabStatus: "applied",
+    job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "02:00 PM",
   },
   {
     id: 30,
     title: "Computer Science Teacher",
+    school: "Austin Bootcamp",
     datePosted: "2025-11-06",
     location: "Austin, TX",
-    badge: "Remote",
+    JobType: "Remote",
     description: "Remote computer science teacher for coding bootcamp.",
-    status: "applied",
+    tabStatus: "applied",
     job_status: "expired",
+    appliedStatus: false,
     avatar: "/tic/school_image.png",
+    timePosted: "03:00 PM",
   },
 ];
 
@@ -364,6 +455,8 @@ const tabIcons = {
   applied: <FaShareAlt />,
 };
 
+import { useEffect } from "react";
+
 function Jobs() {
   const [activeTab, setActiveTab] = useState("all");
   const [page, setPage] = useState(1);
@@ -381,11 +474,17 @@ function Jobs() {
 
   const navigate = useNavigate();
 
+  // Fetch all jobs on initial page load (only once)
+  useEffect(() => {
+    fetchJobsForTab("all");
+    // Only runs once due to []
+  }, []);
+
   // Filter jobs based on active tab
   let filteredJobs =
     activeTab === "all"
       ? jobsData
-      : jobsData.filter((job) => job.status === activeTab);
+      : jobsData.filter((job) => job.tabStatus === activeTab);
 
   // Apply filters
   filteredJobs = filteredJobs.filter((job) => {
@@ -395,7 +494,7 @@ function Jobs() {
       !job.title.toLowerCase().includes(filterTitle.toLowerCase())
     )
       match = false;
-    if (filterJobType && job.badge !== filterJobType) match = false;
+    if (filterJobType && job.JobType !== filterJobType) match = false;
     // schoolType and gender are not in jobsData, so just placeholders for now
     // if (filterSchoolType && job.schoolType !== filterSchoolType) match = false;
     // if (filterGender && job.gender !== filterGender) match = false;
@@ -409,10 +508,41 @@ function Jobs() {
     page * JOBS_PER_PAGE
   );
 
-  // Handle tab change: reset to page 1
-  const handleTabChange = (tabKey: string) => {
+  // API call for pagination with filters
+  const fetchJobsWithFiltersAndPage = async (pageNum: number) => {
+    try {
+      const response = await api.post("/filter-jobs", {
+        title: filterTitle,
+        jobType: filterJobType,
+        schoolType: filterSchoolType,
+        gender: filterGender,
+        tab: activeTab,
+        page: pageNum,
+        action: "paginate",
+      });
+      setJobsData(response.data.jobs || []);
+      setPage(pageNum);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // API call to fetch jobs for a tab
+  const fetchJobsForTab = async (tabKey: string) => {
+    try {
+      const response = await api.post("/jobs", { tabStatus: tabKey });
+      setJobsData(response.data.jobs || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Handle tab change: reset to page 1 and fetch jobs
+  const handleTabChange = async (tabKey: string) => {
+    if (activeTab === tabKey) return; // Prevent duplicate call
     setActiveTab(tabKey);
     setPage(1);
+    fetchJobsForTab(tabKey);
   };
 
   // Lazy load and call saveJob
@@ -429,20 +559,42 @@ function Jobs() {
     }
   };
 
+  // API call for sharing a job
+  const handleShareJob = async (jobId: number) => {
+    try {
+      const response = await api.post("/share-job", { jobId });
+      if (response.status === 200) {
+        alert("Job shared successfully!");
+      } else {
+        alert("Failed to share job.");
+      }
+    } catch (error) {
+      alert("Error sharing job.");
+      console.error(error);
+    }
+  };
+
   // API call to send filters and update jobs data
+  // API call for job details
+  const handleViewJobDetails = async (jobId: number) => {
+    try {
+      const response = await api.get(`/job-details/${jobId}`);
+      navigate(`/jobs/${jobId}`, { state: { job: response.data } });
+    } catch (error) {
+      // Fallback: use sample job data if API fails
+      const sampleJob = jobsData.find((job) => job.id === jobId);
+      if (sampleJob) {
+        navigate(`/jobs/${jobId}`, { state: { job: sampleJob } });
+      } else {
+        alert("Error fetching job details and no sample data found.");
+      }
+      console.error(error);
+    }
+  };
   const sendFiltersToApi = async (filters: any) => {
     try {
-      const response = await fetch("/api/filter-jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(filters),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setJobsData(data.jobs || []); // expects { jobs: [...] }
-      }
+      const response = await api.post("/filter-jobs", filters);
+      setJobsData(response.data.jobs || []); // expects { jobs: [...] }
     } catch (error) {
       console.error(error);
     }
@@ -456,7 +608,7 @@ function Jobs() {
       jobType: filterJobType,
       schoolType: filterSchoolType,
       gender: filterGender,
-      tab: activeTab,
+      tabStatus: activeTab,
       page: 1,
       action: "apply",
     });
@@ -474,7 +626,7 @@ function Jobs() {
       jobType: "",
       schoolType: "",
       gender: "",
-      tab: activeTab,
+      tabStatus: activeTab,
       page: 1,
       action: "clear",
     });
@@ -494,7 +646,8 @@ function Jobs() {
                   const count =
                     tab.key === "all"
                       ? jobsData.length
-                      : jobsData.filter((job) => job.status === tab.key).length;
+                      : jobsData.filter((job) => job.tabStatus === tab.key)
+                          .length;
                   return (
                     <li
                       key={tab.key}
@@ -622,7 +775,7 @@ function Jobs() {
                   ? { backgroundColor: "#FFEDED" }
                   : {}),
               }}
-              onClick={() => navigate(`/jobs/${job.id}`, { state: { job } })}
+              onClick={() => handleViewJobDetails(job.id)}
             >
               <div className="card-body d-flex justify-content-between align-items-center">
                 <div className="d-flex" style={{ width: "100%" }}>
@@ -636,24 +789,25 @@ function Jobs() {
                       {job.title}
                       <span
                         className={`badge ms-2 ${
-                          job.badge === "Remote"
+                          job.JobType === "Remote"
                             ? "remote__badge__"
-                            : "causual__badge__"
+                            : "casual__badge__"
                         }`}
                       >
-                        {job.badge}
+                        {job.JobType}
                       </span>
                       {job.job_status === "expired" && (
                         <span className="expired__badge__ ms-2">Expired</span>
                       )}
                       {/* Applied status for all jobs tab */}
-                      {activeTab === "all" && job.status === "applied" && (
+                      {activeTab === "all" && job.job_status === "applied" && (
                         <span className="badge bg-success  txt__regular__sub__ ml-2">
                           Applied
                         </span>
                       )}
                     </h5>
-                    <p className="job-school">{job.title}</p>
+                    <p className="job-school  mb-1">{job.school}</p>
+
                     <p className="job-school mb-1">
                       <FaLocationArrow style={{ marginRight: 4 }} /> Auckland,
                       55 Mountain Road, Epsom
@@ -673,16 +827,26 @@ function Jobs() {
                   </div>
                 </div>
                 <div className="d-flex flex-column align-items-end gap-2">
-                  <button className="btn btn-light btn-sm" title="Share Job">
+                  <button
+                    className="btn btn-light btn-sm"
+                    title="Share Job"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShareJob(job.id);
+                    }}
+                  >
                     <FaShareAlt />
                   </button>
                   <button
                     className="btn btn-light btn-sm"
                     title="Save Job"
-                    onClick={() => handleSaveJob(job.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSaveJob(job.id);
+                    }}
                     disabled={savingJobId === job.id}
                   >
-                    {job.status === "saved" ? (
+                    {job.job_status === "saved" ? (
                       <FaBookmark />
                     ) : (
                       <FaRegBookmark />
@@ -692,14 +856,13 @@ function Jobs() {
               </div>
             </div>
           ))}
-          {/* Pagination controls */}
           {totalPages > 1 && (
             <nav className="mt-3">
               <ul className="pagination">
                 <li className={`page-item${page === 1 ? " disabled" : ""}`}>
                   <button
                     className="page-link"
-                    onClick={() => setPage(page - 1)}
+                    onClick={() => fetchJobsWithFiltersAndPage(page - 1)}
                     disabled={page === 1}
                   >
                     Previous
@@ -712,7 +875,7 @@ function Jobs() {
                   >
                     <button
                       className="page-link"
-                      onClick={() => setPage(idx + 1)}
+                      onClick={() => fetchJobsWithFiltersAndPage(idx + 1)}
                     >
                       {idx + 1}
                     </button>
@@ -725,7 +888,7 @@ function Jobs() {
                 >
                   <button
                     className="page-link"
-                    onClick={() => setPage(page + 1)}
+                    onClick={() => fetchJobsWithFiltersAndPage(page + 1)}
                     disabled={page === totalPages}
                   >
                     Next

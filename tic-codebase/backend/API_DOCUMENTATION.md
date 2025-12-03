@@ -14,6 +14,7 @@ Base URL: `http://localhost:8000/api`
 - [Job Endpoints](#job-endpoints)
 - [Job Application Endpoints](#job-application-endpoints)
 - [Saved Jobs Endpoints](#saved-jobs-endpoints)
+- [Admin Endpoints](#admin-endpoints)
 
 ---
 
@@ -767,4 +768,206 @@ const updatePassword = async (current, newPassword, confirm) => {
 
   return data;
 };
+```
+
+---
+
+## Admin Endpoints
+
+**Note:** All admin endpoints require authentication with an admin/staff user account. Include the JWT token in the Authorization header.
+
+### 1. Get Dashboard Statistics
+
+**Endpoint:** `GET /api/admin/dashboard/stats`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Get overview statistics for the admin dashboard
+
+**Success Response (200 OK):**
+```json
+{
+  "total_candidates": 150,
+  "total_jobs": 45,
+  "active_jobs": 30,
+  "total_applications": 320,
+  "pending_applications": 85,
+  "recent_applications": 12,
+  "recent_candidates": 8
+}
+```
+
+---
+
+### 2. Get All Candidates
+
+**Endpoint:** `GET /api/admin/candidates`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Get paginated list of all candidates/teachers with their profiles
+
+**Query Parameters:**
+- `page` (optional): Page number (default: 1)
+- `page_size` (optional): Items per page (default: 20, max: 100)
+- `search` (optional): Search by name or email
+- `qualified` (optional): Filter by qualified status (yes/no)
+- `position` (optional): Filter by position (teacher/leader/other)
+- `gender` (optional): Filter by gender (male/female/others)
+
+**Example Request:**
+```
+GET /api/admin/candidates?page=1&search=john&qualified=yes
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "count": 150,
+  "next": "http://localhost:8000/api/admin/candidates?page=2",
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "email": "john.doe@example.com",
+      "first_name": "John",
+      "last_name": "Doe",
+      "full_name": "John Doe",
+      "is_active": true,
+      "date_joined": "2024-01-15T10:30:00Z",
+      "total_applications": 5,
+      "teacher_profile": {
+        "id": 1,
+        "qualified": "yes",
+        "english": "yes",
+        "position": "teacher",
+        "gender": "male",
+        "nationality": "United States",
+        "second_nationality": false,
+        "cv_file": "http://localhost:8000/media/cvs/john_cv.pdf",
+        "hear_from": "LinkedIn",
+        "role": "teacher",
+        "subject": "Mathematics",
+        "age_group": "High School",
+        "curriculum": ["IB Dip", "American"],
+        "leadership_role": null,
+        "job_alerts": true,
+        "available_day": "01",
+        "available_month": "09",
+        "available_year": "2024",
+        "available_from": "2024-09-01",
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+      }
+    }
+  ]
+}
+```
+
+---
+
+### 3. Get Candidate Details
+
+**Endpoint:** `GET /api/admin/candidates/<candidate_id>`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Get detailed information about a specific candidate including all their applications
+
+**Success Response (200 OK):**
+```json
+{
+  "candidate": {
+    "id": 1,
+    "email": "john.doe@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "full_name": "John Doe",
+    "is_active": true,
+    "date_joined": "2024-01-15T10:30:00Z",
+    "total_applications": 5,
+    "teacher_profile": { }
+  },
+  "applications": [
+    {
+      "id": 1,
+      "applicant_email": "john.doe@example.com",
+      "applicant_name": "John Doe",
+      "resume": "http://localhost:8000/media/resumes/john_resume.pdf",
+      "cover_letter": "http://localhost:8000/media/cover_letters/john_cover.pdf",
+      "status": "pending",
+      "applied_at": "2024-02-01T14:20:00Z",
+      "updated_at": "2024-02-01T14:20:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### 4. Get All Jobs (Admin View)
+
+**Endpoint:** `GET /api/admin/jobs`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Get paginated list of all jobs with application counts and applicant details
+
+**Query Parameters:**
+- `page` (optional): Page number (default: 1)
+- `page_size` (optional): Items per page (default: 20, max: 100)
+- `search` (optional): Search by title or school name
+- `job_type` (optional): Filter by job type (remote/casual/full-time/part-time)
+- `school_type` (optional): Filter by school type (public/private/charter/international)
+- `status` (optional): Filter by status (active/expired/closed)
+
+**Example Request:**
+```
+GET /api/admin/jobs?page=1&search=teacher&status=active
+```
+
+---
+
+### 5. Get Job Details (Admin View)
+
+**Endpoint:** `GET /api/admin/jobs/<job_id>`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Get detailed information about a specific job with all applicants
+
+---
+
+### 6. Update Application Status
+
+**Endpoint:** `PATCH /api/admin/applications/<application_id>/status`
+
+**Authentication:** Required (Admin only)
+
+**Description:** Update the status of a job application
+
+**Request Body:**
+```json
+{
+  "status": "reviewed"
+}
+```
+
+**Valid Status Values:**
+- `pending` - Application submitted, not yet reviewed
+- `reviewed` - Application has been reviewed
+- `accepted` - Application accepted
+- `rejected` - Application rejected
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Application status updated successfully",
+  "application": {
+    "id": 1,
+    "status": "reviewed",
+    "applied_at": "2024-02-01T14:20:00Z",
+    "updated_at": "2024-02-05T16:30:00Z"
+  }
+}
 ```

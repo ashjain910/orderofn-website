@@ -434,3 +434,58 @@ class SavedJobSerializer(serializers.ModelSerializer):
         # Automatically set the user from the request
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
+
+# Admin Serializers
+class AdminCandidateSerializer(serializers.ModelSerializer):
+    """Serializer for listing all candidates/teachers"""
+    full_name = serializers.ReadOnlyField()
+    teacher_profile = TeacherProfileSerializer(read_only=True)
+    total_applications = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'email', 'first_name', 'last_name', 'full_name',
+            'is_active', 'date_joined', 'teacher_profile', 'total_applications'
+        ]
+        read_only_fields = ['id', 'date_joined']
+
+    def get_total_applications(self, obj):
+        return JobApplication.objects.filter(user=obj).count()
+
+
+class AdminJobApplicationSerializer(serializers.ModelSerializer):
+    """Serializer for job applications with user details"""
+    applicant_email = serializers.EmailField(source='user.email', read_only=True)
+    applicant_name = serializers.CharField(source='user.full_name', read_only=True)
+    applicant_profile = TeacherProfileSerializer(source='user.teacher_profile', read_only=True)
+
+    class Meta:
+        model = JobApplication
+        fields = [
+            'id', 'applicant_email', 'applicant_name', 'applicant_profile',
+            'resume', 'cover_letter', 'status', 'applied_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'applied_at', 'updated_at']
+
+
+class AdminJobSerializer(serializers.ModelSerializer):
+    """Serializer for jobs with application count and applicants"""
+    is_expired = serializers.ReadOnlyField()
+    applications_count = serializers.SerializerMethodField()
+    applications = AdminJobApplicationSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Job
+        fields = [
+            'id', 'title', 'school_name', 'school_avatar', 'location',
+            'job_type', 'school_type', 'status', 'gender_preference',
+            'summary', 'description', 'requirements', 'level', 'subjects',
+            'date_posted', 'closing_date', 'is_expired', 'applications_count',
+            'applications', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
+
+    def get_applications_count(self, obj):
+        return obj.applications.count()

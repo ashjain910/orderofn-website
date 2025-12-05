@@ -37,7 +37,7 @@ const toastOptionsSucces: {
   progress: undefined;
 } = {
   position: "top-right",
-  autoClose: 10000,
+  autoClose: 5000,
   hideProgressBar: false,
   closeOnClick: true,
   pauseOnHover: true,
@@ -145,7 +145,6 @@ export default function PreRegister() {
   const nextStep = () => {
     const errors = validateStep(step);
     if (errors.length > 0) {
-      setFormErrors(errors);
       errors.forEach((err, idx) => {
         setTimeout(() => {
           toast.error(err, toastOptions);
@@ -153,15 +152,14 @@ export default function PreRegister() {
       });
       return;
     }
-    setFormErrors([]);
     setStep((s) => Math.min(s + 1, 5));
   };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
-  const [formErrors, setFormErrors] = useState<string[]>([]);
+  // Removed formErrors state
 
   // Registration
   const submitAll = async () => {
-    setFormErrors([]);
+    // No formErrors state
     try {
       const form = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
@@ -243,17 +241,6 @@ export default function PreRegister() {
             />
 
             <h3 className="text-center mb-3">Pre-Registration</h3>
-
-            {/* Show form errors if any */}
-            {formErrors.length > 0 && (
-              <div className="alert alert-danger">
-                <ul style={{ marginBottom: 0 }}>
-                  {formErrors.map((err, idx) => (
-                    <li key={idx}>{err}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
             <div className="card registration__card__">
               {step === 1 && (

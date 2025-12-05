@@ -31,7 +31,9 @@ const formatDateTime = (utcString: string) => {
   };
 };
 import { useState } from "react";
+import { toast } from "react-toastify";
 import BaseApi from "../../services/api";
+import Cookies from "js-cookie";
 import {
   FaShareAlt,
   FaRegBookmark,
@@ -81,6 +83,7 @@ interface Job {
   status?: string;
   is_expired?: boolean;
   is_applied?: boolean;
+  is_saved?: boolean;
   file_name?: string;
 }
 
@@ -227,17 +230,89 @@ function Jobs() {
   const handleSaveJob = async (jobId: number) => {
     setSavingJobId(jobId);
     try {
-      const jobService = await import("../../services/jobService");
-      const response = await jobService.saveJob(jobId);
-      if (!response.ok) throw new Error("Failed to save job");
-    } catch (error) {
+      const accessToken =
+        Cookies.get("access") ||
+        localStorage.getItem("access") ||
+        sessionStorage.getItem("access");
+      const response = await BaseApi.post(
+        `/jobs/${jobId}/save`,
+        { job_id: jobId },
+        accessToken
+          ? { headers: { Authorization: `Bearer ${accessToken}` } }
+          : undefined
+      );
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Saved successfully!");
+      } else if (
+        response.status === 400 &&
+        response.data &&
+        response.data.error
+      ) {
+        toast.error(response.data.error);
+      } else {
+        toast.error("Failed to save job. Please try again.");
+      }
+    } catch (error: any) {
+      // If error response is available, show error message
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data &&
+        error.response.data.error
+      ) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Failed to save job. Please try again.");
+      }
       console.error(error);
     } finally {
       setSavingJobId(null);
       setLoading(false);
     }
   };
-
+  const handleUnSaveJob = async (jobId: number) => {
+    setSavingJobId(jobId);
+    try {
+      const accessToken =
+        Cookies.get("access") ||
+        localStorage.getItem("access") ||
+        sessionStorage.getItem("access");
+      const response = await BaseApi.post(
+        `/jobs/${jobId}/unsave`,
+        { job_id: jobId },
+        accessToken
+          ? { headers: { Authorization: `Bearer ${accessToken}` } }
+          : undefined
+      );
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Unsaved successfully!");
+      } else if (
+        response.status === 400 &&
+        response.data &&
+        response.data.error
+      ) {
+        toast.error(response.data.error);
+      } else {
+        toast.error("Failed to unsave job. Please try again.");
+      }
+    } catch (error: any) {
+      // If error response is available, show error message
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data &&
+        error.response.data.error
+      ) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Failed to unsave job. Please try again.");
+      }
+      console.error(error);
+    } finally {
+      setSavingJobId(null);
+      setLoading(false);
+    }
+  };
   // API call to send filters and update jobs data
   // API call for job details
   const handleViewJobDetails = async (jobId: number) => {
@@ -511,18 +586,18 @@ function Jobs() {
                     <div className="d-flex flex-column align-items-end gap-2">
                       <button
                         className="btn btn-light btn-sm"
-                        title="Save Job"
+                        title={job.is_saved ? "Unsave Job" : "Save Job"}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleSaveJob(job.id);
+                          if (job.is_saved) {
+                            handleUnSaveJob(job.id);
+                          } else {
+                            handleSaveJob(job.id);
+                          }
                         }}
                         disabled={savingJobId === job.id}
                       >
-                        {job.job_status === "saved" ? (
-                          <FaBookmark />
-                        ) : (
-                          <FaRegBookmark />
-                        )}
+                        {job.is_saved ? <FaBookmark /> : <FaRegBookmark />}
                       </button>
                     </div>
                   </div>

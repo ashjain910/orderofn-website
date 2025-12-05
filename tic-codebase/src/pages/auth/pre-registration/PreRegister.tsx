@@ -177,7 +177,7 @@ export default function PreRegister() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (
-        response.status === 201 &&
+        (response.status === 200 || response.status === 201) &&
         response.data.access &&
         response.data.refresh
       ) {
@@ -186,20 +186,27 @@ export default function PreRegister() {
         toast.success("Registration successful!", toastOptionsSucces);
         navigate("/jobs");
         // Redirect to dashboard or login
+        return;
       }
+      // If not 200/201 or missing tokens, show error
+      toast.error("Registration failed. Please try again.", toastOptions);
     } catch (error: any) {
       let message = "Registration failed. Please try again.";
-      if (error?.response?.data && typeof error.response.data === "object") {
+      if (
+        error?.response?.status === 400 &&
+        error?.response?.data &&
+        typeof error.response.data === "object"
+      ) {
         const data = error.response.data;
-        Object.entries(data).forEach(([field, errors]) => {
+        Object.values(data).forEach((errors) => {
           if (Array.isArray(errors)) {
             errors.forEach((err: string, idx: number) => {
               setTimeout(() => {
-                toast.error(`${field}: ${err}`, toastOptions);
+                toast.error(err, toastOptions);
               }, idx * 500);
             });
           } else {
-            toast.error(`${field}: ${errors}`, toastOptions);
+            toast.error(String(errors), toastOptions);
           }
         });
       } else if (error?.response?.data) {

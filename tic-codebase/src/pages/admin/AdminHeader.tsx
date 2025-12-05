@@ -39,7 +39,7 @@ export default function AdminHeader() {
       >
         <div className="container-fluid">
           <Link
-            to="/admin/dashboard"
+            to="/admin/jobs"
             className="navbar-brand d-flex align-items-center"
           >
             <img

@@ -76,7 +76,7 @@ button:focus-visible {
   position: fixed !important;
   top: 0;
   width: 100%;
-  z-index: 9999;
+  z-index: 999;
   left: 0;
   right: 0;
   background-color: #0d3b85 !important;
@@ -464,7 +464,7 @@ h3 {
 .teacher-applicants-table a {
   color: #0F3F93 !important;
   text-decoration: none;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
 }
 
@@ -482,7 +482,7 @@ h3 {
   color: #ffffff !important;
   font-weight: 500;
   padding: 4px 14px;
-  background: green;
+  background: #0d3b85;
   width: fit-content;
   border-radius: 56px;
 }
@@ -556,4 +556,15 @@ textarea.form-control {
 .css-1jqq78o-placeholder {
     font-size: 14px !important;
     color: hsl(0, 0%, 50%);
+}
+.posted_div {
+    position: absolute;
+    right: 20px;
+    font-size: 13px;
+}
+.Toastify__toast{
+    margin-top: 65px;
+}
+.table-responsive {
+    overflow-x: unset !important;
 }

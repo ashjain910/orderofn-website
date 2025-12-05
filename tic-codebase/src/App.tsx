@@ -19,6 +19,7 @@ import AdminJobs from "./pages/admin/AdminJobs";
 import MyTeachers from "./pages/admin/MyTeachers";
 import AdminJobDetail from "./pages/admin/AdminJobDetail";
 import PostJob from "./pages/admin/post-jobs";
+import { ToastContainer } from "react-toastify";
 function App() {
   // const [count, setCount] = useState(0);
 
@@ -29,6 +30,7 @@ function App() {
         {/* 👇 DEFAULT ROUTE (Login page will load on app start) */}
         <Route path="/" element={<Login />} />
         <Route path="/pre-register" element={<PreRegister />} />
+        <Route path="/admin" element={<AdminLogin />} />
         {/* User routes */}
         <Route element={<PrivateRoute />}>
           <Route element={<Header />}>
@@ -40,7 +42,6 @@ function App() {
           </Route>
         </Route>
 
-        <Route path="/admin" element={<AdminLogin />} />
         {/* Admin routes - use AdminHeader as layout */}
         <Route element={<PrivateAdminRoute />}>
           <Route element={<AdminHeader />}>
@@ -49,9 +50,11 @@ function App() {
             <Route path="/admin/teachers" element={<MyTeachers />} />
             <Route path="/admin/job-details/:id" element={<AdminJobDetail />} />
             <Route path="/admin/post-job" element={<PostJob />} />
+            <Route path="/admin/post-job/:id" element={<PostJob />} />
           </Route>
         </Route>
       </Routes>
+      <ToastContainer style={{ zIndex: 9999 }} />
     </BrowserRouter>
   );
 }

@@ -41,6 +41,25 @@ export default function Step1({ formData, setFormData, nextStep }: Step1Props) {
         </div>
         <div className="">
           <label className="form-label">
+            Phone number{" "}
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+          </label>
+          <input
+            type="text"
+            placeholder="Enter your phone number"
+            className="form-control"
+            value={formData.phone_number}
+            onChange={(e) =>
+              setFormData({ ...formData, phone_number: e.target.value })
+            }
+          />
+        </div>
+        <div className="">
+          <label className="form-label">
             Password{" "}
             <span
               style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}

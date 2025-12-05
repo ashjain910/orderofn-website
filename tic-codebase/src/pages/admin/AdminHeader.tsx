@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PostJobModal from "../../components/admin/PostJobModal";
 import Nav from "react-bootstrap/esm/Nav";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -7,20 +8,21 @@ export default function AdminHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const [adminName, setAdminName] = useState("");
+  const [showPostJobModal, setShowPostJobModal] = useState(false);
   const logout = () => {
     Cookies.remove("access");
     Cookies.remove("refresh");
     Cookies.remove("admin_access");
     Cookies.remove("admin_refresh");
     sessionStorage.clear();
-    navigate("/");
+    navigate("admin/");
   };
   useEffect(() => {
-    const admin = sessionStorage.getItem("admin");
+    const admin = sessionStorage.getItem("user");
     if (admin) {
       try {
         const parsed = JSON.parse(admin);
-        setAdminName(parsed.name || "Admin");
+        setAdminName(parsed.email || parsed.name || "Admin");
       } catch {
         setAdminName("Admin");
       }
@@ -60,13 +62,13 @@ export default function AdminHeader() {
           </button>
           <div className="collapse navbar-collapse" id="adminNavbar">
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center justify-content-end w-100">
-              <Nav.Link
+              {/* <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/admin/dashboard"}
                 onClick={() => navigate("/admin/dashboard")}
               >
                 Dashboard
-              </Nav.Link>
+              </Nav.Link> */}
               <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/admin/jobs"}
@@ -82,9 +84,9 @@ export default function AdminHeader() {
                 My Teachers
               </Nav.Link>
               <Nav.Link
-                className="mr-20"
-                active={location.pathname === "/admin/post-job"}
-                onClick={() => navigate("/admin/post-job")}
+                className=""
+                role="button"
+                onClick={() => setShowPostJobModal(true)}
               >
                 Post a Job
               </Nav.Link>
@@ -120,6 +122,10 @@ export default function AdminHeader() {
       <div style={{ marginTop: 80, paddingBottom: 80 }}>
         <Outlet />
       </div>
+      <PostJobModal
+        show={showPostJobModal}
+        onClose={() => setShowPostJobModal(false)}
+      />
     </>
   );
 }

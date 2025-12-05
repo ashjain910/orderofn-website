@@ -6,7 +6,7 @@ import Step3 from "../steps/Step3";
 import Step4 from "../steps/Step4";
 import Step5 from "../steps/Step5";
 import Cookies from "js-cookie";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import type { ToastPosition } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +21,23 @@ const toastOptions: {
 } = {
   position: "top-right",
   autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: false,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+};
+const toastOptionsSucces: {
+  position: ToastPosition;
+  autoClose: number;
+  hideProgressBar: boolean;
+  closeOnClick: boolean;
+  pauseOnHover: boolean;
+  draggable: boolean;
+  progress: undefined;
+} = {
+  position: "top-right",
+  autoClose: 10000,
   hideProgressBar: false,
   closeOnClick: true,
   pauseOnHover: true,
@@ -41,7 +58,7 @@ export default function PreRegister() {
     qualified: "", // <-- add this
     english: "", // <-- add this
     position: "", // <-- add this
-
+    phone_number: "",
     // Step2
     firstName: "",
     lastName: "",
@@ -72,6 +89,7 @@ export default function PreRegister() {
     const errors: string[] = [];
     if (step === 1) {
       if (!formData.email) errors.push("Email is required");
+      if (!formData.phone_number) errors.push("Phone number is required");
       if (!formData.password) errors.push("Password is required");
       if (!formData.qualified) errors.push("Qualified is required");
       if (!formData.english) errors.push("English is required");
@@ -167,6 +185,7 @@ export default function PreRegister() {
       ) {
         Cookies.set("access", response.data.access, { secure: true });
         Cookies.set("refresh", response.data.refresh, { secure: true });
+        toast.success("Registration successful!", toastOptionsSucces);
         navigate("/jobs");
         // Redirect to dashboard or login
       }
@@ -208,7 +227,8 @@ export default function PreRegister() {
             className="col-md-6 pl-6 pr-6 pt_rem-1 pb_rem-5"
             style={{
               height: "100vh",
-              overflowY: step === 2 || step === 3 ? "auto" : "hidden",
+              overflowY:
+                step === 1 || step === 2 || step === 3 ? "auto" : "hidden",
             }}
           >
             {/* Logo */}
@@ -224,7 +244,17 @@ export default function PreRegister() {
 
             <h3 className="text-center mb-3">Pre-Registration</h3>
 
-            <ToastContainer />
+            {/* Show form errors if any */}
+            {formErrors.length > 0 && (
+              <div className="alert alert-danger">
+                <ul style={{ marginBottom: 0 }}>
+                  {formErrors.map((err, idx) => (
+                    <li key={idx}>{err}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className="card registration__card__">
               {step === 1 && (
                 <Step1
@@ -268,17 +298,6 @@ export default function PreRegister() {
                   prevStep={prevStep}
                   nextStep={submitAll}
                 />
-              )}
-
-              {/* Show validation errors below the form steps */}
-              {formErrors.length > 0 && (
-                <div className="alert alert-danger mt-3">
-                  <ul className="mb-0">
-                    {formErrors.map((err, idx) => (
-                      <li key={idx}>{err}</li>
-                    ))}
-                  </ul>
-                </div>
               )}
             </div>
             <div className="text-center mt-3">

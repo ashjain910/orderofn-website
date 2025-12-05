@@ -17,87 +17,119 @@ function getRandomColor(str: string) {
   return colors[index];
 }
 import React, { useState } from "react";
+import PostJobModal from "../../components/admin/PostJobModal";
+import { toast } from "react-toastify";
+import { toastOptions } from "../../utils/toastOptions";
 import AdminBaseApi from "../../services/admin-base";
 import { useParams } from "react-router-dom";
 
-import { RxDropdownMenu } from "react-icons/rx";
+import { FaChevronDown } from "react-icons/fa";
 function AdminJobDetail() {
-  // Sample teacher data for table view
-  const initialTeachers = [
-    {
-      name: "Alice Johnson",
-      role: "Math Teacher",
-      email: "alice.johnson@example.com",
-      phone: "+1 555-1234",
-      subjects: "Mathematics",
-      lookingFor: "Full-time",
-      gender: "Female",
-      nationality: "USA",
-      selectedAction: "",
-      status: "Hired",
-      date_applied: "21-10-2025",
-    },
-    {
-      name: "Bob Smith",
-      role: "Science Teacher",
-      email: "bob.smith@example.com",
-      phone: "+1 555-5678",
-      subjects: "Science",
-      lookingFor: "Part-time",
-      gender: "Male",
-      nationality: "Canada",
-      selectedAction: "",
-      status: "Hired",
-      date_applied: "25-10-2025",
-    },
-    {
-      name: "Carol Lee",
-      role: "English Teacher",
-      email: "carol.lee@example.com",
-      phone: "+1 555-8765",
-      subjects: "English",
-      lookingFor: "Full-time",
-      gender: "Female",
-      nationality: "UK",
-      selectedAction: "",
-      status: "Shortlisted",
-      date_applied: "22-10-2025",
-    },
-    {
-      name: "David Kim",
-      role: "History Teacher",
-      email: "david.kim@example.com",
-      phone: "+1 555-4321",
-      subjects: "History",
-      lookingFor: "Casual",
-      gender: "Male",
-      nationality: "South Korea",
-      selectedAction: "",
-      status: "",
-      date_applied: "23-10-2025",
-    },
-  ];
-  const [teachers, setTeachers] = useState(initialTeachers);
+  // Track loading state for status change per applicant
+  const [statusLoadingIdx, setStatusLoadingIdx] = useState<number | null>(null);
+  // Handler for closing job
+  const handleCloseJob = async () => {
+    if (!job?.id) return;
+    setLoading(true);
+    try {
+      const closingDate = job.closing_date || new Date();
+      const formattedDate =
+        typeof closingDate === "string"
+          ? closingDate
+          : `${closingDate.getFullYear()}-${String(
+              closingDate.getMonth() + 1
+            ).padStart(2, "0")}-${String(closingDate.getDate()).padStart(
+              2,
+              "0"
+            )}`;
+      const response = await AdminBaseApi.patch(`/jobs/${job.id}/update`, {
+        status: "closed",
+        closing_date: formattedDate,
+      });
+      if (response.status === 200) {
+        toast.success(
+          response.data?.message || "Job closed successfully",
+          toastOptions
+        );
+        // Refetch job details
+        const jobRes = await AdminBaseApi.get(`/jobs/${job.id}`);
+        if (jobRes.data) {
+          setJob(jobRes.data);
+          if (Array.isArray(jobRes.data.applications)) {
+            setTeachers(jobRes.data.applications);
+          } else {
+            setTeachers([]);
+          }
+        }
+      } else {
+        toast.error("Failed to close job", toastOptions);
+      }
+    } catch (err) {
+      toast.error("Failed to close job", toastOptions);
+    }
+    setLoading(false);
+  };
+  // ...existing code...
+  const [loading, setLoading] = React.useState(true);
+  const formatDateTime = (utcString: string) => {
+    if (!utcString) return { date: "", time: "" };
+    const dateObj = new Date(utcString);
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const day = dateObj.getDate();
+    const month = months[dateObj.getMonth()];
+    const year = dateObj.getFullYear();
+    let hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
+    return {
+      date: `${day} ${month} ${year}`,
+      time: `${hours}:${minStr} ${ampm}`,
+    };
+  };
+  // Teachers state will be set from API job.applications
+  const [teachers, setTeachers] = useState<any[]>([]);
   const [sortBy, setSortBy] = useState<string>("");
   const [dropdownOpenIdx, setDropdownOpenIdx] = useState<number | null>(null);
+  // Close dropdown on outside click
+  React.useEffect(() => {
+    if (dropdownOpenIdx === null) return;
+    const handleClick = (e: MouseEvent) => {
+      // Only close if click is outside any dropdown menu or trigger
+      const dropdowns = document.querySelectorAll(".dropdown-menu.show");
+      let clickedInside = false;
+      dropdowns.forEach((dropdown) => {
+        if (dropdown.contains(e.target as Node)) clickedInside = true;
+      });
+      // Also check triggers
+      const triggers = document.querySelectorAll("[data-dropdown-trigger]");
+      triggers.forEach((trigger) => {
+        if (trigger.contains(e.target as Node)) clickedInside = true;
+      });
+      if (!clickedInside) setDropdownOpenIdx(null);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [dropdownOpenIdx]);
   const { id } = useParams();
-  const defaultSampleJob = {
-    id: 1,
-    title: "Computer Science Teacher",
-    school_avatar: "/school_image.png",
-    badge: "Remote",
-    is_expired: false,
-    status: "active",
-    school_name: "Lincoln High School",
-    location: "New York, NY",
-    job_type: "Remote",
-    level: "High School",
-    closing_date: "2025-12-31",
-    subjects: "Mathematics",
-    description:
-      "Teach high school math classes. Help students succeed in mathematics.",
-  };
-  const [job, setJob] = React.useState<any | null>(defaultSampleJob);
+
+  const [job, setJob] = React.useState<any | null>(null);
+  // const navigate = useNavigate();
 
   const hasFetched = React.useRef(false);
   React.useEffect(() => {
@@ -108,17 +140,49 @@ function AdminJobDetail() {
         const response = await AdminBaseApi.get(`/jobs/${id}`);
         if (response.data) {
           setJob(response.data);
-        } else {
-          setJob(defaultSampleJob);
+          // Set teachers from API applications array
+          if (
+            response.data.applications &&
+            Array.isArray(response.data.applications)
+          ) {
+            setTeachers(response.data.applications);
+          } else {
+            setTeachers([]);
+          }
         }
       } catch (error) {
-        setJob(defaultSampleJob);
+        setTeachers([]);
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchJob();
   }, [id]);
 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const handleEditJob = () => {
+    setShowEditModal(true);
+  };
+
+  if (loading) {
+    return (
+      <div
+        className="container"
+        style={{
+          minHeight: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
   if (!job) {
     return (
       <div
@@ -138,16 +202,10 @@ function AdminJobDetail() {
 
   // Sorting logic
   let sortedTeachers = [...teachers];
-  if (sortBy === "hired") {
+  if (["accepted", "reviewed", "pending", "rejected"].includes(sortBy)) {
     sortedTeachers = sortedTeachers.sort((a, b) => {
-      if (a.status === "Hired" && b.status !== "Hired") return -1;
-      if (a.status !== "Hired" && b.status === "Hired") return 1;
-      return 0;
-    });
-  } else if (sortBy === "shortlisted") {
-    sortedTeachers = sortedTeachers.sort((a, b) => {
-      if (a.status === "Shortlisted" && b.status !== "Shortlisted") return -1;
-      if (a.status !== "Shortlisted" && b.status === "Shortlisted") return 1;
+      if (a.status === sortBy && b.status !== sortBy) return -1;
+      if (a.status !== sortBy && b.status === sortBy) return 1;
       return 0;
     });
   } else if (sortBy === "date") {
@@ -161,27 +219,81 @@ function AdminJobDetail() {
     });
   }
 
-  return (
-    <div className="container mt-5">
-      <div className="row mb-3">
-        <div className="col-12 d-flex justify-content-end">
-          <button className="btn btn-secondary me-3">Close Job</button>
-          <button className="btn btn-primary me-2">Edit Job</button>
-          <select
-            className="form-select form-select-sm w-auto"
-            style={{ minWidth: 140 }}
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="">Sort By</option>
-            <option value="hired">Hired</option>
-            <option value="shortlisted">Shortlisted</option>
-            <option value="date">Date Applied</option>
-          </select>
+  if (loading) {
+    return (
+      <div
+        className="container"
+        style={{
+          minHeight: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="container-fluid mt-5">
       <div className="row">
         <div className="col-lg-4 col-md-4 col-sm-12 col-12 ">
+          <div className="col-12 d-flex justify-content-end mb-3">
+            {job?.is_expired && (
+              <button className="btn btn-secondary me-3">Expired</button>
+            )}
+            {!job?.is_expired && (
+              <button
+                className="btn btn-secondary me-3"
+                onClick={handleCloseJob}
+                disabled={loading || job?.status === "closed"}
+              >
+                {job?.status === "closed" ? "Job Closed" : "Close Job"}
+              </button>
+            )}
+            {job?.status !== "closed" && !job?.is_expired && (
+              <button className="btn btn-primary me-2" onClick={handleEditJob}>
+                Edit Job
+              </button>
+            )}
+            {/* Edit Job Modal */}
+            {showEditModal && (
+              <PostJobModal
+                show={showEditModal}
+                onClose={() => setShowEditModal(false)}
+                onSuccess={async () => {
+                  // Refetch job details after successful edit
+                  setShowEditModal(false);
+                  setLoading(true);
+                  try {
+                    const response = await AdminBaseApi.get(`/jobs/${id}`);
+                    if (response.data) {
+                      setJob(response.data);
+                      if (
+                        response.data.applications &&
+                        Array.isArray(response.data.applications)
+                      ) {
+                        setTeachers(response.data.applications);
+                      } else {
+                        setTeachers([]);
+                      }
+                    }
+                  } catch (error) {
+                    setTeachers([]);
+                    console.error(error);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                // Pass initialValues for editing
+                initialValues={job}
+              />
+            )}
+          </div>
           <div className="card">
             <div className="row">
               <div className="col-lg-9 col-md-9 col-sm-9 col-12">
@@ -202,7 +314,7 @@ function AdminJobDetail() {
                   >
                     {job.title ? job.title[0] : "?"}
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1 }} className=" mb-3">
                     <h5 className=" mb-1">{job.title}</h5>
                     <p className="job__description__ad">{job.school_name}</p>
                     <p className="job__description__ad mb-1">{job.location}</p>
@@ -212,22 +324,65 @@ function AdminJobDetail() {
             </div>
             <div className="row">
               <div className="col-lg-12 col-md-12 col-sm-12 col-12">
-                <h4 className="job__headings__admin mt-3">
-                  Who we are looking for
-                </h4>
-                <ul className="txt__regular__ list__none__">
-                  <li>Retired teachers or teacher aides are warmly welcomed</li>
-                  <li>
-                    Must be patient, responsible and committed to helping
-                    students succeed
-                  </li>
-                  <li>Passionate about education and working with children </li>
-                </ul>
+                <p className="txt__regular__  mb-1">
+                  <strong>School Type: </strong>
+                  {job.school_type}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Job Type: </strong>
+                  {job.job_type}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Posted on: </strong>{" "}
+                  {formatDateTime(job.date_posted).date} -{" "}
+                  {formatDateTime(job.date_posted).time}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Subjects: </strong>{" "}
+                  {Array.isArray(job.subjects)
+                    ? job.subjects.filter((s: any) => s).join(", ")
+                    : job.subjects}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Closing date: </strong>{" "}
+                  {formatDateTime(job.closing_date).date}
+                </p>
+              </div>
+            </div>
+            <div className="row">
+              {/* <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+                <h4 className="job__headings__admin mt-3">Job requirements</h4>
+                <p className="txt__regular__">{job.requirements}</p>
+              </div>
+              <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+                <h4 className="job__headings__admin mt-3">Job Summary</h4>
+                <p className="txt__regular__">{job.summary}</p>
+              </div> */}
+              <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+                <h4 className="job__headings__admin mt-3">Job Description</h4>
+                <p className="txt__regular__">{job.description}</p>
               </div>
             </div>
           </div>
         </div>
         <div className="col-lg-8 col-md-8 col-sm-12 col-12">
+          <div className="row mb-3">
+            <div className="col-12 d-flex justify-content-end">
+              <select
+                className="form-select form-select-sm w-auto"
+                style={{ minWidth: 140 }}
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="">Sort By</option>
+                <option value="pending">Pending</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+                <option value="date">Date Applied</option>
+              </select>
+            </div>
+          </div>
           <div className="card">
             <div className="card-body teacher-applicants-table">
               <div className="table-responsive">
@@ -240,173 +395,259 @@ function AdminJobDetail() {
                     </tr>
                   </thead> */}
                   <tbody>
-                    {sortedTeachers.map((teacher, idx) => (
-                      <tr key={idx}>
-                        <td className="txt__regular__">{idx + 1}</td>
-                        <td>
-                          <div style={{ fontWeight: 600 }}>{teacher.name}</div>
-                          <div className="d-flex flex-column">
-                            <div
-                              className="text-muted mb-1"
-                              style={{ display: "flex", flexWrap: "wrap" }}
-                            >
-                              <div
-                                className="d-block d-sm-inline"
-                                style={{ fontSize: 13, color: "#000000" }}
-                              >
-                                {teacher.role}
-                              </div>
-                              <span
-                                className="mx-2 d-none d-sm-inline"
-                                style={{
-                                  width: "1px",
-                                  height: "14px",
-                                  background: "#ccc",
-                                }}
-                              ></span>
-                              <div
-                                className="d-block d-sm-inline"
-                                style={{ fontSize: 13, color: "#000000" }}
-                              >
-                                {teacher.email}
-                              </div>
-                              <span
-                                className="mx-2 d-none d-sm-inline"
-                                style={{
-                                  width: "1px",
-                                  height: "14px",
-                                  background: "#ccc",
-                                }}
-                              ></span>
-                              <div
-                                className="d-block d-sm-inline"
-                                style={{ fontSize: 13, color: "#000000" }}
-                              >
-                                {teacher.phone}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="d-flex align-items-center text-muted mb-1">
-                            <span
-                              style={{
-                                fontSize: 13,
-                                color: "#555",
-                                marginRight: 4,
-                              }}
-                              className=""
-                            >
-                              Download:
-                            </span>
-                            <a href="{teacher.subjects}">
-                              {/* <MdOutlineFileDownload
-                                style={{
-                                  fontSize: 16,
-                                  color: "#0F3F93",
-                                  marginRight: 2,
-                                }}
-                              /> */}
-                              Resume
-                            </a>
-                            <span
-                              className="mx-2"
-                              style={{
-                                width: "1px",
-                                height: "14px",
-                                background: "#ccc",
-                              }}
-                            ></span>
-                            <a href="{teacher.subjects}">
-                              {/* <MdOutlineFileDownload
-                                style={{
-                                  fontSize: 16,
-                                  color: "#0F3F93",
-                                  marginRight: 2,
-                                }}
-                              /> */}
-                              Cover Letter
-                            </a>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="d-flex align-items-center justify-content-end position-relative">
-                            {/* Show status or selected value with icon if any */}
-                            {(teacher.selectedAction || teacher.status) && (
-                              <span
-                                style={{
-                                  fontWeight: 600,
-                                  fontSize: 13,
-                                  color: "#0F3F93",
-                                  marginRight: 8,
-                                }}
-                              >
-                                {teacher.selectedAction || teacher.status}
-                              </span>
-                            )}
-                            {/* Action icon button */}
-                            <a
-                              role="button"
-                              className=""
-                              style={{ padding: "2px 8px" }}
-                              onClick={() =>
-                                setDropdownOpenIdx(
-                                  dropdownOpenIdx === idx ? null : idx
-                                )
-                              }
-                            >
-                              <RxDropdownMenu style={{ fontSize: 27 }} />
-                            </a>
-                            {/* Dropdown menu */}
-                            {dropdownOpenIdx === idx && (
-                              <div
-                                className="dropdown-menu show"
-                                style={{
-                                  minWidth: "max-content",
-                                  position: "absolute",
-                                  top: 30,
-                                  right: 0,
-                                  zIndex: 10,
-                                }}
-                              >
-                                <button
-                                  className="dropdown-item txt__regular__"
-                                  onClick={() => {
-                                    const updatedTeachers = teachers.map(
-                                      (t, i) =>
-                                        i === idx
-                                          ? {
-                                              ...t,
-                                              selectedAction: "Shortlist",
-                                            }
-                                          : t
-                                    );
-                                    setTeachers(updatedTeachers);
-                                    setDropdownOpenIdx(null);
-                                  }}
-                                >
-                                  Shortlist
-                                </button>
-                                <button
-                                  className="dropdown-item txt__regular__"
-                                  onClick={() => {
-                                    const updatedTeachers = teachers.map(
-                                      (t, i) =>
-                                        i === idx
-                                          ? { ...t, selectedAction: "Hired" }
-                                          : t
-                                    );
-                                    setTeachers(updatedTeachers);
-                                    setDropdownOpenIdx(null);
-                                  }}
-                                >
-                                  Hired
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                    {sortedTeachers.length === 0 ? (
+                      <tr>
+                        <td colSpan={3} className="text-center text-muted py-4">
+                          No applicants found.
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      sortedTeachers.map((teacher, idx) => (
+                        <tr key={idx}>
+                          <td className="txt__regular__">{idx + 1}</td>
+                          <td>
+                            <div style={{ fontWeight: 600 }}>
+                              {teacher?.applicant_name || "-"}
+                            </div>
+                            <div className="d-flex flex-column">
+                              <div
+                                className="text-muted mb-1"
+                                style={{ display: "flex", flexWrap: "wrap" }}
+                              >
+                                <div
+                                  className="d-block d-sm-inline"
+                                  style={{ fontSize: 14, color: "#000000" }}
+                                >
+                                  {teacher?.applicant_profile?.role || "-"}
+                                </div>
+                                <span
+                                  className="mx-2 d-none d-sm-inline"
+                                  style={{
+                                    width: "1px",
+                                    height: "14px",
+                                    background: "#ccc",
+                                  }}
+                                ></span>
+                                <div
+                                  className="d-block d-sm-inline"
+                                  style={{ fontSize: 14, color: "#000000" }}
+                                >
+                                  {teacher?.applicant_email || "-"}
+                                </div>
+                                <span
+                                  className="mx-2 d-none d-sm-inline"
+                                  style={{
+                                    width: "1px",
+                                    height: "14px",
+                                    background: "#ccc",
+                                  }}
+                                ></span>
+                                <div
+                                  className="d-block d-sm-inline"
+                                  style={{ fontSize: 14, color: "#000000" }}
+                                >
+                                  {teacher?.phone || "-"}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="d-flex align-items-center text-muted mb-1">
+                              <span
+                                style={{
+                                  fontSize: 14,
+                                  color: "#555",
+                                  marginRight: 4,
+                                }}
+                                className=""
+                              >
+                                Download:
+                              </span>
+                              <a
+                                href={teacher?.applicant_profile?.resume || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Resume
+                              </a>
+                              <span
+                                className="mx-2"
+                                style={{
+                                  width: "1px",
+                                  height: "14px",
+                                  background: "#ccc",
+                                }}
+                              ></span>
+                              <a
+                                href={
+                                  teacher?.applicant_profile?.cover_letter ||
+                                  "#"
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Cover Letter
+                              </a>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="d-flex align-items-center justify-content-end position-relative">
+                              {/* Show status or selected value with icon if any */}
+                              {(teacher?.selectedAction || teacher?.status) && (
+                                <a
+                                  role="button"
+                                  className=""
+                                  style={{
+                                    fontWeight: 600,
+                                    fontSize: 14,
+                                    color: "#0F3F93",
+                                    padding: "2px ",
+                                    textDecoration: "underline",
+                                    cursor:
+                                      job?.status === "closed" ||
+                                      job?.is_expired
+                                        ? "not-allowed"
+                                        : "pointer",
+                                    opacity:
+                                      job?.status === "closed" ||
+                                      job?.is_expired
+                                        ? 0.5
+                                        : 1,
+                                  }}
+                                  data-dropdown-trigger
+                                  onClick={() => {
+                                    if (
+                                      job?.status === "closed" ||
+                                      job?.is_expired
+                                    )
+                                      return;
+                                    setDropdownOpenIdx(idx);
+                                  }}
+                                >
+                                  {statusLoadingIdx === idx && (
+                                    <span
+                                      className="spinner-border spinner-border-sm me-2"
+                                      role="status"
+                                      aria-hidden="true"
+                                    ></span>
+                                  )}
+                                  {teacher?.selectedAction ||
+                                    (teacher?.status
+                                      ? teacher.status.charAt(0).toUpperCase() +
+                                        teacher.status.slice(1)
+                                      : "")}
+                                </a>
+                              )}
+                              {/* Action icon button */}
+                              <a
+                                role="button"
+                                className=""
+                                style={{
+                                  padding: "2px",
+                                  cursor:
+                                    job?.status === "closed" || job?.is_expired
+                                      ? "not-allowed"
+                                      : "pointer",
+                                  opacity:
+                                    job?.status === "closed" || job?.is_expired
+                                      ? 0.5
+                                      : 1,
+                                }}
+                                onClick={() => {
+                                  if (
+                                    job?.status === "closed" ||
+                                    job?.is_expired
+                                  )
+                                    return;
+                                  setDropdownOpenIdx(
+                                    dropdownOpenIdx === idx ? null : idx
+                                  );
+                                }}
+                              >
+                                <FaChevronDown />{" "}
+                              </a>
+                              {/* Dropdown menu */}
+                              {dropdownOpenIdx === idx &&
+                                !(
+                                  job?.status === "closed" || job?.is_expired
+                                ) && (
+                                  <div
+                                    className="dropdown-menu show"
+                                    style={{
+                                      minWidth: "max-content",
+                                      position: "absolute",
+                                      top: 30,
+                                      right: 0,
+                                      zIndex: 10,
+                                    }}
+                                  >
+                                    {[
+                                      { label: "Pending", value: "pending" },
+                                      { label: "Reviewed", value: "reviewed" },
+                                      { label: "Accepted", value: "accepted" },
+                                      { label: "Rejected", value: "rejected" },
+                                    ].map((statusObj) => (
+                                      <button
+                                        key={statusObj.value}
+                                        className="dropdown-item txt__regular__"
+                                        disabled={statusLoadingIdx === idx}
+                                        onClick={async () => {
+                                          setStatusLoadingIdx(idx);
+                                          const applicationId = teacher?.id;
+                                          try {
+                                            const response =
+                                              await AdminBaseApi.patch(
+                                                `/applications/${applicationId}/status`,
+                                                { status: statusObj.value }
+                                              );
+                                            if (response.status === 200) {
+                                              toast.success(
+                                                response.data?.message ||
+                                                  "Status updated successfully",
+                                                toastOptions
+                                              );
+                                              // Use response.data.application to update the teacher
+                                              const updatedApp =
+                                                response.data?.application;
+                                              const updatedTeachers =
+                                                teachers.map((t, i) =>
+                                                  i === idx && updatedApp
+                                                    ? { ...t, ...updatedApp }
+                                                    : t
+                                                );
+                                              setTeachers(updatedTeachers);
+                                            } else {
+                                              toast.error(
+                                                "Failed to update status",
+                                                toastOptions
+                                              );
+                                            }
+                                          } catch (err) {
+                                            toast.error(
+                                              "Failed to update status",
+                                              toastOptions
+                                            );
+                                          }
+                                          setStatusLoadingIdx(null);
+                                          setDropdownOpenIdx(null);
+                                        }}
+                                      >
+                                        {statusLoadingIdx === idx ? (
+                                          <span
+                                            className="spinner-border spinner-border-sm me-2"
+                                            role="status"
+                                            aria-hidden="true"
+                                          ></span>
+                                        ) : null}
+                                        {statusObj.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

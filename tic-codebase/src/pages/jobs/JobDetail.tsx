@@ -1,18 +1,47 @@
 import React from "react";
+import { toast } from "react-toastify";
 import api from "../../services/api";
 import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
-import {
-  FaShareAlt,
-  FaRegBookmark,
-  FaBookmark,
-  FaLocationArrow,
-  FaRegFileAlt,
-  FaArrowRight,
-} from "react-icons/fa";
+import { FaLocationArrow, FaRegFileAlt, FaArrowRight } from "react-icons/fa";
 import "./JobDetail.css";
 
 function JobDetail() {
+  const [loading, setLoading] = React.useState(true);
+  const [fetchError, setFetchError] = React.useState<string | null>(null);
+  // Toast import
+  // Helper to format UTC date string
+  const formatDateTime = (utcString: string) => {
+    if (!utcString) return { date: "", time: "" };
+    const dateObj = new Date(utcString);
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const day = dateObj.getDate();
+    const month = months[dateObj.getMonth()];
+    const year = dateObj.getFullYear();
+    let hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
+    return {
+      date: `${day} ${month} ${year}`,
+      time: `${hours}:${minStr} ${ampm}`,
+    };
+  };
   const { id } = useParams();
   const [job, setJob] = React.useState<any | null>(null);
   const [resumeFile, setResumeFile] = React.useState<File | null>(null);
@@ -26,9 +55,17 @@ function JobDetail() {
       try {
         const response = await api.get(`/jobs/${id}`);
         setJob(response.data);
-      } catch (error) {
+        setFetchError(null);
+      } catch (error: any) {
         setJob(null);
-        console.error(error);
+        setFetchError("Job not found");
+        if (error?.response?.data) {
+          toast.error(error.response.data);
+        } else {
+          toast.error("Failed to fetch job details.");
+        }
+      } finally {
+        setLoading(false);
       }
     };
     fetchJob();
@@ -48,14 +85,32 @@ function JobDetail() {
           ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         },
       });
-      alert("Application submitted successfully!");
+      toast.success("Application submitted successfully!");
     } catch (error) {
-      alert("Failed to submit application.");
+      toast.error("Failed to submit application.");
       console.error(error);
     }
   };
 
-  if (!job) {
+  if (loading) {
+    return (
+      <div
+        className="container"
+        style={{
+          minHeight: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+  if (fetchError || !job) {
     return (
       <div
         className="container"
@@ -81,8 +136,14 @@ function JobDetail() {
               <div className="row">
                 <div className="col-lg-9 col-md-9 col-sm-9 col-12">
                   <div className="d-flex" style={{ width: "100%" }}>
+                    <div className="posted_div">
+                      <span className="text-muted small">
+                        Posted: {formatDateTime(job.date_posted).date} -{" "}
+                        {formatDateTime(job.date_posted).time}
+                      </span>
+                    </div>
                     <img
-                      src={job.school_avatar || "/school_image.png"}
+                      src={job.school_avatar || "/tic/school_image.png"}
                       alt="Profile"
                       className="job-avatar me-3"
                     />
@@ -123,7 +184,7 @@ function JobDetail() {
                     </div>
                   </div>
                 </div>
-
+                {/* 
                 <div className="col-lg-3 col-md-4 col-sm-4 col-12">
                   <button className="btn btn-light btn-sm" title="Share Job">
                     <FaShareAlt />
@@ -135,7 +196,7 @@ function JobDetail() {
                       <FaRegBookmark />
                     )}
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
             <ul className="ul txt__regular__">
@@ -166,27 +227,20 @@ function JobDetail() {
                 </div>
                 <div className="col-lg-12 col-md-12 col-sm-12 col-12 list-item">
                   <li>
-                    <h4 className="job__headings__ mt-3">Job summary</h4>
-                    <p className="job-description mb-0">{job.description}</p>
+                    <h4 className="job__headings__ mt-3">Job requirements</h4>
+                    <p className="job-description mb-0">{job.requirements}</p>
                   </li>
                 </div>
                 <div className="col-lg-12 col-md-12 col-sm-12 col-12 list-item">
                   <li>
-                    <h4 className="job__headings__ mt-3">
-                      Who we are looking for
-                    </h4>
-                    <ul className="txt__regular__ pl-1 list_none_">
-                      <li>
-                        Retired teachers or teacher aides are warmly welcomed
-                      </li>
-                      <li>
-                        Must be patient, responsible and committed to helping
-                        students succeed
-                      </li>
-                      <li>
-                        Passionate about education and working with children 
-                      </li>
-                    </ul>
+                    <h4 className="job__headings__ mt-3">Job summary</h4>
+                    <p className="job-description mb-0">{job.summary}</p>
+                  </li>
+                </div>
+                <div className="col-lg-12 col-md-12 col-sm-12 col-12 list-item">
+                  <li>
+                    <h4 className="job__headings__ mt-3">Job description</h4>
+                    <p className="job-description mb-0">{job.description}</p>
                   </li>
                 </div>
               </div>
@@ -216,7 +270,9 @@ function JobDetail() {
                     type="file"
                     accept=".pdf,.doc,.docx"
                     className="upload-input__"
+                    disabled={job.is_expired}
                     onChange={(e) => {
+                      if (job.is_expired) return;
                       const file = e.target.files?.[0];
                       if (file) {
                         setResumeFile(file);
@@ -265,7 +321,9 @@ function JobDetail() {
                     type="file"
                     accept=".pdf,.doc,.docx"
                     className="upload-input__"
+                    disabled={job.is_expired}
                     onChange={(e) => {
+                      if (job.is_expired) return;
                       const file = e.target.files?.[0];
                       if (file) {
                         setCoverFile(file);
@@ -303,13 +361,15 @@ function JobDetail() {
                 share your TIC profile with this school.
               </li>
               <div className="d-flex justify-content-end">
-                <button
-                  className="btn btn-primary mt-3 mb-3 px-4 "
-                  onClick={handleApplyJob}
-                >
-                  <FaArrowRight style={{ marginRight: 10 }} />
-                  Apply job
-                </button>
+                {!job.is_applied && !job.is_expired && (
+                  <button
+                    className="btn btn-primary mt-3 mb-3 px-4 "
+                    onClick={handleApplyJob}
+                  >
+                    <FaArrowRight style={{ marginRight: 10 }} />
+                    Apply job
+                  </button>
+                )}
               </div>
             </div>
           </div>

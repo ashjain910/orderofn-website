@@ -5,25 +5,7 @@ import api from "../../../services/api";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
-import type { ToastPosition } from "react-toastify";
-
-const toastOptions: {
-  position: ToastPosition;
-  autoClose: number;
-  hideProgressBar: boolean;
-  closeOnClick: boolean;
-  pauseOnHover: boolean;
-  draggable: boolean;
-  progress: undefined;
-} = {
-  position: "top-right",
-  autoClose: 5000,
-  hideProgressBar: false,
-  closeOnClick: true,
-  pauseOnHover: true,
-  draggable: true,
-  progress: undefined,
-};
+import { toastOptions } from "../../../utils/toastOptions";
 
 export default function Login() {
   const navigate = useNavigate();

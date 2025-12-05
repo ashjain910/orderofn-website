@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import Cookies from "js-cookie";
@@ -9,9 +9,15 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (email: string, password: string) => {
-    navigate("/admin/dashboard");
+  useEffect(() => {
+    const access = Cookies.get("access");
+    const refresh = Cookies.get("refresh");
+    if (access && refresh) {
+      navigate("/admin/jobs");
+    }
+  }, [navigate]);
 
+  const handleLogin = async (email: string, password: string) => {
     try {
       const response = await api.post("/login", { email, password });
       if (
@@ -21,10 +27,10 @@ export default function AdminLogin() {
       ) {
         Cookies.set("access", response.data.access, { secure: true });
         Cookies.set("refresh", response.data.refresh, { secure: true });
-        if (response.data.admin) {
-          sessionStorage.setItem("admin", JSON.stringify(response.data.admin));
+        if (response.data.user) {
+          sessionStorage.setItem("user", JSON.stringify(response.data.user));
         }
-        navigate("/admin/dashboard");
+        navigate("/admin/jobs");
       }
     } catch (error: any) {
       console.error("Admin login error:", error);

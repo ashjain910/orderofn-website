@@ -1,6 +1,6 @@
 // import { useState } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, HashRouter } from "react-router-dom";
 import Login from "./pages/auth/login/Login";
 import Jobs from "./pages/jobs/Jobs";
 import JobDetail from "./pages/jobs/JobDetail";
@@ -24,7 +24,7 @@ function App() {
   // const [count, setCount] = useState(0);
 
   return (
-    <BrowserRouter basename="/tic">
+    <HashRouter>
       <ScrollToTop />
       <Routes>
         {/* 👇 DEFAULT ROUTE (Login page will load on app start) */}
@@ -55,7 +55,7 @@ function App() {
         </Route>
       </Routes>
       <ToastContainer style={{ zIndex: 9999 }} />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

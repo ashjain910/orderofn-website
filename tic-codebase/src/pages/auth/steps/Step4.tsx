@@ -1,4 +1,5 @@
 import { Form, Button } from "react-bootstrap";
+import Select from "react-select";
 
 type Step4Props = {
   formData: any;
@@ -28,19 +29,29 @@ function Step4({ formData, setFormData, nextStep, prevStep }: Step4Props) {
 
           <Form className="">
             <Form.Group className="">
-              <Form.Label>Role</Form.Label>
-              <Form.Select
-                value={formData.leadershipRole}
-                onChange={(e) =>
-                  setFormData({ ...formData, leadershipRole: e.target.value })
+              <Form.Label>Leadership role</Form.Label>
+              <Select
+                isMulti
+                options={[
+                  { value: "coordinator", label: "Coordinator" },
+                  { value: "hod", label: "HOD" },
+                  {
+                    value: "assistant_principal",
+                    label: "Assistant Principal",
+                  },
+                  { value: "principal", label: "Principal" },
+                ]}
+                closeMenuOnSelect={false}
+                value={formData.leadershipRoles || []}
+                onChange={(selected: any) =>
+                  setFormData({
+                    ...formData,
+                    leadershipRoles: Array.isArray(selected) ? selected : [],
+                  })
                 }
-              >
-                <option value="">Please select</option>
-                <option>Coordinator</option>
-                <option>HOD</option>
-                <option>Assistant Principal</option>
-                <option>Principal</option>
-              </Form.Select>
+                classNamePrefix={"react-select"}
+                placeholder="Select leadership role(s)..."
+              />
             </Form.Group>
 
             <div className="d-flex justify-content-between mt-3">

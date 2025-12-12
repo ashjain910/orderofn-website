@@ -38,9 +38,9 @@ import {
   FaShareAlt,
   FaRegBookmark,
   FaBookmark,
-  FaLocationArrow,
   FaSpinner,
 } from "react-icons/fa";
+import { MdLocationPin } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 
@@ -221,9 +221,11 @@ function Jobs() {
   // Handle tab change: reset to page 1 and fetch jobs with all filters
   const handleTabChange = async (tabKey: string) => {
     if (activeTab === tabKey) return; // Prevent duplicate call
+    setLoading(true); // Show loader immediately on tab switch
     setActiveTab(tabKey);
     setPage(1);
     await fetchJobsForTab(tabKey);
+    // setLoading(false) is handled in fetchJobsForTab finally block
   };
 
   // Lazy load and call saveJob
@@ -395,11 +397,15 @@ function Jobs() {
               <ul className="ul d-flex align-items-center">
                 {statusTabs.map((tab) => {
                   // Count jobs for each tab
-                  const count =
-                    tab.key === "all"
-                      ? resultsCount
-                      : jobsData.filter((job) => job.tabStatus === tab.key)
-                          .length;
+                  // Show correct count for each tab
+                  let count = 0;
+                  if (tab.key === "all") {
+                    count = resultsCount;
+                  } else {
+                    count = jobsData.filter(
+                      (job) => job.tabStatus === tab.key
+                    ).length;
+                  }
                   return (
                     <li
                       key={tab.key}
@@ -547,7 +553,7 @@ function Jobs() {
                             {formatDateTime(job.date_posted).time}
                           </span>
                         </div>
-                        <h5 className="job-title mb-1">
+                        <h5 className="job-title  d-flex align-items-center mb-1">
                           {job.title}
                           <span
                             className={`badge ms-2 ${
@@ -559,13 +565,18 @@ function Jobs() {
                             {job.job_type}
                           </span>
                           {job.is_expired && (
-                            <span className="expired__badge__ ms-2">
+                            <span className="badge bg-danger txt__regular__  ms-2">
                               Expired
+                            </span>
+                          )}
+                          {job.status === "closed" && (
+                            <span className="badge bg-secondary txt__regular__  ms-2">
+                              Job Closed
                             </span>
                           )}
                           {/* Applied status for all jobs tab */}
                           {activeTab === "all" && job.is_applied && (
-                            <span className="badge bg-success  txt__regular__sub__ ml-2">
+                            <span className="badge bg-success  txt__regular__ ml-2">
                               Applied
                             </span>
                           )}
@@ -573,13 +584,18 @@ function Jobs() {
                         <p className="job-school  mb-1">{job.school_name}</p>
 
                         <p className="job-school mb-1">
-                          <FaLocationArrow style={{ marginRight: 4 }} />{" "}
+                          <MdLocationPin style={{ marginRight: 4 }} />{" "}
                           {job.location}
                         </p>
                         <p className="job-description mb-0">
-                          {job.description.length > 200
-                            ? job.description.slice(0, 200) + "..."
-                            : job.description}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html:
+                                job.description.length > 200
+                                  ? job.description.slice(0, 200) + "..."
+                                  : job.description,
+                            }}
+                          />
                         </p>
                       </div>
                     </div>
@@ -597,7 +613,11 @@ function Jobs() {
                         }}
                         disabled={savingJobId === job.id}
                       >
-                        {job.is_saved ? <FaBookmark /> : <FaRegBookmark />}
+                        {job.is_saved ? (
+                          <FaBookmark style={{ color: "#0d3b85" }} />
+                        ) : (
+                          <FaRegBookmark />
+                        )}
                       </button>
                     </div>
                   </div>

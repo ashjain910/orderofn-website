@@ -12,138 +12,175 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
   teacher,
 }) => {
   if (!show || !teacher) return null;
+  const profile = teacher.teacher_profile || {};
   return (
-    <React.Fragment>
-      <div
-        className="modal fade show"
-        style={{ display: "block", background: "rgba(0,0,0,0.4)" }}
-        tabIndex={-1}
-      >
-        <div className="modal-dialog modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Teacher Details</h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={onClose}
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div className="row">
-                <div className="col-md-6 mb-2">
-                  <strong>Name:</strong> {teacher.full_name || "-"}
+    <div
+      className="modal fade show"
+      style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+      tabIndex={-1}
+    >
+      <div className="modal-dialog modal-lg">
+        <div className="modal-content p-0" style={{ background: "#f8f9fa" }}>
+          {/* Cover Banner */}
+          <div
+            className=" d-flex"
+            style={{
+              height: "120px",
+              background: "#e6f2ff",
+              borderTopLeftRadius: "8px",
+              borderTopRightRadius: "8px",
+              borderBottomLeftRadius: "20px",
+              borderBottomRightRadius: "20px",
+            }}
+          >
+            {/* Name + Email + Location */}
+            <div className="col d-flex flex-grid gap-3 align-items-center p-2">
+              {/* Avatar (first letter) */}
+              <div className="col-auto">
+                <div
+                  className="rounded-circle d-flex  align-items-center justify-content-center"
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    border: "4px solid #fff",
+                    background: "#0d3b85",
+                    color: "#fff",
+                    fontSize: "48px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {teacher.full_name ? teacher.full_name[0].toUpperCase() : "?"}
                 </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Email:</strong> {teacher.email || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Phone:</strong> {teacher.phone || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Role:</strong> {teacher.teacher_profile?.role || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Qualified:</strong>{" "}
-                  {teacher.teacher_profile?.qualified || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>English:</strong>{" "}
-                  {teacher.teacher_profile?.english || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Position:</strong>{" "}
-                  {teacher.teacher_profile?.position || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Gender:</strong>{" "}
-                  {teacher.teacher_profile?.gender || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Nationality:</strong>{" "}
-                  {teacher.teacher_profile?.nationality || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Second Nationality:</strong>{" "}
-                  {teacher.teacher_profile?.second_nationality ? "Yes" : "No"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Subject:</strong>{" "}
-                  {teacher.teacher_profile?.subject || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Leadership Role:</strong>{" "}
-                  {teacher.teacher_profile?.leadership_role || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Age Group:</strong> {teacher.age_group || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Available Day:</strong> {teacher.available_day || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Available From:</strong>{" "}
-                  {teacher.available_from || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Available Month:</strong>{" "}
-                  {teacher.available_month || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Available Year:</strong>{" "}
-                  {teacher.available_year || "-"}
-                </div>
-                <div className="col-md-12 mb-2">
-                  <strong>Curriculum:</strong>{" "}
-                  {Array.isArray(teacher.teacher_profile?.curriculum)
-                    ? teacher.teacher_profile.curriculum.join(", ")
-                    : teacher.teacher_profile?.curriculum || "-"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Job Alerts:</strong>{" "}
-                  {teacher.teacher_profile?.job_alerts ? "Yes" : "No"}
-                </div>
-                <div className="col-md-6 mb-2">
-                  <strong>Total Applications:</strong>{" "}
-                  {teacher.teacher_profile?.total_applications || "-"}
-                </div>
-                <div className="col-md-12 mb-2">
-                  <strong>CV File:</strong>{" "}
-                  {teacher.teacher_profile?.cv_file ? (
-                    <a
-                      href={teacher.teacher_profile.cv_file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Download
-                    </a>
-                  ) : (
-                    "-"
+              </div>
+              <div className="">
+                <h4 className="mb-1">{teacher.full_name}</h4>
+                <p className="txt__regular__ mb-0">
+                  {teacher.email}
+                  {teacher.location ? ` • ${teacher.location}` : ""}
+                </p>
+                <div className="mt-2 d-flex gap-2">
+                  {profile.role && (
+                    <span className="txt__small__ ">{profile.role || "-"}</span>
                   )}
-                </div>
-                <div className="col-md-12 mb-2">
-                  <strong>Created At:</strong>{" "}
-                  {teacher.teacher_profile?.created_at || "-"}
-                </div>
-                <div className="col-md-12 mb-2">
-                  <strong>Updated At:</strong>{" "}
-                  {teacher.teacher_profile?.updated_at || "-"}
                 </div>
               </div>
             </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={onClose}
-              >
-                Close
-              </button>
+            <button
+              type="button"
+              className="btn-close ms-auto p-3"
+              aria-label="Close"
+              onClick={onClose}
+            ></button>
+          </div>
+
+          {/* Profile Data Only */}
+          <div className="container bg-white p-4 rounded shadow-sm">
+            {/* --- Section: Subject --- */}
+            <div className="row py-2">
+              <div className="col-6 text-muted">Subjects</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.subject || "-"}
+              </div>
+            </div>
+            <div className="row py-2 border-bottom">
+              <div className="col-6 text-muted">Curriculum</div>
+              <div className="col-6 text-end fw-semibold">
+                {Array.isArray(profile.curriculum)
+                  ? profile.curriculum.join(", ")
+                  : profile.curriculum || "-"}
+              </div>
+            </div>
+
+            {/* --- Section: Details --- */}
+            <h5 className="fw-semibold mt-4 mb-3">Details</h5>
+            <div className="row py-2">
+              <div className="col-6 text-muted">Qualified</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.qualified ? "Yes" : "No"}
+              </div>
+            </div>
+            <div className="row py-2">
+              <div className="col-6 text-muted">English</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.english || "-"}
+              </div>
+            </div>
+            <div className="row py-2">
+              <div className="col-6 text-muted">Position</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.position || "-"}
+              </div>
+            </div>
+            <div className="row py-2">
+              <div className="col-6 text-muted">Gender</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.gender || "-"}
+              </div>
+            </div>
+            <div className="row py-2">
+              <div className="col-6 text-muted">Nationality</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.nationality || "-"}
+              </div>
+            </div>
+            <div className="row py-2 border-bottom">
+              <div className="col-6 text-muted">Second Nationality</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.second_nationality ? "Yes" : "No"}
+              </div>
+            </div>
+
+            {/* --- Section: Availability --- */}
+            <h5 className="fw-semibold mt-4 mb-3">Availability</h5>
+            <div className="row py-2">
+              <div className="col-6 text-muted">Age Group</div>
+              <div className="col-6 text-end fw-semibold">
+                {teacher.teacher_profile.age_group || "-"}
+              </div>
+            </div>
+            <div className="row py-2">
+              <div className="col-6 text-muted">Available from</div>
+              <div className="col-6 text-end fw-semibold">
+                {teacher.teacher_profile.available_from || "-"}
+              </div>
+            </div>
+            {/* --- Section: Job Alerts --- */}
+            <h5 className="fw-semibold mt-4 mb-3">Job Alerts</h5>
+            <div className="row py-2 border-bottom">
+              <div className="col-6 text-muted">Job Alerts</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.job_alerts ? "Yes" : "No"}
+              </div>
+            </div>
+
+            {/* --- Section: Applications --- */}
+            <h5 className="fw-semibold mt-4 mb-3">Applications</h5>
+            <div className="row py-2">
+              <div className="col-6 text-muted">Total Applications</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.total_applications || "-"}
+              </div>
+            </div>
+            <div className="row py-2 ">
+              <div className="col-6 text-muted">CV File</div>
+              <div className="col-6 text-end fw-semibold">
+                {profile.cv_file ? (
+                  <a
+                    href={profile.cv_file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download
+                  </a>
+                ) : (
+                  "-"
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </React.Fragment>
+    </div>
   );
 };
 

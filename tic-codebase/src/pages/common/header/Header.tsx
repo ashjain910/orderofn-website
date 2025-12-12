@@ -55,13 +55,20 @@ function NavScrollExample() {
               >
                 Jobs
               </Nav.Link>
-              {/* <Nav.Link
+              <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/settings"}
                 onClick={() => navigate("/settings")}
               >
                 My settings
-              </Nav.Link> */}
+              </Nav.Link>
+              <Nav.Link
+                className="mr-20"
+                active={location.pathname === "/subscription-plans"}
+                onClick={() => navigate("/subscription-plans")}
+              >
+                Subscription
+              </Nav.Link>
               <div className="d-flex">
                 <img
                   src="/tic/profile_image.jpg"
@@ -78,6 +85,9 @@ function NavScrollExample() {
                   title={user?.full_name || "User"}
                   id="navbarScrollingDropdown"
                 >
+                  <NavDropdown.Item onClick={() => navigate("/user-profile")}>
+                    Profile
+                  </NavDropdown.Item>
                   <NavDropdown.Item onClick={() => logout()}>
                     Logout
                   </NavDropdown.Item>

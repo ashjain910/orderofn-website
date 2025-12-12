@@ -76,6 +76,7 @@ export default function AdminHeader() {
               >
                 Jobs
               </Nav.Link>
+
               <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/admin/teachers"}

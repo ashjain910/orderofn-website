@@ -6,22 +6,22 @@ interface Step5Props {
 }
 
 function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
-  const months = [
-    { label: "January", value: "01" },
-    { label: "February", value: "02" },
-    { label: "March", value: "03" },
-    { label: "April", value: "04" },
-    { label: "May", value: "05" },
-    { label: "June", value: "06" },
-    { label: "July", value: "07" },
-    { label: "August", value: "08" },
-    { label: "September", value: "09" },
-    { label: "October", value: "10" },
-    { label: "November", value: "11" },
-    { label: "December", value: "12" },
-  ];
-  const years = Array.from({ length: 60 }, (_, i) => 2025 - i);
+  // const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  // const months = [
+  //   { label: "January", value: "01" },
+  //   { label: "February", value: "02" },
+  //   { label: "March", value: "03" },
+  //   { label: "April", value: "04" },
+  //   { label: "May", value: "05" },
+  //   { label: "June", value: "06" },
+  //   { label: "July", value: "07" },
+  //   { label: "August", value: "08" },
+  //   { label: "September", value: "09" },
+  //   { label: "October", value: "10" },
+  //   { label: "November", value: "11" },
+  //   { label: "December", value: "12" },
+  // ];
+  // const years = Array.from({ length: 60 }, (_, i) => 2025 - i);
 
   return (
     <div className="step-left">
@@ -79,45 +79,15 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
             <div className="date-row d-flex gap-3">
               <select
                 className="form-select"
-                value={formData.day || ""}
+                value={formData.availableYear || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, day: e.target.value })
+                  setFormData({ ...formData, availableYear: e.target.value })
                 }
               >
-                <option value="">Day</option>
-                {days.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className="form-select"
-                value={formData.month || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, month: e.target.value })
-                }
-              >
-                <option value="">Month</option>
-                {months.map((m) => (
-                  <option key={m.value} value={m.value}>
-                    {m.label}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className="form-select"
-                value={formData.year || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, year: e.target.value })
-                }
-              >
-                <option value="">Year</option>
-                {years.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
+                <option value="">Select year</option>
+                {Array.from({ length: 5 }, (_, i) => 2025 + i).map((year) => (
+                  <option key={year} value={year}>
+                    {year}
                   </option>
                 ))}
               </select>

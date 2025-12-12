@@ -309,6 +309,11 @@ ul {
   font-size: 14px !important;
 }
 
+.txt__regular__bold__ {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+}
+
 .txt__regular__sub__ {
   font-weight: 400 !important;
   font-size: 12px !important;
@@ -567,4 +572,41 @@ textarea.form-control {
 }
 .table-responsive {
     overflow-x: unset !important;
+}
+
+.modal-title{
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+.job__closed__ {
+    background-color: #fff4f5 !important;
+    border: 2px solid #ffacac !important;
+}
+.txt__small__{
+  font-size: 13px;
+}
+.note_card {
+    background-color: #ffffff !important;
+    border: 1px solid #b8d3ff !important;
+    font-size: 12px !important;
+    padding: 10px !important;
+}
+.note_card_ad ul {
+   font-size: 14px !important;
+   font-weight: 400 !important;
+   padding-left: 20px !important;
+}
+.note_card_ad{
+    background-color: #d1e3ff !important;
+    border: 1px solid #b8d3ff !important;
+    font-size: 12px !important;
+    padding: 10px !important;    
+}
+.job-title{
+  font-size: 20px !important;
+    font-weight: 700 !important;
+}
+.job-sub-title{
+  font-size: 16px !important;
+  font-weight: 600 !important;
 }

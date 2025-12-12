@@ -1,9 +1,31 @@
+import { toast } from "react-toastify";
 type Step1Props = {
   formData: any;
   setFormData: (d: any) => void;
   nextStep: () => void;
 };
 export default function Step1({ formData, setFormData, nextStep }: Step1Props) {
+  const handleNextStep = () => {
+    // Required fields
+    if (
+      !formData.email ||
+      !formData.phone_number ||
+      !formData.password ||
+      !formData.qualified ||
+      !formData.english ||
+      !formData.position ||
+      (Array.isArray(formData.position) && formData.position.length === 0)
+    ) {
+      toast.error("Please fill all required fields.");
+      return;
+    }
+    // Password validation
+    if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters.");
+      return;
+    }
+    nextStep();
+  };
   return (
     <div className="step-left">
       <div className="step-card">
@@ -72,9 +94,9 @@ export default function Step1({ formData, setFormData, nextStep }: Step1Props) {
             placeholder="Set password"
             className="form-control"
             value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
+            onChange={(e) => {
+              setFormData({ ...formData, password: e.target.value });
+            }}
           />
         </div>
         {/* Qualified Teacher */}
@@ -171,58 +193,48 @@ export default function Step1({ formData, setFormData, nextStep }: Step1Props) {
           </span>
         </label>
         <div className="d-flex gap-3">
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="position"
-              id="positionTeacher"
-              value="teacher"
-              checked={formData.position === "teacher"}
-              onChange={(e) =>
-                setFormData({ ...formData, position: e.target.value })
-              }
-            />
-            <label className="form-check-label ml-2" htmlFor="positionTeacher">
-              Teacher
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="position"
-              id="positionLeader"
-              value="leader"
-              checked={formData.position === "leader"}
-              onChange={(e) =>
-                setFormData({ ...formData, position: e.target.value })
-              }
-            />
-            <label className="form-check-label ml-2" htmlFor="positionLeader">
-              Senior Leader
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="position"
-              id="positionOther"
-              value="other"
-              checked={formData.position === "other"}
-              onChange={(e) =>
-                setFormData({ ...formData, position: e.target.value })
-              }
-            />
-            <label className="form-check-label ml-2" htmlFor="positionOther">
-              Other
-            </label>
-          </div>
+          {[
+            { label: "Teacher", value: "teacher" },
+            { label: "Senior Leader", value: "leader" },
+            { label: "Other", value: "other" },
+          ].map((option) => (
+            <div className="form-check" key={option.value}>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id={`position_${option.value}`}
+                value={option.value}
+                checked={
+                  Array.isArray(formData.position) &&
+                  formData.position.includes(option.value)
+                }
+                onChange={(e) => {
+                  let newPositions = Array.isArray(formData.position)
+                    ? [...formData.position]
+                    : [];
+                  if (e.target.checked) {
+                    if (!newPositions.includes(option.value))
+                      newPositions.push(option.value);
+                  } else {
+                    newPositions = newPositions.filter(
+                      (v) => v !== option.value
+                    );
+                  }
+                  setFormData({ ...formData, position: newPositions });
+                }}
+              />
+              <label
+                className="form-check-label ml-2"
+                htmlFor={`position_${option.value}`}
+              >
+                {option.label}
+              </label>
+            </div>
+          ))}
         </div>
 
         <div className="mt-3 d-flex justify-content-end">
-          <button className="btn btn-primary " onClick={nextStep}>
+          <button className="btn btn-primary " onClick={handleNextStep}>
             Next
           </button>
         </div>

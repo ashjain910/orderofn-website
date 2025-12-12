@@ -20,6 +20,9 @@ import MyTeachers from "./pages/admin/MyTeachers";
 import AdminJobDetail from "./pages/admin/AdminJobDetail";
 import PostJob from "./pages/admin/post-jobs";
 import { ToastContainer } from "react-toastify";
+import UserProfile from "./pages/user-profile/UserProfile";
+import SubscriptionPlans from "./pages/user/SubscriptionPlans";
+
 function App() {
   // const [count, setCount] = useState(0);
 
@@ -39,6 +42,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/manage-job-alert" element={<ManageJobAlert />} />
+            <Route path="/user-profile" element={<UserProfile />} />
+            <Route path="/subscription-plans" element={<SubscriptionPlans />} />
           </Route>
         </Route>
 

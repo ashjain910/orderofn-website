@@ -1,29 +1,62 @@
 import React, { useState } from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import "./PostJobModal.css";
 import AdminBaseApi from "../../services/admin-base";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import type { MultiValue } from "react-select";
 import { toast } from "react-toastify";
 import { toastOptions } from "../../utils/toastOptions";
+
+const benefitOptions = [
+  { value: "medical_insurance", label: "Medical Insurance" },
+  { value: "annual_flight", label: "Annual Flight" },
+  { value: "housing", label: "Housing" },
+  { value: "tuition_concession", label: "Tuition Concession" },
+];
 
 export interface PostJobModalProps {
   show: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  initialValues?: {
-    id?: number;
-    title?: string;
-    school_name?: string;
-    job_type?: string;
-    school_type?: string;
-    subjects?: any[];
-    description?: string;
-    location?: string;
-    gender_preference?: string;
-    closing_date?: Date | string | null;
-  };
+  initialValues?: PostJobModalInitialValues;
 }
+
+export interface PostJobModalInitialValues {
+  position?: string;
+  position_type?: any[];
+  package?: string;
+  contract_type?: string;
+  curriculum?: any[];
+  education_stage?: any[];
+  school_type_multi?: any[];
+  closing_date?: Date | string | null;
+  summary?: string;
+  requirements?: string;
+  description?: string;
+  international_package?: string;
+  salary?: string;
+  benefits?: any[];
+  job_start_date?: Date | string | null;
+}
+
+const positionTypeOptions = [
+  { value: "Teacher", label: "Teacher" },
+  { value: "Deputy Principal", label: "Deputy Principal" },
+  { value: "Head of School", label: "Head of School" },
+];
+const curriculumOptions = [{ value: "IB PYP", label: "IB PYP" }];
+const educationStageOptions = [
+  { value: "Early Years", label: "Early Years" },
+  { value: "Primary", label: "Primary" },
+  { value: "Secondary", label: "Secondary" },
+  { value: "Whole School", label: "Whole School" },
+];
+const schoolTypeMultiOptions = [
+  { value: "Public", label: "Public" },
+  { value: "International", label: "International" },
+];
 
 export default function PostJobModal({
   show,
@@ -31,52 +64,38 @@ export default function PostJobModal({
   onSuccess,
   initialValues,
 }: PostJobModalProps) {
-  type SubjectOption = { value: string; label: string };
-  const [form, setForm] = useState({
-    title: initialValues?.title || "",
-    school_name: initialValues?.school_name || "",
-    job_type: initialValues?.job_type || "",
-    school_type: initialValues?.school_type || "",
-    subjects: initialValues?.subjects
-      ? initialValues.subjects.map((s: any) =>
-          typeof s === "object" && s.value && s.label
-            ? s
-            : { value: s, label: s }
-        )
-      : [],
-    description: initialValues?.description || "",
-    location: initialValues?.location || "",
-    gender_preference: initialValues?.gender_preference || "",
+  const [form, setForm] = useState(() => ({
+    position: initialValues?.position || "",
+    position_type: initialValues?.position_type || [],
+    package: initialValues?.package || "",
+    contract_type: initialValues?.contract_type || "",
+    curriculum: initialValues?.curriculum || [],
+    education_stage: initialValues?.education_stage || [],
+    school_type_multi: initialValues?.school_type_multi || [],
     closing_date: initialValues?.closing_date
       ? typeof initialValues.closing_date === "string"
         ? new Date(initialValues.closing_date)
         : initialValues.closing_date
       : null,
-  });
-  const subjectOptions: SubjectOption[] = [
-    { value: "Math", label: "Math" },
-    { value: "Science", label: "Science" },
-    { value: "English", label: "English" },
-    { value: "History", label: "History" },
-    { value: "Art", label: "Art" },
-    { value: "Physical Education", label: "Physical Education" },
-    { value: "Other", label: "Other" },
-  ];
-  const jobTypes = [
-    { title: "Casual", value: "casual" },
-    { title: "Remote", value: "remote" },
-    { title: "Part-time", value: "part-time" },
-    { title: "Full-time", value: "full-time" },
-  ];
-  const schoolTypes = [
-    { title: "Public", value: "public" },
-    { title: "Private", value: "private" },
-    { title: "Charter", value: "charter" },
-    { title: "International", value: "international" },
-  ];
+    summary: initialValues?.summary || "",
+    requirements: initialValues?.requirements || "",
+    description: initialValues?.description || "",
+    international_package: initialValues?.international_package || "",
+    salary: initialValues?.salary || "",
+    benefits: initialValues?.benefits
+      ? initialValues.benefits.map((b: any) =>
+          typeof b === "object" && b.value && b.label
+            ? b
+            : { value: b, label: b }
+        )
+      : [],
+    job_start_date: initialValues?.job_start_date
+      ? typeof initialValues.job_start_date === "string"
+        ? new Date(initialValues.job_start_date)
+        : initialValues.job_start_date
+      : null,
+  }));
   const [errors, setErrors] = useState<any>({});
-
-  // Clear errors when modal is closed
   React.useEffect(() => {
     if (!show) {
       setErrors({});
@@ -86,17 +105,76 @@ export default function PostJobModal({
 
   const validate = () => {
     const newErrors: any = {};
-    if (!form.title) newErrors.title = "Job title is required";
-    if (!form.school_name) newErrors.school_name = "School name is required";
-    if (!form.job_type) newErrors.job_type = "Job type is required";
-    if (!form.school_type) newErrors.school_type = "School type is required";
-    if (!form.subjects || form.subjects.length === 0)
-      newErrors.subjects = "Subject is required";
-    // if (!form.summary) newErrors.summary = "Summary is required";
-    if (!form.description) newErrors.description = "Description required";
-    if (!form.location) newErrors.location = "Location required";
-    if (!form.closing_date) newErrors.closing_date = "Close date required";
-    // if (!form.requirements) newErrors.requirements = "Requirements required";
+    // Only validate a field if it is empty or not entered
+    if (
+      form.position === undefined ||
+      form.position === null ||
+      form.position === ""
+    )
+      newErrors.position = "Position is required";
+    if (!Array.isArray(form.position_type) || form.position_type.length === 0)
+      newErrors.position_type = "Position type is required";
+    if (
+      form.package === undefined ||
+      form.package === null ||
+      form.package === ""
+    )
+      newErrors.package = "Package is required";
+    if (
+      form.contract_type === undefined ||
+      form.contract_type === null ||
+      form.contract_type === ""
+    )
+      newErrors.contract_type = "Contract type is required";
+    if (!Array.isArray(form.curriculum) || form.curriculum.length === 0)
+      newErrors.curriculum = "Curriculum is required";
+    if (
+      !Array.isArray(form.education_stage) ||
+      form.education_stage.length === 0
+    )
+      newErrors.education_stage = "Education stage is required";
+    if (
+      !Array.isArray(form.school_type_multi) ||
+      form.school_type_multi.length === 0
+    )
+      newErrors.school_type_multi = "School type is required";
+    if (!form.closing_date) newErrors.closing_date = "Closing date is required";
+    if (
+      form.summary === undefined ||
+      form.summary === null ||
+      form.summary.trim() === ""
+    )
+      newErrors.summary = "Job summary is required";
+    if (
+      form.requirements === undefined ||
+      form.requirements === null ||
+      form.requirements.trim() === ""
+    )
+      newErrors.requirements = "Job requirements are required";
+    if (
+      form.description === undefined ||
+      form.description === null ||
+      form.description === ""
+    )
+      newErrors.description = "Job description is required";
+    if (
+      form.international_package === undefined ||
+      form.international_package === null ||
+      form.international_package === ""
+    )
+      newErrors.international_package = "International package is required";
+    if (
+      form.international_package === "competitive" &&
+      (form.salary === undefined ||
+        form.salary === null ||
+        form.salary.trim() === "")
+    ) {
+      newErrors.salary = "Salary is required for competitive package";
+    }
+    if (!Array.isArray(form.benefits) || form.benefits.length === 0)
+      newErrors.benefits = "At least one benefit is required";
+    if (!form.job_start_date)
+      newErrors.job_start_date = "Start date is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -114,21 +192,11 @@ export default function PostJobModal({
         return `${year}-${month}-${day}`;
       };
       let response;
-      if (initialValues && initialValues.id) {
-        // Editing existing job
-        response = await AdminBaseApi.put(`/jobs/${initialValues.id}/update`, {
-          ...form,
-          subjects: form.subjects.map((s) => s.value),
-          closing_date: formatDate(form.closing_date),
-        });
-      } else {
-        // Creating new job
-        response = await AdminBaseApi.post("/jobs/create", {
-          ...form,
-          subjects: form.subjects.map((s) => s.value),
-          closing_date: formatDate(form.closing_date),
-        });
-      }
+      // Only create new job, editing by id is not supported with current fields
+      response = await AdminBaseApi.post("/jobs/create", {
+        ...form,
+        closing_date: formatDate(form.closing_date),
+      });
       if (response.status === 200 || response.status === 201) {
         const msg =
           response.data?.message ||
@@ -137,15 +205,21 @@ export default function PostJobModal({
             : "Job posted successfully!");
         toast.success(msg, toastOptions);
         setForm({
-          title: "",
-          school_name: "",
-          job_type: "",
-          school_type: "",
-          subjects: [],
-          description: "",
-          location: "",
-          gender_preference: "",
+          position: "",
+          position_type: [],
+          package: "",
+          contract_type: "",
+          curriculum: [],
+          education_stage: [],
+          school_type_multi: [],
           closing_date: null,
+          summary: "",
+          requirements: "",
+          description: "",
+          international_package: "",
+          salary: "",
+          benefits: [],
+          job_start_date: null,
         });
         setErrors({});
         if (onSuccess) onSuccess();
@@ -170,6 +244,8 @@ export default function PostJobModal({
     }
     setLoading(false);
   };
+
+  if (!show) return null;
 
   if (!show) return null;
 
@@ -207,73 +283,168 @@ export default function PostJobModal({
             ) : (
               <form onSubmit={handleSubmit} autoComplete="off">
                 <div className="row">
-                  {/* Job Title */}
+                  {/* Position */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
-                      <label className="form-label">Job Title</label>
+                      <label className="form-label">Position</label>
                       <input
                         type="text"
                         className={`form-control ${
-                          errors.title ? "is-invalid" : ""
+                          errors.position ? "is-invalid" : ""
                         }`}
-                        value={form.title}
-                        onChange={(e) =>
-                          setForm({ ...form, title: e.target.value })
-                        }
-                        placeholder="Enter job title"
+                        value={form.position}
+                        onChange={(e) => {
+                          setForm({ ...form, position: e.target.value });
+                          if (errors.position)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              position: undefined,
+                            }));
+                        }}
+                        placeholder="Enter position"
                       />
-                      {errors.title && (
-                        <div className="invalid-feedback">{errors.title}</div>
-                      )}
-                    </div>
-                  </div>
-                  {/* School Name */}
-                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div className="mb-3">
-                      <label className="form-label">School Name</label>
-                      <input
-                        type="text"
-                        className={`form-control ${
-                          errors.school_name ? "is-invalid" : ""
-                        }`}
-                        value={form.school_name}
-                        onChange={(e) =>
-                          setForm({ ...form, school_name: e.target.value })
-                        }
-                        placeholder="Enter school name"
-                      />
-                      {errors.school_name && (
+                      {errors.position && (
                         <div className="invalid-feedback">
-                          {errors.school_name}
+                          {errors.position}
                         </div>
                       )}
                     </div>
                   </div>
-                  {/* Job Type */}
+                  {/* Position Type */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
-                      <label className="form-label">Job Type</label>
-                      <select
-                        className={`form-select ${
-                          errors.job_type ? "is-invalid" : ""
+                      <label className="form-label">Position Type</label>
+                      <Select
+                        isMulti
+                        options={positionTypeOptions}
+                        closeMenuOnSelect={false}
+                        value={form.position_type}
+                        onChange={(selected: any) => {
+                          setForm({ ...form, position_type: selected });
+                          if (errors.position_type)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              position_type: undefined,
+                            }));
+                        }}
+                        placeholder="Select position type(s)"
+                      />
+                      {errors.position_type && (
+                        <div
+                          className="invalid-feedback"
+                          style={{ display: "block" }}
+                        >
+                          {errors.position_type}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Package */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Package</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.package ? "is-invalid" : ""
                         }`}
-                        value={form.job_type}
-                        onChange={(e) =>
-                          setForm({ ...form, job_type: e.target.value })
-                        }
-                      >
-                        <option value="" disabled>
-                          Select job type
-                        </option>
-                        {jobTypes.map((type) => (
-                          <option key={type.value} value={type.value}>
-                            {type.title}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.job_type && (
+                        value={form.package}
+                        onChange={(e) => {
+                          setForm({ ...form, package: e.target.value });
+                          if (errors.package)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              package: undefined,
+                            }));
+                        }}
+                        placeholder="Enter package"
+                      />
+                      {errors.package && (
+                        <div className="invalid-feedback">{errors.package}</div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Contract Type */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Contract Type</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.contract_type ? "is-invalid" : ""
+                        }`}
+                        value={form.contract_type}
+                        onChange={(e) => {
+                          setForm({ ...form, contract_type: e.target.value });
+                          if (errors.contract_type)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              contract_type: undefined,
+                            }));
+                        }}
+                        placeholder="Enter contract type"
+                      />
+                      {errors.contract_type && (
                         <div className="invalid-feedback">
-                          {errors.job_type}
+                          {errors.contract_type}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Curriculum */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Curriculum</label>
+                      <Select
+                        isMulti
+                        options={curriculumOptions}
+                        closeMenuOnSelect={false}
+                        value={form.curriculum}
+                        onChange={(selected: any) => {
+                          setForm({ ...form, curriculum: selected });
+                          if (errors.curriculum)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              curriculum: undefined,
+                            }));
+                        }}
+                        placeholder="Select curriculum(s)"
+                      />
+                      {errors.curriculum && (
+                        <div
+                          className="invalid-feedback"
+                          style={{ display: "block" }}
+                        >
+                          {errors.curriculum}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Education Stage */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Education Stage</label>
+                      <Select
+                        isMulti
+                        options={educationStageOptions}
+                        closeMenuOnSelect={false}
+                        value={form.education_stage}
+                        onChange={(selected: any) => {
+                          setForm({ ...form, education_stage: selected });
+                          if (errors.education_stage)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              education_stage: undefined,
+                            }));
+                        }}
+                        placeholder="Select education stage(s)"
+                      />
+                      {errors.education_stage && (
+                        <div
+                          className="invalid-feedback"
+                          style={{ display: "block" }}
+                        >
+                          {errors.education_stage}
                         </div>
                       )}
                     </div>
@@ -282,57 +453,27 @@ export default function PostJobModal({
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
                       <label className="form-label">School Type</label>
-                      <select
-                        className={`form-select ${
-                          errors.school_type ? "is-invalid" : ""
-                        }`}
-                        value={form.school_type}
-                        onChange={(e) =>
-                          setForm({ ...form, school_type: e.target.value })
-                        }
-                      >
-                        <option value="" disabled>
-                          Select school type
-                        </option>
-                        {schoolTypes.map((type) => (
-                          <option key={type.value} value={type.value}>
-                            {type.title}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.school_type && (
-                        <div className="invalid-feedback">
-                          {errors.school_type}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {/* Subject */}
-                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div className="mb-3">
-                      <label className="form-label">Subject</label>
-                      <Select<SubjectOption, true>
+                      <Select
                         isMulti
-                        options={subjectOptions}
+                        options={schoolTypeMultiOptions}
                         closeMenuOnSelect={false}
-                        value={form.subjects}
-                        onChange={(selected: MultiValue<SubjectOption>) =>
-                          setForm({
-                            ...form,
-                            subjects: Array.isArray(selected)
-                              ? (selected as SubjectOption[])
-                              : [],
-                          })
-                        }
-                        classNamePrefix={errors.subject ? "is-invalid" : ""}
-                        placeholder="Enter subject(s)..."
+                        value={form.school_type_multi}
+                        onChange={(selected: any) => {
+                          setForm({ ...form, school_type_multi: selected });
+                          if (errors.school_type_multi)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              school_type_multi: undefined,
+                            }));
+                        }}
+                        placeholder="Select school type(s)"
                       />
-                      {errors.subjects && (
+                      {errors.school_type_multi && (
                         <div
                           className="invalid-feedback"
                           style={{ display: "block" }}
                         >
-                          {errors.subjects}
+                          {errors.school_type_multi}
                         </div>
                       )}
                     </div>
@@ -343,9 +484,14 @@ export default function PostJobModal({
                       <label className="form-label">Closing Date</label>
                       <DatePicker
                         selected={form.closing_date}
-                        onChange={(date: Date | null) =>
-                          setForm({ ...form, closing_date: date })
-                        }
+                        onChange={(date: Date | null) => {
+                          setForm({ ...form, closing_date: date });
+                          if (errors.closing_date)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              closing_date: undefined,
+                            }));
+                        }}
                         className={`form-control ${
                           errors.closing_date ? "is-invalid" : ""
                         }`}
@@ -364,71 +510,286 @@ export default function PostJobModal({
                       )}
                     </div>
                   </div>
-                  {/* Location */}
+                  {/* International Package: Salary */}
                   <div className="col-lg-6 col-md-6 col-sm-12 col-12">
                     <div className="mb-3">
-                      <label className="form-label">Location</label>
-                      <input
-                        type="text"
-                        className={`form-control ${
-                          errors.location ? "is-invalid" : ""
-                        }`}
-                        value={form.location}
-                        onChange={(e) =>
-                          setForm({ ...form, location: e.target.value })
-                        }
-                        placeholder="Enter location"
-                      />
-                      {errors.location && (
-                        <div className="invalid-feedback">
-                          {errors.location}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {/* Gender Preference */}
-                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
-                    <div className="mb-3">
-                      <label className="form-label">Gender Preference</label>
+                      <label className="form-label">
+                        International Package: Salary
+                      </label>
                       <select
                         className={`form-select ${
-                          errors.gender_preference ? "is-invalid" : ""
+                          errors.international_package ? "is-invalid" : ""
                         }`}
-                        value={form.gender_preference}
-                        onChange={(e) =>
+                        value={form.international_package}
+                        onChange={(e) => {
                           setForm({
                             ...form,
-                            gender_preference: e.target.value,
-                          })
-                        }
+                            international_package: e.target.value,
+                            salary: "",
+                          });
+                          if (errors.international_package)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              international_package: undefined,
+                            }));
+                        }}
                       >
-                        <option value="">Select gender preference</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="others">Others</option>
-                        <option value="any">Any</option>
+                        <option value="">Select option</option>
+                        <option value="tbc">To Be confirmed</option>
+                        <option value="tax_free">Tax Free Salary</option>
+                        <option value="competitive">
+                          Competitive salary based on experience Visa
+                        </option>
                       </select>
-                      {errors.gender_preference && (
+                      {form.international_package === "competitive" && (
+                        <div
+                          className="input-group mt-2"
+                          style={{
+                            width: "150px",
+                            textAlign: "right",
+                            float: "right",
+                          }}
+                        >
+                          <span className="input-group-text">$</span>
+                          <input
+                            type="text"
+                            className={`form-control ${
+                              errors.salary ? "is-invalid" : ""
+                            }`}
+                            placeholder="Enter salary"
+                            value={form.salary}
+                            onChange={(e) => {
+                              setForm({
+                                ...form,
+                                salary: e.target.value,
+                              });
+                              if (errors.salary)
+                                setErrors((prev: any) => ({
+                                  ...prev,
+                                  salary: undefined,
+                                }));
+                            }}
+                          />
+                        </div>
+                      )}
+                      {errors.international_package && (
                         <div className="invalid-feedback">
-                          {errors.gender_preference}
+                          {errors.international_package}
+                        </div>
+                      )}
+                      {form.international_package === "competitive" &&
+                        errors.salary && (
+                          <div className="invalid-feedback">
+                            {errors.salary}
+                          </div>
+                        )}
+                    </div>
+                  </div>
+                  {/* Benefits */}
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Benefits</label>
+                      <Select
+                        isMulti
+                        options={benefitOptions}
+                        closeMenuOnSelect={false}
+                        value={form.benefits || []}
+                        onChange={(selected: any) => {
+                          setForm({
+                            ...form,
+                            benefits: Array.isArray(selected) ? selected : [],
+                          });
+                          if (errors.benefits)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              benefits: undefined,
+                            }));
+                        }}
+                        classNamePrefix={"react-select"}
+                        placeholder="Select benefits..."
+                      />
+                      {errors.benefits && (
+                        <div
+                          className="invalid-feedback"
+                          style={{ display: "block" }}
+                        >
+                          {errors.benefits}
                         </div>
                       )}
                     </div>
                   </div>
-                  {/* Description */}
+                  {/* Start Date */}
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Start Date</label>
+                      <DatePicker
+                        selected={form.job_start_date}
+                        onChange={(date: Date | null) => {
+                          setForm({ ...form, job_start_date: date });
+                          if (errors.job_start_date)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              job_start_date: undefined,
+                            }));
+                        }}
+                        className={`form-control ${
+                          errors.job_start_date ? "is-invalid" : ""
+                        }`}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Select start date"
+                        isClearable
+                      />
+                      {errors.job_start_date && (
+                        <div
+                          className="invalid-feedback"
+                          style={{ display: "block" }}
+                        >
+                          {errors.job_start_date}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Job Summary */}
                   <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                     <div className="mb-3">
-                      <label className="form-label">Description</label>
-                      <textarea
-                        className={`form-control ${
+                      <label className="form-label">Job Summary</label>
+                      <div
+                        className={`ckeditor-editor ${
+                          errors.summary ? "is-invalid" : ""
+                        }`}
+                      >
+                        {/* @ts-ignore: CKEditor5 ClassicEditor type incompatibility is safe to ignore */}
+                        <CKEditor
+                          // @ts-ignore
+                          editor={ClassicEditor}
+                          config={{
+                            toolbar: [
+                              "bold",
+                              "italic",
+                              "underline",
+                              "heading",
+                              "|",
+                              "bulletedList",
+                              "numberedList",
+                              "link",
+                              "|",
+                              "undo",
+                              "redo",
+                            ],
+                          }}
+                          data={form.summary}
+                          onChange={(_event: unknown, editor: any) => {
+                            const data = editor.getData();
+                            setForm((prev: any) => ({
+                              ...prev,
+                              summary: data,
+                            }));
+                            if (errors.summary)
+                              setErrors((prev: any) => ({
+                                ...prev,
+                                summary: undefined,
+                              }));
+                          }}
+                        />
+                      </div>
+                      {errors.summary && (
+                        <div className="invalid-feedback">{errors.summary}</div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Job Requirements */}
+                  <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Job Requirements</label>
+                      <div
+                        className={`ckeditor-editor ${
+                          errors.requirements ? "is-invalid" : ""
+                        }`}
+                      >
+                        {/* @ts-ignore: CKEditor5 ClassicEditor type incompatibility is safe to ignore */}
+                        <CKEditor
+                          // @ts-ignore
+                          editor={ClassicEditor}
+                          config={{
+                            toolbar: [
+                              "bold",
+                              "italic",
+                              "underline",
+                              "heading",
+                              "|",
+                              "bulletedList",
+                              "numberedList",
+                              "link",
+                              "|",
+                              "undo",
+                              "redo",
+                            ],
+                          }}
+                          data={form.requirements}
+                          onChange={(_event: unknown, editor: any) => {
+                            const data = editor.getData();
+                            setForm((prev: any) => ({
+                              ...prev,
+                              requirements: data,
+                            }));
+                            if (errors.requirements)
+                              setErrors((prev: any) => ({
+                                ...prev,
+                                requirements: undefined,
+                              }));
+                          }}
+                        />
+                      </div>
+                      {errors.requirements && (
+                        <div className="invalid-feedback">
+                          {errors.requirements}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Job Description */}
+                  <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Job Description</label>
+                      <div
+                        className={`ckeditor-editor ${
                           errors.description ? "is-invalid" : ""
                         }`}
-                        value={form.description}
-                        onChange={(e) =>
-                          setForm({ ...form, description: e.target.value })
-                        }
-                        rows={4}
-                      />
+                      >
+                        {/* @ts-ignore: CKEditor5 ClassicEditor type incompatibility is safe to ignore */}
+                        <CKEditor
+                          // @ts-ignore
+                          editor={ClassicEditor}
+                          config={{
+                            toolbar: [
+                              "bold",
+                              "italic",
+                              "underline",
+                              "heading",
+                              "|",
+                              "bulletedList",
+                              "numberedList",
+                              "link",
+                              "|",
+                              "undo",
+                              "redo",
+                            ],
+                          }}
+                          data={form.description}
+                          onChange={(_event: unknown, editor: any) => {
+                            const data = editor.getData();
+                            setForm((prev: any) => ({
+                              ...prev,
+                              description: data,
+                            }));
+                            if (errors.description)
+                              setErrors((prev: any) => ({
+                                ...prev,
+                                description: undefined,
+                              }));
+                          }}
+                        />
+                      </div>
                       {errors.description && (
                         <div className="invalid-feedback">
                           {errors.description}
@@ -443,13 +804,7 @@ export default function PostJobModal({
                     className="btn btn-primary d-flex justify-content-center align-items-center"
                     disabled={loading}
                   >
-                    {loading
-                      ? initialValues && initialValues.id
-                        ? "Updating..."
-                        : "Posting..."
-                      : initialValues && initialValues.id
-                      ? "Update Job"
-                      : "Post Job"}
+                    {loading ? "Posting..." : "Post Job"}
                   </button>
                 </div>
               </form>

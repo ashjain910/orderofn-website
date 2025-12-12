@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import AdminBaseApi from "../../services/admin-base";
-import { FaRegBookmark, FaBookmark, FaLocationArrow } from "react-icons/fa";
+import { FaRegBookmark, FaBookmark } from "react-icons/fa";
+import { MdLocationPin } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 const statusTabs = [
@@ -342,7 +343,7 @@ function Jobs() {
                             </span>
                           )}
                         </div>
-                        <h5 className="job-title mb-1">
+                        <h5 className="job-title d-flex align-items-center mb-1">
                           {job.title}
                           <span
                             className={`badge ms-2 ${
@@ -354,10 +355,16 @@ function Jobs() {
                             {job.job_type}
                           </span>
                           {job.is_expired && (
-                            <span className="expired__badge__ ms-2">
+                            <span className="badge bg-danger txt__regular__  ms-2">
                               Expired
                             </span>
                           )}
+                          {job.status === "closed" && (
+                            <span className="badge bg-secondary txt__regular__  ms-2">
+                              Job Closed
+                            </span>
+                          )}
+
                           {activeTab === "active" &&
                             job.status === "applied" && (
                               <span className="badge bg-success  txt__regular__sub__ ml-2">
@@ -367,14 +374,23 @@ function Jobs() {
                         </h5>
                         <p className="job-school  mb-1">{job.school_name}</p>
                         <p className="job-school mb-1">
-                          <FaLocationArrow style={{ marginRight: 4 }} />{" "}
+                          <MdLocationPin style={{ marginRight: 4 }} />{" "}
                           {job.location}
                         </p>
-                        <p className="job-description mb-0">
-                          {job.description.length > 200
-                            ? job.description.slice(0, 200) + "..."
-                            : job.description}
-                        </p>
+                        <div
+                          className="job-description mb-0"
+                          style={{ overflowWrap: "anywhere" }}
+                        >
+                          {/* Truncate HTML to 200 characters, preserving tags */}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html:
+                                job.description.length > 200
+                                  ? job.description.slice(0, 200) + "..."
+                                  : job.description,
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

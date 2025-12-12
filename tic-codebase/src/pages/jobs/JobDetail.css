@@ -1,9 +1,9 @@
 .upload-box__ {
   border: 1px dashed #000000;
   border-radius: 12px;
-  padding: 20px 10px;
+  padding: 10px 10px;
   background: #D8ECFF;
-  min-height: 150px;
+  min-height: 120px;
   position: relative;
   width: 100%;
 }
@@ -18,16 +18,15 @@
 .upload-icon__ {
   font-size: 40px;
   color: #888;
-  margin-bottom: 8px;
 }
 .upload-text__ {
   font-weight: 500;
-  font-size: 16px;
+  font-size: 14px;
   color: #333;
   margin-bottom: 4px;
 }
 .upload-note__ {
-  font-size: 13px;
+  font-size: 12px;
   color: #888;
 }
 .upload-input__ {

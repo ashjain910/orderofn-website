@@ -1,14 +1,6 @@
 // Helper to get a random color based on job title
 function getRandomColor(str: string) {
-  const colors = [
-    "#0d3b85",
-    "#0d3b85",
-    "#0d3b85",
-    "#0d3b85",
-    "#0d3b85",
-    "#0d3b85",
-    "#0d3b85",
-  ];
+  const colors = ["#0d3b85"];
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -17,6 +9,13 @@ function getRandomColor(str: string) {
   return colors[index];
 }
 import React, { useState } from "react";
+
+// Type for resume preview modal state
+type ResumeModalState = {
+  show: boolean;
+  url: string | null;
+  name: string;
+};
 import PostJobModal from "../../components/admin/PostJobModal";
 import { toast } from "react-toastify";
 import { toastOptions } from "../../utils/toastOptions";
@@ -27,10 +26,31 @@ import { FaChevronDown } from "react-icons/fa";
 function AdminJobDetail() {
   // Track loading state for status change per applicant
   const [statusLoadingIdx, setStatusLoadingIdx] = useState<number | null>(null);
-  // Handler for closing job
+  // State for confirmation modal
+  const [showCloseModal, setShowCloseModal] = useState(false);
+
+  // State for resume preview modal
+  const [resumeModal, setResumeModal] = useState<ResumeModalState>({
+    show: false,
+    url: null,
+    name: "Resume",
+  });
+  // State for cover letter preview modal
+  const [coverLetterModal, setCoverLetterModal] = useState<ResumeModalState>({
+    show: false,
+    url: null,
+    name: "Cover Letter",
+  });
+  // Handler for closing job with confirmation modal
   const handleCloseJob = async () => {
     if (!job?.id) return;
+    setShowCloseModal(true);
+  };
+  // Actual close job action
+  const confirmCloseJob = async () => {
+    if (!job?.id) return;
     setLoading(true);
+    setShowCloseModal(false);
     try {
       const closingDate = job.closing_date || new Date();
       const formattedDate =
@@ -69,6 +89,7 @@ function AdminJobDetail() {
     }
     setLoading(false);
   };
+  // ...existing code...
   // ...existing code...
   const [loading, setLoading] = React.useState(true);
   const formatDateTime = (utcString: string) => {
@@ -240,6 +261,50 @@ function AdminJobDetail() {
 
   return (
     <div className="container-fluid mt-5">
+      {/* Close Job Confirmation Modal */}
+      {showCloseModal && (
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+          tabIndex={-1}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Close"
+                  onClick={() => setShowCloseModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p className="txt__regular__">
+                  Are you sure you want to close the job{" "}
+                  <strong>{job.title}</strong>
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowCloseModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={confirmCloseJob}
+                >
+                  Close Job
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="row">
         <div className="col-lg-4 col-md-4 col-sm-12 col-12 ">
           <div className="col-12 d-flex justify-content-end mb-3">
@@ -294,7 +359,7 @@ function AdminJobDetail() {
               />
             )}
           </div>
-          <div className="card">
+          <div className={`card job__${job?.status}__`}>
             <div className="row">
               <div className="col-lg-9 col-md-9 col-sm-9 col-12">
                 <div className="d-flex" style={{ width: "100%" }}>
@@ -350,17 +415,26 @@ function AdminJobDetail() {
               </div>
             </div>
             <div className="row">
-              {/* <div className="col-lg-12 col-md-12 col-sm-12 col-12">
-                <h4 className="job__headings__admin mt-3">Job requirements</h4>
-                <p className="txt__regular__">{job.requirements}</p>
-              </div>
               <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                 <h4 className="job__headings__admin mt-3">Job Summary</h4>
-                <p className="txt__regular__">{job.summary}</p>
-              </div> */}
+                <p
+                  className="txt__regular__"
+                  dangerouslySetInnerHTML={{ __html: job.requirements }}
+                ></p>{" "}
+              </div>
+              <div className="col-lg-12 col-md-12 col-sm-12 col-12">
+                <h4 className="job__headings__admin mt-3">Job requirements</h4>
+                <p
+                  className="txt__regular__"
+                  dangerouslySetInnerHTML={{ __html: job.summary }}
+                ></p>{" "}
+              </div>
               <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                 <h4 className="job__headings__admin mt-3">Job Description</h4>
-                <p className="txt__regular__">{job.description}</p>
+                <p
+                  className="txt__regular__"
+                  dangerouslySetInnerHTML={{ __html: job.description }}
+                ></p>
               </div>
             </div>
           </div>
@@ -462,13 +536,100 @@ function AdminJobDetail() {
                               >
                                 Download:
                               </span>
-                              <a
-                                href={teacher?.applicant_profile?.resume || "#"}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                              <button
+                                className="btn btn-link p-0"
+                                style={{ fontSize: 14 }}
+                                onClick={() =>
+                                  setResumeModal({
+                                    show: true,
+                                    url: "https://pdfobject.com/pdf/sample.pdf", //teacher?.applicant_profile?.resume || null,
+                                    name: teacher?.applicant_name || "Resume",
+                                  })
+                                }
                               >
-                                Resume
-                              </a>
+                                View Resume
+                              </button>
+                              {/* Resume Preview Modal (rendered once at top level) */}
+                              {resumeModal.show && (
+                                <div
+                                  className="modal fade show"
+                                  style={{
+                                    display: "block",
+                                    background: "rgba(0,0,0,0.5)",
+                                  }}
+                                  tabIndex={-1}
+                                >
+                                  <div className="modal-dialog modal-lg">
+                                    <div className="modal-content">
+                                      <div className="modal-header">
+                                        <h5 className="modal-title">
+                                          {resumeModal.name}'s Resume
+                                        </h5>
+                                        <button
+                                          type="button"
+                                          className="btn-close"
+                                          aria-label="Close"
+                                          onClick={() =>
+                                            setResumeModal({
+                                              show: false,
+                                              url: null,
+                                              name: "Resume",
+                                            })
+                                          }
+                                        ></button>
+                                      </div>
+                                      <div
+                                        className="modal-body"
+                                        style={{ minHeight: 500 }}
+                                      >
+                                        {resumeModal.url &&
+                                        resumeModal.url.endsWith(".pdf") ? (
+                                          <iframe
+                                            src={resumeModal.url}
+                                            title="Resume Preview"
+                                            width="100%"
+                                            height="500px"
+                                            style={{ border: 0 }}
+                                          />
+                                        ) : resumeModal.url ? (
+                                          <div>
+                                            <a
+                                              href={resumeModal.url}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                            >
+                                              Open Resume
+                                            </a>
+                                            <p className="text-muted mt-2">
+                                              Preview not available. Click above
+                                              to open or download.
+                                            </p>
+                                          </div>
+                                        ) : (
+                                          <div className="text-danger">
+                                            No resume available.
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="modal-footer">
+                                        <button
+                                          type="button"
+                                          className="btn btn-secondary"
+                                          onClick={() =>
+                                            setResumeModal({
+                                              show: false,
+                                              url: null,
+                                              name: "Resume",
+                                            })
+                                          }
+                                        >
+                                          Close
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                               <span
                                 className="mx-2"
                                 style={{
@@ -477,16 +638,106 @@ function AdminJobDetail() {
                                   background: "#ccc",
                                 }}
                               ></span>
-                              <a
-                                href={
-                                  teacher?.applicant_profile?.cover_letter ||
-                                  "#"
+                              <button
+                                className="btn btn-link p-0"
+                                style={{ fontSize: 14 }}
+                                onClick={() =>
+                                  setCoverLetterModal({
+                                    show: true,
+                                    url: "https://pdfobject.com/pdf/sample.pdf", //teacher?.applicant_profile?.cover_letter || null,
+                                    name:
+                                      teacher?.applicant_name || "Cover Letter",
+                                  })
                                 }
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                disabled={
+                                  !teacher?.applicant_profile?.cover_letter
+                                }
                               >
-                                Cover Letter
-                              </a>
+                                View Cover Letter
+                              </button>
+                              {/* Cover Letter Preview Modal (rendered once at top level) */}
+                              {coverLetterModal.show && (
+                                <div
+                                  className="modal fade show"
+                                  style={{
+                                    display: "block",
+                                    background: "rgba(0,0,0,0.5)",
+                                  }}
+                                  tabIndex={-1}
+                                >
+                                  <div className="modal-dialog modal-lg">
+                                    <div className="modal-content">
+                                      <div className="modal-header">
+                                        <h5 className="modal-title">
+                                          {coverLetterModal.name}
+                                        </h5>
+                                        <button
+                                          type="button"
+                                          className="btn-close"
+                                          aria-label="Close"
+                                          onClick={() =>
+                                            setCoverLetterModal({
+                                              show: false,
+                                              url: null,
+                                              name: "Cover Letter",
+                                            })
+                                          }
+                                        ></button>
+                                      </div>
+                                      <div
+                                        className="modal-body"
+                                        style={{ minHeight: 500 }}
+                                      >
+                                        {coverLetterModal.url &&
+                                        coverLetterModal.url.endsWith(
+                                          ".pdf"
+                                        ) ? (
+                                          <iframe
+                                            src={coverLetterModal.url}
+                                            title="Cover Letter Preview"
+                                            width="100%"
+                                            height="500px"
+                                            style={{ border: 0 }}
+                                          />
+                                        ) : coverLetterModal.url ? (
+                                          <div>
+                                            <a
+                                              href={coverLetterModal.url}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                            >
+                                              Open Cover Letter
+                                            </a>
+                                            <p className="text-muted mt-2">
+                                              Preview not available. Click above
+                                              to open or download.
+                                            </p>
+                                          </div>
+                                        ) : (
+                                          <div className="text-danger">
+                                            No cover letter available.
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="modal-footer">
+                                        <button
+                                          type="button"
+                                          className="btn btn-secondary"
+                                          onClick={() =>
+                                            setCoverLetterModal({
+                                              show: false,
+                                              url: null,
+                                              name: "Cover Letter",
+                                            })
+                                          }
+                                        >
+                                          Close
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </td>
                           <td>

@@ -1,3 +1,153 @@
+// Add countries array
+export const countries = [
+  { code: "AF", name: "Afghanistan" },
+  { code: "AL", name: "Albania" },
+  { code: "DZ", name: "Algeria" },
+  { code: "AS", name: "American Samoa" },
+  { code: "AD", name: "Andorra" },
+  { code: "AO", name: "Angola" },
+  { code: "AR", name: "Argentina" },
+  { code: "AM", name: "Armenia" },
+  { code: "AU", name: "Australia" },
+  { code: "AT", name: "Austria" },
+  { code: "AZ", name: "Azerbaijan" },
+  { code: "BH", name: "Bahrain" },
+  { code: "BD", name: "Bangladesh" },
+  { code: "BY", name: "Belarus" },
+  { code: "BE", name: "Belgium" },
+  { code: "BZ", name: "Belize" },
+  { code: "BJ", name: "Benin" },
+  { code: "BT", name: "Bhutan" },
+  { code: "BO", name: "Bolivia" },
+  { code: "BA", name: "Bosnia and Herzegovina" },
+  { code: "BW", name: "Botswana" },
+  { code: "BR", name: "Brazil" },
+  { code: "BN", name: "Brunei Darussalam" },
+  { code: "BG", name: "Bulgaria" },
+  { code: "BF", name: "Burkina Faso" },
+  { code: "BI", name: "Burundi" },
+  { code: "KH", name: "Cambodia" },
+  { code: "CM", name: "Cameroon" },
+  { code: "CA", name: "Canada" },
+  { code: "CV", name: "Cape Verde" },
+  { code: "CF", name: "Central African Republic" },
+  { code: "TD", name: "Chad" },
+  { code: "CL", name: "Chile" },
+  { code: "CN", name: "China" },
+  { code: "CO", name: "Colombia" },
+  { code: "KM", name: "Comoros" },
+  { code: "CG", name: "Congo" },
+  { code: "CR", name: "Costa Rica" },
+  { code: "HR", name: "Croatia" },
+  { code: "CU", name: "Cuba" },
+  { code: "CY", name: "Cyprus" },
+  { code: "CZ", name: "Czech Republic" },
+  { code: "DK", name: "Denmark" },
+  { code: "DJ", name: "Djibouti" },
+  { code: "DM", name: "Dominica" },
+  { code: "DO", name: "Dominican Republic" },
+  { code: "EC", name: "Ecuador" },
+  { code: "EG", name: "Egypt" },
+  { code: "SV", name: "El Salvador" },
+  { code: "EE", name: "Estonia" },
+  { code: "ET", name: "Ethiopia" },
+  { code: "FI", name: "Finland" },
+  { code: "FR", name: "France" },
+  { code: "GE", name: "Georgia" },
+  { code: "DE", name: "Germany" },
+  { code: "GH", name: "Ghana" },
+  { code: "GR", name: "Greece" },
+  { code: "HK", name: "Hong Kong" },
+  { code: "HU", name: "Hungary" },
+  { code: "IS", name: "Iceland" },
+  { code: "IN", name: "India" },
+  { code: "ID", name: "Indonesia" },
+  { code: "IR", name: "Iran" },
+  { code: "IQ", name: "Iraq" },
+  { code: "IE", name: "Ireland" },
+  { code: "IL", name: "Israel" },
+  { code: "IT", name: "Italy" },
+  { code: "JM", name: "Jamaica" },
+  { code: "JP", name: "Japan" },
+  { code: "JO", name: "Jordan" },
+  { code: "KE", name: "Kenya" },
+  { code: "KR", name: "Korea" },
+  { code: "KW", name: "Kuwait" },
+  { code: "KG", name: "Kyrgyzstan" },
+  { code: "LA", name: "Lao" },
+  { code: "LV", name: "Latvia" },
+  { code: "LB", name: "Lebanon" },
+  { code: "LS", name: "Lesotho" },
+  { code: "LR", name: "Liberia" },
+  { code: "LY", name: "Libya" },
+  { code: "LT", name: "Lithuania" },
+  { code: "LU", name: "Luxembourg" },
+  { code: "MO", name: "Macao" },
+  { code: "MG", name: "Madagascar" },
+  { code: "MW", name: "Malawi" },
+  { code: "MY", name: "Malaysia" },
+  { code: "MV", name: "Maldives" },
+  { code: "ML", name: "Mali" },
+  { code: "MT", name: "Malta" },
+  { code: "MX", name: "Mexico" },
+  { code: "MD", name: "Moldova" },
+  { code: "MN", name: "Mongolia" },
+  { code: "ME", name: "Montenegro" },
+  { code: "MA", name: "Morocco" },
+  { code: "MZ", name: "Mozambique" },
+  { code: "MM", name: "Myanmar" },
+  { code: "NA", name: "Namibia" },
+  { code: "NP", name: "Nepal" },
+  { code: "NL", name: "Netherlands" },
+  { code: "NZ", name: "New Zealand" },
+  { code: "NG", name: "Nigeria" },
+  { code: "NO", name: "Norway" },
+  { code: "OM", name: "Oman" },
+  { code: "PK", name: "Pakistan" },
+  { code: "PA", name: "Panama" },
+  { code: "PG", name: "Papua New Guinea" },
+  { code: "PY", name: "Paraguay" },
+  { code: "PE", name: "Peru" },
+  { code: "PH", name: "Philippines" },
+  { code: "PL", name: "Poland" },
+  { code: "PT", name: "Portugal" },
+  { code: "QA", name: "Qatar" },
+  { code: "RO", name: "Romania" },
+  { code: "RU", name: "Russian Federation" },
+  { code: "RW", name: "Rwanda" },
+  { code: "SA", name: "Saudi Arabia" },
+  { code: "SN", name: "Senegal" },
+  { code: "RS", name: "Serbia" },
+  { code: "SG", name: "Singapore" },
+  { code: "SK", name: "Slovakia" },
+  { code: "SI", name: "Slovenia" },
+  { code: "ZA", name: "South Africa" },
+  { code: "ES", name: "Spain" },
+  { code: "LK", name: "Sri Lanka" },
+  { code: "SD", name: "Sudan" },
+  { code: "SE", name: "Sweden" },
+  { code: "CH", name: "Switzerland" },
+  { code: "SY", name: "Syria" },
+  { code: "TW", name: "Taiwan" },
+  { code: "TJ", name: "Tajikistan" },
+  { code: "TZ", name: "Tanzania" },
+  { code: "TH", name: "Thailand" },
+  { code: "TG", name: "Togo" },
+  { code: "TN", name: "Tunisia" },
+  { code: "TR", name: "Türkiye" },
+  { code: "UG", name: "Uganda" },
+  { code: "UA", name: "Ukraine" },
+  { code: "AE", name: "United Arab Emirates" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "US", name: "United States" },
+  { code: "UY", name: "Uruguay" },
+  { code: "UZ", name: "Uzbekistan" },
+  { code: "VE", name: "Venezuela" },
+  { code: "VN", name: "Viet Nam" },
+  { code: "YE", name: "Yemen" },
+  { code: "ZM", name: "Zambia" },
+  { code: "ZW", name: "Zimbabwe" },
+];
 type StepProps = {
   nextStep: () => void;
   prevStep: () => void;
@@ -24,7 +174,14 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
         <span className="step-count">Step 2 of 5</span>
         <div className="step-card">
           {/* FIRST NAME */}
-          <label className="form-label">First name *</label>
+          <label className="form-label">
+            First name{" "}
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+          </label>
           <input
             type="text"
             className="form-control"
@@ -36,7 +193,14 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           />
 
           {/* LAST NAME */}
-          <label className="form-label">Last name *</label>
+          <label className="form-label">
+            Last name{" "}
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+          </label>
           <input
             type="text"
             className="form-control"
@@ -48,7 +212,14 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           />
 
           {/* GENDER */}
-          <label className="form-label">Gender *</label>
+          <label className="form-label">
+            Gender{" "}
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+          </label>
           <div className="d-flex gap-3">
             <div className="form-check">
               <input
@@ -100,42 +271,42 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             </div>
           </div>
 
-          {/* NATIONALITY */}
-          <label className="form-label">Nationality *</label>
+          {/* NATIONALITY SELECT DROPDOWN */}
+          <label className="form-label mt-2">Nationality</label>
           <select
             className="form-control"
-            value={formData.nationality}
+            value={formData.nationality || ""}
             onChange={(e) =>
               setFormData({ ...formData, nationality: e.target.value })
             }
           >
             <option value="">Please select</option>
-            <option>India</option>
-            <option>UK</option>
-            <option>USA</option>
+            {countries.map((country) => (
+              <option key={country.code} value={country.name}>
+                {country.name}
+              </option>
+            ))}
           </select>
 
-          {/* SECOND NATIONALITY CHECKBOX */}
-          <div className="form-check mt-1">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="secondNat"
-              checked={Boolean(formData.secondNationality)}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  secondNationality: e.target.checked,
-                })
-              }
-            />
-            <label htmlFor="secondNat" className="form-check-label">
-              Second nationality?
-            </label>
-          </div>
+          {/* SECOND NATIONALITY SELECT DROPDOWN */}
+          <label className="form-label mt-2">Second nationality</label>
+          <select
+            className="form-control"
+            value={formData.secondNationality || ""}
+            onChange={(e) =>
+              setFormData({ ...formData, secondNationality: e.target.value })
+            }
+          >
+            <option value="">Please select</option>
+            {countries.map((country) => (
+              <option key={country.code} value={country.name}>
+                {country.name}
+              </option>
+            ))}
+          </select>
 
           {/* CV UPLOAD */}
-          <label className="form-label">CV Upload *</label>
+          <label className="form-label">CV Upload</label>
           <input
             type="file"
             className="form-control"
@@ -145,7 +316,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           />
 
           {/* WHERE DID YOU HEAR ABOUT US */}
-          <label className="form-label">Where did you hear about us? *</label>
+          <label className="form-label">Where did you hear about us?</label>
           <select
             className="form-control"
             value={formData.hearFrom}
@@ -157,6 +328,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             <option>LinkedIn</option>
             <option>Google Search</option>
             <option>Referral</option>
+            <option>Social media</option>
           </select>
 
           {/* BUTTONS */}

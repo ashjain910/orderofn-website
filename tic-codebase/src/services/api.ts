@@ -1,10 +1,22 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
-const api = axios.create({
-    baseURL: "https://api.jobsapp.com/api", // Example backend base URL
+const BaseApi = axios.create({
+    baseURL: "https://tic-api.orderofn.com/api", // Example backend base URL
     headers: {
         "Content-Type": "application/json",
     },
 });
 
-export default api;
+BaseApi.interceptors.request.use(
+    (config) => {
+        const token = Cookies.get("access");
+        if (token) {
+            config.headers["Authorization"] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+export default BaseApi;

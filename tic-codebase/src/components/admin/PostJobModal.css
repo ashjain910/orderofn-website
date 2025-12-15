@@ -1,0 +1,55 @@
+.ProseMirror {
+  border: none !important;
+  outline: none;
+  min-height: 80px;
+  background: transparent;
+}
+/* Minimal TipTap editor styling */
+.tiptap-editor {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  min-height: 120px;
+  padding: 0.5rem;
+  background: #fff;
+}
+.tiptap-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  padding-bottom: 2px;
+}
+.tiptap-toolbar button {
+  background: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #333;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  outline: none;
+  position: relative;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tiptap-toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tiptap-toolbar button:not(:disabled):hover {
+  background: #e2e6ea;
+  color: #007bff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.tiptap-toolbar button:active {
+  background: #dee2e6;
+  color: #0056b3;
+}
+.tiptap-toolbar button.selected {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}

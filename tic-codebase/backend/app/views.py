@@ -538,3 +538,27 @@ def admin_delete_job(request, job_id):
         }, status=status.HTTP_200_OK)
     except Job.DoesNotExist:
         return Response({'error': 'Job not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+import stripe
+from django.conf import settings
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_checkout_session(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        mode='subscription',
+        line_items=[{
+            'price': 'YOUR_STRIPE_PRICE_ID',  # Set this in Stripe dashboard
+            'quantity': 1,
+        }],
+        customer_email=request.user.email,
+        success_url='https://yourdomain.com/success',
+        cancel_url='https://yourdomain.com/cancel',
+    )
+    return Response({'sessionId': session.id})

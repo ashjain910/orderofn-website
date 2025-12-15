@@ -14,7 +14,7 @@ urlpatterns = [
     path('jobs/<int:job_id>/save', views.save_job, name='save-job'),
     path('jobs/<int:job_id>/unsave', views.unsave_job, name='unsave-job'),
     path('saved-jobs', views.saved_jobs_list, name='saved-jobs-list'),
-
+    path('create-checkout-session', views.create_checkout_session, name='create-checkout-session'),
     # Admin endpoints
     path('admin/candidates', views.admin_candidates_list, name='admin-candidates-list'),
     path('admin/candidates/<int:candidate_id>', views.admin_candidate_detail, name='admin-candidate-detail'),

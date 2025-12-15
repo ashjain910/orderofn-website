@@ -6,6 +6,7 @@ djangorestframework-simplejwt==5.5.1
 pillow==11.3.0
 PyJWT==2.10.1
 sqlparse==0.5.4
+stripe
 typing-extensions==4.15.0
 gunicorn==21.2.0
 psycopg2-binary==2.9.9

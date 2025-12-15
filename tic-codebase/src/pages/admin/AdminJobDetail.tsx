@@ -21,6 +21,11 @@ import { toast } from "react-toastify";
 import { toastOptions } from "../../utils/toastOptions";
 import AdminBaseApi from "../../services/admin-base";
 import { useParams } from "react-router-dom";
+import TeacherProfileModal from "../../components/TeacherProfileModal";
+
+import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
+import { pdfjs } from "react-pdf"; // or from 'pdfjs-dist'
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 import { FaChevronDown } from "react-icons/fa";
 function AdminJobDetail() {
@@ -46,6 +51,11 @@ function AdminJobDetail() {
     if (!job?.id) return;
     setShowCloseModal(true);
   };
+  window.addEventListener("unhandledrejection", (event) => {
+    if (event.reason?.name === "AbortError") {
+      event.preventDefault();
+    }
+  });
   // Actual close job action
   const confirmCloseJob = async () => {
     if (!job?.id) return;
@@ -186,6 +196,12 @@ function AdminJobDetail() {
     setShowEditModal(true);
   };
 
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
+
+  // Add a state for doc viewer error
+  const [docError, setDocError] = useState<string | null>(null);
+
   if (loading) {
     return (
       <div
@@ -306,10 +322,19 @@ function AdminJobDetail() {
         </div>
       )}
       <div className="row">
-        <div className="col-lg-4 col-md-4 col-sm-12 col-12 ">
+        <div className="col-lg-5 col-md-5 col-sm-12 col-12 ">
           <div className="col-12 d-flex justify-content-end mb-3">
             {job?.is_expired && (
-              <button className="btn btn-secondary me-3">Expired</button>
+              <>
+                <button className="btn btn-secondary me-3">Expired</button>
+                <button
+                  className="btn btn-primary me-3"
+                  onClick={handleCloseJob}
+                  disabled={loading || job?.status === "closed"}
+                >
+                  {job?.status === "closed" ? "Job Closed" : "Close Job"}
+                </button>
+              </>
             )}
             {!job?.is_expired && (
               <button
@@ -439,7 +464,7 @@ function AdminJobDetail() {
             </div>
           </div>
         </div>
-        <div className="col-lg-8 col-md-8 col-sm-12 col-12">
+        <div className="col-lg-7 col-md-7 col-sm-12 col-12">
           <div className="row mb-3">
             <div className="col-12 d-flex justify-content-end">
               <select
@@ -480,7 +505,18 @@ function AdminJobDetail() {
                         <tr key={idx}>
                           <td className="txt__regular__">{idx + 1}</td>
                           <td>
-                            <div style={{ fontWeight: 600 }}>
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                color: "#0F3F93",
+                                textDecoration: "underline",
+                              }}
+                              onClick={() => {
+                                setSelectedTeacher(teacher);
+                                setShowProfileModal(true);
+                              }}
+                            >
                               {teacher?.applicant_name || "-"}
                             </div>
                             <div className="d-flex flex-column">
@@ -534,7 +570,7 @@ function AdminJobDetail() {
                                 }}
                                 className=""
                               >
-                                Download:
+                                View:
                               </span>
                               <button
                                 className="btn btn-link p-0"
@@ -542,7 +578,7 @@ function AdminJobDetail() {
                                 onClick={() =>
                                   setResumeModal({
                                     show: true,
-                                    url: "https://pdfobject.com/pdf/sample.pdf", //teacher?.applicant_profile?.resume || null,
+                                    url: teacher?.resume || null,
                                     name: teacher?.applicant_name || "Resume",
                                   })
                                 }
@@ -569,42 +605,64 @@ function AdminJobDetail() {
                                           type="button"
                                           className="btn-close"
                                           aria-label="Close"
-                                          onClick={() =>
+                                          onClick={() => {
                                             setResumeModal({
                                               show: false,
                                               url: null,
                                               name: "Resume",
-                                            })
-                                          }
+                                            });
+                                            setDocError(null);
+                                          }}
                                         ></button>
                                       </div>
                                       <div
                                         className="modal-body"
                                         style={{ minHeight: 500 }}
                                       >
-                                        {resumeModal.url &&
-                                        resumeModal.url.endsWith(".pdf") ? (
-                                          <iframe
-                                            src={resumeModal.url}
-                                            title="Resume Preview"
-                                            width="100%"
-                                            height="500px"
-                                            style={{ border: 0 }}
-                                          />
-                                        ) : resumeModal.url ? (
-                                          <div>
-                                            <a
-                                              href={resumeModal.url}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                            >
-                                              Open Resume
-                                            </a>
-                                            <p className="text-muted mt-2">
-                                              Preview not available. Click above
-                                              to open or download.
-                                            </p>
-                                          </div>
+                                        {resumeModal.url ? (
+                                          <>
+                                            <div className="text-end">
+                                              <a
+                                                href={resumeModal.url}
+                                                download
+                                                className="btn btn-secondary btn-sm"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                              >
+                                                Download
+                                              </a>
+                                            </div>
+                                            {docError ? (
+                                              <>
+                                                <div className="alert alert-danger mt-3">
+                                                  {docError}
+                                                </div>
+                                                {/* Fallback to iframe for PDF */}
+                                                {resumeModal.url &&
+                                                  resumeModal.url.endsWith(
+                                                    ".pdf"
+                                                  ) && (
+                                                    <iframe
+                                                      src={resumeModal.url}
+                                                      width="100%"
+                                                      height="500"
+                                                      style={{ border: "none" }}
+                                                      title="PDF Preview"
+                                                    />
+                                                  )}
+                                              </>
+                                            ) : (
+                                              <DocViewer
+                                                documents={[
+                                                  { uri: resumeModal.url },
+                                                ]}
+                                                pluginRenderers={
+                                                  DocViewerRenderers
+                                                }
+                                                style={{ height: 500 }}
+                                              />
+                                            )}
+                                          </>
                                         ) : (
                                           <div className="text-danger">
                                             No resume available.
@@ -615,13 +673,14 @@ function AdminJobDetail() {
                                         <button
                                           type="button"
                                           className="btn btn-secondary"
-                                          onClick={() =>
+                                          onClick={() => {
                                             setResumeModal({
                                               show: false,
                                               url: null,
                                               name: "Resume",
-                                            })
-                                          }
+                                            });
+                                            setDocError(null);
+                                          }}
                                         >
                                           Close
                                         </button>
@@ -906,6 +965,12 @@ function AdminJobDetail() {
           </div>
         </div>
       </div>
+      {/* Teacher Profile Modal */}
+      <TeacherProfileModal
+        show={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        teacher={selectedTeacher}
+      />
     </div>
   );
 }

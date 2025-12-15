@@ -567,7 +567,9 @@ function Jobs() {
                   className={`card mb-3 shadow-sm${job.is_expired ? "" : ""}`}
                   style={{
                     cursor: "pointer",
-                    ...(job.is_expired ? { backgroundColor: "#FFEDED" } : {}),
+                    ...(job.is_expired
+                      ? { backgroundColor: "rgb(250 240 240)" }
+                      : {}),
                   }}
                   onClick={() => handleViewJobDetails(job.id)}
                 >
@@ -617,7 +619,7 @@ function Jobs() {
 >>>>>>> 447c7429e3a6c848e5ac8cd06d8381dc3515617f
 
                         <p className="job-school mb-1">
-                          <MdLocationPin style={{ marginRight: 4 }} />{" "}
+                          <MdLocationPin style={{ color: "#0d3b85" }} />{" "}
                           {job.location}
                         </p>
                         <p className="job-description mb-0">

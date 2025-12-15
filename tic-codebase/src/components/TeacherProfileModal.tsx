@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import { Modal, Button } from "react-bootstrap";
+import SendMessageModal from "./SendMessageModal";
 
 interface TeacherProfileModalProps {
   show: boolean;
@@ -11,16 +13,20 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
   onClose,
   teacher,
 }) => {
+  const [showMessageModal, setShowMessageModal] = useState(false);
   if (!show || !teacher) return null;
   const profile = teacher.teacher_profile || {};
+
   return (
-    <div
-      className="modal fade show"
-      style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
-      tabIndex={-1}
-    >
-      <div className="modal-dialog modal-lg">
-        <div className="modal-content p-0" style={{ background: "#f8f9fa" }}>
+    <Modal show={show} onHide={onClose} centered size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title>Teacher Profile</Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{ padding: 0 }}>
+        <div
+          className="modal-content p-0"
+          style={{ background: "#f8f9fa", border: "none" }}
+        >
           {/* Cover Banner */}
           <div
             className=" d-flex"
@@ -34,54 +40,56 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
             }}
           >
             {/* Name + Email + Location */}
-            <div className="col d-flex flex-grid gap-3 align-items-center p-2">
-              {/* Avatar (first letter) */}
-              <div className="col-auto">
-                <div
-                  className="rounded-circle d-flex  align-items-center justify-content-center"
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    border: "4px solid #fff",
-                    background: "#0d3b85",
-                    color: "#fff",
-                    fontSize: "48px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {teacher.full_name ? teacher.full_name[0].toUpperCase() : "?"}
+            <div className="d-flex justify-content-between w-100 px-3 align-items-center">
+              <div className="col d-flex flex-grid gap-3 align-items-center p-2">
+                {/* Avatar (first letter) */}
+                <div className="col-auto">
+                  <div
+                    className="rounded-circle d-flex  align-items-center justify-content-center"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      border: "4px solid #fff",
+                      background: "#0d3b85",
+                      color: "#fff",
+                      fontSize: "48px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {teacher.full_name
+                      ? teacher.full_name[0].toUpperCase()
+                      : "?"}
+                  </div>
+                </div>
+                <div className="">
+                  <h4 className="mb-1">{teacher.full_name}</h4>
+                  <p className="txt__regular__ mb-0">
+                    {teacher.email}
+                    {teacher.location ? ` • ${teacher.location}` : ""}
+                  </p>
+                  <div className="mt-2 d-flex gap-2">
+                    {profile.role && (
+                      <span className="txt__small__ ">
+                        {profile.role || "-"}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="">
-                <h4 className="mb-1">{teacher.full_name}</h4>
-                <p className="txt__regular__ mb-0">
-                  {teacher.email}
-                  {teacher.location ? ` • ${teacher.location}` : ""}
-                </p>
-                <div className="mt-2 d-flex gap-2">
-                  {profile.role && (
-                    <span className="txt__small__ ">{profile.role || "-"}</span>
-                  )}
-                </div>
+
+              {/* Send Message Button */}
+              <div className="justify-content-end">
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowMessageModal(true)}
+                >
+                  Send Message
+                </Button>
               </div>
             </div>
-            <button
-              type="button"
-              className="btn-close ms-auto p-3"
-              aria-label="Close"
-              onClick={onClose}
-            ></button>
           </div>
 
-          {/* Profile Data Only */}
           <div className="container bg-white p-4 rounded shadow-sm">
-            {/* --- Section: Subject --- */}
-            <div className="row py-2">
-              <div className="col-6 text-muted">Subjects</div>
-              <div className="col-6 text-end fw-semibold">
-                {profile.subject || "-"}
-              </div>
-            </div>
             <div className="row py-2 border-bottom">
               <div className="col-6 text-muted">Curriculum</div>
               <div className="col-6 text-end fw-semibold">
@@ -144,6 +152,7 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                 {teacher.teacher_profile.available_from || "-"}
               </div>
             </div>
+
             {/* --- Section: Job Alerts --- */}
             <h5 className="fw-semibold mt-4 mb-3">Job Alerts</h5>
             <div className="row py-2 border-bottom">
@@ -178,10 +187,16 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Common Send Message Modal */}
+          <SendMessageModal
+            show={showMessageModal}
+            onClose={() => setShowMessageModal(false)}
+            teacherId={teacher.id}
+          />
         </div>
-      </div>
-    </div>
+      </Modal.Body>
+    </Modal>
   );
 };
-
 export default TeacherProfileModal;

@@ -511,38 +511,6 @@ function Jobs() {
               className="d-flex justify-content-center align-items-center"
               style={{ minHeight: 200 }}
             >
-<<<<<<< HEAD
-              <div className="card-body d-flex justify-content-between align-items-center">
-                <div className="d-flex" style={{ width: "100%" }}>
-                  <img
-                    src={job.avatar || "/tic/school_image.png"}
-                    alt="Profile"
-                    className="job-avatar me-3"
-                  />
-                  <div style={{ flex: 1 }}>
-                    <h5 className="job-title mb-1">
-                      {job.title}
-                      <span
-                        className={`badge ms-2 ${
-                          job.JobType === "Remote"
-                            ? "remote__badge__"
-                            : "casual__badge__"
-                        }`}
-                      >
-                        {job.JobType}
-                      </span>
-                      {job.job_status === "expired" && (
-                        <span className="expired__badge__ ms-2">Expired</span>
-                      )}
-                      {/* Applied status for all jobs tab */}
-                      {activeTab === "all" && job.is_applied && (
-                        <span className="badge bg-success  txt__regular__sub__ ml-2">
-                          Applied
-                        </span>
-                      )}
-                    </h5>
-                    <p className="job-school  mb-1">{job.school}</p>
-=======
               <FaSpinner className="fa-spin" size={32} />
               <span className="ms-2">Loading jobs...</span>
             </div>
@@ -616,7 +584,6 @@ function Jobs() {
                           )}
                         </h5>
                         <p className="job-school  mb-1">{job.school_name}</p>
->>>>>>> 447c7429e3a6c848e5ac8cd06d8381dc3515617f
 
                         <p className="job-school mb-1">
                           <MdLocationPin style={{ color: "#0d3b85" }} />{" "}

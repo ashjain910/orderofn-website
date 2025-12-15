@@ -13,6 +13,7 @@ from .serializers import (
     AdminCandidateSerializer, AdminJobSerializer, AdminJobApplicationSerializer,
     AdminJobCreateUpdateSerializer, ProfileSerializer, UpdateProfileSerializer
 )
+from django.shortcuts import redirect
 
 
 @api_view(['POST'])
@@ -558,7 +559,21 @@ def create_checkout_session(request):
             'quantity': 1,
         }],
         customer_email=request.user.email,
-        success_url='https://orderofn.com/tic/success',
-        cancel_url='https://orderofn.com/tic/cancel',
+        success_url='https://orderofn.com/tic/api/checkout-success',
+        cancel_url='https://orderofn.com/tic/api/checkout-cancel',
     )
     return Response({'sessionUrl': session.url})
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def checkout_success(request):
+    """Stripe Checkout success redirect endpoint."""
+    return redirect('/?state=success')
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def checkout_cancel(request):
+    """Stripe Checkout cancel redirect endpoint."""
+    return redirect('/?state=failure')

@@ -554,11 +554,11 @@ def create_checkout_session(request):
         payment_method_types=['card'],
         mode='subscription',
         line_items=[{
-            'price': 'YOUR_STRIPE_PRICE_ID',  # Set this in Stripe dashboard
+            'price': 'prod_TblofDxtLXQSaa',  # Set this in Stripe dashboard
             'quantity': 1,
         }],
         customer_email=request.user.email,
-        success_url='https://yourdomain.com/success',
-        cancel_url='https://yourdomain.com/cancel',
+        success_url='https://orderofn.com/tic/success',
+        cancel_url='https://orderofn.com/tic/cancel',
     )
     return Response({'sessionId': session.id})

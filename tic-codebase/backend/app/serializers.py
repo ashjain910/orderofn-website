@@ -298,7 +298,9 @@ class JobSerializer(serializers.ModelSerializer):
             'id', 'title', 'school_name', 'school_avatar', 'location',
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
-            'date_posted', 'closing_date', 'is_expired', 'is_applied', 'is_saved',
+            'curriculum', 'education_stage', 'contract_type',
+            'international_package', 'benefits',
+            'date_posted', 'closing_date', 'job_start_date', 'is_expired', 'is_applied', 'is_saved',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
@@ -482,7 +484,9 @@ class AdminJobSerializer(serializers.ModelSerializer):
             'id', 'title', 'school_name', 'school_avatar', 'location',
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
-            'date_posted', 'closing_date', 'is_expired', 'applications_count',
+            'curriculum', 'education_stage', 'contract_type',
+            'international_package', 'benefits',
+            'date_posted', 'closing_date', 'job_start_date', 'is_expired', 'applications_count',
             'applications', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
@@ -500,7 +504,9 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
             'id', 'title', 'school_name', 'school_avatar', 'location',
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
-            'closing_date', 'date_posted', 'created_at', 'updated_at'
+            'curriculum', 'education_stage', 'contract_type',
+            'international_package', 'benefits',
+            'closing_date', 'job_start_date', 'date_posted', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
 
@@ -538,6 +544,28 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f"Gender preference must be one of: {', '.join(valid_preferences)}"
             )
+        return value
+
+    def validate_international_package(self, value):
+        """Validate international package"""
+        if value:
+            valid_packages = ['to_be_confirmed', 'tax_free', 'competitive']
+            if value not in valid_packages:
+                raise serializers.ValidationError(
+                    f"International package must be one of: {', '.join(valid_packages)}"
+                )
+        return value
+
+    def validate_benefits(self, value):
+        """Validate benefits"""
+        if value:
+            valid_benefits = ['Medical Insurance', 'Annual Flight', 'Housing', 'Tuition Concession']
+            invalid_benefits = [b for b in value if b not in valid_benefits]
+            if invalid_benefits:
+                raise serializers.ValidationError(
+                    f"Invalid benefit(s): {', '.join(invalid_benefits)}. "
+                    f"Valid options: {', '.join(valid_benefits)}"
+                )
         return value
 
 

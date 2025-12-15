@@ -163,6 +163,12 @@ class Job(models.Model):
         ('other', 'Other'),
     ]
 
+    SALARY_PACKAGE_CHOICES = [
+        ('to_be_confirmed', 'To Be Confirmed'),
+        ('tax_free', 'Tax Free Salary'),
+        ('competitive', 'Competitive salary based on experience'),
+    ]
+
     # Basic Information
     title = models.CharField(max_length=200)
     school_name = models.CharField(max_length=200)
@@ -183,10 +189,18 @@ class Job(models.Model):
     # Additional Details
     level = models.CharField(max_length=100, blank=True)
     subjects = models.JSONField(default=list, blank=True)
+    curriculum = models.CharField(max_length=100, blank=True)
+    education_stage = models.CharField(max_length=100, blank=True)
+    contract_type = models.CharField(max_length=100, blank=True)
+
+    # Compensation & Benefits
+    international_package = models.CharField(max_length=20, choices=SALARY_PACKAGE_CHOICES, blank=True)
+    benefits = models.JSONField(default=list, blank=True)  # Array of: Medical Insurance, Annual Flight, Housing, Tuition Concession
 
     # Dates
     date_posted = models.DateTimeField(auto_now_add=True)
     closing_date = models.DateField(blank=True, null=True)
+    job_start_date = models.DateField(blank=True, null=True)
 
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)

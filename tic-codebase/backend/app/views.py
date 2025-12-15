@@ -11,7 +11,7 @@ from .serializers import (
     LoginSerializer, UserSerializer, PreRegisterSerializer, TeacherProfileSerializer,
     JobSerializer, JobApplicationSerializer, UpdatePasswordSerializer, SavedJobSerializer,
     AdminCandidateSerializer, AdminJobSerializer, AdminJobApplicationSerializer,
-    AdminJobCreateUpdateSerializer
+    AdminJobCreateUpdateSerializer, ProfileSerializer, UpdateProfileSerializer
 )
 
 
@@ -204,6 +204,36 @@ def update_password(request):
         serializer.save()
         return Response({
             'message': 'Password updated successfully'
+        }, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile(request):
+    """Get current user's profile with teacher profile"""
+    serializer = ProfileSerializer(request.user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def update_profile(request):
+    """Update user's basic information and/or teacher profile"""
+    serializer = UpdateProfileSerializer(
+        request.user,
+        data=request.data,
+        partial=True,  # Always allow partial updates
+        context={'request': request}
+    )
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({
+            'message': 'Profile updated successfully',
+            'profile': ProfileSerializer(request.user).data
         }, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

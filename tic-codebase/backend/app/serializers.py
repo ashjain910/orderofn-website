@@ -539,3 +539,223 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
                 f"Gender preference must be one of: {', '.join(valid_preferences)}"
             )
         return value
+
+
+# Profile Serializers
+class ProfileSerializer(serializers.ModelSerializer):
+    """Serializer for viewing complete user profile with teacher profile"""
+    full_name = serializers.ReadOnlyField()
+    teacher_profile = TeacherProfileSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'date_joined', 'teacher_profile']
+        read_only_fields = ['id', 'date_joined']
+
+
+class UpdateProfileSerializer(serializers.Serializer):
+    """Serializer for updating both user info and teacher profile"""
+    VALID_QUALIFIED = ['yes', 'no']
+    VALID_ENGLISH = ['yes', 'no']
+    VALID_POSITIONS = ['teacher', 'leader', 'other']
+    VALID_GENDERS = ['male', 'female', 'others']
+    VALID_ROLES = ['teacher', 'assistant_teacher', 'senior_leader']
+    VALID_LEADERSHIP_ROLES = ['coordinator', 'hod', 'assistant_principal', 'principal']
+    VALID_CURRICULA = [
+        'American', 'Australian', 'Canadian', 'IB Dip', 'IB MYP',
+        'IB PYP', 'Indian', 'IPC', 'New Zealand', 'South African', 'UK National'
+    ]
+    ALLOWED_FILE_EXTENSIONS = ['pdf', 'doc', 'docx']
+    MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+    # User fields
+    first_name = serializers.CharField(max_length=100, required=False)
+    last_name = serializers.CharField(max_length=100, required=False)
+    email = serializers.EmailField(required=False)
+
+    # Teacher Profile fields
+    qualified = serializers.CharField(max_length=10, required=False)
+    english = serializers.CharField(max_length=10, required=False)
+    position = serializers.CharField(max_length=20, required=False)
+    gender = serializers.CharField(max_length=10, required=False)
+    nationality = serializers.CharField(max_length=100, required=False)
+    second_nationality = serializers.BooleanField(required=False)
+    cv_file = serializers.FileField(required=False, allow_null=True)
+    hear_from = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    role = serializers.CharField(max_length=30, required=False, allow_blank=True)
+    subject = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    age_group = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    curriculum = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+    leadership_role = serializers.CharField(max_length=30, required=False, allow_blank=True, allow_null=True)
+    job_alerts = serializers.BooleanField(required=False)
+    available_day = serializers.CharField(max_length=2, required=False, allow_blank=True)
+    available_month = serializers.CharField(max_length=2, required=False, allow_blank=True)
+    available_year = serializers.CharField(max_length=4, required=False, allow_blank=True)
+
+    def validate_email(self, value):
+        user = self.context['request'].user
+        if User.objects.filter(email=value).exclude(id=user.id).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value.lower()
+
+    def validate_first_name(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("First name cannot be empty.")
+        if any(char.isdigit() for char in value):
+            raise serializers.ValidationError("First name cannot contain numbers.")
+        return value.strip()
+
+    def validate_last_name(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("Last name cannot be empty.")
+        if any(char.isdigit() for char in value):
+            raise serializers.ValidationError("Last name cannot contain numbers.")
+        return value.strip()
+
+    def validate_qualified(self, value):
+        if value and value.lower() not in self.VALID_QUALIFIED:
+            raise serializers.ValidationError(f"Qualified must be one of: {', '.join(self.VALID_QUALIFIED)}")
+        return value.lower() if value else value
+
+    def validate_english(self, value):
+        if value and value.lower() not in self.VALID_ENGLISH:
+            raise serializers.ValidationError(f"English must be one of: {', '.join(self.VALID_ENGLISH)}")
+        return value.lower() if value else value
+
+    def validate_position(self, value):
+        if value and value.lower() not in self.VALID_POSITIONS:
+            raise serializers.ValidationError(f"Position must be one of: {', '.join(self.VALID_POSITIONS)}")
+        return value.lower() if value else value
+
+    def validate_gender(self, value):
+        if value and value.lower() not in self.VALID_GENDERS:
+            raise serializers.ValidationError(f"Gender must be one of: {', '.join(self.VALID_GENDERS)}")
+        return value.lower() if value else value
+
+    def validate_nationality(self, value):
+        if value and not value.strip():
+            raise serializers.ValidationError("Nationality cannot be empty.")
+        return value.strip() if value else value
+
+    def validate_cv_file(self, value):
+        if value:
+            if value.size > self.MAX_FILE_SIZE:
+                raise serializers.ValidationError(f"File size cannot exceed {self.MAX_FILE_SIZE / (1024*1024)}MB.")
+
+            file_extension = value.name.split('.')[-1].lower()
+            if file_extension not in self.ALLOWED_FILE_EXTENSIONS:
+                raise serializers.ValidationError(
+                    f"Only {', '.join(self.ALLOWED_FILE_EXTENSIONS)} files are allowed."
+                )
+        return value
+
+    def validate_role(self, value):
+        if value and value.lower() not in self.VALID_ROLES:
+            raise serializers.ValidationError(f"Role must be one of: {', '.join(self.VALID_ROLES)}")
+        return value.lower() if value else value
+
+    def validate_curriculum(self, value):
+        if value:
+            invalid_curricula = [c for c in value if c not in self.VALID_CURRICULA]
+            if invalid_curricula:
+                raise serializers.ValidationError(
+                    f"Invalid curriculum(s): {', '.join(invalid_curricula)}. "
+                    f"Valid options: {', '.join(self.VALID_CURRICULA)}"
+                )
+        return value
+
+    def validate_leadership_role(self, value):
+        if value and value.lower() not in self.VALID_LEADERSHIP_ROLES:
+            raise serializers.ValidationError(
+                f"Leadership role must be one of: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
+            )
+        return value.lower() if value else value
+
+    def validate_available_day(self, value):
+        if value:
+            try:
+                day = int(value)
+                if day < 1 or day > 31:
+                    raise serializers.ValidationError("Day must be between 1 and 31.")
+            except ValueError:
+                raise serializers.ValidationError("Day must be a valid number.")
+        return value
+
+    def validate_available_month(self, value):
+        if value:
+            try:
+                month = int(value)
+                if month < 1 or month > 12:
+                    raise serializers.ValidationError("Month must be between 1 and 12.")
+            except ValueError:
+                raise serializers.ValidationError("Month must be a valid number.")
+        return value
+
+    def validate_available_year(self, value):
+        if value:
+            try:
+                year = int(value)
+                from datetime import datetime
+                current_year = datetime.now().year
+                if year < current_year or year > current_year + 10:
+                    raise serializers.ValidationError(
+                        f"Year must be between {current_year} and {current_year + 10}."
+                    )
+            except ValueError:
+                raise serializers.ValidationError("Year must be a valid number.")
+        return value
+
+    def validate(self, data):
+        day = data.get('available_day')
+        month = data.get('available_month')
+        year = data.get('available_year')
+
+        # If any date field is being updated, validate complete date
+        date_fields = [day, month, year]
+        if any(date_fields) and not all(date_fields):
+            raise serializers.ValidationError({
+                'availability': 'If providing availability date, all fields (day, month, year) are required.'
+            })
+
+        if all(date_fields):
+            try:
+                from datetime import datetime
+                datetime(int(year), int(month), int(day))
+            except ValueError:
+                raise serializers.ValidationError({
+                    'availability': 'Invalid date. Please check day, month, and year values.'
+                })
+
+        return data
+
+    def update(self, instance, validated_data):
+        # Extract user fields
+        user_fields = ['first_name', 'last_name', 'email']
+        user_data = {k: v for k, v in validated_data.items() if k in user_fields}
+
+        # Update user if user fields are present
+        if user_data:
+            for key, value in user_data.items():
+                setattr(instance, key, value)
+            instance.save()
+
+        # Extract teacher profile fields
+        teacher_profile_fields = [
+            'qualified', 'english', 'position', 'gender', 'nationality',
+            'second_nationality', 'cv_file', 'hear_from', 'role', 'subject',
+            'age_group', 'curriculum', 'leadership_role', 'job_alerts',
+            'available_day', 'available_month', 'available_year'
+        ]
+        teacher_data = {k: v for k, v in validated_data.items() if k in teacher_profile_fields}
+
+        # Update teacher profile if teacher fields are present
+        if teacher_data:
+            try:
+                teacher_profile = instance.teacher_profile
+                for key, value in teacher_data.items():
+                    setattr(teacher_profile, key, value)
+                teacher_profile.save()
+            except AttributeError:
+                pass  # Teacher profile doesn't exist, skip
+
+        return instance

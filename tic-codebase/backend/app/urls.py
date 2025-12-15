@@ -5,13 +5,15 @@ urlpatterns = [
     # Public/User endpoints
     path('login', views.login, name='login'),
     path('pre-register', views.pre_register, name='pre-register'),
+    path('profile', views.get_profile, name='get-profile'),
+    path('profile/update', views.update_profile, name='update-profile'),
+    path('update-password', views.update_password, name='update-password'),
     path('jobs', views.job_list, name='job-list'),
     path('jobs/<int:job_id>', views.job_detail, name='job-detail'),
     path('jobs/<int:job_id>/apply', views.apply_to_job, name='apply-to-job'),
     path('jobs/<int:job_id>/save', views.save_job, name='save-job'),
     path('jobs/<int:job_id>/unsave', views.unsave_job, name='unsave-job'),
     path('saved-jobs', views.saved_jobs_list, name='saved-jobs-list'),
-    path('update-password', views.update_password, name='update-password'),
 
     # Admin endpoints
     path('admin/candidates', views.admin_candidates_list, name='admin-candidates-list'),

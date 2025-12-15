@@ -800,7 +800,7 @@ function Jobs() {
                         <span className="expired__badge__ ms-2">Expired</span>
                       )}
                       {/* Applied status for all jobs tab */}
-                      {activeTab === "all" && job.job_status === "applied" && (
+                      {activeTab === "all" && job.is_applied && (
                         <span className="badge bg-success  txt__regular__sub__ ml-2">
                           Applied
                         </span>

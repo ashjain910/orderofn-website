@@ -158,10 +158,10 @@ SIMPLE_JWT = {
 }
 
 # CORS Settings
-if DEBUG:
-    CORS_ALLOW_ALL_ORIGINS = True  # For development only
-else:
-    CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',')
+# if DEBUG:
+#     CORS_ALLOW_ALL_ORIGINS = True  # For development only
+# else:
+#     CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',')
 
 CORS_ALLOW_ALL_ORIGINS = True
 # AWS S3 Settings

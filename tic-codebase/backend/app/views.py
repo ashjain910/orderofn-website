@@ -554,7 +554,7 @@ def create_checkout_session(request):
         payment_method_types=['card'],
         mode='subscription',
         line_items=[{
-            'price': 'prod_TblofDxtLXQSaa',  # Set this in Stripe dashboard
+            'price': 'price_1SeYHCS3b9o0AI70juiCFthQ',  # Set this in Stripe dashboard
             'quantity': 1,
         }],
         customer_email=request.user.email,

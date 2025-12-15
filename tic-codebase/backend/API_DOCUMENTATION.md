@@ -183,7 +183,158 @@ curl -X POST http://localhost:8000/api/pre-register \
 
 ---
 
-### 3. Update Password
+### 3. Get Profile
+
+**Endpoint:** `GET /api/profile`
+
+**Authentication:** Required (JWT)
+
+**Description:** Retrieves the authenticated user's profile including teacher profile information
+
+**Example Request:**
+```bash
+curl http://localhost:8000/api/profile \
+  -H "Authorization: Bearer <access_token>"
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "id": 1,
+  "email": "teacher@example.com",
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "full_name": "Jane Smith",
+  "date_joined": "2025-12-01T00:00:00Z",
+  "teacher_profile": {
+    "id": 1,
+    "qualified": "yes",
+    "english": "yes",
+    "position": "teacher",
+    "gender": "female",
+    "nationality": "American",
+    "second_nationality": false,
+    "cv_file": "http://localhost:8000/media/cvs/cv.pdf",
+    "hear_from": "",
+    "role": "teacher",
+    "subject": "Mathematics",
+    "age_group": "High School",
+    "curriculum": ["American", "IB Dip"],
+    "leadership_role": "",
+    "job_alerts": true,
+    "available_day": "15",
+    "available_month": "6",
+    "available_year": "2026",
+    "available_from": "2026-6-15",
+    "created_at": "2025-12-01T00:00:00Z",
+    "updated_at": "2025-12-01T00:00:00Z"
+  }
+}
+```
+
+---
+
+### 4. Update Profile
+
+**Endpoint:** `PUT /api/profile/update` or `PATCH /api/profile/update`
+
+**Authentication:** Required (JWT)
+
+**Content-Type:** `multipart/form-data`
+
+**Description:** Updates the authenticated user's profile information and/or teacher profile. You can update user fields, teacher profile fields, or both in a single request.
+
+**Request Body (all fields are optional for PATCH):**
+
+**User Fields:**
+| Field | Type | Description |
+|-------|------|-------------|
+| first_name | string | First name (no numbers) |
+| last_name | string | Last name (no numbers) |
+| email | string | Email address (must be unique) |
+
+**Teacher Profile Fields:**
+| Field | Type | Description |
+|-------|------|-------------|
+| qualified | string | `yes` or `no` |
+| english | string | `yes` or `no` |
+| position | string | `teacher`, `leader`, or `other` |
+| gender | string | `male`, `female`, or `others` |
+| nationality | string | Nationality |
+| second_nationality | boolean | Has second nationality |
+| cv_file | file | CV file (PDF, DOC, DOCX, max 5MB) |
+| hear_from | string | How did you hear about us |
+| role | string | `teacher`, `assistant_teacher`, or `senior_leader` |
+| subject | string | Teaching subject |
+| age_group | string | Age group taught |
+| curriculum | array[string] | List of curricula |
+| leadership_role | string | `coordinator`, `hod`, `assistant_principal`, or `principal` |
+| job_alerts | boolean | Job alerts preference |
+| available_day | string | Available day (1-31) |
+| available_month | string | Available month (1-12) |
+| available_year | string | Available year |
+
+**Example Request (Update user info only):**
+```bash
+curl -X PATCH http://localhost:8000/api/profile/update \
+  -H "Authorization: Bearer <access_token>" \
+  -F "first_name=John" \
+  -F "last_name=Doe"
+```
+
+**Example Request (Update teacher profile only):**
+```bash
+curl -X PATCH http://localhost:8000/api/profile/update \
+  -H "Authorization: Bearer <access_token>" \
+  -F "nationality=Canadian" \
+  -F "subject=Physics" \
+  -F "cvFile=@/path/to/new_cv.pdf"
+```
+
+**Example Request (Update both):**
+```bash
+curl -X PATCH http://localhost:8000/api/profile/update \
+  -H "Authorization: Bearer <access_token>" \
+  -F "first_name=Jane" \
+  -F "email=newemail@example.com" \
+  -F "nationality=British" \
+  -F "qualified=yes" \
+  -F "cvFile=@/path/to/cv.pdf"
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Profile updated successfully",
+  "profile": {
+    "id": 1,
+    "email": "newemail@example.com",
+    "first_name": "Jane",
+    "last_name": "Smith",
+    "full_name": "Jane Smith",
+    "date_joined": "2025-12-01T00:00:00Z",
+    "teacher_profile": {
+      "id": 1,
+      "qualified": "yes",
+      "nationality": "British",
+      ...
+    }
+  }
+}
+```
+
+**Error Response (400 Bad Request):**
+```json
+{
+  "email": ["A user with this email already exists."],
+  "first_name": ["First name cannot contain numbers."],
+  "cv_file": ["File size cannot exceed 5.0MB."]
+}
+```
+
+---
+
+### 5. Update Password
 
 **Endpoint:** `POST /api/update-password`
 
@@ -234,7 +385,7 @@ New password same as current:
 
 ## Job Endpoints
 
-### 4. Get Job List
+### 6. Get Job List
 
 **Endpoint:** `GET /api/jobs`
 
@@ -319,7 +470,7 @@ curl "http://localhost:8000/api/jobs?is_saved=false&is_applied=false" \
 
 ---
 
-### 5. Get Job Detail
+### 7. Get Job Detail
 
 **Endpoint:** `GET /api/jobs/:id`
 
@@ -375,7 +526,7 @@ curl http://localhost:8000/api/jobs/1
 
 ## Job Application Endpoints
 
-### 6. Apply to Job
+### 8. Apply to Job
 
 **Endpoint:** `POST /api/jobs/:id/apply`
 
@@ -463,7 +614,7 @@ File validation error:
 
 ## Saved Jobs Endpoints
 
-### 7. Save Job
+### 9. Save Job
 
 **Endpoint:** `POST /api/jobs/:id/save`
 
@@ -531,7 +682,7 @@ Already saved:
 
 ---
 
-### 8. Get Saved Jobs
+### 10. Get Saved Jobs
 
 **Endpoint:** `GET /api/saved-jobs`
 
@@ -582,7 +733,7 @@ curl http://localhost:8000/api/saved-jobs \
 
 ---
 
-### 9. Unsave Job (Remove from Saved)
+### 11. Unsave Job (Remove from Saved)
 
 **Endpoint:** `DELETE /api/jobs/:id/unsave`
 
@@ -740,6 +891,102 @@ const applyToJob = async (jobId, resume, coverLetter) => {
 
   return data;
 };
+```
+
+**Get Profile:**
+```javascript
+const getProfile = async () => {
+  const token = localStorage.getItem('access_token');
+
+  const response = await fetch('http://localhost:8000/api/profile', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch profile');
+  }
+
+  return await response.json();
+};
+```
+
+**Update Profile (User Info):**
+```javascript
+const updateUserInfo = async (firstName, lastName, email) => {
+  const token = localStorage.getItem('access_token');
+  const formData = new FormData();
+
+  if (firstName) formData.append('first_name', firstName);
+  if (lastName) formData.append('last_name', lastName);
+  if (email) formData.append('email', email);
+
+  const response = await fetch('http://localhost:8000/api/profile/update', {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.email?.[0] || data.first_name?.[0] || 'Update failed');
+  }
+
+  return data;
+};
+```
+
+**Update Profile (Teacher Profile):**
+```javascript
+const updateTeacherProfile = async (profileData, cvFile = null) => {
+  const token = localStorage.getItem('access_token');
+  const formData = new FormData();
+
+  // Add text fields
+  Object.keys(profileData).forEach(key => {
+    if (profileData[key] !== undefined && profileData[key] !== null) {
+      if (Array.isArray(profileData[key])) {
+        // Handle curriculum array
+        profileData[key].forEach(item => formData.append(key, item));
+      } else {
+        formData.append(key, profileData[key]);
+      }
+    }
+  });
+
+  // Add CV file if provided
+  if (cvFile) {
+    formData.append('cv_file', cvFile);
+  }
+
+  const response = await fetch('http://localhost:8000/api/profile/update', {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error('Profile update failed');
+  }
+
+  return data;
+};
+
+// Usage example
+await updateTeacherProfile({
+  nationality: 'Canadian',
+  subject: 'Physics',
+  qualified: 'yes',
+  curriculum: ['IB Dip', 'American']
+}, cvFile); // cvFile is a File object from input[type="file"]
 ```
 
 **Update Password:**

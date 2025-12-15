@@ -8,6 +8,7 @@ class MediaStorage(S3Boto3Storage):
     """Custom S3 storage for media files with workaround for HeadObject 403 errors"""
     location = 'media'
     file_overwrite = False
+    # Note: Bucket uses bucket policy for public access, not object ACLs
 
     def exists(self, name):
         """

@@ -163,6 +163,7 @@ if DEBUG:
 else:
     CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',')
 
+CORS_ALLOW_ALL_ORIGINS = True
 # AWS S3 Settings
 USE_S3 = config('USE_S3', default=False, cast=bool)
 

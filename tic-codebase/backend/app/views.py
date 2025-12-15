@@ -561,4 +561,4 @@ def create_checkout_session(request):
         success_url='https://orderofn.com/tic/success',
         cancel_url='https://orderofn.com/tic/cancel',
     )
-    return Response({'sessionId': session.id})
+    return Response({'sessionUrl': session.url})

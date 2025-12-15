@@ -4,7 +4,15 @@ import { useEffect } from "react";
 import TeacherProfileModal from "../../components/TeacherProfileModal";
 import AdminBaseApi from "../../services/admin-base";
 import { FaBookmark } from "react-icons/fa";
+import { LuMessageSquareText } from "react-icons/lu";
+import SendMessageModal from "../../components/SendMessageModal";
+
 export default function MyTeachers() {
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageTeacherIdx, setMessageTeacherIdx] = useState<number | null>(
+    null
+  );
+
   const [dropdownOpenIdx, setDropdownOpenIdx] = useState<number | null>(null);
   // Close action dropdown on outside click
   useEffect(() => {
@@ -80,6 +88,20 @@ export default function MyTeachers() {
     });
     fetchTeachers();
   };
+
+  useEffect(() => {
+    const handleReopenProfileModal = () => {
+      setShowProfileModal(true);
+    };
+    window.addEventListener("reopenProfileModal", handleReopenProfileModal);
+    return () => {
+      window.removeEventListener(
+        "reopenProfileModal",
+        handleReopenProfileModal
+      );
+    };
+  }, []);
+
   return (
     <>
       <TeacherProfileModal
@@ -314,6 +336,23 @@ export default function MyTeachers() {
                                 >
                                   Action{" "}
                                   <FaChevronDown style={{ marginLeft: 4 }} />
+                                  <span
+                                    style={{
+                                      marginLeft: 10,
+                                      color: "#0F3F93",
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                    role="button"
+                                    title="Send Message"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setMessageTeacherIdx(idx);
+                                      setShowMessageModal(true);
+                                    }}
+                                  >
+                                    <LuMessageSquareText size={20} />
+                                  </span>
                                 </span>
                                 {dropdownOpenIdx === idx && (
                                   <div
@@ -360,6 +399,14 @@ export default function MyTeachers() {
           </div>
         </div>
       </div>
+      {/* Common Send Message Modal */}
+      <SendMessageModal
+        show={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        teacherId={
+          messageTeacherIdx !== null ? teachers[messageTeacherIdx]?.id : ""
+        }
+      />
     </>
   );
 }

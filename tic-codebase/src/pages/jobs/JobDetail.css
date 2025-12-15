@@ -1,11 +1,17 @@
 .upload-box__ {
   border: 1px dashed #000000;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 10px 10px;
   background: #D8ECFF;
   min-height: 120px;
   position: relative;
   width: 100%;
+}
+.form-check-input[type=radio] {
+    border-radius: 50%;
+    width: 18px !important;
+    height: 18px !important;
+    border: 2px solid #0a80f6;
 }
 .upload-label__ {
   width: 100%;
@@ -31,4 +37,20 @@
 }
 .upload-input__ {
   display: none;
+}
+
+.txt__regular__bold__ {
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    color: #8e8e8e;
+}
+.form-check-label {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #0d3b85 !important;
+}
+.job-sub-title {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #0d3b85;
 }

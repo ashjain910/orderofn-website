@@ -516,97 +516,142 @@ textarea.form-control {
   border-color: #acacac !important;
   border-radius: 10px !important;
 }
-.css-t3ipsp-control{
-    min-height: 42px !important;
-}
-.css-v7duua:hover {
-    background-color: #deebff !important;
-    color: #0d3b85 !important;
-}
-.css-1p3m7a8-multiValue {
-    border-radius: 6px !important;
-}
-.react-datepicker-wrapper {
-    display: block !important;
-    padding: 0;
-    border: 0;
-}
-.react-datepicker {
-    font-family: poppins, sans-serif;
-    font-size: 13px;
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #aeaeae;
-    border-radius: 0.3rem;
-    display: inline-block;
-    position: relative;
-    line-height: unset;
-}
-.react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-selecting-range, .react-datepicker__year-text--in-range{
-  background-color: #0F3F93 !important;
-}
-.react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover {
-    background-color:#0F3F93 !important;
-    color: #fff;
-}
-.react-datepicker__close-icon::after {
-    cursor: pointer;
-    background-color: #0F3F93 !important;
-    color: #fff;
-    border-radius: 50%;
-    height: 20px !important;
-    width: 20px !important;
-    padding: 2px;
-}
-.css-1jqq78o-placeholder {
-    font-size: 14px !important;
-    color: hsl(0, 0%, 50%);
-}
-.posted_div {
-    position: absolute;
-    right: 20px;
-    font-size: 13px;
-}
-.Toastify__toast{
-   z-index: 1050 !important;
-}
-.table-responsive {
-    overflow-x: unset !important;
+
+.css-t3ipsp-control {
+  min-height: 42px !important;
 }
 
-.modal-title{
-    font-size: 16px !important;
-    font-weight: 600 !important;
+.css-v7duua:hover {
+  background-color: #deebff !important;
+  color: #0d3b85 !important;
 }
-.job__closed__ {
-    background-color: #fff4f5 !important;
-    border: 2px solid #ffacac !important;
+
+.css-1p3m7a8-multiValue {
+  border-radius: 6px !important;
 }
-.txt__small__{
+
+.react-datepicker-wrapper {
+  display: block !important;
+  padding: 0;
+  border: 0;
+}
+
+.react-datepicker {
+  font-family: poppins, sans-serif;
+  font-size: 13px;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #aeaeae;
+  border-radius: 0.3rem;
+  display: inline-block;
+  position: relative;
+  line-height: unset;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range,
+.react-datepicker__month-text--selected,
+.react-datepicker__month-text--in-selecting-range,
+.react-datepicker__month-text--in-range,
+.react-datepicker__quarter-text--selected,
+.react-datepicker__quarter-text--in-selecting-range,
+.react-datepicker__quarter-text--in-range,
+.react-datepicker__year-text--selected,
+.react-datepicker__year-text--in-selecting-range,
+.react-datepicker__year-text--in-range {
+  background-color: #0F3F93 !important;
+}
+
+.react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover,
+.react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover,
+.react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover,
+.react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover {
+  background-color: #0F3F93 !important;
+  color: #fff;
+}
+
+.react-datepicker__close-icon::after {
+  cursor: pointer;
+  background-color: #0F3F93 !important;
+  color: #fff;
+  border-radius: 50%;
+  height: 20px !important;
+  width: 20px !important;
+  padding: 2px;
+}
+
+.css-1jqq78o-placeholder {
+  font-size: 14px !important;
+  color: hsl(0, 0%, 50%);
+}
+
+.posted_div {
+  position: absolute;
+  right: 20px;
   font-size: 13px;
 }
-.note_card {
-    background-color: #ffffff !important;
-    border: 1px solid #b8d3ff !important;
-    font-size: 12px !important;
-    padding: 10px !important;
+
+.Toastify__toast {
+  z-index: 1050 !important;
 }
-.note_card_ad ul {
-   font-size: 14px !important;
-   font-weight: 400 !important;
-   padding-left: 20px !important;
+
+.table-responsive {
+  overflow-x: unset !important;
 }
-.note_card_ad{
-    background-color: #d1e3ff !important;
-    border: 1px solid #b8d3ff !important;
-    font-size: 12px !important;
-    padding: 10px !important;    
-}
-.job-title{
-  font-size: 20px !important;
-    font-weight: 700 !important;
-}
-.job-sub-title{
+
+.modal-title {
   font-size: 16px !important;
   font-weight: 600 !important;
+}
+
+.job__closed__ {
+  background-color: #fff4f5 !important;
+  border: 2px solid #ffacac !important;
+}
+
+.txt__small__ {
+  font-size: 13px;
+}
+
+.note_card {
+  background-color: #ffffff !important;
+  border: 1px solid #b8d3ff !important;
+  font-size: 12px !important;
+  padding: 10px !important;
+}
+
+.note_card_ad ul {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  padding-left: 20px !important;
+}
+
+.note_card_ad {
+  background-color: #d1e3ff !important;
+  border: 1px solid #b8d3ff !important;
+  font-size: 12px !important;
+  padding: 10px !important;
+}
+
+/* .job-title{
+  font-size: 20px !important;
+    font-weight: 600 !important;
+} */
+.job-sub-title {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+/* Stacked modal backdrop for SendMessageModal */
+.modal-backdrop-stacked {
+  z-index: 1060 !important;
+}
+
+.lptsoA {
+  z-index: 3 !important;
+  background-color: rgba(255, 255, 255) !important;
+}
+.dmOAwp {
+    display: none !important;
 }

@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { FaRegFileAlt, FaArrowRight, FaPlus } from "react-icons/fa";
 import { HiLightBulb } from "react-icons/hi";
+import { IoClose } from "react-icons/io5";
 import { Row, Col } from "react-bootstrap";
 import "./JobDetail.css";
 
@@ -223,11 +224,23 @@ function JobDetail() {
                 </p>
                 <h3 className="mb-1 job-title">{job.title}</h3>
                 <div className="text-muted">
-                  {job.school_name} • {job.location} • {job.job_type}
+                  {job.school_name} • {job.location}
                 </div>
                 <div className="text-muted small">
                   Posted - {formatDateTime(job.date_posted).date} -{" "}
                   {formatDateTime(job.date_posted).time}
+                </div>
+                <div className="mb-1 d-flex flex-wrap  align-items-center">
+                  <div className="job-info-item txt__regular__ me-4 mt-2">
+                    <span className="txt__regular__bold__">Type:</span>{" "}
+                    {job.job_type}
+                  </div>
+                </div>
+                <div className="mb-1 d-flex flex-wrap  align-items-center">
+                  <div className="job-info-item txt__regular__ me-4 mt-2">
+                    <span className="txt__regular__bold__">Subjects:</span>{" "}
+                    {job.job_type}
+                  </div>
                 </div>
               </Col>
 
@@ -238,36 +251,39 @@ function JobDetail() {
                 <Button variant="primary">Quick Apply with TIC Profile</Button>
               </Col> */}
             </Row>
+
+            {/* Job Info Row - Simple List */}
             <div className="mb-1 d-flex flex-wrap  align-items-center">
-              <div className="job-info-item txt__regular__ me-4 mt-2">
-                <span className="txt__regular__bold__">Position:</span>{" "}
-                {job.position}
+              <div className="job-info-item txt__regular__ me-4 ">
+                <span className="txt__regular__bold__">Education Stage:</span>{" "}
+                {job.subjects}
               </div>
             </div>
             {/* Job Info Row - Simple List */}
             <div className="mb-1 d-flex flex-wrap  align-items-center">
               <div className="job-info-item txt__regular__ me-4 mt-2">
-                <span className="txt__regular__bold__">Subjects:</span>{" "}
+                <span className="txt__regular__bold__">Curriculum:</span>{" "}
                 {job.subjects}
               </div>
             </div>
             {/* Job Info Row - Simple List */}
             <div className="mb-4 d-flex flex-wrap  align-items-center">
               <div className="job-info-item me-4 txt__regular__ mt-2">
-                <span className="txt__regular__bold__">Level:</span> {job.level}
+                <span className="txt__regular__bold__">Contract Type:</span>{" "}
+                {job.level}
               </div>
               <div className="job-info-item me-4 txt__regular__ mt-2">
-                <span className="txt__regular__bold__">Closing Date:</span>{" "}
+                <span className="txt__regular__bold__">Package:</span>{" "}
                 {job.closing_date}
               </div>
 
-              <div className="job-info-item me-4 txt__regular__ mt-2">
-                <span className="txt__regular__bold__">Job type:</span>{" "}
-                {job.job_type}
-              </div>
-              <div className="job-info-item mt-2 txt__regular__">
+              <div className="job-info-item  me-4  mt-2 txt__regular__">
                 <span className="txt__regular__bold__">Job start date:</span>{" "}
                 {job.start_date}
+              </div>
+              <div className="job-info-item mt-2 txt__regular__">
+                <span className="txt__regular__bold__">Close date:</span>{" "}
+                {job.closing_date}
               </div>
             </div>
 
@@ -452,7 +468,7 @@ function JobDetail() {
                   <div
                     className="upload-box__ d-flex flex-column align-items-center justify-content-center mb-2"
                     style={{
-                      opacity: applyMethod === "upload" ? 1 : 0.5,
+                      opacity: applyMethod === "upload" ? 1 : 0.3,
                       transition: "opacity 0.2s",
                     }}
                   >
@@ -491,12 +507,21 @@ function JobDetail() {
                       {resumeFile && resumeFile.name && (
                         <div className="uploaded-file__ d-flex align-items-center">
                           <span className="file-name__">{resumeFile.name}</span>
-                          <button
-                            className="btn btn-sm btn-danger ms-2"
-                            onClick={() => setResumeFile(null)}
+                          <a
+                            role="button"
+                            className="ms-1"
+                            onClick={() => {
+                              setResumeFile(null);
+                              const input = document.getElementById(
+                                "resume-upload"
+                              ) as HTMLInputElement | null;
+                              if (input) input.value = "";
+                            }}
                           >
-                            Remove
-                          </button>
+                            <IoClose
+                              style={{ cursor: "pointer", fontSize: "22px" }}
+                            />{" "}
+                          </a>
                         </div>
                       )}
                     </div>
@@ -554,12 +579,21 @@ function JobDetail() {
                       {coverFile && coverFile.name && (
                         <div className="uploaded-file__ d-flex align-items-center">
                           <span className="file-name__">{coverFile.name}</span>
-                          <button
-                            className="btn btn-sm btn-danger ms-2"
-                            onClick={() => setCoverFile(null)}
+                          <a
+                            className="ms-1"
+                            role="button"
+                            onClick={() => {
+                              setCoverFile(null);
+                              const input = document.getElementById(
+                                "cover-upload"
+                              ) as HTMLInputElement | null;
+                              if (input) input.value = "";
+                            }}
                           >
-                            Remove
-                          </button>
+                            <IoClose
+                              style={{ cursor: "pointer", fontSize: "22px" }}
+                            />{" "}
+                          </a>
                         </div>
                       )}
                     </div>

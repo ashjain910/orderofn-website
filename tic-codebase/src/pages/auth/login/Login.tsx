@@ -47,34 +47,61 @@ export default function Login() {
       }
     } catch (error: any) {
       // If access token expired, use refresh token
-      if (error.response?.status === 401 && Cookies.get("refresh")) {
-        const refreshResponse = await api.post<RefreshResponse>(
-          "/token/refresh",
-          {
-            refresh: Cookies.get("refresh"),
-          }
-        );
-        if (refreshResponse.data.access) {
-          Cookies.set("access", refreshResponse.data.access, { secure: true });
-          // Retry login or redirect
-        }
-      } else {
-        if (error?.response?.data && typeof error.response.data === "object") {
-          const data = error.response.data;
-          Object.entries(data).forEach(([field, errors]) => {
-            if (Array.isArray(errors)) {
-              errors.forEach((err: string, idx: number) => {
-                setTimeout(() => {
-                  toast.error(`${field}: ${err}`, toastOptions);
-                }, idx * 500);
-              });
-            } else {
-              toast.error(`${field}: ${errors}`, toastOptions);
+      const errorData = error?.response?.data;
+      if (
+        error.response?.status === 401 &&
+        Cookies.get("refresh") &&
+        (errorData?.code === "token_not_valid" ||
+          errorData?.detail?.includes("token not valid"))
+      ) {
+        try {
+          const refreshResponse = await api.post<RefreshResponse>(
+            "/token/refresh",
+            {
+              refresh: Cookies.get("refresh"),
             }
-          });
+          );
+          if (refreshResponse.data.access) {
+            Cookies.set("access", refreshResponse.data.access, {
+              secure: true,
+            });
+            // Optionally retry the original request or redirect
+            toast.info("Session refreshed. Please try again.", toastOptions);
+            return;
+          } else {
+            // Refresh failed, logout
+            Cookies.remove("access");
+            Cookies.remove("refresh");
+            sessionStorage.removeItem("user");
+            navigate("/login");
+            toast.error("Session expired. Please log in again.", toastOptions);
+            return;
+          }
+        } catch (refreshError) {
+          // Refresh failed, logout
+          Cookies.remove("access");
+          Cookies.remove("refresh");
+          sessionStorage.removeItem("user");
+          navigate("/login");
+          toast.error("Session expired. Please log in again.", toastOptions);
+          return;
         }
-        console.error("Login error:", error);
       }
+      if (error?.response?.data && typeof error.response.data === "object") {
+        const data = error.response.data;
+        Object.entries(data).forEach(([field, errors]) => {
+          if (Array.isArray(errors)) {
+            errors.forEach((err: string, idx: number) => {
+              setTimeout(() => {
+                toast.error(`${field}: ${err}`, toastOptions);
+              }, idx * 500);
+            });
+          } else {
+            toast.error(`${field}: ${errors}`, toastOptions);
+          }
+        });
+      }
+      console.error("Login error:", error);
     }
   };
 

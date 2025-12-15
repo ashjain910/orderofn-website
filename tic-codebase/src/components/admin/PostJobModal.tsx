@@ -10,10 +10,10 @@ import { toast } from "react-toastify";
 import { toastOptions } from "../../utils/toastOptions";
 
 const benefitOptions = [
-  { value: "medical_insurance", label: "Medical Insurance" },
-  { value: "annual_flight", label: "Annual Flight" },
-  { value: "housing", label: "Housing" },
-  { value: "tuition_concession", label: "Tuition Concession" },
+  { value: "Medical Insurance", label: "Medical Insurance" },
+  { value: "Annual Flight", label: "Annual Flight" },
+  { value: "Housing", label: "Housing" },
+  { value: "Tuition Concession", label: "Tuition Concession" },
 ];
 
 export interface PostJobModalProps {
@@ -24,13 +24,13 @@ export interface PostJobModalProps {
 }
 
 export interface PostJobModalInitialValues {
-  position?: string;
-  position_type?: any[];
+  title?: string;
+  job_type?: any[];
   package?: string;
   contract_type?: string;
   curriculum?: any[];
   education_stage?: any[];
-  school_type_multi?: any[];
+  school_type?: any[];
   closing_date?: Date | string | null;
   summary?: string;
   requirements?: string;
@@ -39,11 +39,14 @@ export interface PostJobModalInitialValues {
   salary?: string;
   benefits?: any[];
   job_start_date?: Date | string | null;
+  location?: string;
+  subjects?: string;
+  school_name?: string;
 }
 
 const positionTypeOptions = [
-  { value: "Teacher", label: "Teacher" },
-  { value: "Deputy Principal", label: "Deputy Principal" },
+  { value: "causual", label: "Teacher" },
+  { value: "remote", label: "Deputy Principal" },
   { value: "Head of School", label: "Head of School" },
 ];
 const curriculumOptions = [{ value: "IB PYP", label: "IB PYP" }];
@@ -54,8 +57,8 @@ const educationStageOptions = [
   { value: "Whole School", label: "Whole School" },
 ];
 const schoolTypeMultiOptions = [
-  { value: "Public", label: "Public" },
-  { value: "International", label: "International" },
+  { value: "public", label: "Public" },
+  { value: "international", label: "International" },
 ];
 
 export default function PostJobModal({
@@ -65,13 +68,13 @@ export default function PostJobModal({
   initialValues,
 }: PostJobModalProps) {
   const [form, setForm] = useState(() => ({
-    position: initialValues?.position || "",
-    position_type: initialValues?.position_type || [],
+    title: initialValues?.title || "",
+    job_type: initialValues?.job_type || [],
     package: initialValues?.package || "",
     contract_type: initialValues?.contract_type || "",
     curriculum: initialValues?.curriculum || [],
     education_stage: initialValues?.education_stage || [],
-    school_type_multi: initialValues?.school_type_multi || [],
+    school_type: initialValues?.school_type || [],
     closing_date: initialValues?.closing_date
       ? typeof initialValues.closing_date === "string"
         ? new Date(initialValues.closing_date)
@@ -94,6 +97,9 @@ export default function PostJobModal({
         ? new Date(initialValues.job_start_date)
         : initialValues.job_start_date
       : null,
+    location: initialValues?.location || "",
+    subjects: initialValues?.subjects || "",
+    school_name: initialValues?.school_name || "",
   }));
   const [errors, setErrors] = useState<any>({});
   React.useEffect(() => {
@@ -105,15 +111,25 @@ export default function PostJobModal({
 
   const validate = () => {
     const newErrors: any = {};
-    // Only validate a field if it is empty or not entered
     if (
-      form.position === undefined ||
-      form.position === null ||
-      form.position === ""
+      form.school_name === undefined ||
+      form.school_name === null ||
+      form.school_name.trim() === ""
     )
-      newErrors.position = "Position is required";
-    if (!Array.isArray(form.position_type) || form.position_type.length === 0)
-      newErrors.position_type = "Position type is required";
+      newErrors.school_name = "School name is required";
+    // Only validate a field if it is empty or not entered
+    if (form.title === undefined || form.title === null || form.title === "")
+      newErrors.title = "title is required";
+    if (!Array.isArray(form.job_type) || form.job_type.length === 0)
+      newErrors.job_type = "title type is required";
+    if (
+      form.location === undefined ||
+      form.location === null ||
+      form.location === ""
+    )
+      newErrors.location = "Location is required";
+    if (!Array.isArray(form.subjects) || form.subjects.length === 0)
+      newErrors.subjects = "Subjects are required";
     if (
       form.package === undefined ||
       form.package === null ||
@@ -133,11 +149,8 @@ export default function PostJobModal({
       form.education_stage.length === 0
     )
       newErrors.education_stage = "Education stage is required";
-    if (
-      !Array.isArray(form.school_type_multi) ||
-      form.school_type_multi.length === 0
-    )
-      newErrors.school_type_multi = "School type is required";
+    if (!Array.isArray(form.school_type) || form.school_type.length === 0)
+      newErrors.school_type = "School type is required";
     if (!form.closing_date) newErrors.closing_date = "Closing date is required";
     if (
       form.summary === undefined ||
@@ -157,20 +170,20 @@ export default function PostJobModal({
       form.description === ""
     )
       newErrors.description = "Job description is required";
-    if (
-      form.international_package === undefined ||
-      form.international_package === null ||
-      form.international_package === ""
-    )
-      newErrors.international_package = "International package is required";
-    if (
-      form.international_package === "competitive" &&
-      (form.salary === undefined ||
-        form.salary === null ||
-        form.salary.trim() === "")
-    ) {
-      newErrors.salary = "Salary is required for competitive package";
-    }
+    // if (
+    //   form.international_package === undefined ||
+    //   form.international_package === null ||
+    //   form.international_package === ""
+    // )
+    //   newErrors.international_package = "International package is required";
+    // if (
+    //   form.international_package === "competitive" &&
+    //   (form.salary === undefined ||
+    //     form.salary === null ||
+    //     form.salary.trim() === "")
+    // ) {
+    //   newErrors.salary = "Salary is required for competitive package";
+    // }
     if (!Array.isArray(form.benefits) || form.benefits.length === 0)
       newErrors.benefits = "At least one benefit is required";
     if (!form.job_start_date)
@@ -193,9 +206,24 @@ export default function PostJobModal({
       };
       let response;
       // Only create new job, editing by id is not supported with current fields
+      // For single-select: send only the value (string), for multi-select: array of values
+      const toValueArray = (arr: any[]) =>
+        arr.map((item) => (item && item.value ? item.value : item));
+      const getSingleValue = (arr: any[]) =>
+        Array.isArray(arr) && arr[0] && arr[0].value ? arr[0].value : "";
       response = await AdminBaseApi.post("/jobs/create", {
         ...form,
+        job_type: getSingleValue(form.job_type),
+        curriculum: getSingleValue(form.curriculum),
+        education_stage: getSingleValue(form.education_stage),
+        school_type: getSingleValue(form.school_type),
+        benefits: toValueArray(form.benefits), // multi-select
+        subjects: Array.isArray(form.subjects)
+          ? toValueArray(form.subjects)
+          : form.subjects, // multi-select
         closing_date: formatDate(form.closing_date),
+        job_start_date: formatDate(form.job_start_date),
+        school_name: form.school_name,
       });
       if (response.status === 200 || response.status === 201) {
         const msg =
@@ -205,13 +233,13 @@ export default function PostJobModal({
             : "Job posted successfully!");
         toast.success(msg, toastOptions);
         setForm({
-          position: "",
-          position_type: [],
+          title: "",
+          job_type: [],
           package: "",
           contract_type: "",
           curriculum: [],
           education_stage: [],
-          school_type_multi: [],
+          school_type: [],
           closing_date: null,
           summary: "",
           requirements: "",
@@ -220,6 +248,9 @@ export default function PostJobModal({
           salary: "",
           benefits: [],
           job_start_date: null,
+          location: "",
+          subjects: "",
+          school_name: "",
         });
         setErrors({});
         if (onSuccess) onSuccess();
@@ -240,7 +271,7 @@ export default function PostJobModal({
           })
           .join(" | ");
       }
-      toast.error(errorMsg, toastOptions);
+      toast.error(errorMsg || "Something went wrong", toastOptions);
     }
     setLoading(false);
   };
@@ -283,58 +314,161 @@ export default function PostJobModal({
             ) : (
               <form onSubmit={handleSubmit} autoComplete="off">
                 <div className="row">
-                  {/* Position */}
+                  {/* School Name */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">School Name</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.school_name ? "is-invalid" : ""
+                        }`}
+                        value={form.school_name}
+                        onChange={(e) => {
+                          setForm({ ...form, school_name: e.target.value });
+                          if (errors.school_name)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              school_name: undefined,
+                            }));
+                        }}
+                        placeholder="Enter school name"
+                      />
+                      {errors.school_name && (
+                        <div className="invalid-feedback">
+                          {errors.school_name}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* title */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
                       <label className="form-label">Position</label>
                       <input
                         type="text"
                         className={`form-control ${
-                          errors.position ? "is-invalid" : ""
+                          errors.title ? "is-invalid" : ""
                         }`}
-                        value={form.position}
+                        value={form.title}
                         onChange={(e) => {
-                          setForm({ ...form, position: e.target.value });
-                          if (errors.position)
+                          setForm({ ...form, title: e.target.value });
+                          if (errors.title)
                             setErrors((prev: any) => ({
                               ...prev,
-                              position: undefined,
+                              title: undefined,
                             }));
                         }}
-                        placeholder="Enter position"
+                        placeholder="Enter title"
                       />
-                      {errors.position && (
+                      {errors.title && (
+                        <div className="invalid-feedback">{errors.title}</div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Location */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Location</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.location ? "is-invalid" : ""
+                        }`}
+                        value={form.location}
+                        onChange={(e) => {
+                          setForm({ ...form, location: e.target.value });
+                          if (errors.location)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              location: undefined,
+                            }));
+                        }}
+                        placeholder="Enter location"
+                      />
+                      {errors.location && (
                         <div className="invalid-feedback">
-                          {errors.position}
+                          {errors.location}
                         </div>
                       )}
                     </div>
                   </div>
-                  {/* Position Type */}
+                  {/* Subjects (Multi-Select) */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
-                      <label className="form-label">Position Type</label>
+                      <label className="form-label">Subjects</label>
                       <Select
                         isMulti
-                        options={positionTypeOptions}
+                        options={[
+                          { value: "Mathematics", label: "Mathematics" },
+                          { value: "Science", label: "Science" },
+                          { value: "English", label: "English" },
+                          { value: "History", label: "History" },
+                          { value: "Geography", label: "Geography" },
+                          { value: "Art", label: "Art" },
+                          { value: "Music", label: "Music" },
+                          {
+                            value: "Physical Education",
+                            label: "Physical Education",
+                          },
+                          { value: "ICT", label: "ICT" },
+                        ]}
                         closeMenuOnSelect={false}
-                        value={form.position_type}
+                        value={form.subjects}
                         onChange={(selected: any) => {
-                          setForm({ ...form, position_type: selected });
-                          if (errors.position_type)
+                          setForm({ ...form, subjects: selected });
+                          if (errors.subjects)
                             setErrors((prev: any) => ({
                               ...prev,
-                              position_type: undefined,
+                              subjects: undefined,
                             }));
                         }}
-                        placeholder="Select position type(s)"
+                        placeholder="Select subjects"
                       />
-                      {errors.position_type && (
+                      {errors.subjects && (
                         <div
                           className="invalid-feedback"
                           style={{ display: "block" }}
                         >
-                          {errors.position_type}
+                          {errors.subjects}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* title Type (Single Select) */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Postion Type</label>
+                      <select
+                        className={`form-select ${
+                          errors.job_type ? "is-invalid" : ""
+                        }`}
+                        value={form.job_type[0]?.value || ""}
+                        onChange={(e) => {
+                          const selected = positionTypeOptions.find(
+                            (opt) => opt.value === e.target.value
+                          );
+                          setForm({
+                            ...form,
+                            job_type: selected ? [selected] : [],
+                          });
+                          if (errors.job_type)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              job_type: undefined,
+                            }));
+                        }}
+                      >
+                        <option value="">Select title type</option>
+                        {positionTypeOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.job_type && (
+                        <div className="invalid-feedback">
+                          {errors.job_type}
                         </div>
                       )}
                     </div>
@@ -391,89 +525,116 @@ export default function PostJobModal({
                       )}
                     </div>
                   </div>
-                  {/* Curriculum */}
+                  {/* Curriculum (Single Select) */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
                       <label className="form-label">Curriculum</label>
-                      <Select
-                        isMulti
-                        options={curriculumOptions}
-                        closeMenuOnSelect={false}
-                        value={form.curriculum}
-                        onChange={(selected: any) => {
-                          setForm({ ...form, curriculum: selected });
+                      <select
+                        className={`form-select ${
+                          errors.curriculum ? "is-invalid" : ""
+                        }`}
+                        value={form.curriculum[0]?.value || ""}
+                        onChange={(e) => {
+                          const selected = curriculumOptions.find(
+                            (opt) => opt.value === e.target.value
+                          );
+                          setForm({
+                            ...form,
+                            curriculum: selected ? [selected] : [],
+                          });
                           if (errors.curriculum)
                             setErrors((prev: any) => ({
                               ...prev,
                               curriculum: undefined,
                             }));
                         }}
-                        placeholder="Select curriculum(s)"
-                      />
+                      >
+                        <option value="">Select curriculum</option>
+                        {curriculumOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
                       {errors.curriculum && (
-                        <div
-                          className="invalid-feedback"
-                          style={{ display: "block" }}
-                        >
+                        <div className="invalid-feedback">
                           {errors.curriculum}
                         </div>
                       )}
                     </div>
                   </div>
-                  {/* Education Stage */}
+                  {/* Education Stage (Single Select) */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
                       <label className="form-label">Education Stage</label>
-                      <Select
-                        isMulti
-                        options={educationStageOptions}
-                        closeMenuOnSelect={false}
-                        value={form.education_stage}
-                        onChange={(selected: any) => {
-                          setForm({ ...form, education_stage: selected });
+                      <select
+                        className={`form-select ${
+                          errors.education_stage ? "is-invalid" : ""
+                        }`}
+                        value={form.education_stage[0]?.value || ""}
+                        onChange={(e) => {
+                          const selected = educationStageOptions.find(
+                            (opt) => opt.value === e.target.value
+                          );
+                          setForm({
+                            ...form,
+                            education_stage: selected ? [selected] : [],
+                          });
                           if (errors.education_stage)
                             setErrors((prev: any) => ({
                               ...prev,
                               education_stage: undefined,
                             }));
                         }}
-                        placeholder="Select education stage(s)"
-                      />
+                      >
+                        <option value="">Select education stage</option>
+                        {educationStageOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
                       {errors.education_stage && (
-                        <div
-                          className="invalid-feedback"
-                          style={{ display: "block" }}
-                        >
+                        <div className="invalid-feedback">
                           {errors.education_stage}
                         </div>
                       )}
                     </div>
                   </div>
-                  {/* School Type */}
+                  {/* School Type (Single Select) */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
                       <label className="form-label">School Type</label>
-                      <Select
-                        isMulti
-                        options={schoolTypeMultiOptions}
-                        closeMenuOnSelect={false}
-                        value={form.school_type_multi}
-                        onChange={(selected: any) => {
-                          setForm({ ...form, school_type_multi: selected });
-                          if (errors.school_type_multi)
+                      <select
+                        className={`form-select ${
+                          errors.school_type ? "is-invalid" : ""
+                        }`}
+                        value={form.school_type[0]?.value || ""}
+                        onChange={(e) => {
+                          const selected = schoolTypeMultiOptions.find(
+                            (opt) => opt.value === e.target.value
+                          );
+                          setForm({
+                            ...form,
+                            school_type: selected ? [selected] : [],
+                          });
+                          if (errors.school_type)
                             setErrors((prev: any) => ({
                               ...prev,
-                              school_type_multi: undefined,
+                              school_type: undefined,
                             }));
                         }}
-                        placeholder="Select school type(s)"
-                      />
-                      {errors.school_type_multi && (
-                        <div
-                          className="invalid-feedback"
-                          style={{ display: "block" }}
-                        >
-                          {errors.school_type_multi}
+                      >
+                        <option value="">Select school type</option>
+                        {schoolTypeMultiOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.school_type && (
+                        <div className="invalid-feedback">
+                          {errors.school_type}
                         </div>
                       )}
                     </div>
@@ -535,9 +696,9 @@ export default function PostJobModal({
                         }}
                       >
                         <option value="">Select option</option>
-                        <option value="tbc">To Be confirmed</option>
-                        <option value="tax_free">Tax Free Salary</option>
-                        <option value="competitive">
+                        <option value="to be confirmed">To Be confirmed</option>
+                        <option value="tax free salary">Tax Free Salary</option>
+                        <option value="competitive salary based on experience visa">
                           Competitive salary based on experience Visa
                         </option>
                       </select>

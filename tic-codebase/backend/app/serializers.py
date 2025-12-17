@@ -596,7 +596,7 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate_job_type(self, value):
         """Validate job type"""
-        valid_types = ['remote', 'casual', 'full-time', 'part-time']
+        valid_types = ['deputy_principal', 'teacher', 'head_of_school']
         if value not in valid_types:
             raise serializers.ValidationError(
                 f"Job type must be one of: {', '.join(valid_types)}"

@@ -80,7 +80,7 @@ class PreRegisterSerializer(serializers.Serializer):
     # Step 2 - Personal Details
     gender = serializers.CharField(max_length=10)
     nationality = serializers.CharField(max_length=100, min_length=2)
-    secondNationality = serializers.BooleanField(default=False)
+    secondNationality = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
     cvFile = serializers.FileField(required=False, allow_null=True)
     hearFrom = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
@@ -682,7 +682,7 @@ class UpdateProfileSerializer(serializers.Serializer):
     position = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     gender = serializers.CharField(max_length=10, required=False)
     nationality = serializers.CharField(max_length=100, required=False)
-    second_nationality = serializers.BooleanField(required=False)
+    second_nationality = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
     cv_file = serializers.FileField(required=False, allow_null=True)
     hear_from = serializers.CharField(max_length=200, required=False, allow_blank=True)
     role = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)

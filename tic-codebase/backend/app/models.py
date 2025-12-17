@@ -124,7 +124,7 @@ class TeacherProfile(models.Model):
     # Step 2 - Personal Details
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     nationality = models.CharField(max_length=100)
-    second_nationality = models.BooleanField(default=False)
+    second_nationality = models.CharField(max_length=100, blank=True, null=True)
     cv_file = models.FileField(upload_to='cvs/', blank=True, null=True)
     hear_from = models.CharField(max_length=200, blank=True)
 

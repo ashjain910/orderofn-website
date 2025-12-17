@@ -129,8 +129,8 @@ class TeacherProfile(models.Model):
     hear_from = models.CharField(max_length=200, blank=True)
 
     # Step 3 - Teaching Experience
-    role = models.JSONField(default=list, blank=True)  # Changed to array
-    subject = models.JSONField(default=list, blank=True)  # Changed to array
+    roles = models.JSONField(default=list, blank=True)  # Changed to array
+    subjects = models.JSONField(default=list, blank=True)  # Changed to array
     age_group = models.JSONField(default=list, blank=True)  # Changed to array
     curriculum = models.JSONField(default=list, blank=True)
 

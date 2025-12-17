@@ -40,8 +40,8 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
         model = TeacherProfile
         fields = [
             'id', 'qualified', 'english', 'position', 'gender', 'nationality',
-            'second_nationality', 'cv_file', 'hear_from', 'role', 'subject',
-            'age_group', 'curriculum', 'leadership_role', 'job_alerts',
+            'second_nationality', 'cv_file', 'hear_from', 'roles', 'subjects',
+             'age_group', 'curriculum', 'leadership_role', 'job_alerts',
             'available_day', 'available_month', 'available_year', 'available_from',
             'created_at', 'updated_at'
         ]
@@ -300,12 +300,12 @@ class PreRegisterSerializer(serializers.Serializer):
             'position': validated_data.get('position'),
             'gender': validated_data.get('gender'),
             'nationality': validated_data.get('nationality'),
-            'second_nationality': validated_data.get('secondNationality', False),
+            'second_nationality': validated_data.get('secondNationality', ''),
             'cv_file': validated_data.get('cvFile'),
             'hear_from': validated_data.get('hearFrom', ''),
-            'role': validated_data.get('role', ''),
-            'subject': validated_data.get('subject', ''),
-            'age_group': validated_data.get('ageGroup', ''),
+            'roles': validated_data.get('role', []),
+            'subjects': validated_data.get('subject', []),
+            'age_group': validated_data.get('ageGroup', []),
             'curriculum': validated_data.get('curriculum', []),
             'leadership_role': validated_data.get('leadershipRole', ''),
             'job_alerts': validated_data.get('exampleRadio', False),
@@ -876,7 +876,13 @@ class UpdateProfileSerializer(serializers.Serializer):
             try:
                 teacher_profile = instance.teacher_profile
                 for key, value in teacher_data.items():
-                    setattr(teacher_profile, key, value)
+                    # Map serializer field names to model field names
+                    if key == 'role':
+                        setattr(teacher_profile, 'roles', value)
+                    elif key == 'subject':
+                        setattr(teacher_profile, 'subjects', value)
+                    else:
+                        setattr(teacher_profile, key, value)
                 teacher_profile.save()
             except AttributeError:
                 pass  # Teacher profile doesn't exist, skip

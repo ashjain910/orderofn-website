@@ -96,11 +96,11 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
               { value: "vice_principal", label: "Vice Principal" },
             ]}
             closeMenuOnSelect={false}
-            value={formData.role || []}
+            value={formData.roles || []}
             onChange={(selected: any) =>
               setFormData({
                 ...formData,
-                role: Array.isArray(selected) ? selected : [],
+                roles: Array.isArray(selected) ? selected : [],
               })
             }
             classNamePrefix={"react-select"}
@@ -194,11 +194,11 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
               { value: "theory_of_knowledge", label: "Theory of Knowledge" },
             ]}
             closeMenuOnSelect={false}
-            value={formData.subject || []}
+            value={formData.subjects || []}
             onChange={(selected: any) =>
               setFormData({
                 ...formData,
-                subject: Array.isArray(selected) ? selected : [],
+                subjects: Array.isArray(selected) ? selected : [],
               })
             }
             classNamePrefix={"react-select"}

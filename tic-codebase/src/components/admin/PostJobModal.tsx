@@ -45,9 +45,9 @@ export interface PostJobModalInitialValues {
 }
 
 const positionTypeOptions = [
-  { value: "causual", label: "Teacher" },
-  { value: "remote", label: "Deputy Principal" },
-  { value: "Head of School", label: "Head of School" },
+  { value: "teacher", label: "Teacher" },
+  { value: "deputy_principal", label: "Deputy Principal" },
+  { value: "head_of_school", label: "Head of School" },
 ];
 const curriculumOptions = [{ value: "IB PYP", label: "IB PYP" }];
 const educationStageOptions = [
@@ -696,9 +696,9 @@ export default function PostJobModal({
                         }}
                       >
                         <option value="">Select option</option>
-                        <option value="to be confirmed">To Be confirmed</option>
-                        <option value="tax free salary">Tax Free Salary</option>
-                        <option value="competitive salary based on experience visa">
+                        <option value="to_be_confirmed">To Be confirmed</option>
+                        <option value="tax_free">Tax Free Salary</option>
+                        <option value="competitive">
                           Competitive salary based on experience Visa
                         </option>
                       </select>

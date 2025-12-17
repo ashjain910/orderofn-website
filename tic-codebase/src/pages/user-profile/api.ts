@@ -8,16 +8,38 @@ export async function fetchUserProfile() {
 export async function updateUserProfile(data: any) {
     // If there is a file, use FormData
     if (data.cvFile) {
+        // Map camelCase keys to backend snake_case keys
+        const keyMap: Record<string, string> = {
+            firstName: "firstName",
+            lastName: "lastName",
+            secondNationality: "secondNationality",
+            hearFrom: "hearFrom",
+            cvFile: "cvFile",
+            ageGroup: "ageGroup",
+            job_alerts: "job_alerts",
+            available_day: "available_day",
+            roles: "roles",
+            subjects: "subjects",
+            leadershipRoles: "leadershipRoles",
+            // Add more mappings as needed
+        };
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
-                // For arrays (like curriculum), append as JSON string
+                const backendKey = keyMap[key] || key;
+                // Arrays: append each value as separate entry
                 if (Array.isArray(value)) {
-                    formData.append(key, JSON.stringify(value));
-                } else if (value instanceof Blob || typeof value === 'string') {
-                    formData.append(key, value);
+                    value.forEach((v) => {
+                        if (v && typeof v === 'object' && v.value !== undefined) {
+                            formData.append(backendKey, v.value);
+                        } else {
+                            formData.append(backendKey, v);
+                        }
+                    });
+                } else if (value instanceof Blob) {
+                    formData.append(backendKey, value);
                 } else {
-                    formData.append(key, JSON.stringify(value));
+                    formData.append(backendKey, String(value));
                 }
             }
         });

@@ -65,143 +65,80 @@ function Jobs() {
       time: `${hours}:${minStr} ${ampm}`,
     };
   };
-  const [activeTab, setActiveTab] = useState("active");
-  const [page, setPage] = useState(1);
-  const [filterTitle, setFilterTitle] = useState("");
-  const [filterjob_type, setFilterjob_type] = useState("");
-  const [filterSchoolType, setFilterSchoolType] = useState("");
+  const [query, setQuery] = useState({
+    tab: "active",
+    page: 1,
+    filterTitle: "",
+    filterjob_type: "",
+    filterSchoolType: "",
+  });
   const [jobsData, setJobsData] = useState<Job[]>([]);
   const [resultsCount, setResultsCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchInitialJobs = async () => {
-      setLoading(true);
-      try {
-        const response = await AdminBaseApi.get("/jobs", {
-          params: {
-            search: filterTitle,
-            job_type: filterjob_type,
-            school_type: filterSchoolType,
-            status: activeTab,
-            page: page,
-            page_size: JOBS_PER_PAGE,
-          },
-        });
-        setJobsData(response.data.results || []);
-        setResultsCount(response.data.count || 0);
-      } catch (error) {
-        setJobsData([]);
-        setResultsCount(0);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchInitialJobs();
+    fetchJobs(query);
     // eslint-disable-next-line
-  }, [activeTab, page]);
+  }, [
+    query.tab,
+    query.page,
+    query.filterTitle,
+    query.filterjob_type,
+    query.filterSchoolType,
+  ]);
 
-  const fetchJobsWithFiltersAndPage = async (pageNum: number) => {
+  const fetchJobs = async (q: typeof query) => {
     setLoading(true);
-    setPage(pageNum);
+    try {
+      const response = await AdminBaseApi.get("/jobs", {
+        params: {
+          search: q.filterTitle,
+          job_type: q.filterjob_type,
+          school_type: q.filterSchoolType,
+          status: q.tab,
+          page: q.page,
+          page_size: JOBS_PER_PAGE,
+        },
+      });
+      setJobsData(response.data.results || []);
+      setResultsCount(response.data.count || 0);
+    } catch (error) {
+      setJobsData([]);
+      setResultsCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchJobsWithFiltersAndPage = (pageNum: number) => {
+    setQuery((prev) => ({ ...prev, page: pageNum }));
     window.scrollTo({ top: 0, behavior: "smooth" });
-    try {
-      const response = await AdminBaseApi.get("/jobs", {
-        params: {
-          search: filterTitle,
-          job_type: filterjob_type,
-          school_type: filterSchoolType,
-          status: activeTab,
-          page: pageNum,
-          page_size: JOBS_PER_PAGE,
-        },
-      });
-      setJobsData(response.data.results || []);
-      setResultsCount(response.data.count || 0);
-    } catch (error) {
-      setJobsData([]);
-      setResultsCount(0);
-    } finally {
-      setLoading(false);
-    }
   };
 
-  const handleTabChange = async (tabKey: string) => {
-    if (activeTab === tabKey) return;
-    setLoading(true);
-    setActiveTab(tabKey);
-    setPage(1);
-    try {
-      const response = await AdminBaseApi.get("/jobs", {
-        params: {
-          search: filterTitle,
-          job_type: filterjob_type,
-          school_type: filterSchoolType,
-          status: tabKey,
-          page: 1,
-          page_size: JOBS_PER_PAGE,
-        },
-      });
-      setJobsData(response.data.results || []);
-      setResultsCount(response.data.count || 0);
-    } catch (error) {
-      setJobsData([]);
-      setResultsCount(0);
-    } finally {
-      setLoading(false);
-    }
+  const handleTabChange = (tabKey: string) => {
+    if (query.tab === tabKey) return;
+    setQuery((prev) => ({ ...prev, tab: tabKey, page: 1 }));
   };
 
-  const handleApplyFilters = async () => {
-    setLoading(true);
-    setPage(1);
-    try {
-      const response = await AdminBaseApi.get("/jobs", {
-        params: {
-          search: filterTitle,
-          job_type: filterjob_type,
-          school_type: filterSchoolType,
-          status: activeTab,
-          page: 1,
-          page_size: JOBS_PER_PAGE,
-        },
-      });
-      setJobsData(response.data.results || []);
-      setResultsCount(response.data.count || 0);
-    } catch (error) {
-      setJobsData([]);
-      setResultsCount(0);
-    } finally {
-      setLoading(false);
-    }
+  const handleApplyFilters = () => {
+    setQuery((prev) => ({
+      ...prev,
+      page: 1,
+      filterTitle: prev.filterTitle,
+      filterjob_type: prev.filterjob_type,
+      filterSchoolType: prev.filterSchoolType,
+    }));
   };
 
-  const handleClearFilters = async () => {
-    setLoading(true);
-    setFilterTitle("");
-    setFilterjob_type("");
-    setFilterSchoolType("");
-    setPage(1);
-    try {
-      const response = await AdminBaseApi.get("/jobs", {
-        params: {
-          search: "",
-          job_type: "",
-          school_type: "",
-          status: activeTab,
-          page: 1,
-          page_size: JOBS_PER_PAGE,
-        },
-      });
-      setJobsData(response.data.results || []);
-      setResultsCount(response.data.count || 0);
-    } catch (error) {
-      setJobsData([]);
-      setResultsCount(0);
-    } finally {
-      setLoading(false);
-    }
+  const handleClearFilters = () => {
+    setQuery((prev) => ({
+      ...prev,
+      page: 1,
+      filterTitle: "",
+      filterjob_type: "",
+      filterSchoolType: "",
+    }));
   };
 
   const handleViewJobDetails = (jobId: number) => {
@@ -212,6 +149,13 @@ function Jobs() {
   };
 
   const totalPages = Math.ceil(resultsCount / JOBS_PER_PAGE);
+  const {
+    tab: activeTab,
+    page,
+    filterTitle,
+    filterjob_type,
+    filterSchoolType,
+  } = query;
 
   return (
     <div className="container">
@@ -226,7 +170,12 @@ function Jobs() {
                   type="text"
                   className="form-control"
                   value={filterTitle}
-                  onChange={(e) => setFilterTitle(e.target.value)}
+                  onChange={(e) =>
+                    setQuery((prev) => ({
+                      ...prev,
+                      filterTitle: e.target.value,
+                    }))
+                  }
                   placeholder="Enter job title"
                 />
               </div>
@@ -235,7 +184,12 @@ function Jobs() {
                 <select
                   className="form-select"
                   value={filterjob_type}
-                  onChange={(e) => setFilterjob_type(e.target.value)}
+                  onChange={(e) =>
+                    setQuery((prev) => ({
+                      ...prev,
+                      filterjob_type: e.target.value,
+                    }))
+                  }
                 >
                   <option value="">Select job type</option>
                   {/* ...existing code... */}
@@ -246,7 +200,12 @@ function Jobs() {
                 <select
                   className="form-select"
                   value={filterSchoolType}
-                  onChange={(e) => setFilterSchoolType(e.target.value)}
+                  onChange={(e) =>
+                    setQuery((prev) => ({
+                      ...prev,
+                      filterSchoolType: e.target.value,
+                    }))
+                  }
                 >
                   <option value="">Select school type</option>
                   {/* ...existing code... */}

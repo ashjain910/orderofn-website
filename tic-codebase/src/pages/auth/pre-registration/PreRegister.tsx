@@ -78,7 +78,6 @@ export default function PreRegister() {
     leadershipRole: "",
 
     // Step5
-    exampleRadio: false,
     day: "",
     month: "",
     year: "",
@@ -163,7 +162,20 @@ export default function PreRegister() {
     try {
       const form = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
+        // Handle multi-select fields (roles, subjects, leadershipRoles)
+        if (
+          ["roles", "subjects", "leadershipRoles"].includes(key) &&
+          Array.isArray(value)
+        ) {
+          value.forEach((v) => {
+            if (typeof v === "object" && v.value) {
+              form.append(key, v.value);
+            } else {
+              form.append(key, v);
+            }
+          });
+        } else if (Array.isArray(value)) {
+          // For curriculum and other string arrays
           value.forEach((v) => form.append(key, v));
         } else {
           if (value instanceof Blob || typeof value === "string") {

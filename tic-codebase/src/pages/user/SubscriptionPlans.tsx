@@ -2,80 +2,11 @@ import { useState } from "react";
 import { Card, Button, Row, Col } from "react-bootstrap";
 import { FaCheck } from "react-icons/fa";
 // Stripe integration
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+// Stripe imports removed
 import BaseApi from "../../services/api";
 import { toast } from "react-toastify";
 
-const stripePromise = loadStripe("pk_test_your_publishable_key"); // Replace with your Stripe publishable key
-
-function CheckoutForm({ plan }: { plan: Plan }) {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-
-  interface CheckoutFormEvent extends React.FormEvent<HTMLFormElement> {}
-
-  interface StripeConfirmCardPaymentResult {
-    error?: {
-      message?: string | null;
-    };
-    paymentIntent?: {
-      status?: string;
-    };
-  }
-
-  const handleSubmit = async (e: CheckoutFormEvent): Promise<void> => {
-    e.preventDefault();
-    setProcessing(true);
-    setError(null);
-    // For demo: Use Stripe test client secret (replace with backend call in production)
-    const clientSecret: string = "set_your_client_secret_here";
-    if (!stripe || !elements) return;
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      setError("Card information is incomplete.");
-      setProcessing(false);
-      return;
-    }
-    const result: StripeConfirmCardPaymentResult =
-      await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {},
-        },
-      });
-    if (result.error) {
-      setError(result.error.message ?? null);
-    } else if (
-      result.paymentIntent &&
-      result.paymentIntent.status === "succeeded"
-    ) {
-      setSuccess(true);
-    }
-    setProcessing(false);
-  };
-
-  if (success) return <div>Payment successful!</div>;
-
-  return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "0 auto" }}>
-      <h4>Pay for: {plan?.title || "Selected Plan"}</h4>
-      <CardElement options={{ hidePostalCode: true }} />
-      <button
-        type="submit"
-        disabled={!stripe || processing}
-        className="btn btn-primary mt-3"
-      >
-        {processing ? "Processing..." : "Pay Now"}
-      </button>
-      {error && <div className="text-danger mt-2">{error}</div>}
-    </form>
-  );
-}
+// Stripe CheckoutForm removed
 
 type Plan = {
   id: string;
@@ -287,14 +218,7 @@ export default function PricingPlans() {
             </Button>
           </div>
         </>
-      ) : (
-        showPayment &&
-        selectedPlan && (
-          <Elements stripe={stripePromise}>
-            <CheckoutForm plan={selectedPlan} />
-          </Elements>
-        )
-      )}
+      ) : null}
     </div>
   );
 }

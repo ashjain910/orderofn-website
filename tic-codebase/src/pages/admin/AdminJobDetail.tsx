@@ -136,6 +136,7 @@ function AdminJobDetail() {
   // Teachers state will be set from API job.applications
   const [teachers, setTeachers] = useState<any[]>([]);
   const [sortBy, setSortBy] = useState<string>("");
+  const [filterBy, setFilterBy] = useState<string>("");
   const [dropdownOpenIdx, setDropdownOpenIdx] = useState<number | null>(null);
   // Close dropdown on outside click
   React.useEffect(() => {
@@ -190,6 +191,40 @@ function AdminJobDetail() {
     };
     fetchJob();
   }, [id]);
+
+  // Fetch filtered applicants when filterBy changes
+  React.useEffect(() => {
+    if (!job?.id) return;
+    if (!filterBy) {
+      // If filter is cleared, reset to all applicants from job
+      if (job.applications && Array.isArray(job.applications)) {
+        setTeachers(job.applications);
+      }
+      return;
+    }
+    const fetchFiltered = async () => {
+      setLoading(true);
+      try {
+        const response = await AdminBaseApi.get(
+          `/jobs/${job.id}/applications`,
+          {
+            params: { status: filterBy },
+          }
+        );
+        if (Array.isArray(response.data)) {
+          setTeachers(response.data);
+        } else {
+          setTeachers([]);
+        }
+      } catch (error) {
+        setTeachers([]);
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFiltered();
+  }, [filterBy, job?.id]);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const handleEditJob = () => {
@@ -466,7 +501,7 @@ function AdminJobDetail() {
         </div>
         <div className="col-lg-7 col-md-7 col-sm-12 col-12">
           <div className="row mb-3">
-            <div className="col-12 d-flex justify-content-end">
+            <div className="col-12 d-flex justify-content-end gap-2">
               <select
                 className="form-select form-select-sm w-auto"
                 style={{ minWidth: 140 }}
@@ -479,6 +514,18 @@ function AdminJobDetail() {
                 <option value="accepted">Accepted</option>
                 <option value="rejected">Rejected</option>
                 <option value="date">Date Applied</option>
+              </select>
+              <select
+                className="form-select form-select-sm w-auto"
+                style={{ minWidth: 140 }}
+                value={filterBy}
+                onChange={(e) => setFilterBy(e.target.value)}
+              >
+                <option value="">Filter By</option>
+                <option value="pending">Pending</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
               </select>
             </div>
           </div>

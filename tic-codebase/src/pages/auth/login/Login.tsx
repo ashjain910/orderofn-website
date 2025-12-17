@@ -2,21 +2,36 @@ import { useNavigate } from "react-router-dom";
 import "./login.css";
 import api from "../../../services/api";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import { toastOptions } from "../../../utils/toastOptions";
+import { FaSpinner } from "react-icons/fa";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // On mount, check for remembered credentials
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("user_remember_email") || "";
+    const savedPassword = localStorage.getItem("user_remember_password") || "";
+    if (savedEmail && savedPassword) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
+  const [loading, setLoading] = useState(false);
 
   // Login
   interface LoginResponse {
     access: string;
     refresh: string;
     user?: any;
+    teacher_profile?: any;
   }
 
   interface RefreshResponse {
@@ -28,6 +43,7 @@ export default function Login() {
     password: string
   ): Promise<void> => {
     try {
+      setLoading(true);
       const response = await api.post<LoginResponse>("/login", {
         email,
         password,
@@ -37,10 +53,23 @@ export default function Login() {
         response.data.access &&
         response.data.refresh
       ) {
+        if (rememberMe) {
+          localStorage.setItem("user_remember_email", email);
+          localStorage.setItem("user_remember_password", password);
+        } else {
+          localStorage.removeItem("user_remember_email");
+          localStorage.removeItem("user_remember_password");
+        }
         Cookies.set("access", response.data.access, { secure: true });
         Cookies.set("refresh", response.data.refresh, { secure: true });
         if (response.status === 200 && response.data.user) {
           sessionStorage.setItem("user", JSON.stringify(response.data.user));
+        }
+        if (response.status === 200 && response.data.teacher_profile) {
+          sessionStorage.setItem(
+            "teacher_profile",
+            JSON.stringify(response.data.teacher_profile)
+          );
         }
         navigate("/jobs");
         // Redirect to dashboard
@@ -102,6 +131,8 @@ export default function Login() {
         });
       }
       console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,6 +143,26 @@ export default function Login() {
 
   return (
     <div className="login-full-bg">
+      {loading && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(255,255,255,0.8)",
+            zIndex: 9999,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <FaSpinner className="fa-spin" size={32} />
+          <span className="ms-2 mt-2">Loading...</span>
+        </div>
+      )}
       <div className="container-fluid login-container bg-white p-0 m-0">
         <div className="row vh-100">
           {/* LEFT SIDE FORM */}
@@ -159,6 +210,17 @@ export default function Login() {
                   type="checkbox"
                   className="form-check-input"
                   id="remember"
+                  checked={rememberMe}
+                  onChange={() => {
+                    setRememberMe((prev) => {
+                      const newVal = !prev;
+                      if (!newVal) {
+                        localStorage.removeItem("user_remember_email");
+                        localStorage.removeItem("user_remember_password");
+                      }
+                      return newVal;
+                    });
+                  }}
                 />
                 <label className="form-check-label" htmlFor="remember">
                   Remember me
@@ -175,10 +237,23 @@ export default function Login() {
 
             {/* Login Button */}
             <button
-              className="btn btn-primary w-100 py-2"
+              className="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center"
               onClick={() => handleLogin(email, password)}
+              disabled={loading}
+              style={{ minHeight: 40 }}
             >
-              Login
+              {loading ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
 
             {/* Register Link */}

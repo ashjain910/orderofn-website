@@ -104,10 +104,47 @@ function Jobs() {
   // Jobs data state (for API updates)
   const [jobsData, setJobsData] = useState<Job[]>([]);
   const [resultsCount, setResultsCount] = useState(0);
+  // Tab counts for all, saved, applied
+  const [tabCounts, setTabCounts] = useState<{
+    all: number;
+    saved: number;
+    applied: number;
+  }>({ all: 0, saved: 0, applied: 0 });
 
   const navigate = useNavigate();
 
   // Fetch jobs on initial page load with all filters
+  // Helper to fetch tab counts (all, saved, applied)
+  const fetchTabCounts = async () => {
+    try {
+      // You may want to optimize this with a single API endpoint that returns all counts at once
+      const [allRes, savedRes, appliedRes] = await Promise.all([
+        BaseApi.get("/jobs", {
+          params: { status: "all", page: 1, page_size: 1 },
+        }),
+        BaseApi.get("/jobs", {
+          params: { status: "saved", page: 1, page_size: 1, is_saved: true },
+        }),
+        BaseApi.get("/jobs", {
+          params: {
+            status: "applied",
+            page: 1,
+            page_size: 1,
+            is_applied: true,
+          },
+        }),
+      ]);
+      setTabCounts({
+        all: allRes.data.count || 0,
+        saved: savedRes.data.count || 0,
+        applied: appliedRes.data.count || 0,
+      });
+    } catch (error) {
+      // fallback: don't update counts
+      console.error("Error fetching tab counts", error);
+    }
+  };
+
   useEffect(() => {
     const fetchInitialJobs = async () => {
       try {
@@ -127,6 +164,7 @@ function Jobs() {
         });
         setJobsData(response.data.results || []);
         setResultsCount(response.data.count || 0);
+        setTabCounts((prev) => ({ ...prev, all: response.data.count || 0 }));
         console.log("Initial jobs fetched:", response.data);
       } catch (error) {
         console.error(error);
@@ -184,6 +222,7 @@ function Jobs() {
       setJobsData(response.data.results || []);
       setResultsCount(response.data.count || 0);
       setPage(pageNum);
+      await fetchTabCounts();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       console.error(error);
@@ -211,6 +250,8 @@ function Jobs() {
       });
       setJobsData(response.data.results || []);
       setResultsCount(response.data.count || 0);
+      // Update the count for the selected tab with the count from the API response
+      setTabCounts((prev) => ({ ...prev, [tabKey]: response.data.count || 0 }));
     } catch (error) {
       console.error(error);
     } finally {
@@ -225,7 +266,7 @@ function Jobs() {
     setActiveTab(tabKey);
     setPage(1);
     await fetchJobsForTab(tabKey);
-    // setLoading(false) is handled in fetchJobsForTab finally block
+    // Only the selected tab's API is called; no extra tab API calls
   };
 
   // Lazy load and call saveJob
@@ -360,6 +401,7 @@ function Jobs() {
       is_applied: activeTab === "applied" ? true : undefined,
       is_saved: activeTab === "saved" ? true : undefined,
     });
+    await fetchTabCounts();
     setLoading(false);
   };
 
@@ -383,6 +425,7 @@ function Jobs() {
       is_applied: activeTab === "applied" ? true : undefined,
       is_saved: activeTab === "saved" ? true : undefined,
     });
+    await fetchTabCounts();
     setLoading(false);
   };
 
@@ -395,34 +438,24 @@ function Jobs() {
           <div className="card card__tab__ mb-3">
             <div className="d-flex align-items-center">
               <ul className="ul d-flex align-items-center">
-                {statusTabs.map((tab) => {
-                  // Count jobs for each tab
-                  // Show correct count for each tab
-                  let count = 0;
-                  if (tab.key === "all") {
-                    count = resultsCount;
-                  } else {
-                    count = jobsData.filter(
-                      (job) => job.tabStatus === tab.key
-                    ).length;
-                  }
-                  return (
-                    <li
-                      key={tab.key}
-                      className={`btn btn__tab__${
-                        activeTab === tab.key ? " active" : ""
-                      }`}
-                      onClick={() => handleTabChange(tab.key)}
-                      style={{ display: "flex", alignItems: "center", gap: 8 }}
-                    >
-                      {/* Icon before tab text */}
-                      {tabIcons[tab.key as keyof typeof tabIcons]}
-                      <span>{tab.label}</span>
-                      {/* Count in rounded grey background */}
-                      <span className="count__badge__">{count}</span>
-                    </li>
-                  );
-                })}
+                {statusTabs.map((tab) => (
+                  <li
+                    key={tab.key}
+                    className={`btn btn__tab__${
+                      activeTab === tab.key ? " active" : ""
+                    }`}
+                    onClick={() => handleTabChange(tab.key)}
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    {/* Icon before tab text */}
+                    {tabIcons[tab.key as keyof typeof tabIcons]}
+                    <span>{tab.label}</span>
+                    {/* Count in rounded grey background */}
+                    <span className="count__badge__">
+                      {tabCounts[tab.key as keyof typeof tabCounts] ?? 0}
+                    </span>
+                  </li>
+                ))}
               </ul>
               {/* Show/Hide filter switch */}
               <div className="form-switch ms-3 d-flex align-items-center">

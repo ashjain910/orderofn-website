@@ -1,3 +1,5 @@
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 interface Step5Props {
   formData: any;
   setFormData: (data: any) => void;
@@ -46,15 +48,15 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
                 <input
                   className="form-check-input"
                   type="radio"
-                  name="availability"
-                  id="availabilityYes"
+                  name="job_alerts"
+                  id="job_alertsYes"
                   value="yes"
-                  checked={formData.availability === "yes"}
+                  checked={formData.job_alerts === "yes"}
                   onChange={(e) =>
-                    setFormData({ ...formData, availability: e.target.value })
+                    setFormData({ ...formData, job_alerts: e.target.value })
                   }
                 />
-                <label className="form-check-label" htmlFor="availabilityYes">
+                <label className="form-check-label" htmlFor="job_alertsYes">
                   Yes
                 </label>
               </div>
@@ -76,21 +78,28 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
               </div>
             </div>
             <label className="form-label w-100">I will be available from</label>
-            <div className="date-row d-flex gap-3">
-              <select
-                className="form-select"
-                value={formData.availableYear || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, availableYear: e.target.value })
+            <div className="date-row w-100 ">
+              <DatePicker
+                selected={
+                  formData.available_from
+                    ? new Date(formData.available_from)
+                    : null
                 }
-              >
-                <option value="">Select year</option>
-                {Array.from({ length: 5 }, (_, i) => 2025 + i).map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+                onChange={(date: Date | null) =>
+                  setFormData({
+                    ...formData,
+                    available_from: date
+                      ? date.toISOString().split("T")[0]
+                      : "",
+                  })
+                }
+                className="form-control"
+                placeholderText="Select available date"
+                dateFormat="yyyy-MM-dd"
+                isClearable
+                autoComplete="off"
+                minDate={new Date()}
+              />
             </div>
 
             <div className="button-row d-flex justify-content-between mt-3">

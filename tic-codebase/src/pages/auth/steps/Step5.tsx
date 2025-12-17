@@ -81,16 +81,14 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
             <div className="date-row w-100 ">
               <DatePicker
                 selected={
-                  formData.available_from
-                    ? new Date(formData.available_from)
+                  formData.available_day
+                    ? new Date(formData.available_day)
                     : null
                 }
                 onChange={(date: Date | null) =>
                   setFormData({
                     ...formData,
-                    available_from: date
-                      ? date.toISOString().split("T")[0]
-                      : "",
+                    available_day: date ? date.toISOString().split("T")[0] : "",
                   })
                 }
                 className="form-control"

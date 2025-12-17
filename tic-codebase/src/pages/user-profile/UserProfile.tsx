@@ -41,9 +41,8 @@ const sampleProfile = {
   // Step4
   leadershipRole: "",
   // Step5
-  day: "",
-  month: "",
-  year: "",
+  job_alerts: "",
+  available_day: "",
 };
 
 const sectionFields = [

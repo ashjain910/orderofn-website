@@ -12,6 +12,9 @@ const curriculumList = [
   "UK National",
 ];
 import React, { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Select from "react-select";
 import { fetchUserProfile, updateUserProfile } from "./api";
 import { toast } from "react-toastify";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
@@ -30,16 +33,16 @@ const sampleProfile = {
   lastName: "",
   gender: "",
   nationality: "",
-  secondNationality: false,
+  secondNationality: "",
   cvFile: null,
   hearFrom: "",
   // Step3
-  role: "",
-  subject: "",
+  roles: "",
+  subjects: "",
   ageGroup: "",
-  curriculum: [],
+  curriculum: "",
   // Step4
-  leadershipRole: "",
+  leadershipRoles: "",
   // Step5
   job_alerts: "",
   available_day: "",
@@ -81,15 +84,125 @@ const sectionFields = [
   [
     {
       label: "Role",
-      name: "role",
-      type: "select",
-      options: ["", "Teacher", "Assistant Teacher", "Senior Leader"],
+      name: "roles",
+      type: "multi-select",
+      options: [
+        { value: "academic_registrar", label: "Academic registrar" },
+        { value: "business_manager", label: "Business manager" },
+        { value: "careers_counsellor", label: "Careers Counsellor" },
+        { value: "deputy_head_primary", label: "Deputy Head of Primary" },
+        { value: "deputy_head_secondary", label: "Deputy Head of Secondary" },
+        { value: "deputy_head_school", label: "Deputy Head of School" },
+        { value: "director", label: "Director" },
+        { value: "director_of_studies", label: "Director of Studies" },
+        { value: "grade_level_coordinator", label: "Grade level Coordinator" },
+        { value: "head_of_department", label: "Head of Department" },
+        { value: "head_of_early_years", label: "Head of Early Years" },
+        { value: "head_of_prep_school", label: "Head of Prep School" },
+        { value: "head_of_primary", label: "Head of Primary" },
+        { value: "head_of_secondary", label: "Head of Secondary" },
+        { value: "head_of_section", label: "Head of Section" },
+        { value: "head_of_subject", label: "Head of Subject" },
+        { value: "head_of_year", label: "Head of Year" },
+        { value: "head_teacher", label: "Head Teacher" },
+        { value: "house_master", label: "House Master" },
+        { value: "house_mistress", label: "House Mistress" },
+        { value: "ib_coordinator", label: "IB Coordinator" },
+        { value: "inspector", label: "Inspector" },
+        { value: "phase_coordinator", label: "Phase Coordinator" },
+        { value: "principal", label: "Principal" },
+        { value: "principal_inspector", label: "Principal Inspector" },
+        { value: "psychologist", label: "Psychologist" },
+        { value: "second_in_department", label: "Second in Department" },
+        { value: "senior_inspector", label: "Senior Inspector" },
+        { value: "teacher", label: "Teacher" },
+        { value: "vice_director", label: "Vice Director" },
+        { value: "vice_principal", label: "Vice Principal" },
+      ],
     },
     {
       label: "Subject",
-      name: "subject",
-      type: "select",
-      options: ["", "Mathematics", "Science", "English", "History"],
+      name: "subjects",
+      type: "multi-select",
+      options: [
+        { value: "academic_registrar", label: "Academic Registrar" },
+        { value: "american_studies", label: "American Studies" },
+        { value: "arabic", label: "Arabic" },
+        { value: "art_and_design", label: "Art and Design" },
+        { value: "biology", label: "Biology" },
+        { value: "business_studies", label: "Business Studies" },
+        { value: "calculus", label: "Calculus" },
+        { value: "careers", label: "Careers" },
+        { value: "chemistry", label: "Chemistry" },
+        { value: "chinese", label: "Chinese" },
+        { value: "citizenship", label: "Citizenship" },
+        { value: "classical_studies", label: "Classical Studies" },
+        { value: "computer_science", label: "Computer Science" },
+        { value: "computer_studies", label: "Computer Studies" },
+        { value: "dance", label: "Dance" },
+        { value: "design_technology", label: "Design Technology" },
+        { value: "drama", label: "Drama" },
+        { value: "eal", label: "EAL" },
+        { value: "early_years", label: "Early Years" },
+        { value: "economics", label: "Economics" },
+        { value: "education", label: "Education" },
+        { value: "english", label: "English" },
+        {
+          value: "english_as_additional_language",
+          label: "English as an Additional Language",
+        },
+        { value: "environmental_studies", label: "Environmental Studies" },
+        { value: "film_studies", label: "Film Studies" },
+        { value: "french", label: "French" },
+        { value: "geography", label: "Geography" },
+        { value: "geology", label: "Geology" },
+        { value: "german", label: "German" },
+        { value: "global_perspectives", label: "Global Perspectives" },
+        { value: "health", label: "Health" },
+        { value: "history", label: "History" },
+        { value: "home_economics", label: "Home Economics" },
+        { value: "head_teacher", label: "Head Teacher" },
+        { value: "house_master", label: "House Master" },
+        { value: "house_mistress", label: "House Mistress" },
+        { value: "humanities", label: "Humanities" },
+        { value: "ict", label: "ICT" },
+        { value: "inspector", label: "Inspector" },
+        { value: "japanese", label: "Japanese" },
+        { value: "learning_support", label: "Learning Support" },
+        { value: "legal_studies", label: "Legal Studies" },
+        { value: "librarianship", label: "Librarianship" },
+        { value: "literature", label: "Literature" },
+        { value: "mathematics", label: "Mathematics" },
+        { value: "media_studies", label: "Media Studies" },
+        { value: "mfl", label: "MFL" },
+        {
+          value: "middle_school_generalist",
+          label: "Middle School Generalist",
+        },
+        { value: "music", label: "Music" },
+        { value: "outdoor_education", label: "Outdoor Education" },
+        { value: "philosophy", label: "Philosophy" },
+        { value: "physical_education", label: "Physical Education" },
+        { value: "physics", label: "Physics" },
+        { value: "politics", label: "Politics" },
+        { value: "primary", label: "Primary" },
+        { value: "pshe", label: "PSHE" },
+        { value: "psychology", label: "Psychology" },
+        { value: "religious_education", label: "Religious Education" },
+        { value: "russian", label: "Russian" },
+        { value: "school_counselor", label: "School Counselor" },
+        { value: "school_psychologist", label: "School Psychologist" },
+        { value: "science", label: "Science" },
+        { value: "secondary", label: "Secondary" },
+        { value: "social_sciences", label: "Social Sciences" },
+        { value: "sociology", label: "Sociology" },
+        { value: "spanish", label: "Spanish" },
+        { value: "special_needs", label: "Special Needs" },
+        { value: "statistics", label: "Statistics" },
+        { value: "thai", label: "Thai" },
+        { value: "theatre_studies", label: "Theatre Studies" },
+        { value: "theory_of_knowledge", label: "Theory of Knowledge" },
+      ],
     },
     {
       label: "Age Group",
@@ -108,9 +221,14 @@ const sectionFields = [
   [
     {
       label: "Leadership Role",
-      name: "leadershipRole",
-      type: "select",
-      options: ["", "Coordinator", "HOD", "Assistant Principal", "Principal"],
+      name: "leadershipRoles",
+      type: "multi-select",
+      options: [
+        { value: "coordinator", label: "Coordinator" },
+        { value: "hod", label: "HOD" },
+        { value: "assistant_principal", label: "Assistant Principal" },
+        { value: "principal", label: "Principal" },
+      ],
     },
   ],
   // Step 5
@@ -124,35 +242,7 @@ const sectionFields = [
         ...Array.from({ length: 31 }, (_, i) => (i + 1).toString()),
       ],
     },
-    {
-      label: "Available Month",
-      name: "month",
-      type: "select",
-      options: [
-        "",
-        "01",
-        "02",
-        "03",
-        "04",
-        "05",
-        "06",
-        "07",
-        "08",
-        "09",
-        "10",
-        "11",
-        "12",
-      ],
-    },
-    {
-      label: "Available Year",
-      name: "year",
-      type: "select",
-      options: [
-        "",
-        ...Array.from({ length: 60 }, (_, i) => (2025 - i).toString()),
-      ],
-    },
+    // Removed Available Month and Available Year
   ],
 ];
 
@@ -186,8 +276,8 @@ const UserProfile: React.FC = () => {
             data.phone_number || data.teacher_profile?.phone_number || "",
           // Map other fields as needed
           curriculum: data.curriculum || data.teacher_profile?.curriculum || [],
-          subject: data.subject || data.teacher_profile?.subject || "",
-          role: data.role || data.teacher_profile?.role || "",
+          subjects: data.subjects || data.teacher_profile?.subjects || "",
+          roles: data.roles || data.teacher_profile?.roles || "",
           ageGroup: data.age_group || data.teacher_profile?.age_group || "",
           leadershipRole:
             data.leadership_role || data.teacher_profile?.leadership_role || "",
@@ -435,11 +525,17 @@ const UserProfile: React.FC = () => {
                                 onChange={handleEditChange}
                               >
                                 {Array.isArray(f.options) &&
-                                  f.options.map((opt: string) => (
-                                    <option key={opt} value={opt}>
-                                      {opt || "Please select"}
-                                    </option>
-                                  ))}
+                                  f.options.map((opt: any) => {
+                                    const value =
+                                      typeof opt === "string" ? opt : opt.value;
+                                    const label =
+                                      typeof opt === "string" ? opt : opt.label;
+                                    return (
+                                      <option key={value} value={value}>
+                                        {label || "Please select"}
+                                      </option>
+                                    );
+                                  })}
                               </Form.Select>
                             ) : f.type === "checkbox" ? (
                               <Form.Check
@@ -463,76 +559,161 @@ const UserProfile: React.FC = () => {
                       ...sectionFields[2],
                       ...sectionFields[3],
                       ...sectionFields[4],
-                    ].map((f) =>
-                      f.name === "curriculum" ? (
-                        <div
-                          className="col-12 col-lg-12 col-md-12 col-sm-12"
-                          key={f.name}
-                        >
-                          <Form.Group className="mb-3">
-                            <Form.Label>{f.label}</Form.Label>
-                            <div className="row">
-                              {Array.isArray(f.options) &&
-                                f.options.map((item: string) => (
-                                  <div className="col-4 mb-2" key={item}>
-                                    <Form.Check
-                                      type="checkbox"
-                                      label={item}
-                                      checked={editData[f.name]?.includes(item)}
-                                      onChange={() =>
-                                        handleCurriculumChange(item)
-                                      }
-                                    />
-                                  </div>
-                                ))}
-                            </div>
-                          </Form.Group>
-                        </div>
-                      ) : (
-                        <div
-                          className="col-md-6 col-lg-6 col-sm-12 col-12"
-                          key={f.name}
-                        >
-                          <Form.Group className="mb-3">
-                            <Form.Label>{f.label}</Form.Label>
-                            {f.type === "text" ? (
-                              <Form.Control
-                                type={f.type}
-                                name={f.name}
-                                value={editData[f.name] || ""}
-                                onChange={handleEditChange}
+                    ].map((f) => {
+                      if (f.type === "multi-select") {
+                        return (
+                          <div
+                            className="col-md-6 col-lg-6 col-sm-12 col-12"
+                            key={f.name}
+                          >
+                            <Form.Group className="mb-3">
+                              <Form.Label>{f.label}</Form.Label>
+                              <Select
+                                isMulti
+                                options={f.options}
+                                closeMenuOnSelect={false}
+                                value={editData[f.name] || []}
+                                onChange={(selected: any) =>
+                                  setEditData((prev: any) => ({
+                                    ...prev,
+                                    [f.name]: Array.isArray(selected)
+                                      ? selected
+                                      : [],
+                                  }))
+                                }
+                                classNamePrefix={"react-select"}
+                                placeholder={`Select ${f.label.toLowerCase()}...`}
                               />
-                            ) : f.type === "select" ? (
-                              <Form.Select
-                                name={f.name}
-                                value={editData[f.name] || ""}
-                                onChange={handleEditChange}
-                              >
+                            </Form.Group>
+                          </div>
+                        );
+                      } else if (f.name === "curriculum") {
+                        return (
+                          <div
+                            className="col-12 col-lg-12 col-md-12 col-sm-12"
+                            key={f.name}
+                          >
+                            <Form.Group className="mb-3">
+                              <Form.Label>{f.label}</Form.Label>
+                              <div className="row">
                                 {Array.isArray(f.options) &&
-                                  f.options.map((opt: string) => (
-                                    <option key={opt} value={opt}>
-                                      {opt || "Please select"}
-                                    </option>
-                                  ))}
-                              </Form.Select>
-                            ) : f.type === "checkbox" ? (
-                              <Form.Check
-                                type="checkbox"
-                                name={f.name}
-                                checked={!!editData[f.name]}
-                                onChange={handleEditChange}
+                                  f.options.map((item: any) => {
+                                    const value =
+                                      typeof item === "string"
+                                        ? item
+                                        : item.value;
+                                    const label =
+                                      typeof item === "string"
+                                        ? item
+                                        : item.label;
+                                    return (
+                                      <div className="col-4 mb-2" key={value}>
+                                        <Form.Check
+                                          type="checkbox"
+                                          label={label}
+                                          checked={editData[f.name]?.includes(
+                                            value
+                                          )}
+                                          onChange={() =>
+                                            handleCurriculumChange(value)
+                                          }
+                                        />
+                                      </div>
+                                    );
+                                  })}
+                              </div>
+                            </Form.Group>
+                          </div>
+                        );
+                      } else if (f.name === "available_day") {
+                        return (
+                          <div
+                            className="col-md-6 col-lg-6 col-sm-12 col-12"
+                            key={f.name}
+                          >
+                            <Form.Group className="mb-3">
+                              <Form.Label>{f.label}</Form.Label>
+                              <DatePicker
+                                selected={
+                                  editData.available_day
+                                    ? new Date(editData.available_day)
+                                    : null
+                                }
+                                onChange={(date: Date | null) =>
+                                  setEditData((prev: any) => ({
+                                    ...prev,
+                                    available_day: date
+                                      ? date.toISOString().split("T")[0]
+                                      : "",
+                                  }))
+                                }
+                                className="form-control"
+                                placeholderText="Select available date"
+                                dateFormat="yyyy-MM-dd"
+                                isClearable
+                                autoComplete="off"
+                                minDate={new Date()}
                               />
-                            ) : f.type === "file" ? (
-                              <Form.Control
-                                type="file"
-                                name={f.name}
-                                onChange={handleEditChange}
-                              />
-                            ) : null}
-                          </Form.Group>
-                        </div>
-                      )
-                    )}
+                            </Form.Group>
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <div
+                            className="col-md-6 col-lg-6 col-sm-12 col-12"
+                            key={f.name}
+                          >
+                            <Form.Group className="mb-3">
+                              <Form.Label>{f.label}</Form.Label>
+                              {f.type === "text" ? (
+                                <Form.Control
+                                  type={f.type}
+                                  name={f.name}
+                                  value={editData[f.name] || ""}
+                                  onChange={handleEditChange}
+                                />
+                              ) : f.type === "select" ? (
+                                <Form.Select
+                                  name={f.name}
+                                  value={editData[f.name] || ""}
+                                  onChange={handleEditChange}
+                                >
+                                  {Array.isArray(f.options) &&
+                                    f.options.map((opt: any) => {
+                                      const value =
+                                        typeof opt === "string"
+                                          ? opt
+                                          : opt.value;
+                                      const label =
+                                        typeof opt === "string"
+                                          ? opt
+                                          : opt.label;
+                                      return (
+                                        <option key={value} value={value}>
+                                          {label || "Please select"}
+                                        </option>
+                                      );
+                                    })}
+                                </Form.Select>
+                              ) : f.type === "checkbox" ? (
+                                <Form.Check
+                                  type="checkbox"
+                                  name={f.name}
+                                  checked={!!editData[f.name]}
+                                  onChange={handleEditChange}
+                                />
+                              ) : f.type === "file" ? (
+                                <Form.Control
+                                  type="file"
+                                  name={f.name}
+                                  onChange={handleEditChange}
+                                />
+                              ) : null}
+                            </Form.Group>
+                          </div>
+                        );
+                      }
+                    })}
                   </div>
                 </Form>
               </Modal.Body>

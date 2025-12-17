@@ -163,16 +163,13 @@ class TeacherProfile(models.Model):
 
 class Job(models.Model):
     JOB_TYPE_CHOICES = [
-        ('remote', 'Remote'),
-        ('casual', 'Casual'),
-        ('full-time', 'Full-time'),
-        ('part-time', 'Part-time'),
+        ('teacher', 'Teacher'),
+        ('deputy_principal', 'Deputy Principal'),
+        ('head_of_school', 'Head of School'),
     ]
 
     SCHOOL_TYPE_CHOICES = [
         ('public', 'Public'),
-        ('private', 'Private'),
-        ('charter', 'Charter'),
         ('international', 'International'),
     ]
 

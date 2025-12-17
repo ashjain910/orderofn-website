@@ -71,7 +71,11 @@ class PreRegisterSerializer(serializers.Serializer):
     # Teacher Profile fields - Step 1
     qualified = serializers.CharField(max_length=10)
     english = serializers.CharField(max_length=10)
-    position = serializers.CharField(max_length=20)
+    position = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True
+    )
 
     # Step 2 - Personal Details
     gender = serializers.CharField(max_length=10)
@@ -81,9 +85,21 @@ class PreRegisterSerializer(serializers.Serializer):
     hearFrom = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
     # Step 3 - Teaching Experience
-    role = serializers.CharField(max_length=30, required=False, allow_blank=True)
-    subject = serializers.CharField(max_length=100, required=False, allow_blank=True)
-    ageGroup = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    role = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True
+    )
+    subject = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True
+    )
+    ageGroup = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True
+    )
     curriculum = serializers.ListField(
         child=serializers.CharField(),
         required=False,
@@ -129,9 +145,15 @@ class PreRegisterSerializer(serializers.Serializer):
         return value.lower()
 
     def validate_position(self, value):
-        if value.lower() not in self.VALID_POSITIONS:
-            raise serializers.ValidationError(f"Position must be one of: {', '.join(self.VALID_POSITIONS)}")
-        return value.lower()
+        if value:
+            invalid_positions = [p for p in value if p.lower() not in self.VALID_POSITIONS]
+            if invalid_positions:
+                raise serializers.ValidationError(
+                    f"Invalid position(s): {', '.join(invalid_positions)}. "
+                    f"Valid options: {', '.join(self.VALID_POSITIONS)}"
+                )
+            return [p.lower() for p in value]
+        return value
 
     def validate_gender(self, value):
         if value.lower() not in self.VALID_GENDERS:
@@ -158,9 +180,23 @@ class PreRegisterSerializer(serializers.Serializer):
         return value
 
     def validate_role(self, value):
-        if value and value.lower() not in self.VALID_ROLES:
-            raise serializers.ValidationError(f"Role must be one of: {', '.join(self.VALID_ROLES)}")
-        return value.lower() if value else value
+        if value:
+            invalid_roles = [r for r in value if r.lower() not in self.VALID_ROLES]
+            if invalid_roles:
+                raise serializers.ValidationError(
+                    f"Invalid role(s): {', '.join(invalid_roles)}. "
+                    f"Valid options: {', '.join(self.VALID_ROLES)}"
+                )
+            return [r.lower() for r in value]
+        return value
+
+    def validate_subject(self, value):
+        # Subject can be any string, just return as is
+        return value if value else []
+
+    def validate_ageGroup(self, value):
+        # Age group can be any string, just return as is
+        return value if value else []
 
     def validate_curriculum(self, value):
         if value:
@@ -643,15 +679,15 @@ class UpdateProfileSerializer(serializers.Serializer):
     # Teacher Profile fields
     qualified = serializers.CharField(max_length=10, required=False)
     english = serializers.CharField(max_length=10, required=False)
-    position = serializers.CharField(max_length=20, required=False)
+    position = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     gender = serializers.CharField(max_length=10, required=False)
     nationality = serializers.CharField(max_length=100, required=False)
     second_nationality = serializers.BooleanField(required=False)
     cv_file = serializers.FileField(required=False, allow_null=True)
     hear_from = serializers.CharField(max_length=200, required=False, allow_blank=True)
-    role = serializers.CharField(max_length=30, required=False, allow_blank=True)
-    subject = serializers.CharField(max_length=100, required=False, allow_blank=True)
-    age_group = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    role = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+    subject = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+    age_group = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     curriculum = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     leadership_role = serializers.CharField(max_length=30, required=False, allow_blank=True, allow_null=True)
     job_alerts = serializers.BooleanField(required=False)
@@ -690,9 +726,15 @@ class UpdateProfileSerializer(serializers.Serializer):
         return value.lower() if value else value
 
     def validate_position(self, value):
-        if value and value.lower() not in self.VALID_POSITIONS:
-            raise serializers.ValidationError(f"Position must be one of: {', '.join(self.VALID_POSITIONS)}")
-        return value.lower() if value else value
+        if value:
+            invalid_positions = [p for p in value if p.lower() not in self.VALID_POSITIONS]
+            if invalid_positions:
+                raise serializers.ValidationError(
+                    f"Invalid position(s): {', '.join(invalid_positions)}. "
+                    f"Valid options: {', '.join(self.VALID_POSITIONS)}"
+                )
+            return [p.lower() for p in value]
+        return value
 
     def validate_gender(self, value):
         if value and value.lower() not in self.VALID_GENDERS:
@@ -717,9 +759,23 @@ class UpdateProfileSerializer(serializers.Serializer):
         return value
 
     def validate_role(self, value):
-        if value and value.lower() not in self.VALID_ROLES:
-            raise serializers.ValidationError(f"Role must be one of: {', '.join(self.VALID_ROLES)}")
-        return value.lower() if value else value
+        if value:
+            invalid_roles = [r for r in value if r.lower() not in self.VALID_ROLES]
+            if invalid_roles:
+                raise serializers.ValidationError(
+                    f"Invalid role(s): {', '.join(invalid_roles)}. "
+                    f"Valid options: {', '.join(self.VALID_ROLES)}"
+                )
+            return [r.lower() for r in value]
+        return value
+
+    def validate_subject(self, value):
+        # Subject can be any string array, just ensure it's a list
+        return value if value else []
+
+    def validate_age_group(self, value):
+        # Age group can be any string array, just ensure it's a list
+        return value if value else []
 
     def validate_curriculum(self, value):
         if value:

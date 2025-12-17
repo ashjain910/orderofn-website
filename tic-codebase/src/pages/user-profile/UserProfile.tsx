@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import { fetchUserProfile, updateUserProfile } from "./api";
 import { toast } from "react-toastify";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
-import { FaUserEdit } from "react-icons/fa";
+// import { FaUserEdit } from "react-icons/fa";
 
 const sampleProfile = {
   // Step1
@@ -41,9 +41,8 @@ const sampleProfile = {
   // Step4
   leadershipRole: "",
   // Step5
-  day: "",
-  month: "",
-  year: "",
+  job_alerts: "",
+  available_day: "",
 };
 
 const sectionFields = [

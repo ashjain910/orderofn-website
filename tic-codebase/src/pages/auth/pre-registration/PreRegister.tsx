@@ -64,8 +64,8 @@ export default function PreRegister() {
     lastName: "",
     gender: "",
     nationality: "",
-    secondNationality: false,
-    cvFile: null,
+    secondNationality: "",
+    cvFile: "",
     hearFrom: "",
 
     // Step3
@@ -75,12 +75,11 @@ export default function PreRegister() {
     curriculum: [],
 
     // Step4
-    leadershipRole: "",
+    leadershipRoles: "",
 
     // Step5
-    day: "",
-    month: "",
-    year: "",
+    job_alerts: "",
+    available_from: "",
   });
 
   // Step-specific validation

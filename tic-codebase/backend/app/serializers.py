@@ -324,12 +324,13 @@ class JobApplicationSerializer(serializers.ModelSerializer):
 
     job_title = serializers.CharField(source='job.title', read_only=True)
     job_school = serializers.CharField(source='job.school_name', read_only=True)
+    use_profile_resume = serializers.BooleanField(write_only=True, required=False, default=False)
 
     class Meta:
         model = JobApplication
         fields = [
             'id', 'job', 'job_title', 'job_school', 'resume', 'cover_letter',
-            'status', 'applied_at', 'updated_at'
+            'status', 'applied_at', 'updated_at', 'use_profile_resume'
         ]
         read_only_fields = ['id', 'status', 'applied_at', 'updated_at']
 
@@ -373,11 +374,49 @@ class JobApplicationSerializer(serializers.ModelSerializer):
         if JobApplication.objects.filter(user=user, job=job).exists():
             raise serializers.ValidationError("You have already applied to this job.")
 
+        # If use_profile_resume is True, check if user has a CV in their profile
+        use_profile_resume = data.get('use_profile_resume', False)
+        if use_profile_resume:
+            try:
+                teacher_profile = user.teacher_profile
+                if not teacher_profile.cv_file:
+                    raise serializers.ValidationError({
+                        'use_profile_resume': 'No resume found in your profile. Please upload a resume to your profile first or provide one in this application.'
+                    })
+            except AttributeError:
+                raise serializers.ValidationError({
+                    'use_profile_resume': 'No teacher profile found. Please complete your profile first.'
+                })
+
         return data
 
     def create(self, validated_data):
+        from django.core.files.base import ContentFile
+        import os
+
         # Automatically set the user from the request
-        validated_data['user'] = self.context['request'].user
+        user = self.context['request'].user
+        validated_data['user'] = user
+
+        # If use_profile_resume is True, copy the CV from teacher profile
+        use_profile_resume = validated_data.pop('use_profile_resume', False)
+        if use_profile_resume:
+            teacher_profile = user.teacher_profile
+            profile_cv = teacher_profile.cv_file
+
+            # Create a copy of the file so it's independent of the profile CV
+            if profile_cv:
+                # Read the file content
+                profile_cv.open('rb')
+                file_content = profile_cv.read()
+                profile_cv.close()
+
+                # Get the original filename
+                original_filename = os.path.basename(profile_cv.name)
+
+                # Create a new file with the same content
+                validated_data['resume'] = ContentFile(file_content, name=original_filename)
+
         return super().create(validated_data)
 
 

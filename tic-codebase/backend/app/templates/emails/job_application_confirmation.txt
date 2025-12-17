@@ -1,0 +1,26 @@
+TIC Recruitment - Application Confirmation
+
+Dear {{ teacher_name }},
+
+Thank you for your application for the {{ job_title }} position at {{ school_name }} through the TIC Recruitment website. We appreciate your interest and the time you have taken to submit your application.
+
+APPLICATION DETAILS
+-------------------
+Position: {{ job_title }}
+School: {{ school_name }}
+Location: {{ job_location }}
+Application Date: {{ application_date }}
+
+Our team of consultants will now carefully review your details, taking into consideration your experience, qualifications, and how closely your profile matches the specific requirements of the role.
+
+If your application is successful, you will be shortlisted and contacted directly with information regarding the next steps in the recruitment process.
+
+Thank you again for your interest in working with TIC Recruitment. We wish you every success with your application.
+
+Kind regards,
+The TIC Recruitment Team
+
+www.ticrecruitment.com
+
+---
+This is an automated email. Please do not reply to this message.

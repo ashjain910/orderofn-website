@@ -1,0 +1,40 @@
+Subject: Interview Invitation - {{ job_title }} at {{ school_name }}
+
+Dear {{ teacher_name }},
+
+INTERVIEW INVITATION - YOU'RE INVITED TO INTERVIEW!
+
+We're delighted to let you know that {{ school_name }} would like to invite you to interview for the {{ job_title }} position. Congratulations once again on progressing to this next stage.
+
+INTERVIEW DETAILS:
+{% if interview_date %}
+Date: {{ interview_date }}
+{% endif %}
+{% if interview_time %}
+Time: {{ interview_time }}
+{% endif %}
+{% if interview_format %}
+Format: {{ interview_format }}
+{% endif %}
+{% if interview_panel %}
+Interview Panel: {{ interview_panel }}
+{% endif %}
+
+Our consultant will be in touch to confirm all the details and provide guidance to help you prepare. We'll also share background information about the school and its community to ensure you feel fully supported ahead of your interview.
+
+PLEASE ENSURE YOU HAVE:
+- A copy of your updated CV
+- Any supporting documents requested by the school
+- A reliable internet connection (for online interviews)
+
+Here's a link to our 'interview tips for an international position':
+https://www.ticrecruitment.com/interview-tips
+
+If you have any questions or need to adjust your availability, please contact your TIC consultant or email enquiries@ticrecruitment.com as soon as possible.
+
+We wish you every success and look forward to hearing how your interview goes.
+
+Warm regards,
+The TIC Recruitment Team
+
+www.ticrecruitment.com

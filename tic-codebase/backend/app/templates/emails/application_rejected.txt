@@ -1,0 +1,23 @@
+Subject: Outcome of Your Application - {{ job_title }} at {{ school_name }}
+
+Dear {{ teacher_name }},
+
+Thank you once again for taking the time to interview for the {{ job_title }} position at {{ school_name }} through TIC Recruitment.
+
+After careful consideration, the school has decided to move forward with another candidate. Please don't be discouraged — competition for international teaching positions is often very strong, and your experience remains highly valued.
+
+DON'T GIVE UP!
+Your skills and dedication are valuable, and the right opportunity is out there.
+
+WE'RE HERE TO SUPPORT YOU:
+Our team will continue to keep your profile active and consider you for other roles that match your background and preferences. We regularly receive new vacancies from schools around the world, and we'll be in touch when a suitable opportunity arises.
+
+In the meantime, you can explore our latest positions here:
+https://www.ticrecruitment.com/jobs
+
+Thank you again for your professionalism and the positive way you represented yourself throughout the process. We truly value your trust in TIC Recruitment and look forward to assisting you with future opportunities.
+
+Kind regards,
+The TIC Recruitment Team
+
+www.ticrecruitment.com

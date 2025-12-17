@@ -14,6 +14,12 @@ from .serializers import (
     AdminJobCreateUpdateSerializer, ProfileSerializer, UpdateProfileSerializer
 )
 from django.shortcuts import redirect
+from .email_utils import send_job_application_email, send_application_status_update_email, send_interview_invitation_email
+import logging
+import json
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(['POST'])
@@ -188,6 +194,18 @@ def apply_to_job(request, job_id):
 
     if serializer.is_valid():
         application = serializer.save()
+
+        # Send confirmation email to the applicant
+        try:
+            email_sent = send_job_application_email(request.user, job, application)
+            if email_sent:
+                logger.info(f"Confirmation email sent successfully to {request.user.email}")
+            else:
+                logger.warning(f"Failed to send confirmation email to {request.user.email}")
+        except Exception as e:
+            logger.error(f"Error sending confirmation email: {str(e)}")
+            # Don't fail the application if email fails
+
         return Response({
             'message': 'Application submitted successfully',
             'application': JobApplicationSerializer(application).data
@@ -426,26 +444,85 @@ def admin_job_detail(request, job_id):
 def admin_update_application_status(request, application_id):
     """
     Update application status
-    Body: { "status": "pending|reviewed|accepted|rejected" }
+    Body: { "status": "pending|reviewed|shortlisted|accepted|rejected" }
     """
     try:
         application = JobApplication.objects.select_related('user', 'job').get(id=application_id)
 
         new_status = request.data.get('status')
-        if new_status not in ['pending', 'reviewed', 'accepted', 'rejected']:
+        if new_status not in ['pending', 'reviewed', 'shortlisted', 'accepted', 'rejected']:
             return Response(
-                {'error': 'Invalid status. Must be one of: pending, reviewed, accepted, rejected'},
+                {'error': 'Invalid status. Must be one of: pending, reviewed, shortlisted, accepted, rejected'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        old_status = application.status
         application.status = new_status
         application.save()
+
+        # Send status update email if status changed (and not just setting to pending)
+        if old_status != new_status and new_status != 'pending':
+            try:
+                email_sent = send_application_status_update_email(application, old_status, new_status)
+                if email_sent:
+                    logger.info(f"Status update email sent to {application.user.email}")
+                else:
+                    logger.warning(f"Failed to send status update email to {application.user.email}")
+            except Exception as e:
+                logger.error(f"Error sending status update email: {str(e)}")
+                # Don't fail the update if email fails
 
         serializer = AdminJobApplicationSerializer(application)
         return Response({
             'message': 'Application status updated successfully',
             'application': serializer.data
         }, status=status.HTTP_200_OK)
+    except JobApplication.DoesNotExist:
+        return Response({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def admin_send_interview_invitation(request, application_id):
+    """
+    Send interview invitation email to a candidate
+    Body: {
+        "interview_date": "Monday, 15th January 2024" (optional),
+        "interview_time": "10:00 AM GMT" (optional),
+        "interview_format": "Online via Zoom" (optional),
+        "interview_panel": "Principal and Head of Department" (optional)
+    }
+    """
+    try:
+        application = JobApplication.objects.select_related('user', 'job').get(id=application_id)
+
+        # Extract interview details from request
+        interview_details = {
+            'interview_date': request.data.get('interview_date', ''),
+            'interview_time': request.data.get('interview_time', ''),
+            'interview_format': request.data.get('interview_format', ''),
+            'interview_panel': request.data.get('interview_panel', ''),
+        }
+
+        # Send interview invitation email
+        try:
+            email_sent = send_interview_invitation_email(application, interview_details)
+            if email_sent:
+                logger.info(f"Interview invitation email sent to {application.user.email}")
+                return Response({
+                    'message': 'Interview invitation email sent successfully',
+                    'application': AdminJobApplicationSerializer(application).data
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    'error': 'Failed to send interview invitation email'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            logger.error(f"Error sending interview invitation email: {str(e)}")
+            return Response({
+                'error': f'Failed to send interview invitation email: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     except JobApplication.DoesNotExist:
         return Response({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -550,19 +627,292 @@ from django.conf import settings
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_checkout_session(request):
+    """
+    Create a Stripe Checkout Session for subscription payment.
+    Returns the checkout session URL for redirect.
+    """
+    try:
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        user = request.user
+
+        # Check if user already has an active subscription
+        if user.has_active_subscription:
+            return Response({
+                'error': 'You already have an active subscription'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Prepare session parameters
+        session_params = {
+            'payment_method_types': ['card'],
+            'mode': 'subscription',
+            'line_items': [{
+                'price': 'price_1SeYHCS3b9o0AI70juiCFthQ',
+                'quantity': 1,
+            }],
+            'customer_email': user.email,
+            'client_reference_id': str(user.id),  # To identify user in webhook
+            'metadata': {
+                'user_id': str(user.id),
+                'user_email': user.email,
+            },
+            'success_url': 'https://orderofn.com/tic?checkout=success&session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url': 'https://orderofn.com/tic?checkout=canceled',
+        }
+
+        # If user already has a Stripe customer ID, use it
+        if user.stripe_customer_id:
+            session_params['customer'] = user.stripe_customer_id
+
+        # Create the checkout session
+        session = stripe.checkout.Session.create(**session_params)
+
+        logger.info(f"Checkout session created for user {user.email}: {session.id}")
+
+        return Response({
+            'sessionId': session.id,
+            'sessionUrl': session.url
+        }, status=status.HTTP_200_OK)
+
+    except stripe.error.CardError as e:
+        # Card was declined
+        logger.error(f"Card error for user {request.user.email}: {str(e)}")
+        return Response({
+            'error': 'Your card was declined. Please try a different payment method.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    except stripe.error.RateLimitError as e:
+        # Too many requests to Stripe API
+        logger.error(f"Stripe rate limit error: {str(e)}")
+        return Response({
+            'error': 'Service temporarily unavailable. Please try again in a moment.'
+        }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+    except stripe.error.InvalidRequestError as e:
+        # Invalid parameters
+        logger.error(f"Invalid Stripe request for user {request.user.email}: {str(e)}")
+        return Response({
+            'error': 'Invalid request. Please contact support.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    except stripe.error.AuthenticationError as e:
+        # Authentication with Stripe failed
+        logger.error(f"Stripe authentication error: {str(e)}")
+        return Response({
+            'error': 'Payment system configuration error. Please contact support.'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    except stripe.error.APIConnectionError as e:
+        # Network communication with Stripe failed
+        logger.error(f"Stripe API connection error: {str(e)}")
+        return Response({
+            'error': 'Unable to connect to payment service. Please try again.'
+        }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    except stripe.error.StripeError as e:
+        # Generic Stripe error
+        logger.error(f"Stripe error for user {request.user.email}: {str(e)}")
+        return Response({
+            'error': 'Payment processing error. Please try again or contact support.'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    except Exception as e:
+        # Unexpected error
+        logger.error(f"Unexpected error creating checkout session for user {request.user.email}: {str(e)}")
+        return Response({
+            'error': 'An unexpected error occurred. Please try again or contact support.'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def stripe_webhook(request):
+    """
+    Handle Stripe webhook events for subscription management.
+    This endpoint receives real-time updates from Stripe about subscription changes.
+    """
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        mode='subscription',
-        line_items=[{
-            'price': 'price_1SeYHCS3b9o0AI70juiCFthQ',  # Set this in Stripe dashboard
-            'quantity': 1,
-        }],
-        customer_email=request.user.email,
-        success_url='https://orderofn.com/tic/api/checkout-success',
-        cancel_url='https://orderofn.com/tic/api/checkout-cancel',
-    )
-    return Response({'sessionUrl': session.url})
+    webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None)
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+
+    try:
+        # Verify webhook signature
+        if webhook_secret:
+            try:
+                event = stripe.Webhook.construct_event(
+                    payload, sig_header, webhook_secret
+                )
+            except stripe.error.SignatureVerificationError as e:
+                logger.error(f"Webhook signature verification failed: {str(e)}")
+                return Response({'error': 'Invalid signature'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # If no webhook secret is configured, parse the event without verification
+            # WARNING: This is not recommended for production
+            event = stripe.Event.construct_from(
+                json.loads(payload), stripe.api_key
+            )
+            logger.warning("Webhook signature verification skipped - STRIPE_WEBHOOK_SECRET not configured")
+
+        event_type = event['type']
+        data_object = event['data']['object']
+
+        logger.info(f"Received Stripe webhook: {event_type} - Event ID: {event['id']}")
+
+        # Handle checkout session completed
+        if event_type == 'checkout.session.completed':
+            session = data_object
+            handle_checkout_session_completed(session)
+
+        # Handle subscription created
+        elif event_type == 'customer.subscription.created':
+            subscription = data_object
+            handle_subscription_created(subscription)
+
+        # Handle subscription updated
+        elif event_type == 'customer.subscription.updated':
+            subscription = data_object
+            handle_subscription_updated(subscription)
+
+        # Handle subscription deleted (canceled)
+        elif event_type == 'customer.subscription.deleted':
+            subscription = data_object
+            handle_subscription_deleted(subscription)
+
+        # Handle invoice payment succeeded
+        elif event_type == 'invoice.payment_succeeded':
+            invoice = data_object
+            handle_invoice_payment_succeeded(invoice)
+
+        # Handle invoice payment failed
+        elif event_type == 'invoice.payment_failed':
+            invoice = data_object
+            handle_invoice_payment_failed(invoice)
+
+        return Response({'status': 'success'}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.error(f"Error processing webhook: {str(e)}")
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def handle_checkout_session_completed(session):
+    """Process completed checkout session"""
+    try:
+        user_id = session.get('client_reference_id') or session.get('metadata', {}).get('user_id')
+
+        if not user_id:
+            logger.error(f"No user_id found in checkout session {session['id']}")
+            return
+
+        user = User.objects.get(id=user_id)
+
+        # Update user with Stripe customer ID
+        if session.get('customer'):
+            user.stripe_customer_id = session['customer']
+            user.save()
+            logger.info(f"Updated customer ID for user {user.email}: {session['customer']}")
+
+        # If subscription was created, it will be handled by subscription.created webhook
+        logger.info(f"Checkout completed for user {user.email}: {session['id']}")
+
+    except User.DoesNotExist:
+        logger.error(f"User not found for checkout session {session['id']}: user_id={user_id}")
+    except Exception as e:
+        logger.error(f"Error handling checkout session completed: {str(e)}")
+
+
+def handle_subscription_created(subscription):
+    """Process new subscription"""
+    try:
+        customer_id = subscription['customer']
+        user = User.objects.get(stripe_customer_id=customer_id)
+
+        user.stripe_subscription_id = subscription['id']
+        user.subscription_status = subscription['status']
+        user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
+        user.subscription_end_date = datetime.fromtimestamp(subscription['current_period_end'])
+        user.subscription_cancel_at_period_end = subscription.get('cancel_at_period_end', False)
+        user.save()
+
+        logger.info(f"Subscription created for user {user.email}: {subscription['id']} - Status: {subscription['status']}")
+
+    except User.DoesNotExist:
+        logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+    except Exception as e:
+        logger.error(f"Error handling subscription created: {str(e)}")
+
+
+def handle_subscription_updated(subscription):
+    """Process subscription updates"""
+    try:
+        customer_id = subscription['customer']
+        user = User.objects.get(stripe_customer_id=customer_id)
+
+        user.subscription_status = subscription['status']
+        user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
+        user.subscription_end_date = datetime.fromtimestamp(subscription['current_period_end'])
+        user.subscription_cancel_at_period_end = subscription.get('cancel_at_period_end', False)
+        user.save()
+
+        logger.info(f"Subscription updated for user {user.email}: {subscription['id']} - Status: {subscription['status']}")
+
+    except User.DoesNotExist:
+        logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+    except Exception as e:
+        logger.error(f"Error handling subscription updated: {str(e)}")
+
+
+def handle_subscription_deleted(subscription):
+    """Process subscription cancellation"""
+    try:
+        customer_id = subscription['customer']
+        user = User.objects.get(stripe_customer_id=customer_id)
+
+        user.subscription_status = 'canceled'
+        user.subscription_end_date = datetime.fromtimestamp(subscription['ended_at']) if subscription.get('ended_at') else None
+        user.save()
+
+        logger.info(f"Subscription canceled for user {user.email}: {subscription['id']}")
+
+    except User.DoesNotExist:
+        logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+    except Exception as e:
+        logger.error(f"Error handling subscription deleted: {str(e)}")
+
+
+def handle_invoice_payment_succeeded(invoice):
+    """Process successful invoice payment"""
+    try:
+        customer_id = invoice['customer']
+        user = User.objects.get(stripe_customer_id=customer_id)
+
+        # Update subscription status to active on successful payment
+        if user.subscription_status in ['past_due', 'unpaid']:
+            user.subscription_status = 'active'
+            user.save()
+            logger.info(f"Subscription reactivated for user {user.email} after successful payment")
+
+    except User.DoesNotExist:
+        logger.error(f"User not found for invoice {invoice['id']}: customer_id={customer_id}")
+    except Exception as e:
+        logger.error(f"Error handling invoice payment succeeded: {str(e)}")
+
+
+def handle_invoice_payment_failed(invoice):
+    """Process failed invoice payment"""
+    try:
+        customer_id = invoice['customer']
+        user = User.objects.get(stripe_customer_id=customer_id)
+
+        user.subscription_status = 'past_due'
+        user.save()
+
+        logger.warning(f"Payment failed for user {user.email} - Subscription marked as past_due")
+
+    except User.DoesNotExist:
+        logger.error(f"User not found for invoice {invoice['id']}: customer_id={customer_id}")
+    except Exception as e:
+        logger.error(f"Error handling invoice payment failed: {str(e)}")
 
 
 @api_view(['GET'])

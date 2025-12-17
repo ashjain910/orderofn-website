@@ -25,6 +25,15 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    SUBSCRIPTION_STATUS_CHOICES = [
+        ('none', 'No Subscription'),
+        ('active', 'Active'),
+        ('trialing', 'Trialing'),
+        ('past_due', 'Past Due'),
+        ('canceled', 'Canceled'),
+        ('unpaid', 'Unpaid'),
+    ]
+
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
@@ -33,6 +42,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # Stripe subscription fields
+    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True)
+    subscription_status = models.CharField(
+        max_length=20,
+        choices=SUBSCRIPTION_STATUS_CHOICES,
+        default='none'
+    )
+    subscription_start_date = models.DateTimeField(blank=True, null=True)
+    subscription_end_date = models.DateTimeField(blank=True, null=True)
+    subscription_cancel_at_period_end = models.BooleanField(default=False)
 
     objects = UserManager()
 
@@ -50,6 +71,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip()
+
+    @property
+    def has_active_subscription(self):
+        """Check if user has an active subscription"""
+        return self.subscription_status in ['active', 'trialing']
 
 
 class TeacherProfile(models.Model):
@@ -93,7 +119,7 @@ class TeacherProfile(models.Model):
     # Step 1 - Basic Information
     qualified = models.CharField(max_length=10, choices=QUALIFIED_CHOICES)
     english = models.CharField(max_length=10, choices=ENGLISH_CHOICES)
-    position = models.CharField(max_length=20, choices=POSITION_CHOICES)
+    position = models.JSONField(default=list, blank=True)  # Changed to array
 
     # Step 2 - Personal Details
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
@@ -103,9 +129,9 @@ class TeacherProfile(models.Model):
     hear_from = models.CharField(max_length=200, blank=True)
 
     # Step 3 - Teaching Experience
-    role = models.CharField(max_length=30, choices=ROLE_CHOICES, blank=True)
-    subject = models.CharField(max_length=100, blank=True)
-    age_group = models.CharField(max_length=50, blank=True)
+    role = models.JSONField(default=list, blank=True)  # Changed to array
+    subject = models.JSONField(default=list, blank=True)  # Changed to array
+    age_group = models.JSONField(default=list, blank=True)  # Changed to array
     curriculum = models.JSONField(default=list, blank=True)
 
     # Step 4 - Leadership Experience
@@ -227,6 +253,7 @@ class JobApplication(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('reviewed', 'Reviewed'),
+        ('shortlisted', 'Shortlisted'),
         ('accepted', 'Accepted'),
         ('rejected', 'Rejected'),
     ]

@@ -15,6 +15,7 @@ urlpatterns = [
     path('jobs/<int:job_id>/unsave', views.unsave_job, name='unsave-job'),
     path('saved-jobs', views.saved_jobs_list, name='saved-jobs-list'),
     path('create-checkout-session', views.create_checkout_session, name='create-checkout-session'),
+    path('stripe-webhook', views.stripe_webhook, name='stripe-webhook'),
     path('checkout-success', views.checkout_success, name='checkout-success'),
     path('checkout-cancel', views.checkout_cancel, name='checkout-cancel'),
     # Admin endpoints
@@ -26,5 +27,6 @@ urlpatterns = [
     path('admin/jobs/<int:job_id>/update', views.admin_update_job, name='admin-update-job'),
     path('admin/jobs/<int:job_id>/delete', views.admin_delete_job, name='admin-delete-job'),
     path('admin/applications/<int:application_id>/status', views.admin_update_application_status, name='admin-update-application-status'),
+    path('admin/applications/<int:application_id>/send-interview-invitation', views.admin_send_interview_invitation, name='admin-send-interview-invitation'),
     path('admin/dashboard/stats', views.admin_dashboard_stats, name='admin-dashboard-stats'),
 ]

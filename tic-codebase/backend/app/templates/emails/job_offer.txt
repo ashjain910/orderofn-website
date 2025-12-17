@@ -1,0 +1,23 @@
+Subject: Congratulations - {{ job_title }} at {{ school_name }}
+
+Dear {{ teacher_name }},
+
+🎉 CONGRATULATIONS - JOB OFFER! 🎉
+
+We're delighted to let you know that {{ school_name }} has decided to offer you the position of {{ job_title }}. Congratulations on this well-deserved success!
+
+ABOUT YOUR OFFER:
+Position: {{ job_title }}
+School: {{ school_name }}
+
+The school was extremely impressed with your interview and the experience, enthusiasm, and professionalism you demonstrated throughout the process.
+
+WHAT HAPPENS NEXT:
+Your TIC consultant will be in touch shortly to discuss the offer details, including the contract, benefits, and next steps regarding acceptance and relocation (if applicable). We'll also continue to support you through every stage of your transition to ensure everything runs smoothly.
+
+Once again, congratulations on your appointment — we're thrilled to have helped connect you with such a fantastic opportunity.
+
+Warm regards,
+The TIC Recruitment Team
+
+www.ticrecruitment.com

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Invitation - TIC Recruitment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        .highlight-box {
+            background-color: #e3f2fd;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+            border-radius: 4px;
+        }
+        .interview-details {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+            border-radius: 4px;
+        }
+        .interview-details h3 {
+            margin-top: 0;
+            color: #ff9800;
+            font-size: 18px;
+        }
+        .detail-item {
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        .checklist {
+            background-color: #fff3e0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .checklist h3 {
+            margin-top: 0;
+            color: #f57c00;
+            font-size: 16px;
+        }
+        .checklist ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .checklist li {
+            margin: 8px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #2196f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .footer {
+            background-color: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 5px 5px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        h2 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-top: 0;
+        }
+        .success-badge {
+            background-color: #4caf50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TIC Recruitment</h1>
+    </div>
+
+    <div class="content">
+        <p>Dear {{ teacher_name }},</p>
+
+        <div class="highlight-box">
+            <span class="success-badge">Interview Invitation</span>
+            <h2>You're Invited to Interview!</h2>
+            <p style="margin-bottom: 0;">We're delighted to let you know that <strong>{{ school_name }}</strong> would like to invite you to interview for the <strong>{{ job_title }}</strong> position. Congratulations once again on progressing to this next stage.</p>
+        </div>
+
+        <div class="interview-details">
+            <h3>Interview Details</h3>
+            {% if interview_date %}
+            <div class="detail-item">
+                <span class="detail-label">Date:</span>
+                <span>{{ interview_date }}</span>
+            </div>
+            {% endif %}
+            {% if interview_time %}
+            <div class="detail-item">
+                <span class="detail-label">Time:</span>
+                <span>{{ interview_time }}</span>
+            </div>
+            {% endif %}
+            {% if interview_format %}
+            <div class="detail-item">
+                <span class="detail-label">Format:</span>
+                <span>{{ interview_format }}</span>
+            </div>
+            {% endif %}
+            {% if interview_panel %}
+            <div class="detail-item">
+                <span class="detail-label">Interview Panel:</span>
+                <span>{{ interview_panel }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <p>Our consultant will be in touch to confirm all the details and provide guidance to help you prepare. We'll also share background information about the school and its community to ensure you feel fully supported ahead of your interview.</p>
+
+        <div class="checklist">
+            <h3>Please ensure you have:</h3>
+            <ul>
+                <li>A copy of your updated CV</li>
+                <li>Any supporting documents requested by the school</li>
+                <li>A reliable internet connection (for online interviews)</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center;">
+            <a href="https://www.ticrecruitment.com/interview-tips" class="button">View Our Interview Tips for International Positions</a>
+        </p>
+
+        <p>If you have any questions or need to adjust your availability, please contact your TIC consultant or email <a href="mailto:enquiries@ticrecruitment.com" style="color: #3498db;">enquiries@ticrecruitment.com</a> as soon as possible.</p>
+
+        <p>We wish you every success and look forward to hearing how your interview goes.</p>
+
+        <p>Warm regards,<br>
+        <strong>The TIC Recruitment Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p><a href="https://www.ticrecruitment.com" style="color: #3498db; text-decoration: none;">www.ticrecruitment.com</a></p>
+        <p>This is an automated email. Please do not reply to this message.</p>
+    </div>
+</body>
+</html>

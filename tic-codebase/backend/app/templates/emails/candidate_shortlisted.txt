@@ -1,0 +1,28 @@
+Subject: You've Been Shortlisted - {{ job_title }} at {{ school_name }}
+
+Dear {{ teacher_name }},
+
+CONGRATULATIONS - YOU'VE BEEN SHORTLISTED!
+
+We're pleased to inform you that your application for the {{ job_title }} position at {{ school_name }} has been shortlisted.
+
+Your experience and background align closely with what the school is seeking, and your profile has been shared with their leadership team for review.
+
+POSITION DETAILS:
+- Position: {{ job_title }}
+- School: {{ school_name }}
+- Application Date: {{ application_date }}
+
+NEXT STEPS:
+If selected for the next stage, we'll contact you to arrange an interview and provide full details about the process, including the format and timeline.
+
+In the meantime, please ensure that your CV and supporting documents (references, safeguarding declarations, and certifications) are current and available. This will help us progress your application quickly should the school request an interview.
+
+We appreciate the time and care you've taken with your application and we'll continue to support you throughout the next stages.
+
+If you have any questions or would like to update your availability, please don't hesitate to contact us at enquiries@ticrecruitment.com.
+
+Kind regards,
+The TIC Recruitment Team
+
+www.ticrecruitment.com

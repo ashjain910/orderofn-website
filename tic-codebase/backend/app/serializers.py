@@ -188,7 +188,7 @@ class PreRegisterSerializer(serializers.Serializer):
                     f"Valid options: {', '.join(self.VALID_ROLES)}"
                 )
             return [r.lower() for r in value]
-        return value
+        return []
 
     def validate_subject(self, value):
         # Subject can be any string, just return as is
@@ -297,7 +297,7 @@ class PreRegisterSerializer(serializers.Serializer):
             'user': user,
             'qualified': validated_data.get('qualified'),
             'english': validated_data.get('english'),
-            'position': validated_data.get('position'),
+            'position': validated_data.get('position', []),
             'gender': validated_data.get('gender'),
             'nationality': validated_data.get('nationality'),
             'second_nationality': validated_data.get('secondNationality', ''),
@@ -767,7 +767,7 @@ class UpdateProfileSerializer(serializers.Serializer):
                     f"Valid options: {', '.join(self.VALID_ROLES)}"
                 )
             return [r.lower() for r in value]
-        return value
+        return []
 
     def validate_subject(self, value):
         # Subject can be any string array, just ensure it's a list

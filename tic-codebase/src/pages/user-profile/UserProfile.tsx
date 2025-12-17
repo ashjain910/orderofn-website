@@ -18,27 +18,32 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { FaUserEdit } from "react-icons/fa";
 
 const sampleProfile = {
-  email: "henry.wilson@example.com",
-  phone_number: "+123 456 7890",
-  password: "password123",
-  qualified: "yes",
-  english: "Fluent",
-  position: "Teacher",
-  firstName: "Henry",
-  lastName: "Wilson",
-  gender: "male",
-  nationality: "American",
+  // Step1
+  email: "",
+  password: "",
+  qualified: "",
+  english: "",
+  position: "",
+  phone_number: "",
+  // Step2
+  firstName: "",
+  lastName: "",
+  gender: "",
+  nationality: "",
   secondNationality: false,
   cvFile: null,
-  hearFrom: "LinkedIn",
-  role: "Teacher",
-  subject: "Mathematics",
-  ageGroup: "11-15 Years",
+  hearFrom: "",
+  // Step3
+  role: "",
+  subject: "",
+  ageGroup: "",
   curriculum: [],
-  leadershipRole: "Coordinator",
-  day: "15",
-  month: "08",
-  year: "2020",
+  // Step4
+  leadershipRole: "",
+  // Step5
+  day: "",
+  month: "",
+  year: "",
 };
 
 const sectionFields = [
@@ -153,20 +158,64 @@ const sectionFields = [
 ];
 
 const UserProfile: React.FC = () => {
-  const [profile, setProfile] = useState<any>(sampleProfile);
-
-  const [editData, setEditData] = useState<any>(sampleProfile);
+  const [profile, setProfile] = useState<any>(null);
+  const [editData, setEditData] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [editSection, setEditSection] = useState<number | null>(null);
+
+  // Helper to reset editData to empty values
+  const resetEditData = () => setEditData({ ...sampleProfile });
 
   // When API works, replace sampleProfile with fetched data
   useEffect(() => {
     fetchUserProfile()
       .then((data) => {
-        setProfile(data);
-        setEditData(data);
+        // Merge teacher_profile and root fields for UI compatibility
+        const merged = {
+          ...data.teacher_profile,
+          // Remove all snake_case keys if present
+          ...(data.teacher_profile && {
+            leadership_role: undefined,
+            hear_from: undefined,
+            second_nationality: undefined,
+            cv_file: undefined,
+          }),
+          email: data.email,
+          firstName: data.first_name || data.teacher_profile?.first_name || "",
+          lastName: data.last_name || data.teacher_profile?.last_name || "",
+          phone_number:
+            data.phone_number || data.teacher_profile?.phone_number || "",
+          // Map other fields as needed
+          curriculum: data.curriculum || data.teacher_profile?.curriculum || [],
+          subject: data.subject || data.teacher_profile?.subject || "",
+          role: data.role || data.teacher_profile?.role || "",
+          ageGroup: data.age_group || data.teacher_profile?.age_group || "",
+          leadershipRole:
+            data.leadership_role || data.teacher_profile?.leadership_role || "",
+          day: data.available_day || data.teacher_profile?.available_day || "",
+          month:
+            data.available_month || data.teacher_profile?.available_month || "",
+          year:
+            data.available_year || data.teacher_profile?.available_year || "",
+          hearFrom: data.hear_from || data.teacher_profile?.hear_from || "",
+          secondNationality:
+            data.second_nationality ||
+            data.teacher_profile?.second_nationality ||
+            false,
+          cvFile: data.cv_file || data.teacher_profile?.cv_file || null,
+        };
+        // Explicitly delete all snake_case keys if they exist
+        delete merged.leadership_role;
+        delete merged.hear_from;
+        delete merged.second_nationality;
+        delete merged.cv_file;
+        setProfile(merged);
+        setEditData(merged);
       })
-      .catch(() => {});
+      .catch(() => {
+        setProfile({});
+        setEditData({});
+      });
   }, []);
 
   // Fix for React-Bootstrap Form event types
@@ -208,6 +257,19 @@ const UserProfile: React.FC = () => {
   };
 
   // renderEditModal removed as it was unused and caused a TS warning
+
+  if (!profile || !editData) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: 300 }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container p-4">
@@ -272,10 +334,10 @@ const UserProfile: React.FC = () => {
             <div className="d-flex justify-content-end align-items-center mb-2">
               <button
                 type="button"
-                className="btn btn-outline-primary btn-sm"
+                className="btn btn-primary"
                 onClick={() => setEditSection(1)}
               >
-                <FaUserEdit size={16} className="me-1" /> Edit
+                Edit
               </button>
             </div>
             <div className="row">
@@ -304,13 +366,6 @@ const UserProfile: React.FC = () => {
           <div className="p-4 bg-white rounded shadow-sm info-card">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h5 className="mb-2">Other Information</h5>
-              <button
-                type="button"
-                className="btn btn-outline-primary btn-sm"
-                onClick={() => setEditSection(99)}
-              >
-                <FaUserEdit size={16} className="me-1" /> Edit
-              </button>
             </div>
             {/* Rows for each field in Professional, Leadership, Availability */}
             {[
@@ -340,14 +395,71 @@ const UserProfile: React.FC = () => {
             ))}
           </div>
           {/* Edit modal for merged info card */}
-          {editSection === 99 && (
-            <Modal show centered onHide={() => setEditSection(null)} size="lg">
+          {editSection !== null && (
+            <Modal
+              show
+              centered
+              onHide={() => {
+                setEditSection(null);
+                resetEditData();
+              }}
+              size="lg"
+              onShow={() => setEditData(profile)}
+            >
               <Modal.Header closeButton>
-                <Modal.Title>Edit Information</Modal.Title>
+                <Modal.Title>Edit Profile</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form>
                   <div className="row">
+                    {/* All fields from sectionFields[1] (except password) */}
+                    {sectionFields[1]
+                      .filter((f) => f.name !== "password")
+                      .map((f) => (
+                        <div
+                          className="col-md-6 col-lg-6 col-sm-12 col-12"
+                          key={f.name}
+                        >
+                          <Form.Group className="mb-3">
+                            <Form.Label>{f.label}</Form.Label>
+                            {f.type === "text" ? (
+                              <Form.Control
+                                type={f.type}
+                                name={f.name}
+                                value={editData[f.name] || ""}
+                                onChange={handleEditChange}
+                              />
+                            ) : f.type === "select" ? (
+                              <Form.Select
+                                name={f.name}
+                                value={editData[f.name] || ""}
+                                onChange={handleEditChange}
+                              >
+                                {Array.isArray(f.options) &&
+                                  f.options.map((opt: string) => (
+                                    <option key={opt} value={opt}>
+                                      {opt || "Please select"}
+                                    </option>
+                                  ))}
+                              </Form.Select>
+                            ) : f.type === "checkbox" ? (
+                              <Form.Check
+                                type="checkbox"
+                                name={f.name}
+                                checked={!!editData[f.name]}
+                                onChange={handleEditChange}
+                              />
+                            ) : f.type === "file" ? (
+                              <Form.Control
+                                type="file"
+                                name={f.name}
+                                onChange={handleEditChange}
+                              />
+                            ) : null}
+                          </Form.Group>
+                        </div>
+                      ))}
+                    {/* All fields from sectionFields[2], [3], [4] */}
                     {[
                       ...sectionFields[2],
                       ...sectionFields[3],
@@ -422,81 +534,6 @@ const UserProfile: React.FC = () => {
                         </div>
                       )
                     )}
-                  </div>
-                </Form>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  variant="secondary"
-                  onClick={() => setEditSection(null)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleSave}
-                  disabled={saving}
-                >
-                  {saving ? "Saving..." : "Save Changes"}
-                </Button>
-              </Modal.Footer>
-            </Modal>
-          )}
-          {/* Edit modal for Personal Information card */}
-          {editSection === 1 && (
-            <Modal show centered onHide={() => setEditSection(null)} size="lg">
-              <Modal.Header closeButton>
-                <Modal.Title>Edit Personal Information</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form>
-                  <div className="row">
-                    {sectionFields[1]
-                      .filter((f) => f.name !== "password")
-                      .map((f) => (
-                        <div
-                          className="col-md-6 col-lg-6 col-sm-12 col-12"
-                          key={f.name}
-                        >
-                          <Form.Group className="mb-3">
-                            <Form.Label>{f.label}</Form.Label>
-                            {f.type === "text" ? (
-                              <Form.Control
-                                type={f.type}
-                                name={f.name}
-                                value={editData[f.name] || ""}
-                                onChange={handleEditChange}
-                              />
-                            ) : f.type === "select" ? (
-                              <Form.Select
-                                name={f.name}
-                                value={editData[f.name] || ""}
-                                onChange={handleEditChange}
-                              >
-                                {Array.isArray(f.options) &&
-                                  f.options.map((opt: string) => (
-                                    <option key={opt} value={opt}>
-                                      {opt || "Please select"}
-                                    </option>
-                                  ))}
-                              </Form.Select>
-                            ) : f.type === "checkbox" ? (
-                              <Form.Check
-                                type="checkbox"
-                                name={f.name}
-                                checked={!!editData[f.name]}
-                                onChange={handleEditChange}
-                              />
-                            ) : f.type === "file" ? (
-                              <Form.Control
-                                type="file"
-                                name={f.name}
-                                onChange={handleEditChange}
-                              />
-                            ) : null}
-                          </Form.Group>
-                        </div>
-                      ))}
                   </div>
                 </Form>
               </Modal.Body>

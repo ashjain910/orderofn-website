@@ -79,9 +79,12 @@ function JobDetail() {
     fetchJob();
   }, [id]);
 
+  // Loader for apply button
+  const [applying, setApplying] = React.useState(false);
   // Handler for job application
   const handleApplyJob = async () => {
     if (!job) return;
+    setApplying(true);
     const formData = new FormData();
     if (applyMethod === "profile") {
       // User chose TIC profile, no validation, just send flag
@@ -94,6 +97,7 @@ function JobDetail() {
     } else if (applyMethod === "upload") {
       if (!resumeFile) {
         toast.error("Please upload a resume before applying.");
+        setApplying(false);
         return;
       }
       formData.append("use_profile_resume", "false");
@@ -105,6 +109,7 @@ function JobDetail() {
       }
     } else {
       toast.error("Please select an application method.");
+      setApplying(false);
       return;
     }
     try {
@@ -117,6 +122,9 @@ function JobDetail() {
       });
       if (response.status === 200 || response.status === 201) {
         toast.success("Application submitted successfully!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1200);
       } else if (
         response.status === 400 &&
         response.data &&
@@ -127,8 +135,10 @@ function JobDetail() {
         toast.error("Failed to submit application. Please try again.");
       }
     } catch (error: any) {
-      toast.error(error.data.error || "An error occurred while applying.");
+      toast.error(error.data?.error || "An error occurred while applying.");
       console.error(error);
+    } finally {
+      setApplying(false);
     }
   };
 
@@ -606,16 +616,31 @@ function JobDetail() {
             <>
               <div className="d-flex justify-content-end">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-primary d-flex align-items-center justify-content-center"
                   onClick={handleApplyJob}
                   disabled={
+                    applying ||
                     job.is_applied ||
                     applyMethod === null ||
                     (applyMethod === "upload" &&
                       (!resumeFile || !resumeFile.name))
                   }
+                  style={{ minWidth: 100 }}
                 >
-                  Apply <FaArrowRight className="ms-1" />
+                  {applying ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Applying...
+                    </>
+                  ) : (
+                    <>
+                      Apply <FaArrowRight className="ms-1" />
+                    </>
+                  )}
                 </button>
               </div>
               {/* Subscription Card */}

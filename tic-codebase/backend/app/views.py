@@ -837,10 +837,14 @@ def stripe_webhook(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-def get_user_from_stripe_customer(customer_id):
+def get_user_from_stripe_customer(customer_id, subscription_id=None):
     """
     Get user from Stripe customer ID with fallback to Stripe API.
     Handles race condition where subscription events arrive before checkout.session.completed.
+
+    Args:
+        customer_id: Stripe customer ID
+        subscription_id: Optional subscription ID to check metadata as fallback
     """
     try:
         # Try direct lookup first
@@ -853,18 +857,25 @@ def get_user_from_stripe_customer(customer_id):
             customer = stripe.Customer.retrieve(customer_id)
             user_id = customer.get('metadata', {}).get('user_id')
 
+            # If no user_id in customer metadata, try subscription metadata
+            if not user_id and subscription_id:
+                logger.info(f"No user_id in customer metadata, checking subscription {subscription_id}")
+                subscription = stripe.Subscription.retrieve(subscription_id)
+                user_id = subscription.get('metadata', {}).get('user_id')
+                logger.info(f"Subscription metadata: {subscription.get('metadata', {})}")
+
             if user_id:
                 user = User.objects.get(id=user_id)
                 # Save the customer ID for future lookups
                 user.stripe_customer_id = customer_id
                 user.save()
-                logger.info(f"Found user {user.email} via Stripe customer metadata, saved customer_id")
+                logger.info(f"Found user {user.email} via Stripe metadata, saved customer_id")
                 return user
             else:
-                logger.error(f"No user_id in customer metadata for {customer_id}")
+                logger.error(f"No user_id in customer or subscription metadata for customer={customer_id}")
                 return None
         except Exception as e:
-            logger.error(f"Error fetching customer from Stripe: {str(e)}")
+            logger.error(f"Error fetching from Stripe: {str(e)}")
             return None
 
 
@@ -897,7 +908,8 @@ def handle_checkout_session_completed(session):
 def handle_subscription_created(subscription):
     """Process new subscription"""
     try:
-        logger.info(f"Processing subscription.created event: {subscription.get('id')}")
+        subscription_id = subscription.get('id')
+        logger.info(f"Processing subscription.created event: {subscription_id}")
         logger.info(f"Subscription object keys: {list(subscription.keys())}")
 
         # Log important fields for debugging
@@ -907,17 +919,17 @@ def handle_subscription_created(subscription):
         logger.info(f"Has current_period_end: {'current_period_end' in subscription}")
 
         if status in ['incomplete', 'incomplete_expired']:
-            logger.warning(f"Subscription {subscription.get('id')} is in {status} status - payment may not be complete")
+            logger.warning(f"Subscription {subscription_id} is in {status} status - payment may not be complete")
 
         customer_id = subscription.get('customer')
         if not customer_id:
-            logger.error(f"No customer ID in subscription {subscription.get('id')}")
+            logger.error(f"No customer ID in subscription {subscription_id}")
             return
 
-        user = get_user_from_stripe_customer(customer_id)
+        user = get_user_from_stripe_customer(customer_id, subscription_id=subscription_id)
 
         if not user:
-            logger.error(f"User not found for subscription {subscription.get('id')}: customer_id={customer_id}")
+            logger.error(f"User not found for subscription {subscription_id}: customer_id={customer_id}")
             return
 
         user.stripe_subscription_id = subscription['id']
@@ -976,15 +988,16 @@ def handle_subscription_created(subscription):
 def handle_subscription_updated(subscription):
     """Process subscription updates"""
     try:
+        subscription_id = subscription.get('id')
         customer_id = subscription.get('customer')
         if not customer_id:
-            logger.error(f"No customer ID in subscription {subscription.get('id')}")
+            logger.error(f"No customer ID in subscription {subscription_id}")
             return
 
-        user = get_user_from_stripe_customer(customer_id)
+        user = get_user_from_stripe_customer(customer_id, subscription_id=subscription_id)
 
         if not user:
-            logger.error(f"User not found for subscription {subscription.get('id')}: customer_id={customer_id}")
+            logger.error(f"User not found for subscription {subscription_id}: customer_id={customer_id}")
             return
 
         user.subscription_status = subscription.get('status', 'unknown')
@@ -1019,11 +1032,12 @@ def handle_subscription_updated(subscription):
 def handle_subscription_deleted(subscription):
     """Process subscription cancellation"""
     try:
+        subscription_id = subscription.get('id')
         customer_id = subscription['customer']
-        user = get_user_from_stripe_customer(customer_id)
+        user = get_user_from_stripe_customer(customer_id, subscription_id=subscription_id)
 
         if not user:
-            logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+            logger.error(f"User not found for subscription {subscription_id}: customer_id={customer_id}")
             return
 
         user.subscription_status = 'canceled'

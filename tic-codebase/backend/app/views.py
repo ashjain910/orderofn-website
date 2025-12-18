@@ -7,6 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, JsonResponse
 from .models import Job, JobApplication, SavedJob, User
 from .serializers import (
     LoginSerializer, UserSerializer, PreRegisterSerializer, TeacherProfileSerializer,
@@ -725,24 +726,29 @@ def create_checkout_session(request):
 
 
 @csrf_exempt
-@api_view(['POST'])
-@permission_classes([AllowAny])
 def stripe_webhook(request):
     """
     Handle Stripe webhook events for subscription management.
     This endpoint receives real-time updates from Stripe about subscription changes.
+
+    Note: Using plain Django view instead of @api_view to preserve raw request body
+    for Stripe signature verification.
     """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
     stripe.api_key = settings.STRIPE_SECRET_KEY
     webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None)
 
-    # Get raw body - must be done before DRF parses it
-    # DRF's request.body can only be read once, so we access it directly
-    if hasattr(request, '_body'):
-        payload = request._body
-    else:
-        payload = request.body
-
+    # Get raw body - must remain unmodified for signature verification
+    payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+
+    # Debug logging
+    logger.info(f"Webhook request received - Content-Type: {request.META.get('CONTENT_TYPE')}")
+    logger.info(f"Payload length: {len(payload)} bytes")
+    logger.info(f"Signature header present: {bool(sig_header)}")
+    logger.info(f"Webhook secret starts with: {webhook_secret[:7] if webhook_secret else 'None'}...")
 
     try:
         # Verify webhook signature
@@ -751,14 +757,16 @@ def stripe_webhook(request):
                 event = stripe.Webhook.construct_event(
                     payload, sig_header, webhook_secret
                 )
+                logger.info("✓ Webhook signature verified successfully")
             except stripe.error.SignatureVerificationError as e:
                 logger.error(f"Webhook signature verification failed: {str(e)}")
                 logger.error(f"Signature header: {sig_header}")
-                logger.error(f"Webhook secret configured: {bool(webhook_secret)}")
-                return Response({'error': 'Invalid signature'}, status=status.HTTP_400_BAD_REQUEST)
+                logger.error(f"Webhook secret starts with: {webhook_secret[:7]}...")
+                logger.error(f"Make sure the webhook secret in .env matches the one in Stripe Dashboard")
+                return JsonResponse({'error': 'Invalid signature'}, status=400)
             except ValueError as e:
                 logger.error(f"Invalid payload: {str(e)}")
-                return Response({'error': 'Invalid payload'}, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'error': 'Invalid payload'}, status=400)
         else:
             # If no webhook secret is configured, parse the event without verification
             # WARNING: This is not recommended for production
@@ -802,11 +810,11 @@ def stripe_webhook(request):
             invoice = data_object
             handle_invoice_payment_failed(invoice)
 
-        return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        return JsonResponse({'status': 'success'}, status=200)
 
     except Exception as e:
         logger.error(f"Error processing webhook: {str(e)}")
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def handle_checkout_session_completed(session):

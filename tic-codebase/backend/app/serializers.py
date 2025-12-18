@@ -179,7 +179,7 @@ class PreRegisterSerializer(serializers.Serializer):
                 )
         return value
 
-    def validate_role(self, value):
+    def validate_roles(self, value):
         if value:
             invalid_roles = [r for r in value if r.lower() not in self.VALID_ROLES]
             if invalid_roles:
@@ -190,7 +190,7 @@ class PreRegisterSerializer(serializers.Serializer):
             return [r.lower() for r in value]
         return []
 
-    def validate_subject(self, value):
+    def validate_subjects(self, value):
         # Subject can be any string, just return as is
         return value if value else []
 
@@ -303,8 +303,8 @@ class PreRegisterSerializer(serializers.Serializer):
             'second_nationality': validated_data.get('secondNationality', ''),
             'cv_file': validated_data.get('cvFile'),
             'hear_from': validated_data.get('hearFrom', ''),
-            'roles': validated_data.get('role', []),
-            'subjects': validated_data.get('subject', []),
+            'roles': validated_data.get('roles', []),
+            'subjects': validated_data.get('subjects', []),
             'age_group': validated_data.get('ageGroup', []),
             'curriculum': validated_data.get('curriculum', []),
             'leadership_role': validated_data.get('leadershipRole', ''),
@@ -758,7 +758,7 @@ class UpdateProfileSerializer(serializers.Serializer):
                 )
         return value
 
-    def validate_role(self, value):
+    def validate_roles(self, value):
         if value:
             invalid_roles = [r for r in value if r.lower() not in self.VALID_ROLES]
             if invalid_roles:
@@ -769,7 +769,7 @@ class UpdateProfileSerializer(serializers.Serializer):
             return [r.lower() for r in value]
         return []
 
-    def validate_subject(self, value):
+    def validate_subjects(self, value):
         # Subject can be any string array, just ensure it's a list
         return value if value else []
 
@@ -865,7 +865,7 @@ class UpdateProfileSerializer(serializers.Serializer):
         # Extract teacher profile fields
         teacher_profile_fields = [
             'qualified', 'english', 'position', 'gender', 'nationality',
-            'second_nationality', 'cv_file', 'hear_from', 'role', 'subject',
+            'second_nationality', 'cv_file', 'hear_from', 'roles', 'subjects',
             'age_group', 'curriculum', 'leadership_role', 'job_alerts',
             'available_day', 'available_month', 'available_year'
         ]
@@ -876,13 +876,7 @@ class UpdateProfileSerializer(serializers.Serializer):
             try:
                 teacher_profile = instance.teacher_profile
                 for key, value in teacher_data.items():
-                    # Map serializer field names to model field names
-                    if key == 'role':
-                        setattr(teacher_profile, 'roles', value)
-                    elif key == 'subject':
-                        setattr(teacher_profile, 'subjects', value)
-                    else:
-                        setattr(teacher_profile, key, value)
+                    setattr(teacher_profile, key, value)
                 teacher_profile.save()
             except AttributeError:
                 pass  # Teacher profile doesn't exist, skip

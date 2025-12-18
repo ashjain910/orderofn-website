@@ -670,13 +670,20 @@ def create_checkout_session(request):
         # Note: Stripe only allows ONE of 'customer' or 'customer_email', not both
         if user.stripe_customer_id:
             session_params['customer'] = user.stripe_customer_id
+            # Update existing customer metadata
+            try:
+                stripe.Customer.modify(
+                    user.stripe_customer_id,
+                    metadata={
+                        'user_id': str(user.id),
+                        'user_email': user.email,
+                    }
+                )
+                logger.info(f"Updated customer metadata for {user.stripe_customer_id}")
+            except Exception as e:
+                logger.error(f"Failed to update customer metadata: {str(e)}")
         else:
             session_params['customer_email'] = user.email
-            # For new customers, also set metadata on the customer itself
-            session_params['customer_creation'] = 'always'
-            session_params['customer_update'] = {
-                'metadata': 'auto'
-            }
 
         # Create the checkout session
         session = stripe.checkout.Session.create(**session_params)

@@ -29,8 +29,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'date_joined']
-        read_only_fields = ['id', 'date_joined']
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'date_joined', 'subscription_status']
+        read_only_fields = ['id', 'date_joined', 'subscription_status']
 
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
@@ -661,8 +661,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'date_joined', 'teacher_profile']
-        read_only_fields = ['id', 'date_joined']
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'date_joined', 'subscription_status', 'teacher_profile']
+        read_only_fields = ['id', 'date_joined', 'subscription_status']
 
 
 class UpdateProfileSerializer(serializers.Serializer):

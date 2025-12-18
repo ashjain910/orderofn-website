@@ -6,6 +6,25 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Override email recipient for staging/debug mode
+STAGING_EMAIL = 'ashjain910@gmail.com'
+
+
+def get_recipient_email(original_email):
+    """
+    Return staging email if DEBUG=True, otherwise return original email.
+
+    Args:
+        original_email: The intended recipient email address
+
+    Returns:
+        str: Email address to actually send to
+    """
+    if settings.DEBUG:
+        logger.info(f"DEBUG mode: Redirecting email from {original_email} to {STAGING_EMAIL}")
+        return STAGING_EMAIL
+    return original_email
+
 
 def send_job_application_email(user, job, application):
     """
@@ -35,11 +54,12 @@ def send_job_application_email(user, job, application):
         html_content = render_to_string('emails/job_application_confirmation.html', context)
 
         # Create email message
+        recipient_email = get_recipient_email(user.email)
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[user.email]
+            to=[recipient_email]
         )
 
         # Attach HTML version
@@ -84,11 +104,12 @@ def send_candidate_shortlisted_email(application):
         html_content = render_to_string('emails/candidate_shortlisted.html', context)
 
         # Create email message
+        recipient_email = get_recipient_email(user.email)
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[user.email]
+            to=[recipient_email]
         )
 
         # Attach HTML version
@@ -138,11 +159,12 @@ def send_interview_invitation_email(application, interview_details=None):
         html_content = render_to_string('emails/interview_invitation.html', context)
 
         # Create email message
+        recipient_email = get_recipient_email(user.email)
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[user.email]
+            to=[recipient_email]
         )
 
         # Attach HTML version
@@ -186,11 +208,12 @@ def send_job_offer_email(application):
         html_content = render_to_string('emails/job_offer.html', context)
 
         # Create email message
+        recipient_email = get_recipient_email(user.email)
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[user.email]
+            to=[recipient_email]
         )
 
         # Attach HTML version
@@ -234,11 +257,12 @@ def send_rejection_email(application):
         html_content = render_to_string('emails/application_rejected.html', context)
 
         # Create email message
+        recipient_email = get_recipient_email(user.email)
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[user.email]
+            to=[recipient_email]
         )
 
         # Attach HTML version
@@ -322,11 +346,12 @@ www.ticrecruitment.com
 
         # Send email
         from django.core.mail import send_mail
+        recipient_email = get_recipient_email(user.email)
         send_mail(
             subject=subject,
             message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
+            recipient_list=[recipient_email],
             fail_silently=False
         )
 

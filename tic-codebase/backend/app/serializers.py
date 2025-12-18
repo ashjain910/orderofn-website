@@ -53,7 +53,16 @@ class PreRegisterSerializer(serializers.Serializer):
     VALID_ENGLISH = ['yes', 'no']
     VALID_POSITIONS = ['teacher', 'leader', 'other']
     VALID_GENDERS = ['male', 'female', 'others']
-    VALID_ROLES = ['teacher', 'assistant_teacher', 'senior_leader']
+    VALID_ROLES = [
+        'academic_registrar', 'business_manager', 'careers_counsellor', 'deputy_head_primary',
+        'deputy_head_secondary', 'deputy_head_school', 'director', 'director_of_studies',
+        'educational_psychologist', 'head_of_department', 'head_of_early_years',
+        'head_of_prep_school', 'head_of_primary', 'head_of_secondary', 'head_of_section',
+        'head_of_subject', 'head_of_year', 'head_teacher', 'house_master', 'house_mistress',
+        'ib_coordinator', 'inspector', 'phase_coordinator', 'principal', 'principal_inspector',
+        'psychologist', 'second_in_department', 'senior_inspector', 'teacher', 'vice_director',
+        'vice_principal'
+    ]
     VALID_LEADERSHIP_ROLES = ['coordinator', 'hod', 'assistant_principal', 'principal']
     VALID_CURRICULA = [
         'American', 'Australian', 'Canadian', 'IB Dip', 'IB MYP',
@@ -662,7 +671,16 @@ class UpdateProfileSerializer(serializers.Serializer):
     VALID_ENGLISH = ['yes', 'no']
     VALID_POSITIONS = ['teacher', 'leader', 'other']
     VALID_GENDERS = ['male', 'female', 'others']
-    VALID_ROLES = ['teacher', 'assistant_teacher', 'senior_leader']
+    VALID_ROLES = [
+        'academic_registrar', 'business_manager', 'careers_counsellor', 'deputy_head_primary',
+        'deputy_head_secondary', 'deputy_head_school', 'director', 'director_of_studies',
+        'educational_psychologist', 'head_of_department', 'head_of_early_years',
+        'head_of_prep_school', 'head_of_primary', 'head_of_secondary', 'head_of_section',
+        'head_of_subject', 'head_of_year', 'head_teacher', 'house_master', 'house_mistress',
+        'ib_coordinator', 'inspector', 'phase_coordinator', 'principal', 'principal_inspector',
+        'psychologist', 'second_in_department', 'senior_inspector', 'teacher', 'vice_director',
+        'vice_principal'
+    ]
     VALID_LEADERSHIP_ROLES = ['coordinator', 'hod', 'assistant_principal', 'principal']
     VALID_CURRICULA = [
         'American', 'Australian', 'Canadian', 'IB Dip', 'IB MYP',

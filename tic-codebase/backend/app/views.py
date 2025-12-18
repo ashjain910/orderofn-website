@@ -817,6 +817,37 @@ def stripe_webhook(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
+def get_user_from_stripe_customer(customer_id):
+    """
+    Get user from Stripe customer ID with fallback to Stripe API.
+    Handles race condition where subscription events arrive before checkout.session.completed.
+    """
+    try:
+        # Try direct lookup first
+        return User.objects.get(stripe_customer_id=customer_id)
+    except User.DoesNotExist:
+        # Fallback: fetch customer from Stripe to get metadata
+        logger.warning(f"User not found by customer_id {customer_id}, fetching from Stripe...")
+        try:
+            import stripe
+            customer = stripe.Customer.retrieve(customer_id)
+            user_id = customer.get('metadata', {}).get('user_id')
+
+            if user_id:
+                user = User.objects.get(id=user_id)
+                # Save the customer ID for future lookups
+                user.stripe_customer_id = customer_id
+                user.save()
+                logger.info(f"Found user {user.email} via Stripe customer metadata, saved customer_id")
+                return user
+            else:
+                logger.error(f"No user_id in customer metadata for {customer_id}")
+                return None
+        except Exception as e:
+            logger.error(f"Error fetching customer from Stripe: {str(e)}")
+            return None
+
+
 def handle_checkout_session_completed(session):
     """Process completed checkout session"""
     try:
@@ -847,7 +878,11 @@ def handle_subscription_created(subscription):
     """Process new subscription"""
     try:
         customer_id = subscription['customer']
-        user = User.objects.get(stripe_customer_id=customer_id)
+        user = get_user_from_stripe_customer(customer_id)
+
+        if not user:
+            logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+            return
 
         user.stripe_subscription_id = subscription['id']
         user.subscription_status = subscription['status']
@@ -858,8 +893,6 @@ def handle_subscription_created(subscription):
 
         logger.info(f"Subscription created for user {user.email}: {subscription['id']} - Status: {subscription['status']}")
 
-    except User.DoesNotExist:
-        logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
     except Exception as e:
         logger.error(f"Error handling subscription created: {str(e)}")
 
@@ -868,7 +901,11 @@ def handle_subscription_updated(subscription):
     """Process subscription updates"""
     try:
         customer_id = subscription['customer']
-        user = User.objects.get(stripe_customer_id=customer_id)
+        user = get_user_from_stripe_customer(customer_id)
+
+        if not user:
+            logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+            return
 
         user.subscription_status = subscription['status']
         user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
@@ -878,8 +915,6 @@ def handle_subscription_updated(subscription):
 
         logger.info(f"Subscription updated for user {user.email}: {subscription['id']} - Status: {subscription['status']}")
 
-    except User.DoesNotExist:
-        logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
     except Exception as e:
         logger.error(f"Error handling subscription updated: {str(e)}")
 
@@ -888,7 +923,11 @@ def handle_subscription_deleted(subscription):
     """Process subscription cancellation"""
     try:
         customer_id = subscription['customer']
-        user = User.objects.get(stripe_customer_id=customer_id)
+        user = get_user_from_stripe_customer(customer_id)
+
+        if not user:
+            logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+            return
 
         user.subscription_status = 'canceled'
         user.subscription_end_date = datetime.fromtimestamp(subscription['ended_at']) if subscription.get('ended_at') else None
@@ -896,8 +935,6 @@ def handle_subscription_deleted(subscription):
 
         logger.info(f"Subscription canceled for user {user.email}: {subscription['id']}")
 
-    except User.DoesNotExist:
-        logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
     except Exception as e:
         logger.error(f"Error handling subscription deleted: {str(e)}")
 
@@ -906,7 +943,11 @@ def handle_invoice_payment_succeeded(invoice):
     """Process successful invoice payment"""
     try:
         customer_id = invoice['customer']
-        user = User.objects.get(stripe_customer_id=customer_id)
+        user = get_user_from_stripe_customer(customer_id)
+
+        if not user:
+            logger.error(f"User not found for invoice {invoice['id']}: customer_id={customer_id}")
+            return
 
         # Update subscription status to active on successful payment
         if user.subscription_status in ['past_due', 'unpaid']:
@@ -914,8 +955,6 @@ def handle_invoice_payment_succeeded(invoice):
             user.save()
             logger.info(f"Subscription reactivated for user {user.email} after successful payment")
 
-    except User.DoesNotExist:
-        logger.error(f"User not found for invoice {invoice['id']}: customer_id={customer_id}")
     except Exception as e:
         logger.error(f"Error handling invoice payment succeeded: {str(e)}")
 
@@ -924,15 +963,17 @@ def handle_invoice_payment_failed(invoice):
     """Process failed invoice payment"""
     try:
         customer_id = invoice['customer']
-        user = User.objects.get(stripe_customer_id=customer_id)
+        user = get_user_from_stripe_customer(customer_id)
+
+        if not user:
+            logger.error(f"User not found for invoice {invoice['id']}: customer_id={customer_id}")
+            return
 
         user.subscription_status = 'past_due'
         user.save()
 
         logger.warning(f"Payment failed for user {user.email} - Subscription marked as past_due")
 
-    except User.DoesNotExist:
-        logger.error(f"User not found for invoice {invoice['id']}: customer_id={customer_id}")
     except Exception as e:
         logger.error(f"Error handling invoice payment failed: {str(e)}")
 

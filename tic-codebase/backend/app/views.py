@@ -883,9 +883,13 @@ def handle_subscription_created(subscription):
         logger.info(f"Subscription object keys: {list(subscription.keys())}")
 
         # Log important fields for debugging
-        logger.info(f"Subscription status: {subscription.get('status')}")
+        status = subscription.get('status', 'unknown')
+        logger.info(f"Subscription status: {status}")
         logger.info(f"Has current_period_start: {'current_period_start' in subscription}")
         logger.info(f"Has current_period_end: {'current_period_end' in subscription}")
+
+        if status in ['incomplete', 'incomplete_expired']:
+            logger.warning(f"Subscription {subscription.get('id')} is in {status} status - payment may not be complete")
 
         customer_id = subscription.get('customer')
         if not customer_id:
@@ -902,15 +906,41 @@ def handle_subscription_created(subscription):
         user.subscription_status = subscription.get('status', 'unknown')
 
         # Handle current_period_start and current_period_end
-        if 'current_period_start' in subscription:
-            user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
-        else:
-            logger.warning(f"No current_period_start in subscription {subscription['id']}")
+        # These fields are in items.data[0] for standard subscriptions
+        period_start = None
+        period_end = None
 
-        if 'current_period_end' in subscription:
-            user.subscription_end_date = datetime.fromtimestamp(subscription['current_period_end'])
+        # Try top-level first (some subscription types have these at top level)
+        if 'current_period_start' in subscription:
+            period_start = subscription['current_period_start']
+            period_end = subscription.get('current_period_end')
+        # Check items array (standard subscription structure in Stripe API v2023+)
+        elif 'items' in subscription and subscription['items'].get('data'):
+            first_item = subscription['items']['data'][0]
+            period_start = first_item.get('current_period_start')
+            period_end = first_item.get('current_period_end')
+            if period_start:
+                logger.info(f"Found period dates in subscription items for {subscription['id']}")
+
+        # Set start date
+        if period_start:
+            user.subscription_start_date = datetime.fromtimestamp(period_start)
+        elif 'start_date' in subscription:
+            user.subscription_start_date = datetime.fromtimestamp(subscription['start_date'])
+            logger.info(f"Using start_date field for subscription {subscription['id']}")
+        elif 'created' in subscription:
+            user.subscription_start_date = datetime.fromtimestamp(subscription['created'])
+            logger.info(f"Using created timestamp for subscription {subscription['id']}")
         else:
-            logger.warning(f"No current_period_end in subscription {subscription['id']}")
+            logger.warning(f"No start date found in subscription {subscription['id']}")
+            user.subscription_start_date = datetime.now()
+
+        # Set end date
+        if period_end:
+            user.subscription_end_date = datetime.fromtimestamp(period_end)
+        else:
+            logger.info(f"No end date found in subscription {subscription['id']}, leaving as null")
+            user.subscription_end_date = None
 
         user.subscription_cancel_at_period_end = subscription.get('cancel_at_period_end', False)
         user.save()
@@ -941,11 +971,22 @@ def handle_subscription_updated(subscription):
 
         user.subscription_status = subscription.get('status', 'unknown')
 
-        if 'current_period_start' in subscription:
-            user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
+        # Handle current_period dates (same logic as create handler)
+        period_start = None
+        period_end = None
 
-        if 'current_period_end' in subscription:
-            user.subscription_end_date = datetime.fromtimestamp(subscription['current_period_end'])
+        if 'current_period_start' in subscription:
+            period_start = subscription['current_period_start']
+            period_end = subscription.get('current_period_end')
+        elif 'items' in subscription and subscription['items'].get('data'):
+            first_item = subscription['items']['data'][0]
+            period_start = first_item.get('current_period_start')
+            period_end = first_item.get('current_period_end')
+
+        if period_start:
+            user.subscription_start_date = datetime.fromtimestamp(period_start)
+        if period_end:
+            user.subscription_end_date = datetime.fromtimestamp(period_end)
 
         user.subscription_cancel_at_period_end = subscription.get('cancel_at_period_end', False)
         user.save()

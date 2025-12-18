@@ -656,6 +656,12 @@ def create_checkout_session(request):
                 'user_id': str(user.id),
                 'user_email': user.email,
             },
+            'subscription_data': {
+                'metadata': {
+                    'user_id': str(user.id),
+                    'user_email': user.email,
+                }
+            },
             'success_url': 'https://orderofn.com/tic?checkout=success&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url': 'https://orderofn.com/tic?checkout=canceled',
         }
@@ -666,6 +672,11 @@ def create_checkout_session(request):
             session_params['customer'] = user.stripe_customer_id
         else:
             session_params['customer_email'] = user.email
+            # For new customers, also set metadata on the customer itself
+            session_params['customer_creation'] = 'always'
+            session_params['customer_update'] = {
+                'metadata': 'auto'
+            }
 
         # Create the checkout session
         session = stripe.checkout.Session.create(**session_params)

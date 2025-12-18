@@ -879,46 +879,82 @@ def handle_checkout_session_completed(session):
 def handle_subscription_created(subscription):
     """Process new subscription"""
     try:
-        customer_id = subscription['customer']
+        logger.info(f"Processing subscription.created event: {subscription.get('id')}")
+        logger.info(f"Subscription object keys: {list(subscription.keys())}")
+
+        # Log important fields for debugging
+        logger.info(f"Subscription status: {subscription.get('status')}")
+        logger.info(f"Has current_period_start: {'current_period_start' in subscription}")
+        logger.info(f"Has current_period_end: {'current_period_end' in subscription}")
+
+        customer_id = subscription.get('customer')
+        if not customer_id:
+            logger.error(f"No customer ID in subscription {subscription.get('id')}")
+            return
+
         user = get_user_from_stripe_customer(customer_id)
 
         if not user:
-            logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+            logger.error(f"User not found for subscription {subscription.get('id')}: customer_id={customer_id}")
             return
 
         user.stripe_subscription_id = subscription['id']
-        user.subscription_status = subscription['status']
-        user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
-        user.subscription_end_date = datetime.fromtimestamp(subscription['current_period_end'])
+        user.subscription_status = subscription.get('status', 'unknown')
+
+        # Handle current_period_start and current_period_end
+        if 'current_period_start' in subscription:
+            user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
+        else:
+            logger.warning(f"No current_period_start in subscription {subscription['id']}")
+
+        if 'current_period_end' in subscription:
+            user.subscription_end_date = datetime.fromtimestamp(subscription['current_period_end'])
+        else:
+            logger.warning(f"No current_period_end in subscription {subscription['id']}")
+
         user.subscription_cancel_at_period_end = subscription.get('cancel_at_period_end', False)
         user.save()
 
-        logger.info(f"Subscription created for user {user.email}: {subscription['id']} - Status: {subscription['status']}")
+        logger.info(f"Subscription created for user {user.email}: {subscription['id']} - Status: {subscription.get('status')}")
 
+    except KeyError as e:
+        logger.error(f"Missing key in subscription object: {str(e)}")
+        logger.error(f"Subscription data: {subscription}")
     except Exception as e:
         logger.error(f"Error handling subscription created: {str(e)}")
+        logger.error(f"Subscription ID: {subscription.get('id')}")
 
 
 def handle_subscription_updated(subscription):
     """Process subscription updates"""
     try:
-        customer_id = subscription['customer']
+        customer_id = subscription.get('customer')
+        if not customer_id:
+            logger.error(f"No customer ID in subscription {subscription.get('id')}")
+            return
+
         user = get_user_from_stripe_customer(customer_id)
 
         if not user:
-            logger.error(f"User not found for subscription {subscription['id']}: customer_id={customer_id}")
+            logger.error(f"User not found for subscription {subscription.get('id')}: customer_id={customer_id}")
             return
 
-        user.subscription_status = subscription['status']
-        user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
-        user.subscription_end_date = datetime.fromtimestamp(subscription['current_period_end'])
+        user.subscription_status = subscription.get('status', 'unknown')
+
+        if 'current_period_start' in subscription:
+            user.subscription_start_date = datetime.fromtimestamp(subscription['current_period_start'])
+
+        if 'current_period_end' in subscription:
+            user.subscription_end_date = datetime.fromtimestamp(subscription['current_period_end'])
+
         user.subscription_cancel_at_period_end = subscription.get('cancel_at_period_end', False)
         user.save()
 
-        logger.info(f"Subscription updated for user {user.email}: {subscription['id']} - Status: {subscription['status']}")
+        logger.info(f"Subscription updated for user {user.email}: {subscription['id']} - Status: {subscription.get('status')}")
 
     except Exception as e:
         logger.error(f"Error handling subscription updated: {str(e)}")
+        logger.error(f"Subscription ID: {subscription.get('id')}")
 
 
 def handle_subscription_deleted(subscription):

@@ -651,7 +651,6 @@ def create_checkout_session(request):
                 'price': 'price_1SeYHCS3b9o0AI70juiCFthQ',
                 'quantity': 1,
             }],
-            'customer_email': user.email,
             'client_reference_id': str(user.id),  # To identify user in webhook
             'metadata': {
                 'user_id': str(user.id),
@@ -661,9 +660,12 @@ def create_checkout_session(request):
             'cancel_url': 'https://orderofn.com/tic?checkout=canceled',
         }
 
-        # If user already has a Stripe customer ID, use it
+        # If user already has a Stripe customer ID, use it; otherwise use email
+        # Note: Stripe only allows ONE of 'customer' or 'customer_email', not both
         if user.stripe_customer_id:
             session_params['customer'] = user.stripe_customer_id
+        else:
+            session_params['customer_email'] = user.email
 
         # Create the checkout session
         session = stripe.checkout.Session.create(**session_params)

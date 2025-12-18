@@ -85,12 +85,12 @@ class PreRegisterSerializer(serializers.Serializer):
     hearFrom = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
     # Step 3 - Teaching Experience
-    role = serializers.ListField(
+    roles = serializers.ListField(
         child=serializers.CharField(),
         required=False,
         allow_empty=True
     )
-    subject = serializers.ListField(
+    subjects = serializers.ListField(
         child=serializers.CharField(),
         required=False,
         allow_empty=True
@@ -685,8 +685,8 @@ class UpdateProfileSerializer(serializers.Serializer):
     second_nationality = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
     cv_file = serializers.FileField(required=False, allow_null=True)
     hear_from = serializers.CharField(max_length=200, required=False, allow_blank=True)
-    role = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
-    subject = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+    roles = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+    subjects = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     age_group = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     curriculum = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     leadership_role = serializers.CharField(max_length=30, required=False, allow_blank=True, allow_null=True)

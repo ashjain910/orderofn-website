@@ -6,6 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
 from .models import Job, JobApplication, SavedJob, User
 from .serializers import (
     LoginSerializer, UserSerializer, PreRegisterSerializer, TeacherProfileSerializer,
@@ -723,6 +724,7 @@ def create_checkout_session(request):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def stripe_webhook(request):
@@ -732,7 +734,14 @@ def stripe_webhook(request):
     """
     stripe.api_key = settings.STRIPE_SECRET_KEY
     webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None)
-    payload = request.body
+
+    # Get raw body - must be done before DRF parses it
+    # DRF's request.body can only be read once, so we access it directly
+    if hasattr(request, '_body'):
+        payload = request._body
+    else:
+        payload = request.body
+
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
 
     try:
@@ -744,7 +753,12 @@ def stripe_webhook(request):
                 )
             except stripe.error.SignatureVerificationError as e:
                 logger.error(f"Webhook signature verification failed: {str(e)}")
+                logger.error(f"Signature header: {sig_header}")
+                logger.error(f"Webhook secret configured: {bool(webhook_secret)}")
                 return Response({'error': 'Invalid signature'}, status=status.HTTP_400_BAD_REQUEST)
+            except ValueError as e:
+                logger.error(f"Invalid payload: {str(e)}")
+                return Response({'error': 'Invalid payload'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             # If no webhook secret is configured, parse the event without verification
             # WARNING: This is not recommended for production

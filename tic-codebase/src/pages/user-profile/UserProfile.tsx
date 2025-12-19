@@ -44,7 +44,12 @@ const UserProfile: React.FC = () => {
       ageGroup: p.teacher_profile?.age_group || "",
       curriculum: p.teacher_profile?.curriculum || [],
       leadershipRoles: p.teacher_profile?.leadership_role || [],
-      job_alerts: p.teacher_profile?.job_alerts || "",
+      job_alerts:
+        p.teacher_profile?.job_alerts === true
+          ? "yes"
+          : p.teacher_profile?.job_alerts === false
+          ? "no"
+          : p.teacher_profile?.job_alerts || "",
       available_day: p.teacher_profile?.available_day || "",
     };
   }, [profile, showEdit]);
@@ -241,19 +246,27 @@ const UserProfile: React.FC = () => {
               <div className="d-flex mb-2 ">
                 <small className="text-muted">Curriculum experience :</small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.curriculum}
+                  {Array.isArray(profile?.teacher_profile?.curriculum)
+                    ? profile.teacher_profile.curriculum.join(", ")
+                    : profile?.teacher_profile?.curriculum}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
                 <small className="text-muted">Leadership roles :</small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.leadership_role}
+                  {Array.isArray(profile?.teacher_profile?.leadership_role)
+                    ? profile.teacher_profile.leadership_role.join(", ")
+                    : profile?.teacher_profile?.leadership_role}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
                 <small className="text-muted">Send me job alerts:</small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.job_alerts}
+                  {profile?.teacher_profile?.job_alerts === true
+                    ? "Yes"
+                    : profile?.teacher_profile?.job_alerts === false
+                    ? "No"
+                    : profile?.teacher_profile?.job_alerts}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
@@ -284,21 +297,11 @@ const UserProfile: React.FC = () => {
               <h6>Resume</h6>
               {profile?.teacher_profile?.cv_file ? (
                 <>
-                  <div className="text-end mb-2">
-                    <a
-                      href={profile.teacher_profile.cv_file}
-                      download
-                      className="btn btn-secondary btn-sm"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Download
-                    </a>
-                  </div>
                   <DocViewer
+                    key={showEdit ? "editing" : "preview"}
                     documents={[{ uri: profile.teacher_profile.cv_file }]}
                     pluginRenderers={DocViewerRenderers}
-                    style={{ height: 500 }}
+                    style={{ height: 300 }}
                     // @ts-ignore
                     onError={() => {
                       /* Optionally handle preview errors here */

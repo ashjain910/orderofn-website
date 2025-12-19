@@ -51,8 +51,7 @@ const statusTabs = [
 
 const JOBS_PER_PAGE = 5;
 
-const job_types = ["remote", "casual", "full-time", "part-time"];
-const schoolTypes = ["public", "private", "charter", "international"];
+import { job_types, schoolTypes } from "../../constants/jobOptions";
 // const genders = ["any", "male", "female", "other"];
 
 // Icons for each tab
@@ -85,6 +84,7 @@ interface Job {
   is_applied?: boolean;
   is_saved?: boolean;
   file_name?: string;
+  school_type?: string;
 }
 
 function Jobs() {
@@ -118,15 +118,27 @@ function Jobs() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("checkout") === "success") {
-      toast.success("Payment successful! Subscription activated.", {
-        autoClose: 2500,
-        onClose: () => navigate("/jobs", { replace: true }),
-      });
+      // Fetch profile and store subscription_status
+      BaseApi.get("/profile")
+        .then((res) => {
+          if (res && res.data && res.data.subscription_status) {
+            localStorage.setItem(
+              "subscription_status",
+              res.data.subscription_status
+            );
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          toast.success("Payment successful! Subscription activated.", {
+            autoClose: 2500,
+            onClose: () => navigate("/jobs", { replace: true }),
+          });
+        });
     } else if (params.get("checkout") === "canceled") {
       toast.error("Payment canceled.", { autoClose: 2500 });
     }
-    // eslint-disable-next-line
-  }, []);
+  }, [location.search, navigate]);
 
   // Fetch jobs on initial page load with all filters
   // Helper to fetch tab counts (all, saved, applied)
@@ -500,7 +512,7 @@ function Jobs() {
             <div className="card mb-3">
               <div className="row">
                 <div className="mb-1 col-lg-4 col-md-4 col-sm-6 col-12">
-                  <label className="form-label">Job Title</label>
+                  <label className="form-label">Position</label>
                   <input
                     type="text"
                     className="form-control"
@@ -510,16 +522,16 @@ function Jobs() {
                   />
                 </div>
                 <div className="mb-1 col-lg-4 col-md-4 col-sm-6 col-12">
-                  <label className="form-label">Job Type</label>
+                  <label className="form-label">Position Type</label>
                   <select
                     className="form-select"
                     value={filterjob_type}
                     onChange={(e) => setFilterjob_type(e.target.value)}
                   >
-                    <option value="">Select job type</option>
+                    <option value="">Select position type</option>
                     {job_types.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
+                      <option key={type.value} value={type.value}>
+                        {type.label}
                       </option>
                     ))}
                   </select>
@@ -533,8 +545,8 @@ function Jobs() {
                   >
                     <option value="">Select school type</option>
                     {schoolTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
+                      <option key={type.value} value={type.value}>
+                        {type.label}
                       </option>
                     ))}
                   </select>
@@ -610,14 +622,11 @@ function Jobs() {
                         </div>
                         <h5 className="job-title  d-flex align-items-center mb-1">
                           {job.title}
-                          <span
-                            className={`badge ms-2 ${
-                              job.job_type === "Remote"
-                                ? "remote__badge__"
-                                : "casual__badge__"
-                            }`}
-                          >
-                            {job.job_type}
+
+                          <span className={`badge casual__badge__ ms-2 `}>
+                            {schoolTypes.find(
+                              (t) => t.value === job.school_type
+                            )?.label || job.school_type}
                           </span>
                           {job.is_expired && (
                             <span className="badge bg-danger txt__regular__  ms-2">

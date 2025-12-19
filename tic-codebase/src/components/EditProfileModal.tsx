@@ -6,6 +6,10 @@ import { countries } from "../pages/auth/steps/Step2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import api from "../services/api";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import { toastOptions } from "../utils/toastOptions";
+import { useNavigate } from "react-router-dom";
 
 interface EditProfileModalProps {
   show: boolean;
@@ -20,6 +24,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   initialData,
   onSave,
 }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<any>(initialData || {});
 
   React.useEffect(() => {
@@ -61,14 +66,53 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       const response = await api.patch("/profile/update", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (!response) {
-        throw new Error("Failed to update profile");
+      if (
+        (response.status === 200 || response.status === 201) &&
+        response.data.access &&
+        response.data.refresh
+      ) {
+        Cookies.set("access", response.data.access, { secure: true });
+        Cookies.set("refresh", response.data.refresh, { secure: true });
+        toast.success("Profile updated successfully!", toastOptions);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+        return;
       }
-      const data = response.data;
-      onSave(data);
-      onClose();
-    } catch (err: any) {
-      alert(err.message || "Failed to update profile");
+      // If not 200/201 or missing tokens, show error
+      toast.error("Profile update failed. Please try again.", toastOptions);
+    } catch (error: any) {
+      let message = "Profile update failed. Please try again.";
+      if (
+        error?.response?.status === 400 &&
+        error?.response?.data &&
+        typeof error.response.data === "object"
+      ) {
+        const data = error.response.data;
+        // Helper to recursively flatten all error messages
+        function flattenErrors(errObj: any): string[] {
+          if (typeof errObj === "string") return [errObj];
+          if (Array.isArray(errObj)) {
+            return errObj.flatMap(flattenErrors);
+          }
+          if (typeof errObj === "object" && errObj !== null) {
+            return Object.values(errObj).flatMap(flattenErrors);
+          }
+          return [];
+        }
+        const allErrors = flattenErrors(data);
+        allErrors.forEach((err: string, idx: number) => {
+          setTimeout(() => {
+            toast.error(err, toastOptions);
+          }, idx * 500);
+        });
+      } else if (error?.response?.data) {
+        toast.error(error.response.data, toastOptions);
+      } else if (error?.message) {
+        toast.error(error.message, toastOptions);
+      } else {
+        toast.error(message, toastOptions);
+      }
     }
   };
 
@@ -88,6 +132,31 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSave} autoComplete="off">
+          {/* Name, Gender, Nationality, Second Nationality */}
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>First Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={formData.firstName || ""}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  required
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={formData.lastName || ""}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  required
+                />
+              </Form.Group>
+            </Col>
+          </Row>
           {/* Email and Phone */}
           <Row>
             <Col md={6}>
@@ -112,12 +181,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 />
               </Form.Group>
             </Col>
-          </Row>
-          {/* Qualified (Radio) */}
-          <Row>
-            <Col md={6}>
+            {/* Qualified (Radio) */}
+            <Col md={12}>
               <Form.Group className="mb-3">
-                <Form.Label>Qualified</Form.Label>
+                <Form.Label>
+                  Are you a fully qualified teacher / senior leader?
+                </Form.Label>
                 <div className="d-flex gap-3">
                   <Form.Check
                     type="radio"
@@ -138,12 +207,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 </div>
               </Form.Group>
             </Col>
-          </Row>
-          {/* English (Radio) and Position (Checkbox group) */}
-          <Row>
-            <Col md={6}>
+            {/* English (Radio) and Position (Checkbox group) */}
+
+            <Col md={12}>
               <Form.Group className="mb-3">
-                <Form.Label>Fluent English?</Form.Label>
+                <Form.Label>Are you a fluent English speaker?</Form.Label>
                 <div className="d-flex gap-3">
                   <Form.Check
                     type="radio"
@@ -164,9 +232,41 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 </div>
               </Form.Group>
             </Col>
+            {/* Gender (Radio) */}
+            <Col md={12}>
+              <Form.Group className="mb-3">
+                <Form.Label>Gender</Form.Label>
+                <div className="d-flex gap-3">
+                  <Form.Check
+                    type="radio"
+                    label="Male"
+                    name="gender"
+                    value="male"
+                    checked={formData.gender === "male"}
+                    onChange={(e) => handleChange("gender", e.target.value)}
+                  />
+                  <Form.Check
+                    type="radio"
+                    label="Female"
+                    name="gender"
+                    value="female"
+                    checked={formData.gender === "female"}
+                    onChange={(e) => handleChange("gender", e.target.value)}
+                  />
+                  <Form.Check
+                    type="radio"
+                    label="Other"
+                    name="gender"
+                    value="other"
+                    checked={formData.gender === "other"}
+                    onChange={(e) => handleChange("gender", e.target.value)}
+                  />
+                </div>
+              </Form.Group>
+            </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Position</Form.Label>
+                <Form.Label>What positions are you looking for?</Form.Label>
                 <div className="d-flex gap-3">
                   {[
                     { label: "Teacher", value: "teacher" },
@@ -200,71 +300,42 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 </div>
               </Form.Group>
             </Col>
-          </Row>
-          {/* Name, Gender, Nationality, Second Nationality */}
-          <Row>
-            <Col md={6}>
+            <Col md={12}>
               <Form.Group className="mb-3">
-                <Form.Label>First Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={formData.firstName || ""}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Last Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={formData.lastName || ""}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
-                  required
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-          <Row>
-            {/* Gender (Radio) */}
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Gender</Form.Label>
+                <Form.Label>Send me job alerts</Form.Label>
                 <div className="d-flex gap-3">
                   <Form.Check
                     type="radio"
-                    label="Male"
-                    name="gender"
-                    value="male"
-                    checked={formData.gender === "male"}
-                    onChange={(e) => handleChange("gender", e.target.value)}
+                    label="Yes"
+                    name="job_alerts"
+                    value="yes"
+                    checked={formData.job_alerts === "yes"}
+                    onChange={(e) => handleChange("job_alerts", e.target.value)}
                   />
                   <Form.Check
                     type="radio"
-                    label="Female"
-                    name="gender"
-                    value="female"
-                    checked={formData.gender === "female"}
-                    onChange={(e) => handleChange("gender", e.target.value)}
-                  />
-                  <Form.Check
-                    type="radio"
-                    label="Other"
-                    name="gender"
-                    value="other"
-                    checked={formData.gender === "other"}
-                    onChange={(e) => handleChange("gender", e.target.value)}
+                    label="No"
+                    name="job_alerts"
+                    value="no"
+                    checked={formData.job_alerts === "no"}
+                    onChange={(e) => handleChange("job_alerts", e.target.value)}
                   />
                 </div>
               </Form.Group>
             </Col>
+          </Row>
+
+          <Row>
             {/* Nationality Dropdown */}
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Nationality</Form.Label>
                 <Form.Select
-                  value={formData.nationality || ""}
+                  value={
+                    typeof formData.nationality === "string"
+                      ? formData.nationality
+                      : ""
+                  }
                   onChange={(e) => handleChange("nationality", e.target.value)}
                   required
                 >
@@ -277,14 +348,16 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 </Form.Select>
               </Form.Group>
             </Col>
-          </Row>
-          {/* Second Nationality Dropdown and CV Upload */}
-          <Row>
+            {/* Second Nationality Dropdown and CV Upload */}
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Second Nationality</Form.Label>
                 <Form.Select
-                  value={formData.secondNationality || ""}
+                  value={
+                    typeof formData.secondNationality === "string"
+                      ? formData.secondNationality
+                      : ""
+                  }
                   onChange={(e) =>
                     handleChange("secondNationality", e.target.value)
                   }
@@ -309,36 +382,43 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 />
                 {formData.cvFile && typeof formData.cvFile === "string" && (
                   <div className="mt-1">
-                    <small>Current: {formData.cvFile.split("/").pop()}</small>
+                    <small>{formData.cvFile.split("/").pop()}</small>
                   </div>
                 )}
                 {formData.cvFile &&
                   typeof formData.cvFile === "object" &&
                   formData.cvFile.name && (
                     <div className="mt-1">
-                      <small>Current: {formData.cvFile.name}</small>
+                      <small>{formData.cvFile.name}</small>
                     </div>
                   )}
               </Form.Group>
             </Col>
+            <Col md={6}>
+              {/* Where did you hear about us? (Select) */}
+              <Form.Group className="mb-3">
+                <Form.Label>Where did you hear about us?</Form.Label>
+                <Form.Select
+                  value={
+                    typeof formData.hearFrom === "string"
+                      ? formData.hearFrom
+                      : ""
+                  }
+                  onChange={(e) => handleChange("hearFrom", e.target.value)}
+                >
+                  <option value="">Please select</option>
+                  <option>LinkedIn</option>
+                  <option>Google Search</option>
+                  <option>Referral</option>
+                  <option>Social media</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
           </Row>
-          {/* Where did you hear about us? (Select) */}
-          <Form.Group className="mb-3">
-            <Form.Label>Where did you hear about us?</Form.Label>
-            <Form.Select
-              value={formData.hearFrom || ""}
-              onChange={(e) => handleChange("hearFrom", e.target.value)}
-            >
-              <option value="">Please select</option>
-              <option>LinkedIn</option>
-              <option>Google Search</option>
-              <option>Referral</option>
-              <option>Social media</option>
-            </Form.Select>
-          </Form.Group>
+
           {/* Roles, Subjects (Multi-select) */}
           <Row>
-            <Col md={6}>
+            <Col md={12}>
               <Form.Group className="mb-3">
                 <Form.Label>Teacher Roles</Form.Label>
                 <Select
@@ -363,7 +443,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={12}>
               <Form.Group className="mb-3">
                 <Form.Label>Subjects</Form.Label>
                 <Select
@@ -388,6 +468,51 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 />
               </Form.Group>
             </Col>
+            {/* Leadership Roles (Multi-select) */}
+            <Col md={12}>
+              <Form.Group className="mb-3">
+                <Form.Label>Leadership Roles</Form.Label>
+                <Select
+                  isMulti
+                  options={[
+                    { value: "coordinator", label: "Coordinator" },
+                    { value: "hod", label: "HOD" },
+                    {
+                      value: "assistant_principal",
+                      label: "Assistant Principal",
+                    },
+                    { value: "principal", label: "Principal" },
+                  ]}
+                  value={
+                    Array.isArray(formData.leadershipRoles)
+                      ? formData.leadershipRoles
+                          .map((role: any) =>
+                            typeof role === "string"
+                              ? [
+                                  {
+                                    value: "coordinator",
+                                    label: "Coordinator",
+                                  },
+                                  { value: "hod", label: "HOD" },
+                                  {
+                                    value: "assistant_principal",
+                                    label: "Assistant Principal",
+                                  },
+                                  { value: "principal", label: "Principal" },
+                                ].find((opt) => opt.value === role) || null
+                              : role
+                          )
+                          .filter(Boolean)
+                      : []
+                  }
+                  onChange={(selected) =>
+                    handleChange("leadershipRoles", selected)
+                  }
+                  classNamePrefix="react-select"
+                  placeholder="Select leadership role(s)..."
+                />
+              </Form.Group>
+            </Col>
           </Row>
           {/* Age Group (Dropdown) and Curriculum (Checkbox group) */}
           <Row>
@@ -395,7 +520,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               <Form.Group className="mb-3">
                 <Form.Label>Age Group</Form.Label>
                 <Form.Select
-                  value={formData.ageGroup || ""}
+                  value={
+                    typeof formData.ageGroup === "string"
+                      ? formData.ageGroup
+                      : ""
+                  }
                   onChange={(e) => handleChange("ageGroup", e.target.value)}
                 >
                   <option value="">Please select</option>
@@ -407,6 +536,30 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               </Form.Group>
             </Col>
             <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>I will be available from</Form.Label>
+                <DatePicker
+                  selected={(() => {
+                    if (!formData.available_day) return null;
+                    const d = new Date(formData.available_day);
+                    return isNaN(d.getTime()) ? null : d;
+                  })()}
+                  onChange={(date) =>
+                    handleChange(
+                      "available_day",
+                      date ? date.toISOString().split("T")[0] : ""
+                    )
+                  }
+                  className="form-control"
+                  placeholderText="Select available date"
+                  dateFormat="yyyy-MM-dd"
+                  isClearable
+                  autoComplete="off"
+                  minDate={new Date()}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={12}>
               <Form.Group className="mb-3">
                 <Form.Label>Curriculum Experience</Form.Label>
                 <div className="row">
@@ -454,91 +607,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               </Form.Group>
             </Col>
           </Row>
-          {/* Leadership Roles (Multi-select) */}
-          <Form.Group className="mb-3">
-            <Form.Label>Leadership Roles</Form.Label>
-            <Select
-              isMulti
-              options={[
-                { value: "coordinator", label: "Coordinator" },
-                { value: "hod", label: "HOD" },
-                { value: "assistant_principal", label: "Assistant Principal" },
-                { value: "principal", label: "Principal" },
-              ]}
-              value={
-                Array.isArray(formData.leadershipRoles)
-                  ? formData.leadershipRoles
-                      .map((role: any) =>
-                        typeof role === "string"
-                          ? [
-                              { value: "coordinator", label: "Coordinator" },
-                              { value: "hod", label: "HOD" },
-                              {
-                                value: "assistant_principal",
-                                label: "Assistant Principal",
-                              },
-                              { value: "principal", label: "Principal" },
-                            ].find((opt) => opt.value === role) || null
-                          : role
-                      )
-                      .filter(Boolean)
-                  : []
-              }
-              onChange={(selected) => handleChange("leadershipRoles", selected)}
-              classNamePrefix="react-select"
-              placeholder="Select leadership role(s)..."
-            />
-          </Form.Group>
-          {/* Job Alerts (Radio) and Available Day (DatePicker) */}
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Send me job alerts</Form.Label>
-                <div className="d-flex gap-3">
-                  <Form.Check
-                    type="radio"
-                    label="Yes"
-                    name="job_alerts"
-                    value="yes"
-                    checked={formData.job_alerts === "yes"}
-                    onChange={(e) => handleChange("job_alerts", e.target.value)}
-                  />
-                  <Form.Check
-                    type="radio"
-                    label="No"
-                    name="job_alerts"
-                    value="no"
-                    checked={formData.job_alerts === "no"}
-                    onChange={(e) => handleChange("job_alerts", e.target.value)}
-                  />
-                </div>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>I will be available from</Form.Label>
-                <DatePicker
-                  selected={
-                    formData.available_day
-                      ? new Date(formData.available_day)
-                      : null
-                  }
-                  onChange={(date) =>
-                    handleChange(
-                      "available_day",
-                      date ? date.toISOString().split("T")[0] : ""
-                    )
-                  }
-                  className="form-control"
-                  placeholderText="Select available date"
-                  dateFormat="yyyy-MM-dd"
-                  isClearable
-                  autoComplete="off"
-                  minDate={new Date()}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+
           <div className="d-flex justify-content-end">
             <Button variant="primary" type="submit">
               Save

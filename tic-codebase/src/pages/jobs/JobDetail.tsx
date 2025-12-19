@@ -8,6 +8,7 @@ import { HiLightBulb } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { Row, Col } from "react-bootstrap";
 import "./JobDetail.css";
+import { job_types, schoolTypes } from "../../constants/jobOptions";
 
 function JobDetail() {
   const navigate = useNavigate();
@@ -86,14 +87,8 @@ function JobDetail() {
       }
     };
     fetchJobAndProfile();
-    const logoutHandler = () => {
-      isMounted = false;
-      navigate("/login", { replace: true });
-    };
-    window.addEventListener("tic-logout", logoutHandler);
     return () => {
       isMounted = false;
-      window.removeEventListener("tic-logout", logoutHandler);
     };
   }, [id]);
 
@@ -261,14 +256,17 @@ function JobDetail() {
                 </div>
                 <div className="mb-1 d-flex flex-wrap  align-items-center">
                   <div className="job-info-item txt__regular__ me-4 mt-2">
-                    <span className="txt__regular__bold__">Type:</span>{" "}
-                    {job.job_type}
+                    <span className="txt__regular__bold__">Position type:</span>{" "}
+                    {job_types.find((t) => t.value === job.job_type)?.label ||
+                      job.job_type}
                   </div>
                 </div>
                 <div className="mb-1 d-flex flex-wrap  align-items-center">
                   <div className="job-info-item txt__regular__ me-4 mt-2">
                     <span className="txt__regular__bold__">Subjects:</span>{" "}
-                    {job.job_type}
+                    {Array.isArray(job.subjects)
+                      ? job.subjects.filter((s: any) => s).join(", ")
+                      : job.subjects}
                   </div>
                 </div>
               </Col>
@@ -285,30 +283,34 @@ function JobDetail() {
             <div className="mb-1 d-flex flex-wrap  align-items-center">
               <div className="job-info-item txt__regular__ me-4 ">
                 <span className="txt__regular__bold__">Education Stage:</span>{" "}
-                {job.subjects}
+                {Array.isArray(job.education_stage)
+                  ? job.education_stage.filter((s: any) => s).join(", ")
+                  : job.education_stage}
               </div>
             </div>
             {/* Job Info Row - Simple List */}
             <div className="mb-1 d-flex flex-wrap  align-items-center">
               <div className="job-info-item txt__regular__ me-4 mt-2">
                 <span className="txt__regular__bold__">Curriculum:</span>{" "}
-                {job.subjects}
+                {Array.isArray(job.curriculum)
+                  ? job.curriculum.filter((s: any) => s).join(", ")
+                  : job.curriculum}
               </div>
             </div>
             {/* Job Info Row - Simple List */}
             <div className="mb-4 d-flex flex-wrap  align-items-center">
               <div className="job-info-item me-4 txt__regular__ mt-2">
                 <span className="txt__regular__bold__">Contract Type:</span>{" "}
-                {job.level}
+                {job.contract_type}
               </div>
               <div className="job-info-item me-4 txt__regular__ mt-2">
                 <span className="txt__regular__bold__">Package:</span>{" "}
-                {job.closing_date}
+                {job.package}
               </div>
 
               <div className="job-info-item  me-4  mt-2 txt__regular__">
                 <span className="txt__regular__bold__">Job start date:</span>{" "}
-                {job.start_date}
+                {job.job_start_date}
               </div>
               <div className="job-info-item mt-2 txt__regular__">
                 <span className="txt__regular__bold__">Close date:</span>{" "}
@@ -442,7 +444,7 @@ function JobDetail() {
 
           {job.status !== "closed" && !job.is_expired && !job.is_applied && (
             <>
-              {profile && profile.subscription_status === "none" ? (
+              {profile && profile.subscription_status === "none" && (
                 <div className="card note_card mt-4 mb-4 p-3 text-center">
                   <div
                     className="mb-3"
@@ -463,7 +465,8 @@ function JobDetail() {
                     Subscribe <FaPlus style={{ marginLeft: 5 }} />
                   </button>
                 </div>
-              ) : (
+              )}
+              {profile && profile.subscription_status === "active" && (
                 <div className="row mt-4">
                   {/* Quick Apply Card */}
                   <div className="col-md-12 col-lg-12 col-sm-12 mb-3">

@@ -31,7 +31,7 @@ const formatDateTime = (utcString: string) => {
   };
 };
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import BaseApi from "../../services/api";
 import Cookies from "js-cookie";
 import {
@@ -41,7 +41,6 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import { MdLocationPin } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 import React from "react";
 
 const statusTabs = [
@@ -52,8 +51,7 @@ const statusTabs = [
 
 const JOBS_PER_PAGE = 5;
 
-const job_types = ["remote", "casual", "full-time", "part-time"];
-const schoolTypes = ["public", "private", "charter", "international"];
+import { job_types, schoolTypes } from "../../constants/jobOptions";
 // const genders = ["any", "male", "female", "other"];
 
 // Icons for each tab
@@ -64,6 +62,7 @@ const tabIcons = {
 };
 
 import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Type for job objects
 interface Job {
@@ -85,9 +84,11 @@ interface Job {
   is_applied?: boolean;
   is_saved?: boolean;
   file_name?: string;
+  school_type?: string;
 }
 
 function Jobs() {
+  const location = useLocation();
   const [loading, setLoading] = React.useState(true);
 
   const [activeTab, setActiveTab] = useState("all");
@@ -112,6 +113,32 @@ function Jobs() {
   }>({ all: 0, saved: 0, applied: 0 });
 
   const navigate = useNavigate();
+
+  // Show payment success popup and redirect if needed
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("checkout") === "success") {
+      // Fetch profile and store subscription_status
+      BaseApi.get("/profile")
+        .then((res) => {
+          if (res && res.data && res.data.subscription_status) {
+            localStorage.setItem(
+              "subscription_status",
+              res.data.subscription_status
+            );
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          toast.success("Payment successful! Subscription activated.", {
+            autoClose: 2500,
+            onClose: () => navigate("/jobs", { replace: true }),
+          });
+        });
+    } else if (params.get("checkout") === "canceled") {
+      toast.error("Payment canceled.", { autoClose: 2500 });
+    }
+  }, [location.search, navigate]);
 
   // Fetch jobs on initial page load with all filters
   // Helper to fetch tab counts (all, saved, applied)
@@ -285,7 +312,24 @@ function Jobs() {
           : undefined
       );
       if (response.status === 200 || response.status === 201) {
-        toast.success("Saved successfully!");
+        toast.success(response.data.message || "Saved successfully!");
+        // Update the saved job in jobsData if response.data.saved_job exists
+        if (response.data.saved_job && response.data.saved_job.id) {
+          setJobsData((prevJobs) => {
+            const idx = prevJobs.findIndex(
+              (j) => j.id === response.data.saved_job.id
+            );
+            if (idx !== -1) {
+              const updatedJobs = [...prevJobs];
+              updatedJobs[idx] = {
+                ...updatedJobs[idx],
+                ...response.data.saved_job,
+              };
+              return updatedJobs;
+            }
+            return prevJobs;
+          });
+        }
       } else if (
         response.status === 400 &&
         response.data &&
@@ -359,21 +403,7 @@ function Jobs() {
   // API call to send filters and update jobs data
   // API call for job details
   const handleViewJobDetails = async (jobId: number) => {
-    try {
-      const response = await BaseApi.get(`/jobs/${jobId}`);
-      navigate(`/jobs/${jobId}`, { state: { job: response.data } });
-    } catch (error) {
-      // Fallback: use sample job data if API fails
-      const sampleJob = jobsData.find((job) => job.id === jobId);
-      if (sampleJob) {
-        navigate(`/jobs/${jobId}`, { state: { job: sampleJob } });
-      } else {
-        alert("Error fetching job details and no sample data found.");
-      }
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    navigate(`/jobs/${jobId}`);
   };
   const sendFiltersToApi = async (filters: any) => {
     try {
@@ -431,6 +461,8 @@ function Jobs() {
 
   return (
     <div className="container">
+      <ToastContainer style={{ zIndex: 9999 }} />
+
       <div className="row">
         {/* Left column: tabs, filters, job cards */}
         <div className="col-lg-9">
@@ -480,7 +512,7 @@ function Jobs() {
             <div className="card mb-3">
               <div className="row">
                 <div className="mb-1 col-lg-4 col-md-4 col-sm-6 col-12">
-                  <label className="form-label">Job Title</label>
+                  <label className="form-label">Position</label>
                   <input
                     type="text"
                     className="form-control"
@@ -490,16 +522,16 @@ function Jobs() {
                   />
                 </div>
                 <div className="mb-1 col-lg-4 col-md-4 col-sm-6 col-12">
-                  <label className="form-label">Job Type</label>
+                  <label className="form-label">Position Type</label>
                   <select
                     className="form-select"
                     value={filterjob_type}
                     onChange={(e) => setFilterjob_type(e.target.value)}
                   >
-                    <option value="">Select job type</option>
+                    <option value="">Select position type</option>
                     {job_types.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
+                      <option key={type.value} value={type.value}>
+                        {type.label}
                       </option>
                     ))}
                   </select>
@@ -513,8 +545,8 @@ function Jobs() {
                   >
                     <option value="">Select school type</option>
                     {schoolTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
+                      <option key={type.value} value={type.value}>
+                        {type.label}
                       </option>
                     ))}
                   </select>
@@ -590,14 +622,11 @@ function Jobs() {
                         </div>
                         <h5 className="job-title  d-flex align-items-center mb-1">
                           {job.title}
-                          <span
-                            className={`badge ms-2 ${
-                              job.job_type === "Remote"
-                                ? "remote__badge__"
-                                : "casual__badge__"
-                            }`}
-                          >
-                            {job.job_type}
+
+                          <span className={`badge casual__badge__ ms-2 `}>
+                            {schoolTypes.find(
+                              (t) => t.value === job.school_type
+                            )?.label || job.school_type}
                           </span>
                           {job.is_expired && (
                             <span className="badge bg-danger txt__regular__  ms-2">

@@ -1,5 +1,5 @@
 import React from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import api from "../../services/api";
 import { useParams, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -8,6 +8,7 @@ import { HiLightBulb } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { Row, Col } from "react-bootstrap";
 import "./JobDetail.css";
+import { job_types, schoolTypes } from "../../constants/jobOptions";
 
 function JobDetail() {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ function JobDetail() {
   };
   const { id } = useParams();
   const [job, setJob] = React.useState<any | null>(null);
+  const [profile, setProfile] = React.useState<any | null>(null);
   // null = nothing selected, 'profile' = quick apply, 'upload' = upload resume
   const [applyMethod, setApplyMethod] = React.useState<
     null | "profile" | "upload"
@@ -55,28 +57,39 @@ function JobDetail() {
   const [resumeFile, setResumeFile] = React.useState<File | null>(null);
   const [coverFile, setCoverFile] = React.useState<File | null>(null);
 
-  const hasFetched = React.useRef(false);
   React.useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    const fetchJob = async () => {
+    let isMounted = true;
+    const fetchJobAndProfile = async () => {
       try {
         const response = await api.get(`/jobs/${id}`);
-        setJob(response.data);
-        setFetchError(null);
+        if (isMounted) {
+          setJob(response.data);
+          setFetchError(null);
+        }
       } catch (error: any) {
-        setJob(null);
-        setFetchError("Job not found");
-        if (error?.response?.data) {
-          toast.error(error.response.data);
-        } else {
-          toast.error("Failed to fetch job details.");
+        if (isMounted) {
+          setJob(null);
+          setFetchError("Job not found");
+          if (error?.response?.data) {
+            toast.error(error.response.data);
+          } else {
+            toast.error("Failed to fetch job details.");
+          }
         }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
+      }
+      try {
+        const profileRes = await api.get("/profile");
+        if (isMounted) setProfile(profileRes.data);
+      } catch (e) {
+        if (isMounted) setProfile(null);
       }
     };
-    fetchJob();
+    fetchJobAndProfile();
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   // Loader for apply button
@@ -179,6 +192,7 @@ function JobDetail() {
 
   return (
     <div className="container mt-5">
+      <ToastContainer style={{ zIndex: 9999 }} />
       <div className="row">
         <div className="col-lg-9 col-md-9 col-sm-12 col-12">
           <div className="card note_card_ad mb-3">
@@ -242,14 +256,17 @@ function JobDetail() {
                 </div>
                 <div className="mb-1 d-flex flex-wrap  align-items-center">
                   <div className="job-info-item txt__regular__ me-4 mt-2">
-                    <span className="txt__regular__bold__">Type:</span>{" "}
-                    {job.job_type}
+                    <span className="txt__regular__bold__">Position type:</span>{" "}
+                    {job_types.find((t) => t.value === job.job_type)?.label ||
+                      job.job_type}
                   </div>
                 </div>
                 <div className="mb-1 d-flex flex-wrap  align-items-center">
                   <div className="job-info-item txt__regular__ me-4 mt-2">
                     <span className="txt__regular__bold__">Subjects:</span>{" "}
-                    {job.job_type}
+                    {Array.isArray(job.subjects)
+                      ? job.subjects.filter((s: any) => s).join(", ")
+                      : job.subjects}
                   </div>
                 </div>
               </Col>
@@ -266,30 +283,34 @@ function JobDetail() {
             <div className="mb-1 d-flex flex-wrap  align-items-center">
               <div className="job-info-item txt__regular__ me-4 ">
                 <span className="txt__regular__bold__">Education Stage:</span>{" "}
-                {job.subjects}
+                {Array.isArray(job.education_stage)
+                  ? job.education_stage.filter((s: any) => s).join(", ")
+                  : job.education_stage}
               </div>
             </div>
             {/* Job Info Row - Simple List */}
             <div className="mb-1 d-flex flex-wrap  align-items-center">
               <div className="job-info-item txt__regular__ me-4 mt-2">
                 <span className="txt__regular__bold__">Curriculum:</span>{" "}
-                {job.subjects}
+                {Array.isArray(job.curriculum)
+                  ? job.curriculum.filter((s: any) => s).join(", ")
+                  : job.curriculum}
               </div>
             </div>
             {/* Job Info Row - Simple List */}
             <div className="mb-4 d-flex flex-wrap  align-items-center">
               <div className="job-info-item me-4 txt__regular__ mt-2">
                 <span className="txt__regular__bold__">Contract Type:</span>{" "}
-                {job.level}
+                {job.contract_type}
               </div>
               <div className="job-info-item me-4 txt__regular__ mt-2">
                 <span className="txt__regular__bold__">Package:</span>{" "}
-                {job.closing_date}
+                {job.package}
               </div>
 
               <div className="job-info-item  me-4  mt-2 txt__regular__">
                 <span className="txt__regular__bold__">Job start date:</span>{" "}
-                {job.start_date}
+                {job.job_start_date}
               </div>
               <div className="job-info-item mt-2 txt__regular__">
                 <span className="txt__regular__bold__">Close date:</span>{" "}
@@ -422,245 +443,286 @@ function JobDetail() {
           </div> */}
 
           {job.status !== "closed" && !job.is_expired && !job.is_applied && (
-            <div className="row mt-4">
-              {/* Quick Apply Card */}
-              <div className="col-md-12 col-lg-12 col-sm-12 mb-3">
-                <div className="card note_card h-100">
-                  <div className="d-flex align-items-center">
-                    <input
-                      className="form-check-input me-2 m-0"
-                      type="radio"
-                      name="applyMethod"
-                      id="quick-apply"
-                      checked={applyMethod === "profile"}
-                      onChange={() => {
-                        setApplyMethod("profile");
-                        setResumeFile(null);
-                      }}
-                      disabled={job.is_applied}
-                    />
-                    <label className="form-check-label" htmlFor="quick-apply">
-                      Quick Apply with TIC Profile
-                    </label>
-                  </div>
-                  {applyMethod === "profile" && job.profile_resume_name && (
-                    <div className="fw-semibold text-success mb-2">
-                      {job.profile_resume_name}
-                    </div>
-                  )}
-                </div>
-              </div>
-              {/* Upload Resume Card */}
-              <div className="col-md-12 col-lg-12 col-sm-12 mb-3">
-                <div className="card note_card">
-                  <div className="d-flex align-items-center mb-2">
-                    <input
-                      className="form-check-input me-2 m-0"
-                      type="radio"
-                      name="applyMethod"
-                      id="upload-resume"
-                      checked={applyMethod === "upload"}
-                      onChange={() => {
-                        setApplyMethod("upload");
-                        setResumeFile(null);
-                      }}
-                      disabled={job.is_applied}
-                    />
-                    <label className="form-check-label" htmlFor="upload-resume">
-                      Upload Resume
-                    </label>
-                  </div>
-                  <div className="mb-2">
-                    <span className="txt__regular__">
-                      Upload your updated resume for this application.
-                    </span>
-                  </div>
+            <>
+              {profile && profile.subscription_status === "none" && (
+                <div className="card note_card mt-4 mb-4 p-3 text-center">
                   <div
-                    className="upload-box__ d-flex flex-column align-items-center justify-content-center mb-2"
+                    className="mb-3"
+                    style={{ fontWeight: 400, fontSize: 16 }}
+                  >
+                    This job requires Premium access. Upgrade now to submit your
+                    application with enhanced visibility and priority review.
+                  </div>
+                  <button
+                    onClick={() => navigate("/subscription-plans")}
+                    className="btn btn-primary p-3 py-2 d-flex align-items-center justify-content-center mx-auto"
                     style={{
-                      opacity: applyMethod === "upload" ? 1 : 0.3,
-                      transition: "opacity 0.2s",
+                      fontWeight: 600,
+                      fontSize: 16,
+                      width: "max-content",
                     }}
                   >
-                    <label
-                      htmlFor="resume-upload"
-                      className="upload-label__ w-100"
-                    >
-                      <span className="upload-icon__">
-                        <FaRegFileAlt size={30} />
-                      </span>
-                      <span className="upload-text__">
-                        Click here or drag and drop to upload
-                      </span>
-                      <span className="upload-note__">
-                        Upload .pdf or .docx files
-                      </span>
-                      <input
-                        id="resume-upload"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        className="upload-input__"
-                        disabled={job.is_expired || applyMethod !== "upload"}
-                        onChange={(e) => {
-                          if (job.is_expired) return;
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setResumeFile(file);
-                            toast.success("Resume uploaded successfully.");
-                          } else {
+                    Subscribe <FaPlus style={{ marginLeft: 5 }} />
+                  </button>
+                </div>
+              )}
+              {profile && profile.subscription_status === "active" && (
+                <div className="row mt-4">
+                  {/* Quick Apply Card */}
+                  <div className="col-md-12 col-lg-12 col-sm-12 mb-3">
+                    <div className="card note_card h-100">
+                      <div className="d-flex align-items-center">
+                        <input
+                          className="form-check-input me-2 m-0"
+                          type="radio"
+                          name="applyMethod"
+                          id="quick-apply"
+                          checked={applyMethod === "profile"}
+                          onChange={() => {
+                            setApplyMethod("profile");
                             setResumeFile(null);
+                          }}
+                          disabled={
+                            job.is_applied ||
+                            !profile ||
+                            !profile.teacher_profile ||
+                            !profile.teacher_profile.cv_file
                           }
-                        }}
-                      />
-                    </label>
-                    <div className="mt-2">
-                      {resumeFile && resumeFile.name && (
-                        <div className="uploaded-file__ d-flex align-items-center">
-                          <span className="file-name__">{resumeFile.name}</span>
-                          <a
-                            role="button"
-                            className="ms-1"
-                            onClick={() => {
-                              setResumeFile(null);
-                              const input = document.getElementById(
-                                "resume-upload"
-                              ) as HTMLInputElement | null;
-                              if (input) input.value = "";
-                            }}
-                          >
-                            <IoClose
-                              style={{ cursor: "pointer", fontSize: "22px" }}
-                            />{" "}
-                          </a>
-                        </div>
-                      )}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="quick-apply"
+                        >
+                          Quick Apply with TIC Profile
+                        </label>
+                      </div>
+                      {/* Show file name if available */}
+                      {profile &&
+                        profile.teacher_profile &&
+                        profile.teacher_profile.cv_file && (
+                          <div className="fw-semibold mb-2 mt-2 pl-10">
+                            {profile.teacher_profile.cv_file.split("/").pop()}
+                          </div>
+                        )}
+                      {/* If no CV file, show a message */}
+                      {profile &&
+                        profile.teacher_profile &&
+                        !profile.teacher_profile.cv_file && (
+                          <div className="text-danger mb-2">
+                            No CV found in your profile. Please upload a CV to
+                            use Quick Apply.
+                          </div>
+                        )}
                     </div>
                   </div>
-                </div>
-                <div className="card note_card mb-2 mt-3">
-                  {/* Cover Letter Upload (optional, always enabled, outside upload section) */}
-                  <div className="w-100 mb-2">
-                    <span className="txt__regular__">
-                      <HiLightBulb
+                  {/* Upload Resume Card */}
+                  <div className="col-md-12 col-lg-12 col-sm-12 mb-3">
+                    <div className="card note_card">
+                      <div className="d-flex align-items-center mb-2">
+                        <input
+                          className="form-check-input me-2 m-0"
+                          type="radio"
+                          name="applyMethod"
+                          id="upload-resume"
+                          checked={applyMethod === "upload"}
+                          onChange={() => {
+                            setApplyMethod("upload");
+                            setResumeFile(null);
+                          }}
+                          disabled={job.is_applied}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="upload-resume"
+                        >
+                          Upload Resume
+                        </label>
+                      </div>
+                      <div className="mb-2">
+                        <span className="txt__regular__">
+                          Upload your updated resume for this application.
+                        </span>
+                      </div>
+                      <div
+                        className="upload-box__ d-flex flex-column align-items-center justify-content-center mb-2"
                         style={{
-                          fontSize: 25,
-                          marginBottom: 3,
-                          color: "rgb(237 190 49)",
-                          marginRight: 6,
+                          opacity: applyMethod === "upload" ? 1 : 0.3,
+                          transition: "opacity 0.2s",
                         }}
-                      />
-                      Applicants who include a cover letter are more likely to
-                      get hired. (Optional)
-                    </span>
-                  </div>
-                  <div className="upload-box__ d-flex flex-column align-items-center justify-content-center mb-2">
-                    <label
-                      htmlFor="cover-upload"
-                      className="upload-label__ w-100"
-                    >
-                      <span className="upload-icon__">
-                        <FaRegFileAlt size={30} />
-                      </span>
-                      <span className="upload-text__">
-                        Upload Cover Letter (Optional)
-                      </span>
-                      <span className="upload-note__">
-                        Upload .pdf or .docx files
-                      </span>
-                      <input
-                        id="cover-upload"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        className="upload-input__"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setCoverFile(file);
-                            toast.success(
-                              "Cover letter uploaded successfully."
-                            );
-                          } else {
-                            setCoverFile(null);
-                          }
-                        }}
-                      />
-                    </label>
-                    <div className="mt-2">
-                      {coverFile && coverFile.name && (
-                        <div className="uploaded-file__ d-flex align-items-center">
-                          <span className="file-name__">{coverFile.name}</span>
-                          <a
-                            className="ms-1"
-                            role="button"
-                            onClick={() => {
-                              setCoverFile(null);
-                              const input = document.getElementById(
-                                "cover-upload"
-                              ) as HTMLInputElement | null;
-                              if (input) input.value = "";
+                      >
+                        <label
+                          htmlFor="resume-upload"
+                          className="upload-label__ w-100"
+                        >
+                          <span className="upload-icon__">
+                            <FaRegFileAlt size={30} />
+                          </span>
+                          <span className="upload-text__">
+                            Click here or drag and drop to upload
+                          </span>
+                          <span className="upload-note__">
+                            Upload .pdf or .docx files
+                          </span>
+                          <input
+                            id="resume-upload"
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            className="upload-input__"
+                            disabled={
+                              job.is_expired || applyMethod !== "upload"
+                            }
+                            onChange={(e) => {
+                              if (job.is_expired) return;
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setResumeFile(file);
+                                toast.success("Resume uploaded successfully.");
+                              } else {
+                                setResumeFile(null);
+                              }
                             }}
-                          >
-                            <IoClose
-                              style={{ cursor: "pointer", fontSize: "22px" }}
-                            />{" "}
-                          </a>
+                          />
+                        </label>
+                        <div className="mt-2">
+                          {resumeFile && resumeFile.name && (
+                            <div className="uploaded-file__ d-flex align-items-center">
+                              <span className="file-name__">
+                                {resumeFile.name}
+                              </span>
+                              <a
+                                role="button"
+                                className="ms-1"
+                                onClick={() => {
+                                  setResumeFile(null);
+                                  const input = document.getElementById(
+                                    "resume-upload"
+                                  ) as HTMLInputElement | null;
+                                  if (input) input.value = "";
+                                }}
+                              >
+                                <IoClose
+                                  style={{
+                                    cursor: "pointer",
+                                    fontSize: "22px",
+                                  }}
+                                />{" "}
+                              </a>
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
+                    </div>
+                    <div className="card note_card mb-2 mt-3">
+                      {/* Cover Letter Upload (optional, always enabled, outside upload section) */}
+                      <div className="w-100 mb-2">
+                        <span className="txt__regular__">
+                          <HiLightBulb
+                            style={{
+                              fontSize: 25,
+                              marginBottom: 3,
+                              color: "rgb(237 190 49)",
+                              marginRight: 6,
+                            }}
+                          />
+                          Applicants who include a cover letter are more likely
+                          to get hired. (Optional)
+                        </span>
+                      </div>
+                      <div className="upload-box__ d-flex flex-column align-items-center justify-content-center mb-2">
+                        <label
+                          htmlFor="cover-upload"
+                          className="upload-label__ w-100"
+                        >
+                          <span className="upload-icon__">
+                            <FaRegFileAlt size={30} />
+                          </span>
+                          <span className="upload-text__">
+                            Upload Cover Letter (Optional)
+                          </span>
+                          <span className="upload-note__">
+                            Upload .pdf or .docx files
+                          </span>
+                          <input
+                            id="cover-upload"
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            className="upload-input__"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setCoverFile(file);
+                                toast.success(
+                                  "Cover letter uploaded successfully."
+                                );
+                              } else {
+                                setCoverFile(null);
+                              }
+                            }}
+                          />
+                        </label>
+                        <div className="mt-2">
+                          {coverFile && coverFile.name && (
+                            <div className="uploaded-file__ d-flex align-items-center">
+                              <span className="file-name__">
+                                {coverFile.name}
+                              </span>
+                              <a
+                                className="ms-1"
+                                role="button"
+                                onClick={() => {
+                                  setCoverFile(null);
+                                  const input = document.getElementById(
+                                    "cover-upload"
+                                  ) as HTMLInputElement | null;
+                                  if (input) input.value = "";
+                                }}
+                              >
+                                <IoClose
+                                  style={{
+                                    cursor: "pointer",
+                                    fontSize: "22px",
+                                  }}
+                                />{" "}
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
+                  <>
+                    <div className="d-flex justify-content-end">
+                      <button
+                        className="btn btn-primary d-flex align-items-center justify-content-center"
+                        onClick={handleApplyJob}
+                        disabled={
+                          applying ||
+                          job.is_applied ||
+                          applyMethod === null ||
+                          (applyMethod === "upload" &&
+                            (!resumeFile || !resumeFile.name))
+                        }
+                        style={{ minWidth: 100 }}
+                      >
+                        {applying ? (
+                          <>
+                            <span
+                              className="spinner-border spinner-border-sm me-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            Applying...
+                          </>
+                        ) : (
+                          <>
+                            Apply <FaArrowRight className="ms-1" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
                 </div>
-              </div>
-            </div>
-          )}
-          {job.status !== "closed" && !job.is_expired && !job.is_applied && (
-            <>
-              <div className="d-flex justify-content-end">
-                <button
-                  className="btn btn-primary d-flex align-items-center justify-content-center"
-                  onClick={handleApplyJob}
-                  disabled={
-                    applying ||
-                    job.is_applied ||
-                    applyMethod === null ||
-                    (applyMethod === "upload" &&
-                      (!resumeFile || !resumeFile.name))
-                  }
-                  style={{ minWidth: 100 }}
-                >
-                  {applying ? (
-                    <>
-                      <span
-                        className="spinner-border spinner-border-sm me-2"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                      Applying...
-                    </>
-                  ) : (
-                    <>
-                      Apply <FaArrowRight className="ms-1" />
-                    </>
-                  )}
-                </button>
-              </div>
-              {/* Subscription Card */}
-              <div className="card note_card mt-4 mb-4 p-3 text-center">
-                <div className="mb-3" style={{ fontWeight: 400, fontSize: 16 }}>
-                  This job requires Premium access. Upgrade now to submit your
-                  application with enhanced visibility and priority review.
-                </div>
-                <button
-                  onClick={() => navigate("/subscription-plans")}
-                  className="btn btn-primary p-3 py-2 d-flex align-items-center justify-content-center mx-auto"
-                  style={{
-                    fontWeight: 600,
-                    fontSize: 16,
-                    width: "max-content",
-                  }}
-                >
-                  Subscribe <FaPlus style={{ marginLeft: 5 }} />
-                </button>
-              </div>
+              )}
             </>
           )}
         </div>

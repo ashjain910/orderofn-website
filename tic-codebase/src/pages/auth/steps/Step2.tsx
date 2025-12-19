@@ -155,7 +155,22 @@ type StepProps = {
   setFormData: (data: any) => void;
 };
 
+import { useState } from "react";
+
 const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
+  const [touched, setTouched] = useState<any>({});
+  const handleBlur = (field: string) => {
+    setTouched((prev: any) => ({ ...prev, [field]: true }));
+  };
+  const handleNextStep = () => {
+    setTouched({
+      firstName: true,
+      lastName: true,
+      gender: true,
+      nationality: true,
+    });
+    nextStep();
+  };
   return (
     <div className="step-left">
       <div className="step-card">
@@ -181,15 +196,21 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             >
               *
             </span>
+            {touched.firstName && !formData.firstName && (
+              <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
+                First name is required
+              </span>
+            )}
           </label>
           <input
             type="text"
             className="form-control"
-            placeholder="John"
+            placeholder="First name"
             value={formData.firstName}
             onChange={(e) =>
               setFormData({ ...formData, firstName: e.target.value })
             }
+            onBlur={() => handleBlur("firstName")}
           />
 
           {/* LAST NAME */}
@@ -200,15 +221,21 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             >
               *
             </span>
+            {touched.lastName && !formData.lastName && (
+              <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
+                Last name is required
+              </span>
+            )}
           </label>
           <input
             type="text"
             className="form-control"
-            placeholder="Doe"
+            placeholder="Last name"
             value={formData.lastName}
             onChange={(e) =>
               setFormData({ ...formData, lastName: e.target.value })
             }
+            onBlur={() => handleBlur("lastName")}
           />
 
           {/* GENDER */}
@@ -219,6 +246,11 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             >
               *
             </span>
+            {touched.gender && !formData.gender && (
+              <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
+                Gender is required
+              </span>
+            )}
           </label>
           <div className="d-flex gap-3">
             <div className="form-check">
@@ -232,6 +264,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
                 onChange={(e) =>
                   setFormData({ ...formData, gender: e.target.value })
                 }
+                onBlur={() => handleBlur("gender")}
               />
               <label className="form-check-label  ml-2" htmlFor="genderMale">
                 Male
@@ -248,6 +281,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
                 onChange={(e) =>
                   setFormData({ ...formData, gender: e.target.value })
                 }
+                onBlur={() => handleBlur("gender")}
               />
               <label className="form-check-label  ml-2" htmlFor="genderFemale">
                 Female
@@ -264,6 +298,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
                 onChange={(e) =>
                   setFormData({ ...formData, gender: e.target.value })
                 }
+                onBlur={() => handleBlur("gender")}
               />
               <label className="form-check-label  ml-2" htmlFor="genderOthers">
                 Others
@@ -272,13 +307,26 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </div>
 
           {/* NATIONALITY SELECT DROPDOWN */}
-          <label className="form-label mt-2">Nationality</label>
+          <label className="form-label mt-2">
+            Nationality
+            <span
+              style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
+            >
+              *
+            </span>
+            {touched.nationality && !formData.nationality && (
+              <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
+                Nationality is required
+              </span>
+            )}
+          </label>
           <select
             className="form-control"
             value={formData.nationality || ""}
             onChange={(e) =>
               setFormData({ ...formData, nationality: e.target.value })
             }
+            onBlur={() => handleBlur("nationality")}
           >
             <option value="">Please select</option>
             {countries.map((country) => (
@@ -337,7 +385,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
               Previous
             </button>
 
-            <button onClick={nextStep} className="btn btn-primary px-4">
+            <button onClick={handleNextStep} className="btn btn-primary px-4">
               Next
             </button>
           </div>

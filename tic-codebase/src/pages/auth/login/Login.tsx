@@ -184,77 +184,87 @@ export default function Login() {
             <p className="text-muted mb-4">
               Enter your email and password to access your account.
             </p>
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control mb-3"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin(email, password);
+              }}
+              autoComplete="on"
+            >
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control mb-3"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="username"
+              />
 
-            {/* Password */}
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-control mb-2"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+              {/* Password */}
+              <label className="form-label">Password</label>
+              <input
+                type="password"
+                className="form-control mb-2"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
 
-            {/* Remember + Forgot */}
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="remember"
-                  checked={rememberMe}
-                  onChange={() => {
-                    setRememberMe((prev) => {
-                      const newVal = !prev;
-                      if (!newVal) {
-                        localStorage.removeItem("user_remember_email");
-                        localStorage.removeItem("user_remember_password");
-                      }
-                      return newVal;
-                    });
-                  }}
-                />
-                <label className="form-check-label" htmlFor="remember">
-                  Remember me
-                </label>
+              {/* Remember + Forgot */}
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="remember"
+                    checked={rememberMe}
+                    onChange={() => {
+                      setRememberMe((prev) => {
+                        const newVal = !prev;
+                        if (!newVal) {
+                          localStorage.removeItem("user_remember_email");
+                          localStorage.removeItem("user_remember_password");
+                        }
+                        return newVal;
+                      });
+                    }}
+                  />
+                  <label className="form-check-label" htmlFor="remember">
+                    Remember me
+                  </label>
+                </div>
+
+                <a
+                  href="#"
+                  className="text-primary txt__regular__ text-decoration-none"
+                >
+                  Forgot Password
+                </a>
               </div>
 
-              <a
-                href="#"
-                className="text-primary txt__regular__ text-decoration-none"
+              {/* Login Button */}
+              <button
+                className="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center"
+                type="submit"
+                disabled={loading}
+                style={{ minHeight: 40 }}
               >
-                Forgot Password
-              </a>
-            </div>
-
-            {/* Login Button */}
-            <button
-              className="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center"
-              onClick={() => handleLogin(email, password)}
-              disabled={loading}
-              style={{ minHeight: 40 }}
-            >
-              {loading ? (
-                <>
-                  <span
-                    className="spinner-border spinner-border-sm me-2"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
-                  Logging in...
-                </>
-              ) : (
-                "Login"
-              )}
-            </button>
+                {loading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </button>
+            </form>
 
             {/* Register Link */}
             <p className="text-center txt__regular__ mt-3">

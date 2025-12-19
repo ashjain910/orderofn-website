@@ -53,3 +53,22 @@
   color: #fff;
   border-color: #007bff;
 }
+.ckeditor-editor ul,
+.ckeditor-editor ol {
+  margin-left: 1.5em;
+  padding-left: 0;
+  list-style-position: outside;
+}
+
+.ckeditor-editor ul {
+  list-style-type: disc;
+}
+
+.ckeditor-editor ol {
+  list-style-type: decimal;
+}
+
+.ckeditor-editor li {
+  margin-bottom: 0.25em;
+  display: list-item;
+}

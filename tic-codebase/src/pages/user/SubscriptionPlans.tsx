@@ -46,8 +46,19 @@ export default function PricingPlans() {
     },
   ];
 
-  const [selected, setSelected] = useState("basic"); // Basic selected by default
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(plans[0]); // Basic plan by default
+  // Read subscription_status from localStorage
+  const subscriptionStatus =
+    typeof window !== "undefined"
+      ? localStorage.getItem("subscription_status")
+      : null;
+  // If active, premium is active, else default to basic
+  const isPremiumActive = subscriptionStatus === "active";
+  const [selected, setSelected] = useState(
+    isPremiumActive ? "premium" : "basic"
+  );
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(
+    isPremiumActive ? plans[1] : plans[0]
+  );
   const [showPayment, setShowPayment] = useState(false);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
 
@@ -103,7 +114,7 @@ export default function PricingPlans() {
                     position: "relative",
                   }}
                   onClick={() => {
-                    if (plan.id !== "basic") {
+                    if (plan.id !== "basic" && !isPremiumActive) {
                       setSelected(plan.id);
                       setSelectedPlan(plan);
                       setShowPayment(false);
@@ -137,7 +148,7 @@ export default function PricingPlans() {
                     <h6 className="text-start fw-semibold mb-0">
                       {plan.title}
                     </h6>
-                    {plan.id === "basic" && (
+                    {plan.id === "basic" && !isPremiumActive && (
                       <span
                         className="badge bg-success"
                         style={{ fontSize: 12 }}
@@ -145,7 +156,15 @@ export default function PricingPlans() {
                         Active Plan
                       </span>
                     )}
-                    {plan.id === "premium" && (
+                    {plan.id === "premium" && isPremiumActive && (
+                      <span
+                        className="badge bg-success"
+                        style={{ fontSize: 12 }}
+                      >
+                        Active Plan
+                      </span>
+                    )}
+                    {plan.id === "premium" && !isPremiumActive && (
                       <span
                         className="badge bg-primary"
                         style={{ fontSize: 12 }}
@@ -175,12 +194,17 @@ export default function PricingPlans() {
                         selected === plan.id ? "none" : "1px solid #d3d3d3",
                       color: selected === plan.id ? "#fff" : "#fff",
                     }}
-                    disabled={plan.id === "basic"}
+                    disabled={
+                      plan.id === "basic" ||
+                      (plan.id === "premium" && isPremiumActive)
+                    }
                   >
                     {plan.id === "basic"
                       ? selected === "basic"
                         ? "Active"
                         : "Active"
+                      : plan.id === "premium" && isPremiumActive
+                      ? "Active"
                       : selected === plan.id
                       ? "Selected"
                       : "Choose this plan"}
@@ -203,20 +227,22 @@ export default function PricingPlans() {
           </Row>
 
           {/* Continue Button */}
-          <div className="mt-4">
-            <Button
-              size="lg"
-              style={{
-                backgroundColor: "#123a93",
-                borderRadius: "8px",
-                padding: "10px 40px",
-              }}
-              disabled={selected !== "premium" || loadingCheckout}
-              onClick={handleContinue}
-            >
-              {loadingCheckout ? "Redirecting..." : "Continue"}
-            </Button>
-          </div>
+          {!isPremiumActive && (
+            <div className="mt-4">
+              <Button
+                size="lg"
+                style={{
+                  backgroundColor: "#123a93",
+                  borderRadius: "8px",
+                  padding: "10px 40px",
+                }}
+                disabled={selected !== "premium" || loadingCheckout}
+                onClick={handleContinue}
+              >
+                {loadingCheckout ? "Redirecting..." : "Continue"}
+              </Button>
+            </div>
+          )}
         </>
       ) : null}
     </div>

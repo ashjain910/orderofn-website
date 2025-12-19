@@ -9,26 +9,50 @@ function getRandomColor(str: string) {
   return colors[index];
 }
 import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaChevronDown } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+import AdminBaseApi from "../../services/admin-base";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import TeacherProfileModal from "../../components/TeacherProfileModal";
+import PostJobModal from "../../components/admin/PostJobModal";
+import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
+import { toastOptions } from "../../utils/toastOptions";
 
-// Type for resume preview modal state
+// Minimal ResumeModalState type
 type ResumeModalState = {
   show: boolean;
   url: string | null;
   name: string;
 };
-import PostJobModal from "../../components/admin/PostJobModal";
-import { toast } from "react-toastify";
-import { toastOptions } from "../../utils/toastOptions";
-import AdminBaseApi from "../../services/admin-base";
-import { useParams } from "react-router-dom";
-import TeacherProfileModal from "../../components/TeacherProfileModal";
-
-import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
-import { pdfjs } from "react-pdf"; // or from 'pdfjs-dist'
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
-import { FaChevronDown } from "react-icons/fa";
 function AdminJobDetail() {
+  // Loader for interview invitation
+  const [interviewLoading, setInterviewLoading] = useState(false);
+  // Interview modal validation state (must be at top level)
+  const [interviewErrors, setInterviewErrors] = useState({
+    interview_date: "",
+    interview_time: "",
+    interview_format: "",
+    interview_panel: "",
+  });
+  // Interview modal state
+  const [showInterviewModal, setShowInterviewModal] = useState(false);
+  type InterviewFormState = {
+    applicationId: number | null;
+    interview_date: Date | null;
+    interview_time: string;
+    interview_format: string;
+    interview_panel: string;
+  };
+  const [interviewForm, setInterviewForm] = useState<InterviewFormState>({
+    applicationId: null,
+    interview_date: null,
+    interview_time: "",
+    interview_format: "",
+    interview_panel: "",
+  });
   // Track loading state for status change per applicant
   const [statusLoadingIdx, setStatusLoadingIdx] = useState<number | null>(null);
   // State for confirmation modal
@@ -99,8 +123,26 @@ function AdminJobDetail() {
     }
     setLoading(false);
   };
-  // ...existing code...
-  // ...existing code...
+  const positionTypeOptions = [
+    { value: "teacher", label: "Teacher" },
+    { value: "deputy_principal", label: "Deputy Principal" },
+    { value: "head_of_school", label: "Head of School" },
+  ];
+  const schoolTypeMultiOptions = [
+    { value: "public", label: "Public" },
+    { value: "international", label: "International" },
+  ];
+
+  interface Option {
+    value: string;
+    label: string;
+  }
+
+  function getLabelFromOptions(value: string, options: Option[]): string {
+    if (!value) return "";
+    const found = options.find((opt) => opt.value === value);
+    return found ? found.label : value;
+  }
   const [loading, setLoading] = React.useState(true);
   const formatDateTime = (utcString: string) => {
     if (!utcString) return { date: "", time: "" };
@@ -192,39 +234,28 @@ function AdminJobDetail() {
     fetchJob();
   }, [id]);
 
-  // Fetch filtered applicants when filterBy changes
-  React.useEffect(() => {
-    if (!job?.id) return;
-    if (!filterBy) {
-      // If filter is cleared, reset to all applicants from job
-      if (job.applications && Array.isArray(job.applications)) {
-        setTeachers(job.applications);
-      }
-      return;
-    }
-    const fetchFiltered = async () => {
-      setLoading(true);
-      try {
-        const response = await AdminBaseApi.get(
-          `/jobs/${job.id}/applications`,
-          {
-            params: { status: filterBy },
-          }
-        );
-        if (Array.isArray(response.data)) {
-          setTeachers(response.data);
-        } else {
-          setTeachers([]);
-        }
-      } catch (error) {
-        setTeachers([]);
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchFiltered();
-  }, [filterBy, job?.id]);
+  // Remove API call for filterBy, filter on frontend
+
+  // Filtering and sorting logic
+  let sortedTeachers = filterBy
+    ? teachers.filter((t) => t.status === filterBy)
+    : [...teachers];
+  if (["accepted", "reviewed", "pending", "rejected"].includes(sortBy)) {
+    sortedTeachers = sortedTeachers.sort((a, b) => {
+      if (a.status === sortBy && b.status !== sortBy) return -1;
+      if (a.status !== sortBy && b.status === sortBy) return 1;
+      return 0;
+    });
+  } else if (sortBy === "date") {
+    sortedTeachers = sortedTeachers.sort((a, b) => {
+      // date_applied format: DD-MM-YYYY
+      const parseDate = (d: string) => {
+        const [day, month, year] = d.split("-").map(Number);
+        return new Date(year, month - 1, day).getTime();
+      };
+      return parseDate(a.date_applied) - parseDate(b.date_applied);
+    });
+  }
 
   const [showEditModal, setShowEditModal] = useState(false);
   const handleEditJob = () => {
@@ -272,25 +303,6 @@ function AdminJobDetail() {
     );
   }
 
-  // Sorting logic
-  let sortedTeachers = [...teachers];
-  if (["accepted", "reviewed", "pending", "rejected"].includes(sortBy)) {
-    sortedTeachers = sortedTeachers.sort((a, b) => {
-      if (a.status === sortBy && b.status !== sortBy) return -1;
-      if (a.status !== sortBy && b.status === sortBy) return 1;
-      return 0;
-    });
-  } else if (sortBy === "date") {
-    sortedTeachers = sortedTeachers.sort((a, b) => {
-      // date_applied format: DD-MM-YYYY
-      const parseDate = (d: string) => {
-        const [day, month, year] = d.split("-").map(Number);
-        return new Date(year, month - 1, day).getTime();
-      };
-      return parseDate(a.date_applied) - parseDate(b.date_applied);
-    });
-  }
-
   if (loading) {
     return (
       <div
@@ -312,6 +324,216 @@ function AdminJobDetail() {
 
   return (
     <div className="container-fluid mt-5">
+      {/* Interview Scheduling Modal (rendered once at root) */}
+      {showInterviewModal && (
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+          tabIndex={-1}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Schedule Interview</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Close"
+                  onClick={() => setShowInterviewModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const errors: any = {};
+                    if (!interviewForm.interview_date) {
+                      errors.interview_date = "Interview date is required.";
+                    }
+                    if (!interviewForm.interview_time) {
+                      errors.interview_time = "Interview time is required.";
+                    }
+
+                    setInterviewErrors(errors);
+                    const firstError = Object.values(errors)[0];
+                    if (firstError) {
+                      return;
+                    }
+                    try {
+                      setInterviewLoading(true);
+                      const dateObj = interviewForm.interview_date;
+                      let formattedDate = "";
+                      if (dateObj instanceof Date) {
+                        const year = dateObj.getFullYear();
+                        const month = String(dateObj.getMonth() + 1).padStart(
+                          2,
+                          "0"
+                        );
+                        const day = String(dateObj.getDate()).padStart(2, "0");
+                        formattedDate = `${year}-${month}-${day}`;
+                      } else if (typeof dateObj === "string") {
+                        formattedDate = dateObj;
+                      }
+                      const payload = {
+                        interview_date: formattedDate,
+                        interview_time: interviewForm.interview_time,
+                        interview_format: interviewForm.interview_format,
+                        interview_panel: interviewForm.interview_panel,
+                      };
+                      const res = await AdminBaseApi.post(
+                        `/applications/${interviewForm.applicationId}/send-interview-invitation`,
+                        payload
+                      );
+                      if (res.status === 200 || res.status === 201) {
+                        toast.success(
+                          res.data?.message || "Interview invitation sent!",
+                          toastOptions
+                        );
+                        setShowInterviewModal(false);
+                        setInterviewErrors({
+                          interview_date: "",
+                          interview_time: "",
+                          interview_format: "",
+                          interview_panel: "",
+                        });
+                      } else {
+                        toast.error("Failed to send invitation.", toastOptions);
+                      }
+                    } catch (err) {
+                      toast.error("Failed to send invitation.", toastOptions);
+                    } finally {
+                      setInterviewLoading(false);
+                    }
+                  }}
+                >
+                  <div className="mb-3">
+                    <label className="form-label">Interview Date</label>
+                    <DatePicker
+                      selected={interviewForm.interview_date}
+                      onChange={(date) => {
+                        setInterviewForm((f) => ({
+                          ...f,
+                          interview_date: date,
+                        }));
+                        setInterviewErrors((e) => ({
+                          ...e,
+                          interview_date: date
+                            ? ""
+                            : "Interview date is required.",
+                        }));
+                      }}
+                      className="form-control"
+                      dateFormat="EEEE, d MMMM yyyy"
+                      placeholderText="Select date"
+                    />
+                    {interviewErrors.interview_date && (
+                      <div className="text-danger small mt-1">
+                        {interviewErrors.interview_date}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Interview Time</label>
+                    <input
+                      type="time"
+                      className="form-control"
+                      value={interviewForm.interview_time}
+                      onChange={(e) => {
+                        setInterviewForm((f) => ({
+                          ...f,
+                          interview_time: e.target.value,
+                        }));
+                        setInterviewErrors((er) => ({
+                          ...er,
+                          interview_time: e.target.value
+                            ? ""
+                            : "Interview time is required.",
+                        }));
+                      }}
+                    />
+                    {interviewErrors.interview_time && (
+                      <div className="text-danger small mt-1">
+                        {interviewErrors.interview_time}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Interview Format</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={interviewForm.interview_format}
+                      onChange={(e) => {
+                        setInterviewForm((f) => ({
+                          ...f,
+                          interview_format: e.target.value,
+                        }));
+                        setInterviewErrors((er) => ({
+                          ...er,
+                          interview_format: e.target.value
+                            ? ""
+                            : "Interview format is required.",
+                        }));
+                      }}
+                      placeholder="e.g. Online via Zoom"
+                    />
+                    {interviewErrors.interview_format && (
+                      <div className="text-danger small mt-1">
+                        {interviewErrors.interview_format}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Interview Panel</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={interviewForm.interview_panel}
+                      onChange={(e) => {
+                        setInterviewForm((f) => ({
+                          ...f,
+                          interview_panel: e.target.value,
+                        }));
+                        setInterviewErrors((er) => ({
+                          ...er,
+                          interview_panel: e.target.value
+                            ? ""
+                            : "Interview panel is required.",
+                        }));
+                      }}
+                      placeholder="e.g. Principal and Head of Department"
+                    />
+                    {interviewErrors.interview_panel && (
+                      <div className="text-danger small mt-1">
+                        {interviewErrors.interview_panel}
+                      </div>
+                    )}
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShowInterviewModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      {interviewLoading ? (
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                      ) : null}
+                      {interviewLoading ? "Sending..." : "Send Invitation"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Close Job Confirmation Modal */}
       {showCloseModal && (
         <div
@@ -451,22 +673,47 @@ function AdminJobDetail() {
               <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                 <p className="txt__regular__  mb-1">
                   <strong>School Type: </strong>
-                  {job.school_type}
+                  {getLabelFromOptions(job.school_type, schoolTypeMultiOptions)}
                 </p>
                 <p className="txt__regular__  mb-1">
-                  <strong>Job Type: </strong>
-                  {job.job_type}
+                  <strong>Postion Type: </strong>
+                  {getLabelFromOptions(job.job_type, positionTypeOptions)}
                 </p>
-                <p className="txt__regular__  mb-1">
-                  <strong>Posted on: </strong>{" "}
-                  {formatDateTime(job.date_posted).date} -{" "}
-                  {formatDateTime(job.date_posted).time}
-                </p>
+
                 <p className="txt__regular__  mb-1">
                   <strong>Subjects: </strong>{" "}
                   {Array.isArray(job.subjects)
                     ? job.subjects.filter((s: any) => s).join(", ")
                     : job.subjects}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Curriculum: </strong>{" "}
+                  {Array.isArray(job.curriculum)
+                    ? job.curriculum.filter((s: any) => s).join(", ")
+                    : job.curriculum}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Contract Type: </strong>{" "}
+                  {Array.isArray(job.contract_type)
+                    ? job.contract_type.filter((s: any) => s).join(", ")
+                    : job.contract_type}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Education Stage: </strong>{" "}
+                  {Array.isArray(job.education_stage)
+                    ? job.education_stage.filter((s: any) => s).join(", ")
+                    : job.education_stage}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Benefits: </strong>{" "}
+                  {Array.isArray(job.benefits)
+                    ? job.benefits.filter((s: any) => s).join(", ")
+                    : job.benefits}
+                </p>
+                <p className="txt__regular__  mb-1">
+                  <strong>Posted on: </strong>{" "}
+                  {formatDateTime(job.date_posted).date} -{" "}
+                  {formatDateTime(job.date_posted).time}
                 </p>
                 <p className="txt__regular__  mb-1">
                   <strong>Closing date: </strong>{" "}
@@ -479,14 +726,14 @@ function AdminJobDetail() {
                 <h4 className="job__headings__admin mt-3">Job Summary</h4>
                 <p
                   className="txt__regular__"
-                  dangerouslySetInnerHTML={{ __html: job.requirements }}
+                  dangerouslySetInnerHTML={{ __html: job.summary }}
                 ></p>{" "}
               </div>
               <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                 <h4 className="job__headings__admin mt-3">Job requirements</h4>
                 <p
                   className="txt__regular__"
-                  dangerouslySetInnerHTML={{ __html: job.summary }}
+                  dangerouslySetInnerHTML={{ __html: job.requirements }}
                 ></p>{" "}
               </div>
               <div className="col-lg-12 col-md-12 col-sm-12 col-12">
@@ -750,13 +997,10 @@ function AdminJobDetail() {
                                 onClick={() =>
                                   setCoverLetterModal({
                                     show: true,
-                                    url: "https://pdfobject.com/pdf/sample.pdf", //teacher?.applicant_profile?.cover_letter || null,
+                                    url: teacher?.cover_letter || null,
                                     name:
                                       teacher?.applicant_name || "Cover Letter",
                                   })
-                                }
-                                disabled={
-                                  !teacher?.applicant_profile?.cover_letter
                                 }
                               >
                                 View Cover Letter
@@ -781,44 +1025,70 @@ function AdminJobDetail() {
                                           type="button"
                                           className="btn-close"
                                           aria-label="Close"
-                                          onClick={() =>
+                                          onClick={() => {
                                             setCoverLetterModal({
                                               show: false,
                                               url: null,
                                               name: "Cover Letter",
-                                            })
-                                          }
+                                            });
+                                            setDocError(null);
+                                          }}
                                         ></button>
                                       </div>
                                       <div
                                         className="modal-body"
                                         style={{ minHeight: 500 }}
                                       >
-                                        {coverLetterModal.url &&
-                                        coverLetterModal.url.endsWith(
-                                          ".pdf"
-                                        ) ? (
-                                          <iframe
-                                            src={coverLetterModal.url}
-                                            title="Cover Letter Preview"
-                                            width="100%"
-                                            height="500px"
-                                            style={{ border: 0 }}
-                                          />
-                                        ) : coverLetterModal.url ? (
-                                          <div>
-                                            <a
-                                              href={coverLetterModal.url}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                            >
-                                              Open Cover Letter
-                                            </a>
-                                            <p className="text-muted mt-2">
-                                              Preview not available. Click above
-                                              to open or download.
-                                            </p>
-                                          </div>
+                                        {coverLetterModal.url ? (
+                                          <>
+                                            <div className="text-end">
+                                              <a
+                                                href={coverLetterModal.url}
+                                                download
+                                                className="btn btn-secondary btn-sm"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                              >
+                                                Download
+                                              </a>
+                                            </div>
+                                            {docError ? (
+                                              <>
+                                                <div className="alert alert-danger mt-3">
+                                                  {docError}
+                                                </div>
+                                                {/* Fallback to iframe for PDF */}
+                                                {coverLetterModal.url &&
+                                                  coverLetterModal.url.endsWith(
+                                                    ".pdf"
+                                                  ) && (
+                                                    <iframe
+                                                      src={coverLetterModal.url}
+                                                      width="100%"
+                                                      height="500"
+                                                      style={{ border: "none" }}
+                                                      title="PDF Preview"
+                                                    />
+                                                  )}
+                                              </>
+                                            ) : (
+                                              <DocViewer
+                                                documents={[
+                                                  { uri: coverLetterModal.url },
+                                                ]}
+                                                pluginRenderers={
+                                                  DocViewerRenderers
+                                                }
+                                                style={{ height: 500 }}
+                                                // @ts-ignore
+                                                onError={(e) =>
+                                                  setDocError(
+                                                    "Failed to preview document. Try downloading instead."
+                                                  )
+                                                }
+                                              />
+                                            )}
+                                          </>
                                         ) : (
                                           <div className="text-danger">
                                             No cover letter available.
@@ -829,13 +1099,14 @@ function AdminJobDetail() {
                                         <button
                                           type="button"
                                           className="btn btn-secondary"
-                                          onClick={() =>
+                                          onClick={() => {
                                             setCoverLetterModal({
                                               show: false,
                                               url: null,
                                               name: "Cover Letter",
-                                            })
-                                          }
+                                            });
+                                            setDocError(null);
+                                          }}
                                         >
                                           Close
                                         </button>
@@ -1001,6 +1272,26 @@ function AdminJobDetail() {
                                   </div>
                                 )}
                             </div>
+                            {/* Schedule Interview button as separate button for reviewed/accepted */}
+                            {(teacher.status === "reviewed" ||
+                              teacher.status === "accepted") && (
+                              <a
+                                role="button"
+                                className="ms-2 float-end mt-3"
+                                onClick={() => {
+                                  setInterviewForm({
+                                    applicationId: teacher.id,
+                                    interview_date: null,
+                                    interview_time: "",
+                                    interview_format: "",
+                                    interview_panel: "",
+                                  });
+                                  setShowInterviewModal(true);
+                                }}
+                              >
+                                Schedule Interview
+                              </a>
+                            )}
                           </td>
                         </tr>
                       ))

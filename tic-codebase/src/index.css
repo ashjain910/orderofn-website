@@ -655,3 +655,20 @@ textarea.form-control {
 .dmOAwp {
     display: none !important;
 }
+.form-control::placeholder {
+  color: #b0b0b0 !important;
+  opacity: 1;
+}
+
+.dTuydp {
+    display: none !important;
+    -webkit-box-pack: end;
+    justify-content: flex-end;
+    -webkit-box-align: center;
+    align-items: center;
+    z-index: 1;
+    padding: 0px 10px;
+    background-color: rgb(255, 255, 255);
+    font-size: 16px;
+    min-height: 50px;
+}

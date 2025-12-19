@@ -37,6 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -135,13 +136,11 @@ class TeacherProfile(models.Model):
     curriculum = models.JSONField(default=list, blank=True)
 
     # Step 4 - Leadership Experience
-    leadership_role = models.CharField(max_length=30, choices=LEADERSHIP_ROLE_CHOICES, blank=True, null=True)
+    leadership_role = models.JSONField(default=list, blank=True)  # Changed to array
 
     # Step 5 - Availability
     job_alerts = models.BooleanField(default=False)
-    available_day = models.CharField(max_length=2, blank=True)
-    available_month = models.CharField(max_length=2, blank=True)
-    available_year = models.CharField(max_length=4, blank=True)
+    available_date = models.DateField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -156,8 +155,8 @@ class TeacherProfile(models.Model):
 
     @property
     def available_from(self):
-        if self.available_day and self.available_month and self.available_year:
-            return f"{self.available_year}-{self.available_month}-{self.available_day}"
+        if self.available_date:
+            return self.available_date.isoformat()
         return None
 
 
@@ -219,6 +218,7 @@ class Job(models.Model):
     # Compensation & Benefits
     international_package = models.CharField(max_length=20, choices=SALARY_PACKAGE_CHOICES, blank=True)
     benefits = models.JSONField(default=list, blank=True)  # Array of: Medical Insurance, Annual Flight, Housing, Tuition Concession
+    package = models.CharField(max_length=200, blank=True)
 
     # Dates
     date_posted = models.DateTimeField(auto_now_add=True)

@@ -26,6 +26,26 @@ def get_recipient_email(original_email):
     return original_email
 
 
+def send_email_safe(email_func):
+    """
+    Decorator to handle email sending failures gracefully in DEBUG mode.
+    Logs email details instead of raising exceptions when email backend fails.
+    """
+    def wrapper(*args, **kwargs):
+        try:
+            return email_func(*args, **kwargs)
+        except Exception as e:
+            if settings.DEBUG:
+                logger.warning(f"Email sending failed in DEBUG mode (this is okay): {str(e)}")
+                logger.info(f"Email would have been sent by {email_func.__name__}")
+                return True  # Return success in DEBUG mode even if sending fails
+            else:
+                # In production, re-raise the exception
+                raise
+    return wrapper
+
+
+@send_email_safe
 def send_job_application_email(user, job, application):
     """
     Send a confirmation email to the applicant when they apply for a job.
@@ -76,6 +96,7 @@ def send_job_application_email(user, job, application):
         return False
 
 
+@send_email_safe
 def send_candidate_shortlisted_email(application):
     """
     Send a detailed shortlisted email to the candidate using HTML template.
@@ -126,6 +147,7 @@ def send_candidate_shortlisted_email(application):
         return False
 
 
+@send_email_safe
 def send_interview_invitation_email(application, interview_details=None):
     """
     Send an interview invitation email to the candidate using HTML template.
@@ -171,7 +193,7 @@ def send_interview_invitation_email(application, interview_details=None):
         email.attach_alternative(html_content, "text/html")
 
         # Send email
-        email.send(fail_silently=False)
+        email.send(fail_silently=True)
 
         logger.info(f"Interview invitation email sent to {user.email} for job {job.id}")
         return True
@@ -181,6 +203,7 @@ def send_interview_invitation_email(application, interview_details=None):
         return False
 
 
+@send_email_safe
 def send_job_offer_email(application):
     """
     Send a job offer congratulations email to the candidate using HTML template.
@@ -230,6 +253,7 @@ def send_job_offer_email(application):
         return False
 
 
+@send_email_safe
 def send_rejection_email(application):
     """
     Send a supportive rejection email to the candidate using HTML template.
@@ -279,6 +303,7 @@ def send_rejection_email(application):
         return False
 
 
+@send_email_safe
 def send_application_status_update_email(application, old_status, new_status):
     """
     Send an email notification when application status changes.

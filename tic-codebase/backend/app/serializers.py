@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'date_joined', 'subscription_status']
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'phone', 'date_joined', 'subscription_status']
         read_only_fields = ['id', 'date_joined', 'subscription_status']
 
 
@@ -42,10 +42,21 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
             'id', 'qualified', 'english', 'position', 'gender', 'nationality',
             'second_nationality', 'cv_file', 'hear_from', 'roles', 'subjects',
              'age_group', 'curriculum', 'leadership_role', 'job_alerts',
-            'available_day', 'available_month', 'available_year', 'available_from',
+            'available_date', 'available_from',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    """Serializer for viewing complete user profile with teacher profile"""
+    full_name = serializers.ReadOnlyField()
+    teacher_profile = TeacherProfileSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'phone', 'date_joined', 'subscription_status', 'teacher_profile']
+        read_only_fields = ['id', 'date_joined', 'subscription_status']
 
 
 class PreRegisterSerializer(serializers.Serializer):
@@ -76,6 +87,7 @@ class PreRegisterSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, required=False, min_length=8, max_length=128)
     firstName = serializers.CharField(max_length=100, min_length=1)
     lastName = serializers.CharField(max_length=100, min_length=1)
+    phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
 
     # Teacher Profile fields - Step 1
     qualified = serializers.CharField(max_length=10)
@@ -116,13 +128,15 @@ class PreRegisterSerializer(serializers.Serializer):
     )
 
     # Step 4 - Leadership Experience
-    leadershipRole = serializers.CharField(max_length=30, required=False, allow_blank=True, allow_null=True)
+    leadershipRole = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True
+    )
 
     # Step 5 - Availability
     exampleRadio = serializers.BooleanField(default=False)
-    day = serializers.CharField(max_length=2, required=False, allow_blank=True)
-    month = serializers.CharField(max_length=2, required=False, allow_blank=True)
-    year = serializers.CharField(max_length=4, required=False, allow_blank=True)
+    availableDate = serializers.DateField(required=False, allow_null=True)
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -142,6 +156,16 @@ class PreRegisterSerializer(serializers.Serializer):
         if any(char.isdigit() for char in value):
             raise serializers.ValidationError("Last name cannot contain numbers.")
         return value.strip()
+
+    def validate_phone(self, value):
+        if value and value.strip():
+            # Remove common phone formatting characters
+            cleaned = value.strip().replace(' ', '').replace('-', '').replace('(', '').replace(')', '').replace('+', '')
+            # Check if remaining characters are digits
+            if not cleaned.isdigit():
+                raise serializers.ValidationError("Phone number can only contain digits, spaces, hyphens, parentheses, and plus sign.")
+            return value.strip()
+        return value
 
     def validate_qualified(self, value):
         if value.lower() not in self.VALID_QUALIFIED:
@@ -218,70 +242,24 @@ class PreRegisterSerializer(serializers.Serializer):
         return value
 
     def validate_leadershipRole(self, value):
-        if value and value.lower() not in self.VALID_LEADERSHIP_ROLES:
-            raise serializers.ValidationError(
-                f"Leadership role must be one of: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
-            )
-        return value.lower() if value else value
-
-    def validate_day(self, value):
         if value:
-            try:
-                day = int(value)
-                if day < 1 or day > 31:
-                    raise serializers.ValidationError("Day must be between 1 and 31.")
-            except ValueError:
-                raise serializers.ValidationError("Day must be a valid number.")
+            invalid_roles = [r for r in value if r.lower() not in self.VALID_LEADERSHIP_ROLES]
+            if invalid_roles:
+                raise serializers.ValidationError(
+                    f"Invalid leadership role(s): {', '.join(invalid_roles)}. "
+                    f"Valid options: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
+                )
+            return [r.lower() for r in value]
         return value
 
-    def validate_month(self, value):
+    def validate_availableDate(self, value):
         if value:
-            try:
-                month = int(value)
-                if month < 1 or month > 12:
-                    raise serializers.ValidationError("Month must be between 1 and 12.")
-            except ValueError:
-                raise serializers.ValidationError("Month must be a valid number.")
+            from datetime import date
+            current_date = date.today()
+            # Check if date is not too far in the past
+            if value < current_date.replace(year=current_date.year - 1):
+                raise serializers.ValidationError("Available date cannot be more than a year in the past.")
         return value
-
-    def validate_year(self, value):
-        if value:
-            try:
-                year = int(value)
-                from datetime import datetime
-                current_year = datetime.now().year
-                if year < current_year or year > current_year + 10:
-                    raise serializers.ValidationError(
-                        f"Year must be between {current_year} and {current_year + 10}."
-                    )
-            except ValueError:
-                raise serializers.ValidationError("Year must be a valid number.")
-        return value
-
-    def validate(self, data):
-        # Cross-field validation for availability date
-        day = data.get('day')
-        month = data.get('month')
-        year = data.get('year')
-
-        # If any date field is provided, all should be provided
-        date_fields = [day, month, year]
-        if any(date_fields) and not all(date_fields):
-            raise serializers.ValidationError({
-                'availability': 'If providing availability date, all fields (day, month, year) are required.'
-            })
-
-        # Validate complete date if all fields are present
-        if all(date_fields):
-            try:
-                from datetime import datetime
-                datetime(int(year), int(month), int(day))
-            except ValueError:
-                raise serializers.ValidationError({
-                    'availability': 'Invalid date. Please check day, month, and year values.'
-                })
-
-        return data
 
     def create(self, validated_data):
         # Generate a random password if not provided
@@ -293,6 +271,7 @@ class PreRegisterSerializer(serializers.Serializer):
             'email': validated_data.pop('email'),
             'first_name': validated_data.pop('firstName'),
             'last_name': validated_data.pop('lastName'),
+            'phone': validated_data.pop('phone', ''),
         }
 
         # Create user
@@ -316,11 +295,9 @@ class PreRegisterSerializer(serializers.Serializer):
             'subjects': validated_data.get('subjects', []),
             'age_group': validated_data.get('ageGroup', []),
             'curriculum': validated_data.get('curriculum', []),
-            'leadership_role': validated_data.get('leadershipRole', ''),
+            'leadership_role': validated_data.get('leadershipRole', []),
             'job_alerts': validated_data.get('exampleRadio', False),
-            'available_day': validated_data.get('day', ''),
-            'available_month': validated_data.get('month', ''),
-            'available_year': validated_data.get('year', ''),
+            'available_date': validated_data.get('availableDate'),
         }
 
         # Create teacher profile
@@ -344,7 +321,7 @@ class JobSerializer(serializers.ModelSerializer):
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
             'curriculum', 'education_stage', 'contract_type',
-            'international_package', 'benefits',
+            'international_package', 'benefits', 'package',
             'date_posted', 'closing_date', 'job_start_date', 'is_expired', 'is_applied', 'is_saved',
             'created_at', 'updated_at'
         ]
@@ -545,7 +522,7 @@ class AdminJobApplicationSerializer(serializers.ModelSerializer):
     """Serializer for job applications with user details"""
     applicant_email = serializers.EmailField(source='user.email', read_only=True)
     applicant_name = serializers.CharField(source='user.full_name', read_only=True)
-    applicant_profile = TeacherProfileSerializer(source='user.teacher_profile', read_only=True)
+    applicant_profile = ProfileSerializer(source='user', read_only=True)
 
     class Meta:
         model = JobApplication
@@ -569,7 +546,7 @@ class AdminJobSerializer(serializers.ModelSerializer):
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
             'curriculum', 'education_stage', 'contract_type',
-            'international_package', 'benefits',
+            'international_package', 'benefits', 'package',
             'date_posted', 'closing_date', 'job_start_date', 'is_expired', 'applications_count',
             'applications', 'created_at', 'updated_at'
         ]
@@ -589,7 +566,7 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
             'curriculum', 'education_stage', 'contract_type',
-            'international_package', 'benefits',
+            'international_package', 'benefits', 'package',
             'closing_date', 'job_start_date', 'date_posted', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
@@ -654,17 +631,6 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
 
 
 # Profile Serializers
-class ProfileSerializer(serializers.ModelSerializer):
-    """Serializer for viewing complete user profile with teacher profile"""
-    full_name = serializers.ReadOnlyField()
-    teacher_profile = TeacherProfileSerializer(read_only=True)
-
-    class Meta:
-        model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'date_joined', 'subscription_status', 'teacher_profile']
-        read_only_fields = ['id', 'date_joined', 'subscription_status']
-
-
 class UpdateProfileSerializer(serializers.Serializer):
     """Serializer for updating both user info and teacher profile"""
     VALID_QUALIFIED = ['yes', 'no']
@@ -693,6 +659,7 @@ class UpdateProfileSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=100, required=False)
     last_name = serializers.CharField(max_length=100, required=False)
     email = serializers.EmailField(required=False)
+    phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
 
     # Teacher Profile fields
     qualified = serializers.CharField(max_length=10, required=False)
@@ -707,11 +674,9 @@ class UpdateProfileSerializer(serializers.Serializer):
     subjects = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     age_group = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     curriculum = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
-    leadership_role = serializers.CharField(max_length=30, required=False, allow_blank=True, allow_null=True)
+    leadership_role = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
     job_alerts = serializers.BooleanField(required=False)
-    available_day = serializers.CharField(max_length=2, required=False, allow_blank=True)
-    available_month = serializers.CharField(max_length=2, required=False, allow_blank=True)
-    available_year = serializers.CharField(max_length=4, required=False, allow_blank=True)
+    available_date = serializers.DateField(required=False, allow_null=True)
 
     def validate_email(self, value):
         user = self.context['request'].user
@@ -732,6 +697,16 @@ class UpdateProfileSerializer(serializers.Serializer):
         if any(char.isdigit() for char in value):
             raise serializers.ValidationError("Last name cannot contain numbers.")
         return value.strip()
+
+    def validate_phone(self, value):
+        if value and value.strip():
+            # Remove common phone formatting characters
+            cleaned = value.strip().replace(' ', '').replace('-', '').replace('(', '').replace(')', '').replace('+', '')
+            # Check if remaining characters are digits
+            if not cleaned.isdigit():
+                raise serializers.ValidationError("Phone number can only contain digits, spaces, hyphens, parentheses, and plus sign.")
+            return value.strip()
+        return value
 
     def validate_qualified(self, value):
         if value and value.lower() not in self.VALID_QUALIFIED:
@@ -806,72 +781,32 @@ class UpdateProfileSerializer(serializers.Serializer):
         return value
 
     def validate_leadership_role(self, value):
-        if value and value.lower() not in self.VALID_LEADERSHIP_ROLES:
-            raise serializers.ValidationError(
-                f"Leadership role must be one of: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
-            )
-        return value.lower() if value else value
-
-    def validate_available_day(self, value):
         if value:
-            try:
-                day = int(value)
-                if day < 1 or day > 31:
-                    raise serializers.ValidationError("Day must be between 1 and 31.")
-            except ValueError:
-                raise serializers.ValidationError("Day must be a valid number.")
+            invalid_roles = [r for r in value if r.lower() not in self.VALID_LEADERSHIP_ROLES]
+            if invalid_roles:
+                raise serializers.ValidationError(
+                    f"Invalid leadership role(s): {', '.join(invalid_roles)}. "
+                    f"Valid options: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
+                )
+            return [r.lower() for r in value]
         return value
 
-    def validate_available_month(self, value):
+    def validate_available_date(self, value):
         if value:
-            try:
-                month = int(value)
-                if month < 1 or month > 12:
-                    raise serializers.ValidationError("Month must be between 1 and 12.")
-            except ValueError:
-                raise serializers.ValidationError("Month must be a valid number.")
-        return value
-
-    def validate_available_year(self, value):
-        if value:
-            try:
-                year = int(value)
-                from datetime import datetime
-                current_year = datetime.now().year
-                if year < current_year or year > current_year + 10:
-                    raise serializers.ValidationError(
-                        f"Year must be between {current_year} and {current_year + 10}."
-                    )
-            except ValueError:
-                raise serializers.ValidationError("Year must be a valid number.")
+            from datetime import date
+            current_date = date.today()
+            # Check if date is not too far in the past
+            if value < current_date.replace(year=current_date.year - 1):
+                raise serializers.ValidationError("Available date cannot be more than a year in the past.")
         return value
 
     def validate(self, data):
-        day = data.get('available_day')
-        month = data.get('available_month')
-        year = data.get('available_year')
-
-        # If any date field is being updated, validate complete date
-        date_fields = [day, month, year]
-        if any(date_fields) and not all(date_fields):
-            raise serializers.ValidationError({
-                'availability': 'If providing availability date, all fields (day, month, year) are required.'
-            })
-
-        if all(date_fields):
-            try:
-                from datetime import datetime
-                datetime(int(year), int(month), int(day))
-            except ValueError:
-                raise serializers.ValidationError({
-                    'availability': 'Invalid date. Please check day, month, and year values.'
-                })
-
+        # No cross-field validation needed currently
         return data
 
     def update(self, instance, validated_data):
         # Extract user fields
-        user_fields = ['first_name', 'last_name', 'email']
+        user_fields = ['first_name', 'last_name', 'email', 'phone']
         user_data = {k: v for k, v in validated_data.items() if k in user_fields}
 
         # Update user if user fields are present
@@ -885,7 +820,7 @@ class UpdateProfileSerializer(serializers.Serializer):
             'qualified', 'english', 'position', 'gender', 'nationality',
             'second_nationality', 'cv_file', 'hear_from', 'roles', 'subjects',
             'age_group', 'curriculum', 'leadership_role', 'job_alerts',
-            'available_day', 'available_month', 'available_year'
+            'available_date'
         ]
         teacher_data = {k: v for k, v in validated_data.items() if k in teacher_profile_fields}
 

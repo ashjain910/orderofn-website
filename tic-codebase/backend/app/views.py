@@ -662,8 +662,8 @@ def create_checkout_session(request):
                     'user_email': user.email,
                 }
             },
-            'success_url': 'https://orderofn.com/tic?checkout=success&session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url': 'https://orderofn.com/tic?checkout=canceled',
+            'success_url': 'https://orderofn.com/tic/#/job?checkout=success&session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url': 'https://orderofn.com/tic/#/job?checkout=canceled',
         }
 
         # If user already has a Stripe customer ID, use it; otherwise use email

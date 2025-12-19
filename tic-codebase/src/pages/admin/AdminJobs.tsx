@@ -165,7 +165,7 @@ function Jobs() {
           <div className="card mb-3">
             <div className="row">
               <div className="mb-1 col-12">
-                <label className="form-label">Job Title</label>
+                <label className="form-label">Position</label>
                 <input
                   type="text"
                   className="form-control"
@@ -180,7 +180,7 @@ function Jobs() {
                 />
               </div>
               <div className="mb-1 col-12">
-                <label className="form-label">Job Type</label>
+                <label className="form-label">Position Type</label>
                 <select
                   className="form-select"
                   value={filterjob_type}

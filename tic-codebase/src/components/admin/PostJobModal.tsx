@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SUBJECT_OPTIONS } from "../../common/subjectOptions";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "./PostJobModal.css";
@@ -24,6 +25,7 @@ export interface PostJobModalProps {
 }
 
 export interface PostJobModalInitialValues {
+  id?: string | number;
   title?: string;
   job_type?: any[];
   package?: string;
@@ -67,14 +69,108 @@ export default function PostJobModal({
   onSuccess,
   initialValues,
 }: PostJobModalProps) {
+  const mapSubjectsToOptions = (subjects: any) => {
+    if (!subjects) return [];
+    // If already array of {label, value}
+    if (
+      Array.isArray(subjects) &&
+      subjects.length > 0 &&
+      subjects[0].value &&
+      subjects[0].label
+    ) {
+      return subjects;
+    }
+    // If comma-separated string
+    if (typeof subjects === "string") {
+      try {
+        // Try to parse as JSON array
+        const parsed = JSON.parse(subjects);
+        if (Array.isArray(parsed)) {
+          return SUBJECT_OPTIONS.filter((opt) => parsed.includes(opt.value));
+        }
+      } catch {
+        // Not JSON, treat as single subject string
+        return SUBJECT_OPTIONS.filter((opt) => opt.value === subjects);
+      }
+    }
+    // If array of strings
+    if (Array.isArray(subjects)) {
+      return SUBJECT_OPTIONS.filter((opt) => subjects.includes(opt.value));
+    }
+    return [];
+  };
+
+  const mapSchoolTypeToOptions = (schoolType: any) => {
+    if (!schoolType) return [];
+    if (
+      Array.isArray(schoolType) &&
+      schoolType.length > 0 &&
+      schoolType[0].value &&
+      schoolType[0].label
+    ) {
+      return schoolType;
+    }
+    if (typeof schoolType === "string") {
+      return schoolTypeMultiOptions.filter((opt) => opt.value === schoolType);
+    }
+    if (Array.isArray(schoolType)) {
+      return schoolTypeMultiOptions.filter((opt) =>
+        schoolType.includes(opt.value)
+      );
+    }
+    return [];
+  };
+
+  const mapCurriculumToOptions = (curriculum: any) => {
+    if (!curriculum) return [];
+    if (
+      Array.isArray(curriculum) &&
+      curriculum.length > 0 &&
+      curriculum[0].value &&
+      curriculum[0].label
+    ) {
+      return curriculum;
+    }
+    if (typeof curriculum === "string") {
+      return curriculumOptions.filter((opt) => opt.value === curriculum);
+    }
+    if (Array.isArray(curriculum)) {
+      return curriculumOptions.filter((opt) => curriculum.includes(opt.value));
+    }
+    return [];
+  };
+
+  const mapEducationStageToOptions = (educationStage: any) => {
+    if (!educationStage) return [];
+    if (
+      Array.isArray(educationStage) &&
+      educationStage.length > 0 &&
+      educationStage[0].value &&
+      educationStage[0].label
+    ) {
+      return educationStage;
+    }
+    if (typeof educationStage === "string") {
+      return educationStageOptions.filter(
+        (opt) => opt.value === educationStage
+      );
+    }
+    if (Array.isArray(educationStage)) {
+      return educationStageOptions.filter((opt) =>
+        educationStage.includes(opt.value)
+      );
+    }
+    return [];
+  };
+
   const [form, setForm] = useState(() => ({
     title: initialValues?.title || "",
-    job_type: initialValues?.job_type || [],
+    job_type: mapJobTypeToOptions(initialValues?.job_type),
     package: initialValues?.package || "",
     contract_type: initialValues?.contract_type || "",
-    curriculum: initialValues?.curriculum || [],
-    education_stage: initialValues?.education_stage || [],
-    school_type: initialValues?.school_type || [],
+    curriculum: mapCurriculumToOptions(initialValues?.curriculum),
+    education_stage: mapEducationStageToOptions(initialValues?.education_stage),
+    school_type: mapSchoolTypeToOptions(initialValues?.school_type),
     closing_date: initialValues?.closing_date
       ? typeof initialValues.closing_date === "string"
         ? new Date(initialValues.closing_date)
@@ -98,7 +194,7 @@ export default function PostJobModal({
         : initialValues.job_start_date
       : null,
     location: initialValues?.location || "",
-    subjects: initialValues?.subjects || "",
+    subjects: mapSubjectsToOptions(initialValues?.subjects),
     school_name: initialValues?.school_name || "",
   }));
   const [errors, setErrors] = useState<any>({});
@@ -205,30 +301,50 @@ export default function PostJobModal({
         return `${year}-${month}-${day}`;
       };
       let response;
-      // Only create new job, editing by id is not supported with current fields
-      // For single-select: send only the value (string), for multi-select: array of values
       const toValueArray = (arr: any[]) =>
         arr.map((item) => (item && item.value ? item.value : item));
       const getSingleValue = (arr: any[]) =>
         Array.isArray(arr) && arr[0] && arr[0].value ? arr[0].value : "";
-      response = await AdminBaseApi.post("/jobs/create", {
-        ...form,
-        job_type: getSingleValue(form.job_type),
-        curriculum: getSingleValue(form.curriculum),
-        education_stage: getSingleValue(form.education_stage),
-        school_type: getSingleValue(form.school_type),
-        benefits: toValueArray(form.benefits), // multi-select
-        subjects: Array.isArray(form.subjects)
-          ? toValueArray(form.subjects)
-          : form.subjects, // multi-select
-        closing_date: formatDate(form.closing_date),
-        job_start_date: formatDate(form.job_start_date),
-        school_name: form.school_name,
-      });
+      if (initialValues && initialValues.id) {
+        // PATCH update job
+        response = await AdminBaseApi.patch(
+          `/jobs/${initialValues.id}/update`,
+          {
+            ...form,
+            job_type: getSingleValue(form.job_type),
+            curriculum: getSingleValue(form.curriculum),
+            education_stage: getSingleValue(form.education_stage),
+            school_type: getSingleValue(form.school_type),
+            benefits: toValueArray(form.benefits),
+            subjects: Array.isArray(form.subjects)
+              ? toValueArray(form.subjects)
+              : form.subjects,
+            closing_date: formatDate(form.closing_date),
+            job_start_date: formatDate(form.job_start_date),
+            school_name: form.school_name,
+          }
+        );
+      } else {
+        // POST create job
+        response = await AdminBaseApi.post("/jobs/create", {
+          ...form,
+          job_type: getSingleValue(form.job_type),
+          curriculum: getSingleValue(form.curriculum),
+          education_stage: getSingleValue(form.education_stage),
+          school_type: getSingleValue(form.school_type),
+          benefits: toValueArray(form.benefits),
+          subjects: Array.isArray(form.subjects)
+            ? toValueArray(form.subjects)
+            : form.subjects,
+          closing_date: formatDate(form.closing_date),
+          job_start_date: formatDate(form.job_start_date),
+          school_name: form.school_name,
+        });
+      }
       if (response.status === 200 || response.status === 201) {
         const msg =
           response.data?.message ||
-          (initialValues
+          (initialValues && initialValues.id
             ? "Job updated successfully!"
             : "Job posted successfully!");
         toast.success(msg, toastOptions);
@@ -249,17 +365,22 @@ export default function PostJobModal({
           benefits: [],
           job_start_date: null,
           location: "",
-          subjects: "",
+          subjects: [],
           school_name: "",
         });
         setErrors({});
         if (onSuccess) onSuccess();
+        setTimeout(() => {
+          // Force a page refresh by navigating to the same path with a unique query param
+          window.location.reload();
+        }, 3000);
         onClose();
       }
     } catch (err: any) {
-      let errorMsg = initialValues
-        ? "Failed to update job"
-        : "Failed to post job";
+      let errorMsg =
+        initialValues && initialValues.id
+          ? "Failed to update job"
+          : "Failed to post job";
       if (err?.response?.data) {
         const errorData = err.response.data;
         errorMsg = Object.entries(errorData)
@@ -314,33 +435,6 @@ export default function PostJobModal({
             ) : (
               <form onSubmit={handleSubmit} autoComplete="off">
                 <div className="row">
-                  {/* School Name */}
-                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div className="mb-3">
-                      <label className="form-label">School Name</label>
-                      <input
-                        type="text"
-                        className={`form-control ${
-                          errors.school_name ? "is-invalid" : ""
-                        }`}
-                        value={form.school_name}
-                        onChange={(e) => {
-                          setForm({ ...form, school_name: e.target.value });
-                          if (errors.school_name)
-                            setErrors((prev: any) => ({
-                              ...prev,
-                              school_name: undefined,
-                            }));
-                        }}
-                        placeholder="Enter school name"
-                      />
-                      {errors.school_name && (
-                        <div className="invalid-feedback">
-                          {errors.school_name}
-                        </div>
-                      )}
-                    </div>
-                  </div>
                   {/* title */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
@@ -363,75 +457,6 @@ export default function PostJobModal({
                       />
                       {errors.title && (
                         <div className="invalid-feedback">{errors.title}</div>
-                      )}
-                    </div>
-                  </div>
-                  {/* Location */}
-                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div className="mb-3">
-                      <label className="form-label">Location</label>
-                      <input
-                        type="text"
-                        className={`form-control ${
-                          errors.location ? "is-invalid" : ""
-                        }`}
-                        value={form.location}
-                        onChange={(e) => {
-                          setForm({ ...form, location: e.target.value });
-                          if (errors.location)
-                            setErrors((prev: any) => ({
-                              ...prev,
-                              location: undefined,
-                            }));
-                        }}
-                        placeholder="Enter location"
-                      />
-                      {errors.location && (
-                        <div className="invalid-feedback">
-                          {errors.location}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {/* Subjects (Multi-Select) */}
-                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div className="mb-3">
-                      <label className="form-label">Subjects</label>
-                      <Select
-                        isMulti
-                        options={[
-                          { value: "Mathematics", label: "Mathematics" },
-                          { value: "Science", label: "Science" },
-                          { value: "English", label: "English" },
-                          { value: "History", label: "History" },
-                          { value: "Geography", label: "Geography" },
-                          { value: "Art", label: "Art" },
-                          { value: "Music", label: "Music" },
-                          {
-                            value: "Physical Education",
-                            label: "Physical Education",
-                          },
-                          { value: "ICT", label: "ICT" },
-                        ]}
-                        closeMenuOnSelect={false}
-                        value={form.subjects}
-                        onChange={(selected: any) => {
-                          setForm({ ...form, subjects: selected });
-                          if (errors.subjects)
-                            setErrors((prev: any) => ({
-                              ...prev,
-                              subjects: undefined,
-                            }));
-                        }}
-                        placeholder="Select subjects"
-                      />
-                      {errors.subjects && (
-                        <div
-                          className="invalid-feedback"
-                          style={{ display: "block" }}
-                        >
-                          {errors.subjects}
-                        </div>
                       )}
                     </div>
                   </div>
@@ -473,6 +498,90 @@ export default function PostJobModal({
                       )}
                     </div>
                   </div>
+                  {/* School Name */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">School Name</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.school_name ? "is-invalid" : ""
+                        }`}
+                        value={form.school_name}
+                        onChange={(e) => {
+                          setForm({ ...form, school_name: e.target.value });
+                          if (errors.school_name)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              school_name: undefined,
+                            }));
+                        }}
+                        placeholder="Enter school name"
+                      />
+                      {errors.school_name && (
+                        <div className="invalid-feedback">
+                          {errors.school_name}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Location */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Location</label>
+                      <input
+                        type="text"
+                        className={`form-control ${
+                          errors.location ? "is-invalid" : ""
+                        }`}
+                        value={form.location}
+                        onChange={(e) => {
+                          setForm({ ...form, location: e.target.value });
+                          if (errors.location)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              location: undefined,
+                            }));
+                        }}
+                        placeholder="Enter location"
+                      />
+                      {errors.location && (
+                        <div className="invalid-feedback">
+                          {errors.location}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Subjects (Multi-Select) */}
+                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div className="mb-3">
+                      <label className="form-label">Subjects</label>
+                      <Select
+                        isMulti
+                        options={SUBJECT_OPTIONS}
+                        closeMenuOnSelect={false}
+                        value={form.subjects}
+                        onChange={(selected: any) => {
+                          setForm({ ...form, subjects: selected });
+                          if (errors.subjects)
+                            setErrors((prev: any) => ({
+                              ...prev,
+                              subjects: undefined,
+                            }));
+                        }}
+                        placeholder="Select subjects"
+                      />
+                      {errors.subjects && (
+                        <div
+                          className="invalid-feedback"
+                          style={{ display: "block" }}
+                        >
+                          {errors.subjects}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Package */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
@@ -965,7 +1074,13 @@ export default function PostJobModal({
                     className="btn btn-primary d-flex justify-content-center align-items-center"
                     disabled={loading}
                   >
-                    {loading ? "Posting..." : "Post Job"}
+                    {loading
+                      ? initialValues && initialValues.id
+                        ? "Updating..."
+                        : "Posting..."
+                      : initialValues && initialValues.id
+                      ? "Update Job"
+                      : "Post Job"}
                   </button>
                 </div>
               </form>
@@ -975,4 +1090,25 @@ export default function PostJobModal({
       </div>
     </div>
   );
+}
+function mapJobTypeToOptions(job_type: any[] | string | undefined): any[] {
+  if (!job_type) return [];
+  // Already array of {label, value}
+  if (
+    Array.isArray(job_type) &&
+    job_type.length > 0 &&
+    job_type[0].value &&
+    job_type[0].label
+  ) {
+    return job_type;
+  }
+  // If string
+  if (typeof job_type === "string") {
+    return positionTypeOptions.filter((opt) => opt.value === job_type);
+  }
+  // If array of strings
+  if (Array.isArray(job_type)) {
+    return positionTypeOptions.filter((opt) => job_type.includes(opt.value));
+  }
+  return [];
 }

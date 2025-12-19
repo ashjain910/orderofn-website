@@ -655,3 +655,17 @@ textarea.form-control {
 .dmOAwp {
     display: none !important;
 }
+.form-control::placeholder {
+  color: #b0b0b0 !important;
+  opacity: 1;
+}
+
+div.WACFrameWord {
+    right: 0px;
+    left: 0px;
+    min-width: 640px;
+    min-height: 250px;
+    height: 250px !important;
+    width: 100%;
+    position: absolute;
+}

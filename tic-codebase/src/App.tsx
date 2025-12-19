@@ -1,6 +1,13 @@
-// import { useState } from "react";
+import React from "react";
 import "./App.css";
-import { Routes, Route, HashRouter } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  HashRouter,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
+import Cookies from "js-cookie";
 import Login from "./pages/auth/login/Login";
 import Jobs from "./pages/jobs/Jobs";
 import JobDetail from "./pages/jobs/JobDetail";
@@ -23,15 +30,21 @@ import { ToastContainer } from "react-toastify";
 import UserProfile from "./pages/user-profile/UserProfile";
 import SubscriptionPlans from "./pages/user/SubscriptionPlans";
 
-function App() {
-  // const [count, setCount] = useState(0);
+// const [count, setCount] = useState(0);
 
+function App() {
+  // Helper to check login (access token in cookies)
+  const isLoggedIn = !!Cookies.get("access");
   return (
     <HashRouter>
+      <LogoutListener />
       <ScrollToTop />
       <Routes>
         {/* 👇 DEFAULT ROUTE (Login page will load on app start) */}
-        <Route path="/" element={<Login />} />
+        <Route
+          path="/"
+          element={isLoggedIn ? <Navigate to="/jobs" replace /> : <Login />}
+        />
         <Route path="/pre-register" element={<PreRegister />} />
         <Route path="/admin" element={<AdminLogin />} />
         {/* User routes */}
@@ -58,10 +71,30 @@ function App() {
             <Route path="/admin/post-job/:id" element={<PostJob />} />
           </Route>
         </Route>
+
+        {/* Catch-all: redirect to jobs if logged in, else login */}
+        <Route
+          path="*"
+          element={<Navigate to={isLoggedIn ? "/jobs" : "/"} replace />}
+        />
       </Routes>
       <ToastContainer style={{ zIndex: 9999 }} />
     </HashRouter>
   );
+}
+
+function LogoutListener() {
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    const logoutHandler = () => {
+      navigate("/login", { replace: true });
+    };
+    window.addEventListener("tic-logout", logoutHandler);
+    return () => {
+      window.removeEventListener("tic-logout", logoutHandler);
+    };
+  }, [navigate]);
+  return null;
 }
 
 export default App;

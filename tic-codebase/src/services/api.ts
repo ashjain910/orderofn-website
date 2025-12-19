@@ -77,7 +77,8 @@ BaseApi.interceptors.response.use(
                     Cookies.remove("refresh");
                     sessionStorage.removeItem("user");
                     toast.error("Session expired. Please log in again.");
-                    window.location.href = "/tic/login";
+                    // Use SPA navigation event for logout
+                    window.dispatchEvent(new CustomEvent("tic-logout"));
                     return Promise.reject(error);
                 }
             } catch (refreshError) {
@@ -86,7 +87,7 @@ BaseApi.interceptors.response.use(
                 Cookies.remove("refresh");
                 sessionStorage.removeItem("user");
                 toast.error("Session expired. Please log in again.");
-                window.location.href = "/login";
+                window.dispatchEvent(new CustomEvent("tic-logout"));
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;

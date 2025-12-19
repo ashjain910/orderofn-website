@@ -84,13 +84,13 @@ export default function AdminHeader() {
               >
                 My Teachers
               </Nav.Link>
-              <Nav.Link
-                className=""
-                role="button"
+              <button
+                className="btn post-job btn-secondary me-3"
+                type="button"
                 onClick={() => setShowPostJobModal(true)}
               >
                 Post a Job
-              </Nav.Link>
+              </button>
               <li
                 role="button"
                 className="nav-item dropdown ml-2"

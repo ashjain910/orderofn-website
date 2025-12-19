@@ -6,7 +6,7 @@ import Step3 from "../steps/Step3";
 import Step4 from "../steps/Step4";
 import Step5 from "../steps/Step5";
 import Cookies from "js-cookie";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import type { ToastPosition } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -86,12 +86,22 @@ export default function PreRegister() {
   const validateStep = (step: number) => {
     const errors: string[] = [];
     if (step === 1) {
-      if (!formData.email) errors.push("Email is required");
+      if (!formData.email) {
+        errors.push("Email is required");
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        errors.push("Enter a valid email address");
+      }
       if (!formData.phone_number) errors.push("Phone number is required");
       if (!formData.password) errors.push("Password is required");
+      if (formData.password && formData.password.length < 8)
+        errors.push("Password must be at least 8 characters.");
       if (!formData.qualified) errors.push("Qualified is required");
       if (!formData.english) errors.push("English is required");
-      if (!formData.position) errors.push("Position is required");
+      if (
+        !formData.position ||
+        (Array.isArray(formData.position) && formData.position.length === 0)
+      )
+        errors.push("Position is required");
     }
     if (step === 2) {
       if (!formData.firstName) errors.push("First name is required");
@@ -143,14 +153,11 @@ export default function PreRegister() {
   const nextStep = () => {
     const errors = validateStep(step);
     if (errors.length > 0) {
-      errors.forEach((err, idx) => {
-        setTimeout(() => {
-          toast.error(err, toastOptions);
-        }, idx * 500); // stagger toasts by 500ms
-      });
-      return;
+      // No toast for input validation; inline errors only
+      return false;
     }
     setStep((s) => Math.min(s + 1, 5));
+    return true;
   };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
   // Removed formErrors state
@@ -195,7 +202,9 @@ export default function PreRegister() {
         Cookies.set("access", response.data.access, { secure: true });
         Cookies.set("refresh", response.data.refresh, { secure: true });
         toast.success("Registration successful!", toastOptionsSucces);
-        navigate("/jobs");
+        setTimeout(() => {
+          navigate("/jobs");
+        }, 1000);
         // Redirect to dashboard or login
         return;
       }
@@ -209,16 +218,25 @@ export default function PreRegister() {
         typeof error.response.data === "object"
       ) {
         const data = error.response.data;
-        Object.values(data).forEach((errors) => {
-          if (Array.isArray(errors)) {
-            errors.forEach((err: string, idx: number) => {
-              setTimeout(() => {
-                toast.error(err, toastOptions);
-              }, idx * 500);
-            });
-          } else {
-            toast.error(String(errors), toastOptions);
+        console.log("API 400 error data:", data);
+
+        // Helper to recursively flatten all error messages
+        function flattenErrors(errObj: any): string[] {
+          if (typeof errObj === "string") return [errObj];
+          if (Array.isArray(errObj)) {
+            return errObj.flatMap(flattenErrors);
           }
+          if (typeof errObj === "object" && errObj !== null) {
+            return Object.values(errObj).flatMap(flattenErrors);
+          }
+          return [];
+        }
+
+        const allErrors = flattenErrors(data);
+        allErrors.forEach((err: string, idx: number) => {
+          setTimeout(() => {
+            toast.error(err, toastOptions);
+          }, idx * 500);
         });
       } else if (error?.response?.data) {
         toast.error(error.response.data, toastOptions);
@@ -233,6 +251,7 @@ export default function PreRegister() {
 
   return (
     <div className="">
+      <ToastContainer />
       <div
         className="container-fluid login-container bg-white p-0 m-0"
         style={{ height: "100vh" }}

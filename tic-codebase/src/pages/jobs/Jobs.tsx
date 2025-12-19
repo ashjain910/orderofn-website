@@ -31,7 +31,7 @@ const formatDateTime = (utcString: string) => {
   };
 };
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import BaseApi from "../../services/api";
 import Cookies from "js-cookie";
 import {
@@ -41,7 +41,6 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import { MdLocationPin } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 import React from "react";
 
 const statusTabs = [
@@ -64,6 +63,7 @@ const tabIcons = {
 };
 
 import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Type for job objects
 interface Job {
@@ -88,6 +88,7 @@ interface Job {
 }
 
 function Jobs() {
+  const location = useLocation();
   const [loading, setLoading] = React.useState(true);
 
   const [activeTab, setActiveTab] = useState("all");
@@ -112,6 +113,20 @@ function Jobs() {
   }>({ all: 0, saved: 0, applied: 0 });
 
   const navigate = useNavigate();
+
+  // Show payment success popup and redirect if needed
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("checkout") === "success") {
+      toast.success("Payment successful! Subscription activated.", {
+        autoClose: 2500,
+        onClose: () => navigate("/jobs", { replace: true }),
+      });
+    } else if (params.get("checkout") === "canceled") {
+      toast.error("Payment canceled.", { autoClose: 2500 });
+    }
+    // eslint-disable-next-line
+  }, []);
 
   // Fetch jobs on initial page load with all filters
   // Helper to fetch tab counts (all, saved, applied)
@@ -285,7 +300,24 @@ function Jobs() {
           : undefined
       );
       if (response.status === 200 || response.status === 201) {
-        toast.success("Saved successfully!");
+        toast.success(response.data.message || "Saved successfully!");
+        // Update the saved job in jobsData if response.data.saved_job exists
+        if (response.data.saved_job && response.data.saved_job.id) {
+          setJobsData((prevJobs) => {
+            const idx = prevJobs.findIndex(
+              (j) => j.id === response.data.saved_job.id
+            );
+            if (idx !== -1) {
+              const updatedJobs = [...prevJobs];
+              updatedJobs[idx] = {
+                ...updatedJobs[idx],
+                ...response.data.saved_job,
+              };
+              return updatedJobs;
+            }
+            return prevJobs;
+          });
+        }
       } else if (
         response.status === 400 &&
         response.data &&
@@ -359,21 +391,7 @@ function Jobs() {
   // API call to send filters and update jobs data
   // API call for job details
   const handleViewJobDetails = async (jobId: number) => {
-    try {
-      const response = await BaseApi.get(`/jobs/${jobId}`);
-      navigate(`/jobs/${jobId}`, { state: { job: response.data } });
-    } catch (error) {
-      // Fallback: use sample job data if API fails
-      const sampleJob = jobsData.find((job) => job.id === jobId);
-      if (sampleJob) {
-        navigate(`/jobs/${jobId}`, { state: { job: sampleJob } });
-      } else {
-        alert("Error fetching job details and no sample data found.");
-      }
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    navigate(`/jobs/${jobId}`);
   };
   const sendFiltersToApi = async (filters: any) => {
     try {
@@ -431,6 +449,8 @@ function Jobs() {
 
   return (
     <div className="container">
+      <ToastContainer style={{ zIndex: 9999 }} />
+
       <div className="row">
         {/* Left column: tabs, filters, job cards */}
         <div className="col-lg-9">

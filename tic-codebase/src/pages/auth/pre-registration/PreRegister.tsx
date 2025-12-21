@@ -6,7 +6,7 @@ import Step3 from "../steps/Step3";
 import Step4 from "../steps/Step4";
 import Step5 from "../steps/Step5";
 import Cookies from "js-cookie";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import type { ToastPosition } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -58,7 +58,7 @@ export default function PreRegister() {
     qualified: "", // <-- add this
     english: "", // <-- add this
     position: "", // <-- add this
-    phone_number: "",
+    phone: "",
     // Step2
     firstName: "",
     lastName: "",
@@ -75,12 +75,15 @@ export default function PreRegister() {
     curriculum: [],
 
     // Step4
-    leadershipRoles: "",
+    leadership_role: "",
 
     // Step5
     job_alerts: "",
-    available_day: "",
+    available_date: "",
   });
+
+  // Loader state
+  const [loading, setLoading] = useState(false);
 
   // Step-specific validation
   const validateStep = (step: number) => {
@@ -91,7 +94,7 @@ export default function PreRegister() {
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
         errors.push("Enter a valid email address");
       }
-      if (!formData.phone_number) errors.push("Phone number is required");
+      if (!formData.phone) errors.push("Phone number is required");
       if (!formData.password) errors.push("Password is required");
       if (formData.password && formData.password.length < 8)
         errors.push("Password must be at least 8 characters.");
@@ -164,13 +167,13 @@ export default function PreRegister() {
 
   // Registration
   const submitAll = async () => {
-    // No formErrors state
+    setLoading(true);
     try {
       const form = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         // Handle multi-select fields (roles, subjects, leadershipRoles)
         if (
-          ["roles", "subjects", "leadershipRoles"].includes(key) &&
+          ["roles", "subjects", "leadership_role", "ageGroup"].includes(key) &&
           Array.isArray(value)
         ) {
           value.forEach((v) => {
@@ -202,9 +205,20 @@ export default function PreRegister() {
         Cookies.set("access", response.data.access, { secure: true });
         Cookies.set("refresh", response.data.refresh, { secure: true });
         toast.success("Registration successful!", toastOptionsSucces);
-        setTimeout(() => {
-          navigate("/jobs");
-        }, 1000);
+        sessionStorage.setItem("user", JSON.stringify(response.data.user));
+
+        // Store teacher_profile from either top-level or nested in user
+        const teacherProfile = response.data.user;
+        if (teacherProfile) {
+          if (teacherProfile.subscription_status) {
+            sessionStorage.setItem(
+              "subscription_status",
+              teacherProfile.subscription_status
+            );
+          }
+        }
+        navigate("/jobs");
+
         // Redirect to dashboard or login
         return;
       }
@@ -246,12 +260,34 @@ export default function PreRegister() {
         toast.error(message, toastOptions);
       }
       console.error("API error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="">
-      <ToastContainer />
+      {/* Loader overlay */}
+      {loading && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(255,255,255,0.7)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
       <div
         className="container-fluid login-container bg-white p-0 m-0"
         style={{ height: "100vh" }}

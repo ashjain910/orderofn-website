@@ -1,0 +1,4 @@
+/* Card hover background for AdminJobs */
+.job-card:hover {
+  background: #f3f8ff !important;
+}

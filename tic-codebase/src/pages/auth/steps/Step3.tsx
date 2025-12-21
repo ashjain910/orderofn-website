@@ -89,26 +89,25 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
 
           {/* AGE GROUP */}
           <label className="form-label">Age group</label>
-          <select
-            className="form-control"
-            value={
-              typeof formData.ageGroup === "string"
-                ? formData.ageGroup
-                : Array.isArray(formData.ageGroup) &&
-                  formData.ageGroup.length > 0
-                ? formData.ageGroup[0]
-                : ""
+          <Select
+            isMulti
+            options={[
+              { value: "3-5 Years", label: "3-5 Years" },
+              { value: "6-10 Years", label: "6-10 Years" },
+              { value: "11-15 Years", label: "11-15 Years" },
+              { value: "16+ Years", label: "16+ Years" },
+            ]}
+            closeMenuOnSelect={false}
+            value={formData.ageGroup || []}
+            onChange={(selected: any) =>
+              setFormData({
+                ...formData,
+                ageGroup: Array.isArray(selected) ? selected : [],
+              })
             }
-            onChange={(e) =>
-              setFormData({ ...formData, ageGroup: e.target.value })
-            }
-          >
-            <option value="">Please select</option>
-            <option value="3-5 Years">3-5 Years</option>
-            <option value="6-10 Years">6-10 Years</option>
-            <option value="11-15 Years">11-15 Years</option>
-            <option value="16+ Years">16+ Years</option>
-          </select>
+            classNamePrefix={"react-select"}
+            placeholder="Select age group(s)..."
+          />
 
           {/* CURRICULUM EXPERIENCE */}
           <label className="form-label">Curriculum experience</label>

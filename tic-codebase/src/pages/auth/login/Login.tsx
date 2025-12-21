@@ -4,7 +4,7 @@ import api from "../../../services/api";
 
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { toastOptions } from "../../../utils/toastOptions";
 import { FaSpinner } from "react-icons/fa";
 
@@ -24,6 +24,13 @@ export default function Login() {
       setRememberMe(true);
     }
   }, []);
+
+  useEffect(() => {
+    const access = Cookies.get("access");
+    if (access) {
+      navigate("/jobs", { replace: true });
+    }
+  }, [navigate]);
   const [loading, setLoading] = useState(false);
 
   // Login
@@ -65,12 +72,18 @@ export default function Login() {
         if (response.status === 200 && response.data.user) {
           sessionStorage.setItem("user", JSON.stringify(response.data.user));
         }
-        if (response.status === 200 && response.data.teacher_profile) {
-          sessionStorage.setItem(
-            "teacher_profile",
-            JSON.stringify(response.data.teacher_profile)
-          );
+
+        // Store teacher_profile from either top-level or nested in user
+        const teacherProfile = response.data.user;
+        if (teacherProfile) {
+          if (teacherProfile.subscription_status) {
+            sessionStorage.setItem(
+              "subscription_status",
+              teacherProfile.subscription_status
+            );
+          }
         }
+
         navigate("/jobs");
         // Redirect to dashboard
       }
@@ -102,7 +115,7 @@ export default function Login() {
             Cookies.remove("access");
             Cookies.remove("refresh");
             sessionStorage.removeItem("user");
-            navigate("/login");
+            navigate("/", { replace: true });
             toast.error("Session expired. Please log in again.", toastOptions);
             return;
           }
@@ -111,7 +124,7 @@ export default function Login() {
           Cookies.remove("access");
           Cookies.remove("refresh");
           sessionStorage.removeItem("user");
-          navigate("/login");
+          navigate("/", { replace: true });
           toast.error("Session expired. Please log in again.", toastOptions);
           return;
         }
@@ -179,7 +192,6 @@ export default function Login() {
                 marginRight: "auto",
               }}
             />
-            <ToastContainer />
             <h3 className="mb-3">Login</h3>
             <p className="text-muted mb-4">
               Enter your email and password to access your account.

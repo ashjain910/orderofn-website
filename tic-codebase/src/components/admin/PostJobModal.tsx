@@ -370,13 +370,15 @@ export default function PostJobModal({
         });
         setErrors({});
         if (onSuccess) onSuccess();
-        setTimeout(() => {
-          // Force a page refresh by navigating to the same path with a unique query param
-          window.location.reload();
-        }, 3000);
+        // setTimeout(() => {
+        //   // Force a page refresh by navigating to the same path with a unique query param
+        //   window.location.reload();
+        //   setLoading(false);
+        // }, 3000);
         onClose();
       }
     } catch (err: any) {
+      setLoading(false);
       let errorMsg =
         initialValues && initialValues.id
           ? "Failed to update job"
@@ -392,9 +394,9 @@ export default function PostJobModal({
           })
           .join(" | ");
       }
+      setLoading(false);
       toast.error(errorMsg || "Something went wrong", toastOptions);
     }
-    setLoading(false);
   };
 
   if (!show) return null;

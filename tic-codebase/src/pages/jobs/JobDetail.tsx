@@ -1,5 +1,5 @@
 import React from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import api from "../../services/api";
 import { useParams, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -8,7 +8,7 @@ import { HiLightBulb } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { Row, Col } from "react-bootstrap";
 import "./JobDetail.css";
-import { job_types, schoolTypes } from "../../constants/jobOptions";
+import { job_types } from "../../constants/jobOptions";
 
 function JobDetail() {
   const navigate = useNavigate();
@@ -192,7 +192,6 @@ function JobDetail() {
 
   return (
     <div className="container mt-5">
-      <ToastContainer style={{ zIndex: 9999 }} />
       <div className="row">
         <div className="col-lg-9 col-md-9 col-sm-12 col-12">
           <div className="card note_card_ad mb-3">
@@ -342,105 +341,6 @@ function JobDetail() {
               ></p>
             </div>
           </div>
-          {/* <div className="card">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-lg-9 col-md-9 col-sm-9 col-12">
-                  <div className="d-flex" style={{ width: "100%" }}>
-                    <div className="posted_div">
-                      <span className="text-muted small">
-                        Posted: {formatDateTime(job.date_posted).date} -{" "}
-                        {formatDateTime(job.date_posted).time}
-                      </span>
-                    </div>
-                    <img
-                      src={job.school_avatar || "/tic/school_image.png"}
-                      alt="Profile"
-                      className="job-avatar me-3"
-                    />
-                    <div style={{ flex: 1 }}>
-                      <h5 className="job-title mb-1">
-                        {job.title}
-                        <span
-                          className={`badge ms-2 ${
-                            job.badge === "Remote"
-                              ? "remote__badge__"
-                              : "causual__badge__"
-                          }`}
-                        >
-                          {job.badge}
-                        </span>
-                        {job.is_expired && (
-                          <span className="expired__badge__ ms-2">
-                            Job Expired
-                          </span>
-                        )}
-                        {job.status == "closed" && (
-                          <span className="expired__badge__ ms-2">
-                            Job Closed
-                          </span>
-                        )}
-                        {job.status === "applied" && (
-                          <span className="badge bg-success  txt__regular__sub__ ml-2">
-                            Applied
-                          </span>
-                        )}
-                      </h5>
-                      <p className="job-school">{job.school_name}</p>
-                      <p className="job-school mb-1">
-                        <FaLocationArrow style={{ marginRight: 4 }} />{" "}
-                        {job.location}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <ul className="ul txt__regular__">
-              <div className="row px-20">
-                <div className="col-lg-3 col-md-3 col-sm-4 col-6 list-item">
-                  <h4 className="job__headings__ mt-3">Job type</h4>
-                  <p className="job-description mb-0">{job.job_type}</p>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-4 col-6 list-item">
-                  <li>
-                    <h4 className="job__headings__ mt-3">Level</h4>
-                    <p className="job-description mb-0">{job.level}</p>
-                  </li>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-4 col-6 list-item">
-                  <li>
-                    <h4 className="job__headings__ mt-3">Closing Date</h4>
-                    <p className="job-description mb-0">{job.closing_date}</p>
-                  </li>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-4 col-6 list-item">
-                  <li>
-                    <h4 className="job__headings__ mt-3">Subjects</h4>
-                    <p className="job-description mb-0">{job.subjects}</p>
-                  </li>
-                </div>
-                <div className="col-lg-12 col-md-12 col-sm-12 col-12 list-item">
-                  <li>
-                    <h4 className="job__headings__ mt-3">Job requirements</h4>
-                    <p className="job-description mb-0">{job.requirements}</p>
-                  </li>
-                </div>
-                <div className="col-lg-12 col-md-12 col-sm-12 col-12 list-item">
-                  <li>
-                    <h4 className="job__headings__ mt-3">Job summary</h4>
-                    <p className="job-description mb-0">{job.summary}</p>
-                  </li>
-                </div>
-                <div className="col-lg-12 col-md-12 col-sm-12 col-12 list-item">
-                  <li>
-                    <h4 className="job__headings__ mt-3">Job description</h4>
-                    <p className="job-description mb-0">{job.description}</p>
-                  </li>
-                </div>
-              </div>
-            </ul>
-          </div> */}
 
           {job.status !== "closed" && !job.is_expired && !job.is_applied && (
             <>

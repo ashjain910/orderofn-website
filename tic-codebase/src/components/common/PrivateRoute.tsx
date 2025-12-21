@@ -1,9 +1,13 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 
 const PrivateRoute = () => {
+  const location = useLocation();
   const access = Cookies.get("access");
-  // You can add more logic to check token validity if needed
+  // Prevent redirect loop: if already on login, don't redirect again
+  if (!access && location.pathname === "/") {
+    return <Outlet />;
+  }
   return access ? <Outlet /> : <Navigate to="/" replace />;
 };
 

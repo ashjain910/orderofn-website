@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaChevronDown } from "react-icons/fa";
 import { useEffect } from "react";
 import TeacherProfileModal from "../../components/TeacherProfileModal";
 import AdminBaseApi from "../../services/admin-base";
@@ -225,7 +224,6 @@ export default function MyTeachers() {
                                   fontWeight: 600,
                                   cursor: "pointer",
                                   color: "#0F3F93",
-                                  textDecoration: "underline",
                                 }}
                                 onClick={() => {
                                   setSelectedTeacher(teacher);
@@ -262,7 +260,7 @@ export default function MyTeachers() {
                                     {teacher.phone}
                                   </div>
                                 </div>
-                                <div className="d-flex align-items-center text-muted mb-1">
+                                {/* <div className="d-flex align-items-center text-muted mb-1">
                                   <span
                                     style={{
                                       fontSize: 14,
@@ -275,7 +273,7 @@ export default function MyTeachers() {
                                   <p style={{ fontSize: 14, color: "#000000" }}>
                                     {teacher.teacher_profile.subject}
                                   </p>
-                                </div>
+                                </div> */}
                               </div>
                             </td>
                             <td className="txt__regular__">
@@ -293,31 +291,37 @@ export default function MyTeachers() {
                               </p>
                             </td>
                             <td>
-                              <p className="status__subscribed">
-                                Subscribed: {teacher.teacher_profile.english}
-                              </p>
-                              <p className="txt__regular__sub__ mt-2">
-                                <span>12 Feb 2024 to 12 Mar 2024</span>
-                              </p>
-                              <p className="txt__regular__sub__ mt-2">
-                                <span>1 Month</span>
+                              <p
+                                className={`txt__regular_sub__ ${
+                                  teacher.teacher_profile.english === "yes"
+                                    ? "text-success"
+                                    : "text-danger"
+                                }`}
+                                style={{ fontSize: 14 }}
+                              >
+                                Subscribed
                               </p>
                             </td>
                             <td>
                               <div className="d-flex align-items-center justify-content-end position-relative">
-                                {/* {teacher.selectedAction && (
                                 <span
                                   style={{
-                                    fontWeight: 600,
-                                    fontSize: 14,
+                                    marginLeft: 10,
                                     color: "#0F3F93",
-                                    marginRight: 8,
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                  role="button"
+                                  title="Send Message"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setMessageTeacherIdx(idx);
+                                    setShowMessageModal(true);
                                   }}
                                 >
-                                  {teacher.selectedAction}
+                                  <LuMessageSquareText size={20} />
                                 </span>
-                              )} */}
-                                <span
+                                {/* <span
                                   role="button"
                                   style={{
                                     display: "flex",
@@ -336,23 +340,6 @@ export default function MyTeachers() {
                                 >
                                   Action{" "}
                                   <FaChevronDown style={{ marginLeft: 4 }} />
-                                  <span
-                                    style={{
-                                      marginLeft: 10,
-                                      color: "#0F3F93",
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                    role="button"
-                                    title="Send Message"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setMessageTeacherIdx(idx);
-                                      setShowMessageModal(true);
-                                    }}
-                                  >
-                                    <LuMessageSquareText size={20} />
-                                  </span>
                                 </span>
                                 {dropdownOpenIdx === idx && (
                                   <div
@@ -385,7 +372,7 @@ export default function MyTeachers() {
                                       Remove from list
                                     </button>
                                   </div>
-                                )}
+                                )} */}
                               </div>
                             </td>
                           </tr>

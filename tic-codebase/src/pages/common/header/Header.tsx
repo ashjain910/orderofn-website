@@ -17,6 +17,9 @@ function NavScrollExample() {
       return null;
     }
   })();
+  // Get subscription_status from sessionStorage
+  const subscriptionStatus =
+    sessionStorage.getItem("subscription_status") || "";
 
   const logout = () => {
     Cookies.remove("access");
@@ -69,7 +72,8 @@ function NavScrollExample() {
               >
                 Subscription
               </Nav.Link>
-              <div className="d-flex">
+
+              <div className="d-flex align-items-center">
                 <img
                   src="/tic/profile_image.jpg"
                   alt="User Avatar"
@@ -81,12 +85,18 @@ function NavScrollExample() {
                     marginRight: "5px",
                   }}
                 />
+
                 <NavDropdown
                   title={user?.full_name || "User"}
                   id="navbarScrollingDropdown"
                 >
                   <NavDropdown.Item onClick={() => navigate("/user-profile")}>
                     Profile
+                  </NavDropdown.Item>
+                  <NavDropdown.Item>
+                    {subscriptionStatus && (
+                      <span>Plan: {subscriptionStatus}</span>
+                    )}
                   </NavDropdown.Item>
                   <NavDropdown.Item onClick={() => logout()}>
                     Logout

@@ -1,3 +1,4 @@
+import "./jobs.css";
 // Helper to format UTC date string
 const formatDateTime = (utcString: string) => {
   if (!utcString) return { date: "", time: "" };
@@ -31,7 +32,7 @@ const formatDateTime = (utcString: string) => {
   };
 };
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import BaseApi from "../../services/api";
 import Cookies from "js-cookie";
 import {
@@ -42,6 +43,7 @@ import {
 } from "react-icons/fa";
 import { MdLocationPin } from "react-icons/md";
 import React from "react";
+import { Modal } from "react-bootstrap";
 
 const statusTabs = [
   { key: "all", label: "All Jobs" },
@@ -91,6 +93,12 @@ function Jobs() {
   const location = useLocation();
   const [loading, setLoading] = React.useState(true);
 
+  // Modal for payment status (success/failure)
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<
+    "success" | "failed" | null
+  >(null);
+
   const [activeTab, setActiveTab] = useState("all");
   const [page, setPage] = useState(1);
   const [savingJobId, setSavingJobId] = useState<number | null>(null);
@@ -101,6 +109,8 @@ function Jobs() {
   const [filterjob_type, setFilterjob_type] = useState("");
   const [filterSchoolType, setFilterSchoolType] = useState("");
   const [filterGender, setFilterGender] = useState("");
+  // New: Active jobs filter (checked by default)
+  const [filterActive, setFilterActive] = useState(true);
 
   // Jobs data state (for API updates)
   const [jobsData, setJobsData] = useState<Job[]>([]);
@@ -114,11 +124,11 @@ function Jobs() {
 
   const navigate = useNavigate();
 
-  // Show payment success popup and redirect if needed
+  // Show payment status popup and redirect if needed
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
     const params = new URLSearchParams(location.search);
     if (params.get("checkout") === "success") {
-      // Fetch profile and store subscription_status
       BaseApi.get("/profile")
         .then((res) => {
           if (res && res.data && res.data.subscription_status) {
@@ -127,17 +137,29 @@ function Jobs() {
               res.data.subscription_status
             );
           }
+          setPaymentStatus("success");
         })
-        .catch(() => {})
+        .catch(() => {
+          setPaymentStatus("failed");
+        })
         .finally(() => {
-          toast.success("Payment successful! Subscription activated.", {
-            autoClose: 2500,
-            onClose: () => navigate("/jobs", { replace: true }),
-          });
+          setShowPaymentModal(true);
+          timeoutId = setTimeout(() => {
+            setShowPaymentModal(false);
+            navigate("/jobs", { replace: true });
+          }, 5000);
         });
     } else if (params.get("checkout") === "canceled") {
-      toast.error("Payment canceled.", { autoClose: 2500 });
+      setPaymentStatus("failed");
+      setShowPaymentModal(true);
+      timeoutId = setTimeout(() => {
+        setShowPaymentModal(false);
+        navigate("/jobs", { replace: true });
+      }, 5000);
     }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [location.search, navigate]);
 
   // Fetch jobs on initial page load with all filters
@@ -175,20 +197,24 @@ function Jobs() {
   useEffect(() => {
     const fetchInitialJobs = async () => {
       try {
-        const response = await BaseApi.get("/jobs", {
-          params: {
-            title: filterTitle,
-            jobType: filterjob_type,
-            schoolType: filterSchoolType,
-            gender: filterGender,
-            status: "all",
-            page: 1,
-            action: "init",
-            page_size: JOBS_PER_PAGE,
-            is_applied: activeTab === "applied" ? true : undefined,
-            is_saved: activeTab === "saved" ? true : undefined,
-          },
-        });
+        const params: any = {
+          title: filterTitle,
+          jobType: filterjob_type,
+          schoolType: filterSchoolType,
+          gender: filterGender,
+          page: 1,
+          action: "init",
+          page_size: JOBS_PER_PAGE,
+          is_applied: activeTab === "applied" ? true : undefined,
+          is_saved: activeTab === "saved" ? true : undefined,
+        };
+        if (filterActive) {
+          params.status = "active";
+          params.is_expired = false;
+        } else {
+          params.status = "all";
+        }
+        const response = await BaseApi.get("/jobs", { params });
         setJobsData(response.data.results || []);
         setResultsCount(response.data.count || 0);
         setTabCounts((prev) => ({ ...prev, all: response.data.count || 0 }));
@@ -231,20 +257,24 @@ function Jobs() {
   // API call for pagination with filters
   const fetchJobsWithFiltersAndPage = async (pageNum: number) => {
     try {
-      const response = await BaseApi.get("/jobs", {
-        params: {
-          title: filterTitle,
-          jobType: filterjob_type,
-          schoolType: filterSchoolType,
-          gender: filterGender,
-          status: activeTab,
-          page: pageNum,
-          action: "paginate",
-          page_size: JOBS_PER_PAGE,
-          is_applied: activeTab === "applied" ? true : undefined,
-          is_saved: activeTab === "saved" ? true : undefined,
-        },
-      });
+      const params: any = {
+        title: filterTitle,
+        jobType: filterjob_type,
+        schoolType: filterSchoolType,
+        gender: filterGender,
+        page: pageNum,
+        action: "paginate",
+        page_size: JOBS_PER_PAGE,
+        is_applied: activeTab === "applied" ? true : undefined,
+        is_saved: activeTab === "saved" ? true : undefined,
+      };
+      if (filterActive) {
+        params.status = "active";
+        params.is_expired = false;
+      } else {
+        params.status = activeTab;
+      }
+      const response = await BaseApi.get("/jobs", { params });
       console.log("Pagination API response:", response.data);
       setJobsData(response.data.results || []);
       setResultsCount(response.data.count || 0);
@@ -261,20 +291,24 @@ function Jobs() {
   // API call to fetch jobs for a tab with all filters
   const fetchJobsForTab = async (tabKey: string) => {
     try {
-      const response = await BaseApi.get("/jobs", {
-        params: {
-          title: filterTitle,
-          jobType: filterjob_type,
-          schoolType: filterSchoolType,
-          gender: filterGender,
-          status: tabKey,
-          page: 1,
-          action: "tab",
-          page_size: JOBS_PER_PAGE,
-          is_applied: tabKey === "applied" ? true : undefined,
-          is_saved: tabKey === "saved" ? true : undefined,
-        },
-      });
+      const params: any = {
+        title: filterTitle,
+        jobType: filterjob_type,
+        schoolType: filterSchoolType,
+        gender: filterGender,
+        page: 1,
+        action: "tab",
+        page_size: JOBS_PER_PAGE,
+        is_applied: tabKey === "applied" ? true : undefined,
+        is_saved: tabKey === "saved" ? true : undefined,
+      };
+      if (filterActive) {
+        params.status = "active";
+        params.is_expired = false;
+      } else {
+        params.status = tabKey;
+      }
+      const response = await BaseApi.get("/jobs", { params });
       setJobsData(response.data.results || []);
       setResultsCount(response.data.count || 0);
       // Update the count for the selected tab with the count from the API response
@@ -407,7 +441,12 @@ function Jobs() {
   };
   const sendFiltersToApi = async (filters: any) => {
     try {
-      const response = await BaseApi.get("/jobs", { params: filters });
+      const params: any = { ...filters };
+      if (filterActive) {
+        params.status = "active";
+        params.is_expired = false;
+      }
+      const response = await BaseApi.get("/jobs", { params });
       setJobsData(response.data.results || []); // expects { results: [...] }
       setResultsCount(response.data.count || 0);
     } catch (error) {
@@ -442,6 +481,7 @@ function Jobs() {
     setFilterjob_type("");
     setFilterSchoolType("");
     setFilterGender("");
+    setFilterActive(true); // Reset to checked on clear
     setPage(1);
     await sendFiltersToApi({
       title: "",
@@ -461,7 +501,52 @@ function Jobs() {
 
   return (
     <div className="container">
-      <ToastContainer style={{ zIndex: 9999 }} />
+      <Modal show={showPaymentModal} backdrop="static" keyboard={false}>
+        <Modal.Body>
+          <div className="d-flex align-items-center justify-content-center">
+            <div className=" text-center p-4">
+              {/* Icon */}
+              <div className="d-flex justify-content-center mb-3">
+                <div
+                  className="d-flex align-items-center justify-content-center"
+                  style={{
+                    width: "90px",
+                    height: "90px",
+                    borderRadius: "50%",
+                    backgroundColor:
+                      paymentStatus === "success" ? "#0d3b85" : "#dc3545",
+                    color: "#fff",
+                    fontSize: "40px",
+                  }}
+                >
+                  {paymentStatus === "success" ? "✓" : "✗"}
+                </div>
+              </div>
+              {/* Title */}
+              <h5 className="fw-semibold mb-2">
+                {paymentStatus === "success"
+                  ? "Subscription Successful"
+                  : "Subscription Failed"}
+              </h5>
+              {/* Spinner */}
+              <div className="d-flex justify-content-center my-3">
+                <span
+                  className={`spinner-border ${
+                    paymentStatus === "success" ? "text-primary" : "text-danger"
+                  }`}
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+              </div>
+              {/* Description */}
+              <p className="text-muted mb-4">
+                Please wait
+                <br /> while we redirect you
+              </p>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
 
       <div className="row">
         {/* Left column: tabs, filters, job cards */}
@@ -551,9 +636,26 @@ function Jobs() {
                     ))}
                   </select>
                 </div>
+                {/* Active jobs filter checkbox */}
+                <div className="mb-1 col-lg-4 col-md-4 col-sm-6 col-12 d-flex align-items-center">
+                  <input
+                    type="checkbox"
+                    className="form-check-input me-1"
+                    id="activeJobsCheckbox"
+                    checked={filterActive}
+                    onChange={() => setFilterActive((prev) => !prev)}
+                  />
+                  <label
+                    className="form-label mt-2"
+                    style={{ fontSize: 14 }}
+                    htmlFor="activeJobsCheckbox"
+                  >
+                    Active Jobs
+                  </label>
+                </div>
 
-                <div className="mb-1 col-lg-8 col-md-8 col-sm-6 col-12">
-                  <div className="d-flex gap-2 mt-25">
+                <div className="mb-1 col-lg-12 col-md-12 col-sm-12 col-12">
+                  <div className="d-flex gap-2 mt-2">
                     <button
                       className="btn btn-primary"
                       onClick={handleApplyFilters}
@@ -597,7 +699,9 @@ function Jobs() {
               {jobsData.map((job) => (
                 <div
                   key={job.id}
-                  className={`card mb-3 shadow-sm${job.is_expired ? "" : ""}`}
+                  className={`card mb-3 shadow-sm job-card${
+                    job.is_expired ? "" : ""
+                  }`}
                   style={{
                     cursor: "pointer",
                     ...(job.is_expired

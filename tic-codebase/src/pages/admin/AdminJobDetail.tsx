@@ -434,22 +434,35 @@ function AdminJobDetail() {
                   </div>
                   <div className="mb-3">
                     <label className="form-label">Interview Time</label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      value={interviewForm.interview_time}
-                      onChange={(e) => {
+                    <DatePicker
+                      selected={
+                        interviewForm.interview_time
+                          ? new Date(
+                              `1970-01-01T${interviewForm.interview_time}`
+                            )
+                          : null
+                      }
+                      onChange={(date: Date | null) => {
                         setInterviewForm((f) => ({
                           ...f,
-                          interview_time: e.target.value,
+                          interview_time: date
+                            ? date.toTimeString().slice(0, 5)
+                            : "",
                         }));
                         setInterviewErrors((er) => ({
                           ...er,
-                          interview_time: e.target.value
+                          interview_time: date
                             ? ""
                             : "Interview time is required.",
                         }));
                       }}
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={1}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      className="form-control"
+                      placeholderText="Select time"
                     />
                     {interviewErrors.interview_time && (
                       <div className="text-danger small mt-1">

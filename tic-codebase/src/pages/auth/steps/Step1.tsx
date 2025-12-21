@@ -13,6 +13,35 @@ export default function Step1({
   nextStep,
   validateStep,
 }: Step1Props) {
+  // Robust validation for all required fields
+  const defaultValidateStep = () => {
+    let valid = true;
+    // Email
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      valid = false;
+    }
+    // Phone
+    if (!formData.phone) {
+      valid = false;
+    }
+    // Password
+    if (!formData.password || formData.password.length < 8) {
+      valid = false;
+    }
+    // Qualified
+    if (!formData.qualified) {
+      valid = false;
+    }
+    // English
+    if (!formData.english) {
+      valid = false;
+    }
+    // Position
+    if (!Array.isArray(formData.position) || formData.position.length === 0) {
+      valid = false;
+    }
+    return valid;
+  };
   const [touched, setTouched] = useState<any>({});
   const handleBlur = (field: string) => {
     setTouched((prev: any) => ({ ...prev, [field]: true }));
@@ -21,13 +50,16 @@ export default function Step1({
     // Mark all as touched on submit
     setTouched({
       email: true,
-      phone_number: true,
+      phone: true,
       password: true,
       qualified: true,
       english: true,
       position: true,
     });
-    if (!validateStep || validateStep()) {
+    // Use provided validateStep or fallback to default
+    const isValid = validateStep ? validateStep() : defaultValidateStep();
+    if (isValid) {
+      console.log("Step 1 data is valid:", isValid, formData);
       nextStep();
     }
   };
@@ -74,7 +106,7 @@ export default function Step1({
             type="text"
             placeholder="What is your email"
             className="form-control"
-            value={formData.email}
+            value={formData.email || ""}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
@@ -90,7 +122,7 @@ export default function Step1({
             >
               *
             </span>
-            {touched.phone_number && !formData.phone_number && (
+            {touched.phone && !formData.phone && (
               <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
                 Phone number is required
               </span>
@@ -101,19 +133,19 @@ export default function Step1({
             type="text"
             placeholder="Enter your phone number"
             className="form-control"
-            value={formData.phone_number}
+            value={formData.phone || ""}
             onChange={(e) => {
               // Allow only digits, plus, and spaces
               const val = e.target.value;
               if (/^[0-9+ ]*$/.test(val)) {
-                setFormData({ ...formData, phone_number: val });
+                setFormData({ ...formData, phone: val });
               }
             }}
-            onBlur={() => handleBlur("phone_number")}
+            onBlur={() => handleBlur("phone")}
           />
-          {touched.phone_number &&
-            formData.phone_number &&
-            !/^[0-9+ ]+$/.test(formData.phone_number) && (
+          {touched.phone &&
+            formData.phone &&
+            !/^[0-9+ ]+$/.test(formData.phone) && (
               <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
                 Only numbers, + and spaces allowed
               </span>
@@ -146,7 +178,7 @@ export default function Step1({
             type="password"
             placeholder="Set password"
             className="form-control"
-            value={formData.password}
+            value={formData.password || ""}
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
@@ -291,8 +323,9 @@ export default function Step1({
                   id={`position_${option.value}`}
                   value={option.value}
                   checked={
-                    Array.isArray(formData.position) &&
-                    formData.position.includes(option.value)
+                    Array.isArray(formData.position)
+                      ? formData.position.includes(option.value)
+                      : false
                   }
                   onChange={(e) => {
                     let newPositions = Array.isArray(formData.position)

@@ -1,8 +1,11 @@
+// Add at the top or after imports
+import "./admin-jobs.css";
 import { useState, useEffect } from "react";
 import AdminBaseApi from "../../services/admin-base";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { MdLocationPin } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { job_types, schoolTypes } from "../../constants/jobOptions";
 
 const statusTabs = [
   { key: "active", label: "Active Jobs" },
@@ -30,9 +33,12 @@ interface Job {
   status?: string;
   is_expired?: boolean;
   applications_count?: number;
+  school_type?: string;
 }
 
 function Jobs() {
+  // State to control post job modal
+  const [showPostJobModal, setShowPostJobModal] = useState(false);
   // Helper to format UTC date string
   const formatDateTime = (utcString: string) => {
     if (!utcString) return { date: "", time: "" };
@@ -72,6 +78,9 @@ function Jobs() {
     filterjob_type: "",
     filterSchoolType: "",
   });
+  // Temporary filter states for controlled selects
+  const [tempFilterJobType, setTempFilterJobType] = useState("");
+  const [tempFilterSchoolType, setTempFilterSchoolType] = useState("");
   const [jobsData, setJobsData] = useState<Job[]>([]);
   const [resultsCount, setResultsCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -125,13 +134,14 @@ function Jobs() {
     setQuery((prev) => ({
       ...prev,
       page: 1,
-      filterTitle: prev.filterTitle,
-      filterjob_type: prev.filterjob_type,
-      filterSchoolType: prev.filterSchoolType,
+      filterjob_type: tempFilterJobType,
+      filterSchoolType: tempFilterSchoolType,
     }));
   };
 
   const handleClearFilters = () => {
+    setTempFilterJobType("");
+    setTempFilterSchoolType("");
     setQuery((prev) => ({
       ...prev,
       page: 1,
@@ -149,13 +159,7 @@ function Jobs() {
   };
 
   const totalPages = Math.ceil(resultsCount / JOBS_PER_PAGE);
-  const {
-    tab: activeTab,
-    page,
-    filterTitle,
-    filterjob_type,
-    filterSchoolType,
-  } = query;
+  const { tab: activeTab, page, filterTitle } = query;
 
   return (
     <div className="container">
@@ -183,32 +187,30 @@ function Jobs() {
                 <label className="form-label">Position Type</label>
                 <select
                   className="form-select"
-                  value={filterjob_type}
-                  onChange={(e) =>
-                    setQuery((prev) => ({
-                      ...prev,
-                      filterjob_type: e.target.value,
-                    }))
-                  }
+                  value={tempFilterJobType}
+                  onChange={(e) => setTempFilterJobType(e.target.value)}
                 >
-                  <option value="">Select job type</option>
-                  {/* ...existing code... */}
+                  <option value="">Select position type</option>
+                  {job_types.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="mb-1 col-12">
                 <label className="form-label">School Type</label>
                 <select
                   className="form-select"
-                  value={filterSchoolType}
-                  onChange={(e) =>
-                    setQuery((prev) => ({
-                      ...prev,
-                      filterSchoolType: e.target.value,
-                    }))
-                  }
+                  value={tempFilterSchoolType}
+                  onChange={(e) => setTempFilterSchoolType(e.target.value)}
                 >
                   <option value="">Select school type</option>
-                  {/* ...existing code... */}
+                  {schoolTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="mb-1 col-12">
@@ -271,12 +273,83 @@ function Jobs() {
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
+          ) : jobsData.length === 0 ? (
+            <div
+              className="d-flex flex-column align-items-center justify-content-center"
+              style={{ minHeight: 200 }}
+            >
+              {query.filterTitle ||
+              query.filterjob_type ||
+              query.filterSchoolType ? (
+                <>
+                  <div className="mb-2">No data found.</div>
+                  <button
+                    className="btn btn-outline-primary"
+                    onClick={handleClearFilters}
+                  >
+                    Clear filters
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="mb-2">
+                    No jobs found. Post a job to see here.
+                  </div>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setShowPostJobModal(true)}
+                  >
+                    Post Job
+                  </button>
+                  {/* Post Job Modal */}
+                  {showPostJobModal && (
+                    <div
+                      className="modal fade show"
+                      style={{ display: "block" }}
+                      tabIndex={-1}
+                    >
+                      <div className="modal-dialog">
+                        <div className="modal-content">
+                          <div className="modal-header">
+                            <h5 className="modal-title">Post Job</h5>
+                            <button
+                              type="button"
+                              className="btn-close"
+                              onClick={() => setShowPostJobModal(false)}
+                            ></button>
+                          </div>
+                          <div className="modal-body">
+                            {/* TODO: Add post job form here */}
+                            <p>Post job form goes here.</p>
+                          </div>
+                          <div className="modal-footer">
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              onClick={() => setShowPostJobModal(false)}
+                            >
+                              Close
+                            </button>
+                            <button type="button" className="btn btn-primary">
+                              Submit
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="modal-backdrop fade show"></div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           ) : (
             <>
               {jobsData.map((job) => (
                 <div
                   key={job.id}
-                  className={`card mb-3 shadow-sm${job.is_expired ? "" : ""}`}
+                  className={`card mb-3 shadow-sm job-card${
+                    job.is_expired ? "" : ""
+                  }`}
                   style={{
                     cursor: "pointer",
                     ...(job.is_expired ? { backgroundColor: "#FFEDED" } : {}),
@@ -292,26 +365,22 @@ function Jobs() {
                       />
                       <div style={{ flex: 1 }}>
                         <div className="posted_div">
-                          <span className="text-muted small">
+                          <span className=" txt__regular__sub__">
                             Posted: {formatDateTime(job.date_posted).date} at{" "}
                             {formatDateTime(job.date_posted).time}
                           </span>
                           {typeof job.applications_count !== "undefined" && (
-                            <span className="text-muted small d-block mt-1">
+                            <span className=" text-success  txt__regular__sub__ d-block mt-1">
                               Applications: {job.applications_count}
                             </span>
                           )}
                         </div>
                         <h5 className="job-title d-flex align-items-center mb-1">
                           {job.title}
-                          <span
-                            className={`badge ms-2 ${
-                              job.job_type === "Remote"
-                                ? "remote__badge__"
-                                : "casual__badge__"
-                            }`}
-                          >
-                            {job.job_type}
+                          <span className={`badge casual__badge__ ms-2 `}>
+                            {schoolTypes.find(
+                              (t) => t.value === job.school_type
+                            )?.label || job.school_type}
                           </span>
                           {job.is_expired && (
                             <span className="badge bg-danger txt__regular__  ms-2">

@@ -42,11 +42,11 @@ function Step4({ formData, setFormData, nextStep, prevStep }: Step4Props) {
                   { value: "principal", label: "Principal" },
                 ]}
                 closeMenuOnSelect={false}
-                value={formData.leadershipRoles || []}
+                value={formData.leadership_role || []}
                 onChange={(selected: any) =>
                   setFormData({
                     ...formData,
-                    leadershipRoles: Array.isArray(selected) ? selected : [],
+                    leadership_role: Array.isArray(selected) ? selected : [],
                   })
                 }
                 classNamePrefix={"react-select"}

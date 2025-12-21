@@ -1,4 +1,5 @@
 import React from "react";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import {
   Routes,
@@ -7,7 +8,6 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import Cookies from "js-cookie";
 import Login from "./pages/auth/login/Login";
 import Jobs from "./pages/jobs/Jobs";
 import JobDetail from "./pages/jobs/JobDetail";
@@ -26,7 +26,6 @@ import AdminJobs from "./pages/admin/AdminJobs";
 import MyTeachers from "./pages/admin/MyTeachers";
 import AdminJobDetail from "./pages/admin/AdminJobDetail";
 import PostJob from "./pages/admin/post-jobs";
-import { ToastContainer } from "react-toastify";
 import UserProfile from "./pages/user-profile/UserProfile";
 import SubscriptionPlans from "./pages/user/SubscriptionPlans";
 
@@ -34,20 +33,18 @@ import SubscriptionPlans from "./pages/user/SubscriptionPlans";
 
 function App() {
   // Helper to check login (access token in cookies)
-  const isLoggedIn = !!Cookies.get("access");
   return (
     <HashRouter>
       <LogoutListener />
       <ScrollToTop />
+
       <Routes>
-        {/* 👇 DEFAULT ROUTE (Login page will load on app start) */}
-        <Route
-          path="/"
-          element={isLoggedIn ? <Navigate to="/jobs" replace /> : <Login />}
-        />
+        {/* Public */}
+        <Route path="/" element={<Login />} />
         <Route path="/pre-register" element={<PreRegister />} />
         <Route path="/admin" element={<AdminLogin />} />
-        {/* User routes */}
+
+        {/* User Protected */}
         <Route element={<PrivateRoute />}>
           <Route element={<Header />}>
             <Route path="/jobs" element={<Jobs />} />
@@ -60,7 +57,7 @@ function App() {
           </Route>
         </Route>
 
-        {/* Admin routes - use AdminHeader as layout */}
+        {/* Admin Protected */}
         <Route element={<PrivateAdminRoute />}>
           <Route element={<AdminHeader />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -72,28 +69,27 @@ function App() {
           </Route>
         </Route>
 
-        {/* Catch-all: redirect to jobs if logged in, else login */}
-        <Route
-          path="*"
-          element={<Navigate to={isLoggedIn ? "/jobs" : "/"} replace />}
-        />
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <ToastContainer style={{ zIndex: 9999 }} />
     </HashRouter>
   );
 }
 
 function LogoutListener() {
   const navigate = useNavigate();
+
   React.useEffect(() => {
     const logoutHandler = () => {
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true }); // ✅ FIXED
     };
+
     window.addEventListener("tic-logout", logoutHandler);
     return () => {
       window.removeEventListener("tic-logout", logoutHandler);
     };
   }, [navigate]);
+
   return null;
 }
 

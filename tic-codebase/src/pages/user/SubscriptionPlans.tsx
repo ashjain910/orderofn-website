@@ -49,7 +49,7 @@ export default function PricingPlans() {
   // Read subscription_status from localStorage
   const subscriptionStatus =
     typeof window !== "undefined"
-      ? localStorage.getItem("subscription_status")
+      ? sessionStorage.getItem("subscription_status")
       : null;
   // If active, premium is active, else default to basic
   const isPremiumActive = subscriptionStatus === "active";
@@ -148,6 +148,7 @@ export default function PricingPlans() {
                     <h6 className="text-start fw-semibold mb-0">
                       {plan.title}
                     </h6>
+                    {/* Only show 'Active Plan' for basic if premium is NOT active */}
                     {plan.id === "basic" && !isPremiumActive && (
                       <span
                         className="badge bg-success"
@@ -156,6 +157,7 @@ export default function PricingPlans() {
                         Active Plan
                       </span>
                     )}
+                    {/* Only show 'Active Plan' for premium if premium is active */}
                     {plan.id === "premium" && isPremiumActive && (
                       <span
                         className="badge bg-success"
@@ -202,7 +204,7 @@ export default function PricingPlans() {
                     {plan.id === "basic"
                       ? selected === "basic"
                         ? "Active"
-                        : "Active"
+                        : "Choose this plan"
                       : plan.id === "premium" && isPremiumActive
                       ? "Active"
                       : selected === plan.id

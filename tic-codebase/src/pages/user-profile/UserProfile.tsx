@@ -1,8 +1,15 @@
+import { getLeadershipRoleLabel } from "../../constants/leadershipRoles";
 import React, { useEffect, useState, useMemo } from "react";
 import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 import { fetchUserProfile } from "./api";
-import { ROLES_OPTIONS, SUBJECT_OPTIONS } from "../../common/subjectOptions";
 import EditProfileModal from "../../components/EditProfileModal";
+import { ROLES_OPTIONS, SUBJECT_OPTIONS } from "../../common/subjectOptions";
+
+const POSITION_OPTIONS = [
+  { label: "Teacher", value: "teacher" },
+  { label: "Senior Leader", value: "leader" },
+  { label: "Other", value: "other" },
+];
 
 const UserProfile: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -10,11 +17,15 @@ const UserProfile: React.FC = () => {
   const [showEdit, setShowEdit] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
     fetchUserProfile().then((data) => {
-      setProfile(data);
-      setLoading(false);
+      if (isMounted) setProfile(data);
+      if (isMounted) setLoading(false);
     });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const openEdit = () => {
@@ -23,7 +34,7 @@ const UserProfile: React.FC = () => {
 
   // Memoize editFormData so it only changes when profile or showEdit changes
   const memoizedEditFormData = useMemo(() => {
-    if (!showEdit || !profile) return null;
+    if (!profile) return null;
     const p = profile || {};
     return {
       email: p.email || "",
@@ -31,7 +42,7 @@ const UserProfile: React.FC = () => {
       qualified: p.teacher_profile?.qualified || "",
       english: p.teacher_profile?.english || "",
       position: p.teacher_profile?.position || "",
-      phone_number: p.phone || "",
+      phone: p.phone || "",
       firstName: p.first_name || "",
       lastName: p.last_name || "",
       gender: p.teacher_profile?.gender || "",
@@ -43,22 +54,26 @@ const UserProfile: React.FC = () => {
       subjects: p.teacher_profile?.subjects || [],
       ageGroup: p.teacher_profile?.age_group || "",
       curriculum: p.teacher_profile?.curriculum || [],
-      leadershipRoles: p.teacher_profile?.leadership_role || [],
+      leadership_role: p.teacher_profile?.leadership_role || [],
       job_alerts:
         p.teacher_profile?.job_alerts === true
           ? "yes"
           : p.teacher_profile?.job_alerts === false
           ? "no"
           : p.teacher_profile?.job_alerts || "",
-      available_day: p.teacher_profile?.available_day || "",
+      available_date: p.teacher_profile?.available_date || "",
     };
-  }, [profile, showEdit]);
+  }, [profile]);
 
   const closeEdit = () => setShowEdit(false);
 
-  const handleEditSave = () => {
+  // After saving, refetch profile data and close modal (no reload)
+  const handleEditSave = async () => {
     setShowEdit(false);
-    window.location.reload(); // reload page after edit
+    setLoading(true);
+    const data = await fetchUserProfile();
+    setProfile(data);
+    setLoading(false);
   };
 
   if (loading) {
@@ -144,7 +159,10 @@ const UserProfile: React.FC = () => {
               <div className="mb-1">
                 <small className="text-muted">Gender :</small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.gender}
+                  {profile?.teacher_profile?.gender
+                    ? profile.teacher_profile.gender[0].toUpperCase() +
+                      profile.teacher_profile.gender.slice(1)
+                    : "-"}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
@@ -152,7 +170,10 @@ const UserProfile: React.FC = () => {
                   Are you a fully qualified teacher / senior leader? :
                 </small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.qualified}
+                  {profile?.teacher_profile?.qualified
+                    ? profile.teacher_profile.qualified[0].toUpperCase() +
+                      profile.teacher_profile.qualified.slice(1)
+                    : "-"}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
@@ -160,7 +181,10 @@ const UserProfile: React.FC = () => {
                   Are you a fluent English speaker? :
                 </small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.english}
+                  {profile?.teacher_profile?.english
+                    ? profile.teacher_profile.english[0].toUpperCase() +
+                      profile.teacher_profile.english.slice(1)
+                    : "-"}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
@@ -168,7 +192,23 @@ const UserProfile: React.FC = () => {
                   What positions are you looking for? :
                 </small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.positions}
+                  {Array.isArray(profile?.teacher_profile?.position)
+                    ? profile.teacher_profile.position
+                        .map((posVal: string) => {
+                          const found = POSITION_OPTIONS.find(
+                            (p) => p.value === posVal
+                          );
+                          return found ? found.label : posVal;
+                        })
+                        .join(", ")
+                    : (() => {
+                        const found = POSITION_OPTIONS.find(
+                          (p) => p.value === profile?.teacher_profile?.position
+                        );
+                        return found
+                          ? found.label
+                          : profile?.teacher_profile?.position;
+                      })()}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
@@ -240,7 +280,30 @@ const UserProfile: React.FC = () => {
               <div className="d-flex mb-2 ">
                 <small className="text-muted">Age group :</small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.age_group}
+                  {(() => {
+                    const AGE_GROUP_OPTIONS = [
+                      { value: "3-5 Years", label: "3-5 Years" },
+                      { value: "6-10 Years", label: "6-10 Years" },
+                      { value: "11-15 Years", label: "11-15 Years" },
+                      { value: "16+ Years", label: "16+ Years" },
+                    ];
+                    const val = profile?.teacher_profile?.age_group;
+                    if (Array.isArray(val)) {
+                      return val
+                        .map((ag: string) => {
+                          const found = AGE_GROUP_OPTIONS.find(
+                            (opt) => opt.value === ag
+                          );
+                          return found ? found.label : ag;
+                        })
+                        .join(", ");
+                    } else {
+                      const found = AGE_GROUP_OPTIONS.find(
+                        (opt) => opt.value === val
+                      );
+                      return found ? found.label : val;
+                    }
+                  })()}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
@@ -255,8 +318,20 @@ const UserProfile: React.FC = () => {
                 <small className="text-muted">Leadership roles :</small>
                 <small className="ml-2">
                   {Array.isArray(profile?.teacher_profile?.leadership_role)
-                    ? profile.teacher_profile.leadership_role.join(", ")
-                    : profile?.teacher_profile?.leadership_role}
+                    ? profile.teacher_profile.leadership_role.map(
+                        (role: string, idx: number) => (
+                          <span key={role}>
+                            {getLeadershipRoleLabel(role)}
+                            {idx <
+                            profile.teacher_profile.leadership_role.length - 1
+                              ? ", "
+                              : ""}
+                          </span>
+                        )
+                      )
+                    : getLeadershipRoleLabel(
+                        profile.teacher_profile?.leadership_role
+                      )}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
@@ -272,7 +347,7 @@ const UserProfile: React.FC = () => {
               <div className="d-flex mb-2 ">
                 <small className="text-muted">I will be available from :</small>
                 <small className="ml-2">
-                  {profile?.teacher_profile?.available_day}
+                  {profile?.teacher_profile?.available_date}
                 </small>
               </div>
             </div>
@@ -313,7 +388,26 @@ const UserProfile: React.FC = () => {
               )}
             </div>
             <div className="card p-4 mt-4">
-              <h6>Subcription</h6>
+              {profile?.subscription_status &&
+              profile.subscription_status !== "none" ? (
+                <div className="text-success">
+                  <strong>Congratulations!</strong> Your plan is{" "}
+                  <strong>
+                    {profile.subscription_status.charAt(0).toUpperCase() +
+                      profile.subscription_status.slice(1)}
+                  </strong>{" "}
+                  and active. Enjoy full access!
+                </div>
+              ) : (
+                <div className="txt-muted text-center">
+                  No active subscription
+                  <br></br> Subscribe to get the benefit of full access.
+                  <br />
+                  <button className="btn btn-primary mt-3">
+                    Subscribe now
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

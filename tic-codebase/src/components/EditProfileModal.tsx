@@ -6,10 +6,12 @@ import { countries } from "../pages/auth/steps/Step2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import api from "../services/api";
-import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { toastOptions } from "../utils/toastOptions";
-import { useNavigate } from "react-router-dom";
+import {
+  LEADERSHIP_ROLE_OPTIONS,
+  getLeadershipRoleLabel,
+} from "../constants/leadershipRoles";
 
 interface EditProfileModalProps {
   show: boolean;
@@ -22,14 +24,20 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   show,
   onClose,
   initialData,
-  onSave,
 }) => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState<any>(initialData || {});
+  const [saving, setSaving] = useState(false);
+  console.log("Form data initialized:", initialData);
 
   React.useEffect(() => {
-    setFormData(initialData || {});
-  }, [initialData, show]);
+    if (
+      show &&
+      initialData &&
+      JSON.stringify(formData) !== JSON.stringify(initialData)
+    ) {
+      setFormData(initialData);
+    }
+  }, [show, initialData]);
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -37,12 +45,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
     try {
       const form = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        // Handle multi-select fields (roles, subjects, leadershipRoles)
+        // Handle multi-select fields (roles, subjects, leadership_role)
         if (
-          ["roles", "subjects", "leadershipRoles"].includes(key) &&
+          ["roles", "subjects", "leadership_role", "ageGroup"].includes(key) &&
           Array.isArray(value)
         ) {
           value.forEach((v: any) => {
@@ -66,14 +75,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       const response = await api.patch("/profile/update", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      if (
-        (response.status === 200 || response.status === 201) &&
-        response.data.access &&
-        response.data.refresh
-      ) {
-        Cookies.set("access", response.data.access, { secure: true });
-        Cookies.set("refresh", response.data.refresh, { secure: true });
+      if (response.status === 200 || response.status === 201) {
         toast.success("Profile updated successfully!", toastOptions);
+        setTimeout(() => {
+          onClose();
+          setSaving(false);
+        }, 4000);
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -81,30 +88,24 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       }
       // If not 200/201 or missing tokens, show error
       toast.error("Profile update failed. Please try again.", toastOptions);
+      setSaving(false);
     } catch (error: any) {
       let message = "Profile update failed. Please try again.";
       if (
         error?.response?.status === 400 &&
-        error?.response?.data &&
         typeof error.response.data === "object"
       ) {
         const data = error.response.data;
-        // Helper to recursively flatten all error messages
         function flattenErrors(errObj: any): string[] {
           if (typeof errObj === "string") return [errObj];
-          if (Array.isArray(errObj)) {
-            return errObj.flatMap(flattenErrors);
-          }
-          if (typeof errObj === "object" && errObj !== null) {
+          if (Array.isArray(errObj)) return errObj.flatMap(flattenErrors);
+          if (typeof errObj === "object" && errObj !== null)
             return Object.values(errObj).flatMap(flattenErrors);
-          }
           return [];
         }
         const allErrors = flattenErrors(data);
-        allErrors.forEach((err: string, idx: number) => {
-          setTimeout(() => {
-            toast.error(err, toastOptions);
-          }, idx * 500);
+        allErrors.forEach((err: string) => {
+          toast.error(err, toastOptions);
         });
       } else if (error?.response?.data) {
         toast.error(error.response.data, toastOptions);
@@ -113,6 +114,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       } else {
         toast.error(message, toastOptions);
       }
+      setSaving(false);
     }
   };
 
@@ -131,6 +133,26 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
         <Modal.Title>Edit Profile</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {saving && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              background: "rgba(255,255,255,0.7)",
+              zIndex: 1000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Saving...</span>
+            </div>
+          </div>
+        )}
         <Form onSubmit={handleSave} autoComplete="off">
           {/* Name, Gender, Nationality, Second Nationality */}
           <Row>
@@ -175,8 +197,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <Form.Label>Phone Number</Form.Label>
                 <Form.Control
                   type="text"
-                  value={formData.phone_number || ""}
-                  onChange={(e) => handleChange("phone_number", e.target.value)}
+                  value={formData.phone || ""}
+                  onChange={(e) => handleChange("phone", e.target.value)}
                   required
                 />
               </Form.Group>
@@ -474,43 +496,44 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <Form.Label>Leadership Roles</Form.Label>
                 <Select
                   isMulti
-                  options={[
-                    { value: "coordinator", label: "Coordinator" },
-                    { value: "hod", label: "HOD" },
-                    {
-                      value: "assistant_principal",
-                      label: "Assistant Principal",
-                    },
-                    { value: "principal", label: "Principal" },
-                  ]}
+                  options={LEADERSHIP_ROLE_OPTIONS}
                   value={
-                    Array.isArray(formData.leadershipRoles)
-                      ? formData.leadershipRoles
+                    Array.isArray(formData.leadership_role)
+                      ? formData.leadership_role
                           .map((role: any) =>
                             typeof role === "string"
-                              ? [
-                                  {
-                                    value: "coordinator",
-                                    label: "Coordinator",
-                                  },
-                                  { value: "hod", label: "HOD" },
-                                  {
-                                    value: "assistant_principal",
-                                    label: "Assistant Principal",
-                                  },
-                                  { value: "principal", label: "Principal" },
-                                ].find((opt) => opt.value === role) || null
+                              ? LEADERSHIP_ROLE_OPTIONS.find(
+                                  (opt) => opt.value === role
+                                ) || null
                               : role
                           )
                           .filter(Boolean)
                       : []
                   }
                   onChange={(selected) =>
-                    handleChange("leadershipRoles", selected)
+                    handleChange("leadership_role", selected)
                   }
                   classNamePrefix="react-select"
                   placeholder="Select leadership role(s)..."
                 />
+                {/* Leadership Roles Preview (if needed) */}
+                {Array.isArray(formData.leadership_role) &&
+                  formData.leadership_role.length > 0 && (
+                    <div className="mb-2">
+                      <small className="text-muted">
+                        Selected Leadership roles:{" "}
+                      </small>
+                      <small>
+                        {formData.leadership_role
+                          .map((role: any) =>
+                            getLeadershipRoleLabel(
+                              typeof role === "string" ? role : role.value
+                            )
+                          )
+                          .join(", ")}
+                      </small>
+                    </div>
+                  )}
               </Form.Group>
             </Col>
           </Row>
@@ -519,20 +542,43 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Age Group</Form.Label>
-                <Form.Select
+                <Select
+                  isMulti
+                  options={[
+                    { value: "3-5 Years", label: "3-5 Years" },
+                    { value: "6-10 Years", label: "6-10 Years" },
+                    { value: "11-15 Years", label: "11-15 Years" },
+                    { value: "16+ Years", label: "16+ Years" },
+                  ]}
+                  closeMenuOnSelect={false}
                   value={
-                    typeof formData.ageGroup === "string"
+                    Array.isArray(formData.ageGroup)
                       ? formData.ageGroup
-                      : ""
+                          .map((ag: any) =>
+                            typeof ag === "string"
+                              ? [
+                                  { value: "3-5 Years", label: "3-5 Years" },
+                                  { value: "6-10 Years", label: "6-10 Years" },
+                                  {
+                                    value: "11-15 Years",
+                                    label: "11-15 Years",
+                                  },
+                                  { value: "16+ Years", label: "16+ Years" },
+                                ].find((opt) => opt.value === ag) || null
+                              : ag
+                          )
+                          .filter(Boolean)
+                      : []
                   }
-                  onChange={(e) => handleChange("ageGroup", e.target.value)}
-                >
-                  <option value="">Please select</option>
-                  <option value="3-5 Years">3-5 Years</option>
-                  <option value="6-10 Years">6-10 Years</option>
-                  <option value="11-15 Years">11-15 Years</option>
-                  <option value="16+ Years">16+ Years</option>
-                </Form.Select>
+                  onChange={(selected: any) =>
+                    handleChange(
+                      "ageGroup",
+                      Array.isArray(selected) ? selected : []
+                    )
+                  }
+                  classNamePrefix={"react-select"}
+                  placeholder="Select age group(s)..."
+                />
               </Form.Group>
             </Col>
             <Col md={6}>
@@ -540,13 +586,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <Form.Label>I will be available from</Form.Label>
                 <DatePicker
                   selected={(() => {
-                    if (!formData.available_day) return null;
-                    const d = new Date(formData.available_day);
+                    if (!formData.available_date) return null;
+                    const d = new Date(formData.available_date);
                     return isNaN(d.getTime()) ? null : d;
                   })()}
                   onChange={(date) =>
                     handleChange(
-                      "available_day",
+                      "available_date",
                       date ? date.toISOString().split("T")[0] : ""
                     )
                   }

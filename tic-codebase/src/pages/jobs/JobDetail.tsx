@@ -56,41 +56,42 @@ function JobDetail() {
   >(null);
   const [resumeFile, setResumeFile] = React.useState<File | null>(null);
   const [coverFile, setCoverFile] = React.useState<File | null>(null);
-
-  React.useEffect(() => {
+  // Expose fetchJobAndProfile for re-use after apply (must be inside component for state setters)
+  const fetchJobAndProfile = React.useCallback(async () => {
     let isMounted = true;
-    const fetchJobAndProfile = async () => {
-      try {
-        const response = await api.get(`/jobs/${id}`);
-        if (isMounted) {
-          setJob(response.data);
-          setFetchError(null);
-        }
-      } catch (error: any) {
-        if (isMounted) {
-          setJob(null);
-          setFetchError("Job not found");
-          if (error?.response?.data) {
-            toast.error(error.response.data);
-          } else {
-            toast.error("Failed to fetch job details.");
-          }
-        }
-      } finally {
-        if (isMounted) setLoading(false);
+    try {
+      const response = await api.get(`/jobs/${id}`);
+      if (isMounted) {
+        setJob(response.data);
+        setFetchError && setFetchError(null);
       }
-      try {
-        const profileRes = await api.get("/profile");
-        if (isMounted) setProfile(profileRes.data);
-      } catch (e) {
-        if (isMounted) setProfile(null);
+    } catch (error: any) {
+      if (isMounted) {
+        setJob(null);
+        setFetchError && setFetchError("Job not found");
+        if (error?.response?.data) {
+          toast.error(error.response.data);
+        } else {
+          toast.error("Failed to fetch job details.");
+        }
       }
-    };
-    fetchJobAndProfile();
+    } finally {
+      if (isMounted) setLoading(false);
+    }
+    try {
+      const profileRes = await api.get("/profile");
+      if (isMounted) setProfile(profileRes.data);
+    } catch (e) {
+      if (isMounted) setProfile(null);
+    }
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, setJob, setFetchError, setLoading, setProfile]);
+  React.useEffect(() => {
+    fetchJobAndProfile();
+    // eslint-disable-next-line
+  }, [fetchJobAndProfile]);
 
   // Loader for apply button
   const [applying, setApplying] = React.useState(false);
@@ -135,8 +136,12 @@ function JobDetail() {
       });
       if (response.status === 200 || response.status === 201) {
         toast.success("Application submitted successfully!");
-        setTimeout(() => {
-          window.location.reload();
+        // Keep loader until new data is fetched
+        setTimeout(async () => {
+          setLoading(true);
+          await fetchJobAndProfile();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          setApplying(false);
         }, 1200);
       } else if (
         response.status === 400 &&
@@ -144,13 +149,14 @@ function JobDetail() {
         response.data.error
       ) {
         toast.error(response.data.error);
+        setApplying(false);
       } else {
         toast.error("Failed to submit application. Please try again.");
+        setApplying(false);
       }
     } catch (error: any) {
       toast.error(error.data?.error || "An error occurred while applying.");
       console.error(error);
-    } finally {
       setApplying(false);
     }
   };
@@ -476,7 +482,6 @@ function JobDetail() {
                               const file = e.target.files?.[0];
                               if (file) {
                                 setResumeFile(file);
-                                toast.success("Resume uploaded successfully.");
                               } else {
                                 setResumeFile(null);
                               }
@@ -551,9 +556,6 @@ function JobDetail() {
                               const file = e.target.files?.[0];
                               if (file) {
                                 setCoverFile(file);
-                                toast.success(
-                                  "Cover letter uploaded successfully."
-                                );
                               } else {
                                 setCoverFile(null);
                               }

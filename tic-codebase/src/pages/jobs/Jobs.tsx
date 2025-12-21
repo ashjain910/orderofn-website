@@ -132,7 +132,7 @@ function Jobs() {
       BaseApi.get("/profile")
         .then((res) => {
           if (res && res.data && res.data.subscription_status) {
-            localStorage.setItem(
+            sessionStorage.setItem(
               "subscription_status",
               res.data.subscription_status
             );

@@ -4,6 +4,7 @@ import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 import { fetchUserProfile } from "./api";
 import EditProfileModal from "../../components/EditProfileModal";
 import { ROLES_OPTIONS, SUBJECT_OPTIONS } from "../../common/subjectOptions";
+import { useNavigate } from "react-router-dom";
 
 const POSITION_OPTIONS = [
   { label: "Teacher", value: "teacher" },
@@ -15,6 +16,7 @@ const UserProfile: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showEdit, setShowEdit] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -403,7 +405,10 @@ const UserProfile: React.FC = () => {
                   No active subscription
                   <br></br> Subscribe to get the benefit of full access.
                   <br />
-                  <button className="btn btn-primary mt-3">
+                  <button
+                    onClick={() => navigate("/subscription-plans")}
+                    className="btn btn-primary mt-3"
+                  >
                     Subscribe now
                   </button>
                 </div>

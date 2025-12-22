@@ -652,23 +652,43 @@ textarea.form-control {
   z-index: 3 !important;
   background-color: rgba(255, 255, 255) !important;
 }
+
 .dmOAwp {
-    display: none !important;
+  display: none !important;
 }
+
 .form-control::placeholder {
   color: #b0b0b0 !important;
   opacity: 1;
 }
 
 .dTuydp {
+  display: none !important;
+  -webkit-box-pack: end;
+  justify-content: flex-end;
+  -webkit-box-align: center;
+  align-items: center;
+  z-index: 1;
+  padding: 0px 10px;
+  background-color: rgb(255, 255, 255);
+  font-size: 16px;
+  min-height: 50px;
+}
+
+.preregister_form {
+  padding-left: 5rem !important;
+  padding-right: 5rem !important;
+}
+
+@media screen and (max-width: 680px) {
+  .preregister_form {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .sm__d_none__ {
     display: none !important;
-    -webkit-box-pack: end;
-    justify-content: flex-end;
-    -webkit-box-align: center;
-    align-items: center;
-    z-index: 1;
-    padding: 0px 10px;
-    background-color: rgb(255, 255, 255);
-    font-size: 16px;
-    min-height: 50px;
+  }
 }

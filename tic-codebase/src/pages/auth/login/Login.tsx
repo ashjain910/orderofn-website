@@ -179,7 +179,7 @@ export default function Login() {
       <div className="container-fluid login-container bg-white p-0 m-0">
         <div className="row vh-100">
           {/* LEFT SIDE FORM */}
-          <div className="col-md-6 d-flex flex-column login__section__ pl_rem-8 pr_rem-8 position-relative">
+          <div className="col-md-6 d-flex flex-column login__section__  position-relative">
             {/* Logo */}
             <img
               src="/tic/tic_logo.png"

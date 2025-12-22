@@ -201,7 +201,7 @@ export default function Step1({
               </span>
             )}
           </label>
-          <div className="d-flex gap-3">
+          <div className="d-flex  flex-wrap gap-3 ">
             <div className="form-check">
               <input
                 className="form-check-input"
@@ -254,7 +254,7 @@ export default function Step1({
               </span>
             )}
           </label>
-          <div className="d-flex gap-3">
+          <div className="d-flex  flex-wrap gap-3">
             <div className="form-check">
               <input
                 className="form-check-input"
@@ -310,7 +310,7 @@ export default function Step1({
                 </span>
               )}
           </label>
-          <div className="d-flex gap-3">
+          <div className="d-flex  flex-wrap gap-3">
             {[
               { label: "Teacher", value: "teacher" },
               { label: "Senior Leader", value: "leader" },
@@ -354,7 +354,7 @@ export default function Step1({
           </div>
         </div>
 
-        <div className="mt-3 d-flex justify-content-end">
+        <div className="mt-3 d-flex  flex-wrap justify-content-end">
           <button className="btn btn-primary " onClick={handleNextStep}>
             Next
           </button>

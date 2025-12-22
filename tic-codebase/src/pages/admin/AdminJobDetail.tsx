@@ -64,6 +64,10 @@ function AdminJobDetail() {
     url: null,
     name: "Resume",
   });
+  // Track which applicant's resume is being viewed
+  const [selectedResumeApplicant, setSelectedResumeApplicant] = useState<
+    any | null
+  >(null);
   // State for cover letter preview modal
   const [coverLetterModal, setCoverLetterModal] = useState<ResumeModalState>({
     show: false,
@@ -882,18 +886,19 @@ function AdminJobDetail() {
                               <button
                                 className="btn btn-link p-0"
                                 style={{ fontSize: 14 }}
-                                onClick={() =>
+                                onClick={() => {
                                   setResumeModal({
                                     show: true,
                                     url: teacher?.resume || null,
                                     name: teacher?.applicant_name || "Resume",
-                                  })
-                                }
+                                  });
+                                  setSelectedResumeApplicant(teacher);
+                                }}
                               >
                                 View Resume
                               </button>
-                              {/* Resume Preview Modal (rendered once at top level) */}
-                              {resumeModal.show && (
+                              {/* Resume Preview Modal (rendered once at top level, not inside map) */}
+                              {resumeModal.show && selectedResumeApplicant && (
                                 <div
                                   className="modal fade show"
                                   style={{
@@ -919,6 +924,7 @@ function AdminJobDetail() {
                                               name: "Resume",
                                             });
                                             setDocError(null);
+                                            setSelectedResumeApplicant(null);
                                           }}
                                         ></button>
                                       </div>
@@ -961,7 +967,15 @@ function AdminJobDetail() {
                                             ) : (
                                               <DocViewer
                                                 documents={[
-                                                  { uri: resumeModal.url },
+                                                  resumeModal.url &&
+                                                  resumeModal.url.endsWith(
+                                                    ".docx"
+                                                  )
+                                                    ? {
+                                                        uri: resumeModal.url,
+                                                        fileType: "docx",
+                                                      }
+                                                    : { uri: resumeModal.url },
                                                 ]}
                                                 pluginRenderers={
                                                   DocViewerRenderers
@@ -987,6 +1001,7 @@ function AdminJobDetail() {
                                               name: "Resume",
                                             });
                                             setDocError(null);
+                                            setSelectedResumeApplicant(null);
                                           }}
                                         >
                                           Close

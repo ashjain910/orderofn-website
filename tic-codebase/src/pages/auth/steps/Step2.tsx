@@ -252,7 +252,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
               </span>
             )}
           </label>
-          <div className="d-flex gap-3">
+          <div className="d-flex  flex-wrap gap-3">
             <div className="form-check">
               <input
                 className="form-check-input"
@@ -380,7 +380,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </select>
 
           {/* BUTTONS */}
-          <div className="d-flex justify-content-between mt-3">
+          <div className="d-flex  flex-wrap justify-content-between mt-3">
             <button onClick={prevStep} className="btn btn-secondary px-4">
               Previous
             </button>

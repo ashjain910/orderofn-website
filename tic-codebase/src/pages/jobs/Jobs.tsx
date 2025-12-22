@@ -503,12 +503,12 @@ function Jobs() {
     <div className="container">
       <Modal show={showPaymentModal} backdrop="static" keyboard={false}>
         <Modal.Body>
-          <div className="d-flex align-items-center justify-content-center">
+          <div className="d-flex  flex-wrap align-items-center justify-content-center">
             <div className=" text-center p-4">
               {/* Icon */}
-              <div className="d-flex justify-content-center mb-3">
+              <div className="d-flex  flex-wrap justify-content-center mb-3">
                 <div
-                  className="d-flex align-items-center justify-content-center"
+                  className="d-flex  flex-wrap align-items-center justify-content-center"
                   style={{
                     width: "90px",
                     height: "90px",
@@ -529,7 +529,7 @@ function Jobs() {
                   : "Subscription Failed"}
               </h5>
               {/* Spinner */}
-              <div className="d-flex justify-content-center my-3">
+              <div className="d-flex  flex-wrap justify-content-center my-3">
                 <span
                   className={`spinner-border ${
                     paymentStatus === "success" ? "text-primary" : "text-danger"
@@ -553,8 +553,8 @@ function Jobs() {
         <div className="col-lg-9">
           {/* Tabs for filtering */}
           <div className="card card__tab__ mb-3">
-            <div className="d-flex align-items-center">
-              <ul className="ul d-flex align-items-center">
+            <div className="d-flex  flex-wrap align-items-center">
+              <ul className="ul d-flex  flex-wrap align-items-center">
                 {statusTabs.map((tab) => (
                   <li
                     key={tab.key}
@@ -575,7 +575,7 @@ function Jobs() {
                 ))}
               </ul>
               {/* Show/Hide filter switch */}
-              <div className="form-switch ms-3 d-flex align-items-center">
+              <div className="form-switch ms-3 d-flex  flex-wrap align-items-center">
                 <input
                   className="form-check-input"
                   type="checkbox"
@@ -637,7 +637,7 @@ function Jobs() {
                   </select>
                 </div>
                 {/* Active jobs filter checkbox */}
-                <div className="mb-1 col-lg-4 col-md-4 col-sm-6 col-12 d-flex align-items-center">
+                <div className="mb-1 col-lg-4 col-md-4 col-sm-6 col-12 d-flex  flex-wrap align-items-center">
                   <input
                     type="checkbox"
                     className="form-check-input me-1"
@@ -655,7 +655,7 @@ function Jobs() {
                 </div>
 
                 <div className="mb-1 col-lg-12 col-md-12 col-sm-12 col-12">
-                  <div className="d-flex gap-2 mt-2">
+                  <div className="d-flex  flex-wrap gap-2 mt-2">
                     <button
                       className="btn btn-primary"
                       onClick={handleApplyFilters}
@@ -675,7 +675,7 @@ function Jobs() {
           )}
           {loading ? (
             <div
-              className="d-flex justify-content-center align-items-center"
+              className="d-flex  flex-wrap justify-content-center align-items-center"
               style={{ minHeight: 200 }}
             >
               <FaSpinner className="fa-spin" size={32} />
@@ -683,7 +683,7 @@ function Jobs() {
             </div>
           ) : jobsData.length === 0 ? (
             <div
-              className="d-flex flex-column align-items-center justify-content-center"
+              className="d-flex  flex-wrap flex-column align-items-center justify-content-center"
               style={{ minHeight: 200 }}
             >
               <div className="mb-2">No jobs found.</div>
@@ -710,7 +710,7 @@ function Jobs() {
                   }}
                   onClick={() => handleViewJobDetails(job.id)}
                 >
-                  <div className="card-body d-flex justify-content-between align-items-center">
+                  <div className="card-body d-flex  justify-content-between align-items-center">
                     <div className="d-flex" style={{ width: "100%" }}>
                       <img
                         src={job.avatar || "/tic/school_image.png"}
@@ -718,13 +718,13 @@ function Jobs() {
                         className="job-avatar me-3"
                       />
                       <div style={{ flex: 1 }}>
-                        <div className="posted_div">
+                        <div className="posted_div sm__d_none__">
                           <span className="text-muted small">
                             Posted: {formatDateTime(job.date_posted).date} -{" "}
                             {formatDateTime(job.date_posted).time}
                           </span>
                         </div>
-                        <h5 className="job-title  d-flex align-items-center mb-1">
+                        <h5 className="job-title  d-flex  flex-wrap align-items-center mb-1">
                           {job.title}
 
                           <span className={`badge casual__badge__ ms-2 `}>
@@ -767,7 +767,7 @@ function Jobs() {
                         </p>
                       </div>
                     </div>
-                    <div className="d-flex flex-column align-items-end gap-2">
+                    <div className="d-flex  flex-wrap sm__d_none__ flex-column align-items-end gap-2">
                       <button
                         className="btn btn-light btn-sm"
                         title={job.is_saved ? "Unsave Job" : "Save Job"}

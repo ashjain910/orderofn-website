@@ -295,7 +295,7 @@ export default function PreRegister() {
         <div className="row" style={{ height: "100vh" }}>
           {/* LEFT SIDE — FORMS + STEPS */}
           <div
-            className="col-md-6 pl-6 pr-6 pt_rem-1 pb_rem-5"
+            className="col-md-6 preregister_form pt_rem-1 pb_rem-5"
             style={{
               height: "100vh",
               overflowY:

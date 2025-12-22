@@ -1,3 +1,19 @@
+// Add position type options for label lookup
+const positionTypeOptions = [
+  { value: "teacher", label: "Teacher" },
+  { value: "leader", label: "Leader" },
+  { value: "other", label: "Other" },
+];
+
+// Helper to get label from options
+// function getLabelFromOptions(
+//   value: string,
+//   options: { value: string; label: string }[]
+// ): string {
+//   if (!value) return "";
+//   const found = options.find((opt) => opt.value === value);
+//   return found ? found.label : value;
+// }
 import { useState } from "react";
 import { useEffect } from "react";
 import TeacherProfileModal from "../../components/TeacherProfileModal";
@@ -112,7 +128,10 @@ export default function MyTeachers() {
         <div className="row">
           {/* Filter section - left side */}
           <div className="col-lg-3 col-md-4 col-sm-12 mb-3">
-            <div className="card mb-3">
+            <div
+              className="card sticky-top"
+              style={{ top: 80, zIndex: 2, width: "100%" }}
+            >
               <div className="row">
                 <div className="mb-1 col-12">
                   <label className="form-label">Search by name / email</label>
@@ -156,7 +175,7 @@ export default function MyTeachers() {
                   </select>
                 </div>
                 <div className="mb-1 col-12">
-                  <div className="d-flex gap-2 mt-25">
+                  <div className="d-flex flex-wrap gap-2 mt-25">
                     <button
                       className="btn btn-primary"
                       onClick={handleApplyFilters}
@@ -213,10 +232,19 @@ export default function MyTeachers() {
                   </div>
                 ) : (
                   <div className="table-responsive">
-                    <table className="table table-hover">
+                    <table className="table align-middle table-striped table-hover">
                       <tbody>
                         {teachers.map((teacher, idx) => (
-                          <tr key={idx}>
+                          <tr
+                            key={idx}
+                            onClick={() => {
+                              setSelectedTeacher(teacher);
+                              setShowProfileModal(true);
+                            }}
+                            style={{
+                              cursor: "pointer",
+                            }}
+                          >
                             <td className="txt__regular__">{idx + 1}</td>
                             <td>
                               <div
@@ -224,10 +252,6 @@ export default function MyTeachers() {
                                   fontWeight: 600,
                                   cursor: "pointer",
                                   color: "#0F3F93",
-                                }}
-                                onClick={() => {
-                                  setSelectedTeacher(teacher);
-                                  setShowProfileModal(true);
                                 }}
                               >
                                 {teacher.full_name}
@@ -240,19 +264,25 @@ export default function MyTeachers() {
                                 >
                                   <div
                                     className="d-block d-sm-inline"
-                                    style={{ fontSize: 14, color: "#000000" }}
+                                    style={{
+                                      fontSize: 14,
+                                      color: "#000000",
+                                      marginTop: "5px",
+                                    }}
                                   >
                                     {teacher.email}
                                   </div>
-                                  <span
-                                    className="mx-2 d-none d-sm-inline"
-                                    style={{
-                                      width: "1px",
-                                      height: "14px",
-                                      background: "#ccc",
-                                      marginTop: "2px",
-                                    }}
-                                  ></span>
+                                  {teacher.phone && (
+                                    <span
+                                      className="mx-2 d-none d-sm-inline"
+                                      style={{
+                                        width: "1px",
+                                        height: "14px",
+                                        background: "#ccc",
+                                        marginTop: "2px",
+                                      }}
+                                    ></span>
+                                  )}
                                   <div
                                     className="d-block d-sm-inline"
                                     style={{ fontSize: 14, color: "#000000" }}
@@ -278,28 +308,50 @@ export default function MyTeachers() {
                             </td>
                             <td className="txt__regular__">
                               <p style={{ fontSize: 14, color: "#000000" }}>
+                                {Array.isArray(teacher.teacher_profile.position)
+                                  ? teacher.teacher_profile.position
+                                      .map(
+                                        (pos: any) =>
+                                          positionTypeOptions.find(
+                                            (opt) => opt.value === pos
+                                          )?.label || pos
+                                      )
+                                      .join(", ")
+                                  : positionTypeOptions.find(
+                                      (opt) =>
+                                        opt.value ===
+                                        teacher.teacher_profile.position
+                                    )?.label ||
+                                    teacher.teacher_profile.position ||
+                                    ""}
+                              </p>
+                              <p style={{ marginTop: "5px" }}>
                                 <span
                                   style={{
-                                    fontSize: 14,
-                                    color: "#555",
+                                    fontSize: 12,
+                                    color: "#333333",
                                     marginRight: 4,
                                   }}
                                 >
-                                  Role:
+                                  Qualifed:{" "}
+                                  {teacher.teacher_profile.qualified === "yes"
+                                    ? "Yes"
+                                    : "No"}
                                 </span>
-                                {teacher.teacher_profile.role}
                               </p>
                             </td>
                             <td>
                               <p
-                                className={`txt__regular_sub__ ${
+                                className={`txt__regular_sub ${
                                   teacher.teacher_profile.english === "yes"
                                     ? "text-success"
                                     : "text-danger"
                                 }`}
-                                style={{ fontSize: 14 }}
+                                style={{ fontSize: 13, fontWeight: 500 }}
                               >
-                                Subscribed
+                                {teacher.teacher_profile.english === "yes"
+                                  ? "Subscribed"
+                                  : "Not Subscribed"}
                               </p>
                             </td>
                             <td>

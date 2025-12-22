@@ -54,3 +54,20 @@
     font-weight: 600 !important;
     color: #0d3b85;
 }
+.job-simi-card {
+  border-left: 3px solid #3b82f6;
+}
+
+.job-simi-card h6 {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.job-simi-card small {
+  font-size: 12px;
+    line-height: 1.5;
+}
+.job-simi-card .small {
+  font-size: 12px;
+    line-height: 1.5;
+}

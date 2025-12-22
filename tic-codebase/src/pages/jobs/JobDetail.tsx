@@ -9,8 +9,42 @@ import { IoClose } from "react-icons/io5";
 import { Row, Col } from "react-bootstrap";
 import "./JobDetail.css";
 import { job_types } from "../../constants/jobOptions";
+import { FaArrowLeft } from "react-icons/fa6";
 
 function JobDetail() {
+  // Get job id from params (must be before any use of id)
+  const { id } = useParams();
+
+  // Similar jobs state
+  const [similarJobs, setSimilarJobs] = React.useState<any[]>([]);
+  const [similarLoading, setSimilarLoading] = React.useState(true);
+
+  // Fetch similar jobs (reuse jobs page logic, but exclude current job)
+  React.useEffect(() => {
+    const fetchSimilarJobs = async () => {
+      setSimilarLoading(true);
+      try {
+        const params: any = {
+          page: 1,
+          action: "init",
+          page_size: 5,
+          status: "active",
+          is_expired: false,
+        };
+        const response = await api.get("/jobs", { params });
+        // Exclude current job from similar jobs
+        const jobs = (response.data.results || []).filter(
+          (j: any) => String(j.id) !== String(id)
+        );
+        setSimilarJobs(jobs);
+      } catch (e) {
+        setSimilarJobs([]);
+      } finally {
+        setSimilarLoading(false);
+      }
+    };
+    fetchSimilarJobs();
+  }, [id]);
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(true);
   const [fetchError, setFetchError] = React.useState<string | null>(null);
@@ -47,7 +81,6 @@ function JobDetail() {
       time: `${hours}:${minStr} ${ampm}`,
     };
   };
-  const { id } = useParams();
   const [job, setJob] = React.useState<any | null>(null);
   const [profile, setProfile] = React.useState<any | null>(null);
   // null = nothing selected, 'profile' = quick apply, 'upload' = upload resume
@@ -196,9 +229,37 @@ function JobDetail() {
     );
   }
 
+  // Helper to get a stable color based on job id (or any number)
+  function getAvatarColor(id: number): React.CSSProperties["backgroundColor"] {
+    const colors = [
+      "#0d6efd", // blue
+      "#6610f2", // indigo
+      "#6f42c1", // purple
+      "#d63384", // pink
+      "#fd7e14", // orange
+      "#20c997", // teal
+      "#198754", // green
+      "#ffc107", // yellow
+      "#dc3545", // red
+      "#343a40", // dark
+    ];
+    if (typeof id !== "number" || isNaN(id)) return colors[0];
+    return colors[Math.abs(id) % colors.length];
+  }
   return (
     <div className="container mt-5">
       <div className="row">
+        <div className="col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mt-2">
+          <a
+            style={{ textDecoration: "none", width: "fit-content" }}
+            role="button"
+            href="/tic/#/jobs"
+            className=""
+          >
+            <FaArrowLeft style={{ marginRight: 5 }} />
+            Back to Jobs
+          </a>
+        </div>
         <div className="col-lg-9 col-md-9 col-sm-12 col-12">
           <div className="card note_card_ad mb-3">
             <p className="txt__regular__">
@@ -629,35 +690,99 @@ function JobDetail() {
           )}
         </div>
 
-        {/* <div className="col-lg-3 col-md-3 col-sm-12 col-12">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="text-center">School Information</h5>
-              <div className="text-center">
-                <img
-                  src={job.school_avatar || "/tic/school_image.png"}
-                  alt="School"
-                  className="school-avatar img-fluid mb-3"
-                />
-              </div>
-              <p className="text-muted small mb-1">
-                <FaLocationArrow style={{ marginRight: 4 }} /> {job.location}
-              </p>
-              <p className="text-muted small">
-                Posted: {formatDateTime(job.date_posted).date} -{" "}
-                {formatDateTime(job.date_posted).time}
-              </p>
-              <div className="mt-3">
-                <a
-                  href={`/school/${job.school_id}`}
-                  className="btn btn-outline-primary w-100"
-                >
-                  View School Profile
-                </a>
-              </div>
+        <div className="col-lg-3 col-md-3 col-sm-12 col-12">
+          <div className="card p-4 mb-4">
+            {profile?.subscription_status &&
+              profile.subscription_status === "none" && (
+                <div className="txt-muted text-center">
+                  <h6 className="fw-bold">No active subscription</h6>
+                  <h6>Subscribe to apply for this job.</h6>
+                  <button
+                    onClick={() => navigate("/subscription-plans")}
+                    className="btn btn-primary mt-1"
+                  >
+                    Subscribe now
+                  </button>
+                </div>
+              )}
+          </div>
+          <div className="card shadow-sm border-0 job-simi-card">
+            <div className="card-body p-2">
+              <h5 className=" mb-3">Similar Jobs</h5>
+              {similarLoading ? (
+                <div className="text-center py-3">
+                  <div
+                    className="spinner-border text-primary"
+                    role="status"
+                    style={{ width: 24, height: 24 }}
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              ) : similarJobs.length === 0 ? (
+                <div className="text-muted text-center py-3">
+                  No similar jobs found.
+                </div>
+              ) : (
+                <div>
+                  {similarJobs.slice(0, 7).map((sj, idx, arr) => (
+                    <div
+                      key={sj.id}
+                      className="d-flex align-items-start p-2 mt-2 mb-2 rounded hover-bg-light"
+                      style={{
+                        cursor: "pointer",
+                        transition: "background 0.2s",
+                        borderBottom:
+                          idx !== arr.length - 1
+                            ? "1px solid #e5e5e5"
+                            : undefined,
+                        marginBottom: idx !== arr.length - 1 ? 0 : undefined,
+                      }}
+                      onClick={() => navigate(`/jobs/${sj.id}`)}
+                    >
+                      <div
+                        className="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                        style={{
+                          width: 40,
+                          height: 40,
+                          backgroundColor: getAvatarColor(sj.id || 0),
+                          color: "#fff",
+                          fontWeight: 700,
+                          fontSize: 16,
+                          textTransform: "uppercase",
+                          flexShrink: 0,
+                          userSelect: "none",
+                        }}
+                      >
+                        {sj.title?.slice(0, 2) || "?"}
+                      </div>
+                      <div className="flex-grow-1">
+                        <h6
+                          className="mb-0 fw-semibold"
+                          style={{ fontSize: 16 }}
+                        >
+                          {sj.title || "Job Title"}
+                        </h6>
+                        <small className="text-muted">
+                          {sj.school_name && sj.school_name + " |"}{" "}
+                          {sj.location || ""}
+                        </small>
+
+                        <div className="small">
+                          <span>Position - </span>
+                          {job_types.find((t) => t.value === sj.job_type)
+                            ?.label ||
+                            sj.job_type ||
+                            "Not specified"}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );

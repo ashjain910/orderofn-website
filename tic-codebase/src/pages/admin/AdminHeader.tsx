@@ -104,11 +104,11 @@ export default function AdminHeader() {
                   className="dropdown-menu dropdown-menu-end"
                   aria-labelledby="adminProfileDropdown"
                 >
-                  <li>
+                  {/* <li>
                     <Link className="dropdown-item" to="/admin/settings">
                       My Settings
                     </Link>
-                  </li>
+                  </li> */}
                   <li>
                     <button className="dropdown-item" onClick={logout}>
                       Logout

@@ -1,6 +1,17 @@
 // Helper to get a random color based on job title
 function getRandomColor(str: string) {
-  const colors = ["#0d3b85"];
+  const colors = [
+    "#0d6efd", // blue
+    "#6610f2", // indigo
+    "#6f42c1", // purple
+    "#d63384", // pink
+    "#fd7e14", // orange
+    "#20c997", // teal
+    "#198754", // green
+    "#ffc107", // yellow
+    "#dc3545", // red
+    "#343a40", // dark
+  ];
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -668,11 +679,11 @@ function AdminJobDetail() {
                       width: 60,
                       height: 60,
                       borderRadius: "50%",
-                      background: "#ffffff",
-                      border: `3px solid ${getRandomColor(job.title)}`,
+                      background: `${getRandomColor(job.id)}`,
+                      border: `3px solid #ffffff}`,
                       fontSize: 24,
                       fontWeight: 600,
-                      color: getRandomColor(job.title),
+                      color: "#ffffff",
                       textTransform: "uppercase",
                     }}
                   >
@@ -765,32 +776,39 @@ function AdminJobDetail() {
         </div>
         <div className="col-lg-7 col-md-7 col-sm-12 col-12">
           <div className="row mb-3">
-            <div className="col-12 d-flex justify-content-end gap-2">
-              <select
-                className="form-select form-select-sm w-auto"
-                style={{ minWidth: 140 }}
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="">Sort By</option>
-                <option value="pending">Pending</option>
-                <option value="reviewed">Reviewed</option>
-                <option value="accepted">Accepted</option>
-                <option value="rejected">Rejected</option>
-                <option value="date">Date Applied</option>
-              </select>
-              <select
-                className="form-select form-select-sm w-auto"
-                style={{ minWidth: 140 }}
-                value={filterBy}
-                onChange={(e) => setFilterBy(e.target.value)}
-              >
-                <option value="">Filter By</option>
-                <option value="pending">Pending</option>
-                <option value="reviewed">Reviewed</option>
-                <option value="accepted">Accepted</option>
-                <option value="rejected">Rejected</option>
-              </select>
+            <div className="col-12 d-flex align-items-center justify-content-between gap-2">
+              <div>
+                <p className="txt__regular__">
+                  Total applicants - {job.applications_count}
+                </p>
+              </div>
+              <div className="d-flex flex-wrap gap-3">
+                <select
+                  className="form-select form-select-sm w-auto"
+                  style={{ minWidth: 140 }}
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="">Sort By</option>
+                  <option value="pending">Pending</option>
+                  <option value="reviewed">Reviewed</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="date">Date Applied</option>
+                </select>
+                <select
+                  className="form-select form-select-sm w-auto"
+                  style={{ minWidth: 140 }}
+                  value={filterBy}
+                  onChange={(e) => setFilterBy(e.target.value)}
+                >
+                  <option value="">Filter By</option>
+                  <option value="pending">Pending</option>
+                  <option value="reviewed">Reviewed</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
             </div>
           </div>
           <div className="card">
@@ -821,7 +839,7 @@ function AdminJobDetail() {
                                 fontWeight: 600,
                                 cursor: "pointer",
                                 color: "#0F3F93",
-                                textDecoration: "underline",
+                                marginBottom: 4,
                               }}
                               onClick={() => {
                                 setSelectedTeacher(teacher);
@@ -835,7 +853,7 @@ function AdminJobDetail() {
                                 className="text-muted mb-1"
                                 style={{ display: "flex", flexWrap: "wrap" }}
                               >
-                                <div
+                                {/* <div
                                   className="d-block d-sm-inline"
                                   style={{ fontSize: 14, color: "#000000" }}
                                 >
@@ -848,7 +866,7 @@ function AdminJobDetail() {
                                     height: "14px",
                                     background: "#ccc",
                                   }}
-                                ></span>
+                                ></span> */}
                                 <div
                                   className="d-block d-sm-inline"
                                   style={{ fontSize: 14, color: "#000000" }}
@@ -861,21 +879,22 @@ function AdminJobDetail() {
                                     width: "1px",
                                     height: "14px",
                                     background: "#ccc",
+                                    marginTop: 4,
                                   }}
                                 ></span>
                                 <div
                                   className="d-block d-sm-inline"
                                   style={{ fontSize: 14, color: "#000000" }}
                                 >
-                                  {teacher?.phone || "-"}
+                                  {teacher?.applicant_profile?.phone || "-"}
                                 </div>
                               </div>
                             </div>
 
-                            <div className="d-flex align-items-center text-muted mb-1">
+                            <div className="d-flex flex-wrap align-items-center text-muted mb-1">
                               <span
                                 style={{
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   color: "#555",
                                   marginRight: 4,
                                 }}
@@ -885,7 +904,7 @@ function AdminJobDetail() {
                               </span>
                               <button
                                 className="btn btn-link p-0"
-                                style={{ fontSize: 14 }}
+                                style={{ fontSize: 12 }}
                                 onClick={() => {
                                   setResumeModal({
                                     show: true,
@@ -1021,7 +1040,7 @@ function AdminJobDetail() {
                               ></span>
                               <button
                                 className="btn btn-link p-0"
-                                style={{ fontSize: 14 }}
+                                style={{ fontSize: 12 }}
                                 onClick={() =>
                                   setCoverLetterModal({
                                     show: true,

@@ -680,15 +680,28 @@ textarea.form-control {
   padding-right: 5rem !important;
 }
 
-@media screen and (max-width: 680px) {
-  .preregister_form {
-    padding-left: 25px !important;
-    padding-right: 25px !important;
-  }
-}
 
 @media screen and (max-width: 680px) {
   .sm__d_none__ {
     display: none !important;
   }
+  .container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+   .preregister_form {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+  }
+}
+@media  (max-width: 992px) {
+  .container {
+    margin-left: 15px !important;
+    margin-right: 15px !important;
+  }
+  @media  (min-width: 768px) {
+    .container, .container-md, .container-sm {
+        max-width: 98% !important;
+    }
+}
 }

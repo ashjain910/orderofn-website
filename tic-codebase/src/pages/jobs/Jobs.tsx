@@ -1,4 +1,34 @@
+// Helper to get a random color based on job id (stable per job)
+function getAvatarColor(id: number) {
+  const colors = [
+    "#0d6efd", // blue
+    "#6610f2", // indigo
+    "#6f42c1", // purple
+    "#d63384", // pink
+    "#fd7e14", // orange
+    "#20c997", // teal
+    "#198754", // green
+    "#ffc107", // yellow
+    "#dc3545", // red
+    "#343a40", // dark
+  ];
+  return colors[id % colors.length];
+}
 import "./jobs.css";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import BaseApi from "../../services/api";
+import Cookies from "js-cookie";
+import {
+  FaShareAlt,
+  FaRegBookmark,
+  FaBookmark,
+  FaSpinner,
+} from "react-icons/fa";
+import React from "react";
+import { Modal } from "react-bootstrap";
+import { HiLightBulb } from "react-icons/hi";
+
 // Helper to format UTC date string
 const formatDateTime = (utcString: string) => {
   if (!utcString) return { date: "", time: "" };
@@ -31,19 +61,6 @@ const formatDateTime = (utcString: string) => {
     time: `${hours}:${minStr} ${ampm}`,
   };
 };
-import { useState } from "react";
-import { toast } from "react-toastify";
-import BaseApi from "../../services/api";
-import Cookies from "js-cookie";
-import {
-  FaShareAlt,
-  FaRegBookmark,
-  FaBookmark,
-  FaSpinner,
-} from "react-icons/fa";
-import { MdLocationPin } from "react-icons/md";
-import React from "react";
-import { Modal } from "react-bootstrap";
 
 const statusTabs = [
   { key: "all", label: "All Jobs" },
@@ -712,11 +729,24 @@ function Jobs() {
                 >
                   <div className="card-body d-flex  justify-content-between align-items-center">
                     <div className="d-flex" style={{ width: "100%" }}>
-                      <img
-                        src={job.avatar || "/tic/school_image.png"}
-                        alt="Profile"
-                        className="job-avatar me-3"
-                      />
+                      {/* Avatar replacement: Circle with first 2 letters of job title and random color */}
+                      <div
+                        className="job-avatar me-3 d-flex align-items-center justify-content-center"
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: "50%",
+                          backgroundColor: getAvatarColor(job.id),
+                          color: "#fff",
+                          fontWeight: 500,
+                          fontSize: 20,
+                          textTransform: "uppercase",
+                          flexShrink: 0,
+                          userSelect: "none",
+                        }}
+                      >
+                        {job.title?.slice(0, 2) || "?"}
+                      </div>
                       <div style={{ flex: 1 }}>
                         <div className="posted_div sm__d_none__">
                           <span className="text-muted small">
@@ -749,11 +779,13 @@ function Jobs() {
                             </span>
                           )}
                         </h5>
-                        <p className="job-school  mb-1">{job.school_name}</p>
-
-                        <p className="job-school mb-1">
-                          <MdLocationPin style={{ color: "#0d3b85" }} />{" "}
-                          {job.location}
+                        <p className="job-school  mb-1">
+                          {job_types.find((type) => type.value === job.job_type)
+                            ?.label || job.job_type}
+                          {job.job_type && job.location && " • "}
+                          {job.school_name}
+                          {job.school_name && job.location && " • "}
+                          {job.location}{" "}
                         </p>
                         <p className="job-description mb-0">
                           <span
@@ -837,7 +869,62 @@ function Jobs() {
             </>
           )}
         </div>
-        {/* Remove right column */}
+        <div className="col-lg-3 sm__d_none__">
+          {/* Remove right column */}
+          <div className="card note_card_ad mb-3">
+            <p className="txt__regular__">
+              <HiLightBulb
+                style={{
+                  fontSize: 25,
+                  marginBottom: 3,
+                  color: "rgb(237 190 49)",
+                }}
+              />{" "}
+              Tip
+            </p>
+            <ul className="txt__regular__  mb-0">
+              <li>
+                Quick apply to this job with your TIC profile. You may also
+                upload your updated resume and cover letter if you wish to do
+                so.
+              </li>
+              <li>
+                Applicants who include a cover letter are more likely to get
+                hired.
+              </li>
+            </ul>
+          </div>
+          <div className="card p-4 mb-4">
+            {(() => {
+              // Prefer profile.subscription_status, else check session/local storage
+              let subStatus =
+                sessionStorage.getItem("profile_subscription_status") ||
+                localStorage.getItem("profile_subscription_status") ||
+                undefined;
+              if (!subStatus) {
+                subStatus =
+                  sessionStorage.getItem("subscription_status") ||
+                  localStorage.getItem("subscription_status") ||
+                  undefined;
+              }
+              if (subStatus === "none") {
+                return (
+                  <div className="txt-muted text-center">
+                    <h6 className="fw-bold">No active subscription</h6>
+                    <h6>Subscribe to get full access.</h6>
+                    <button
+                      onClick={() => navigate("/subscription-plans")}
+                      className="btn btn-primary mt-1"
+                    >
+                      Subscribe now
+                    </button>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </div>
+        </div>
       </div>
     </div>
   );

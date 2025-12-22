@@ -3,7 +3,6 @@ import "./admin-jobs.css";
 import { useState, useEffect } from "react";
 import AdminBaseApi from "../../services/admin-base";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
-import { MdLocationPin } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { job_types, schoolTypes } from "../../constants/jobOptions";
 
@@ -35,7 +34,22 @@ interface Job {
   applications_count?: number;
   school_type?: string;
 }
-
+// Helper to get a random color based on job id (stable per job)
+function getAvatarColor(id: number) {
+  const colors = [
+    "#0d6efd", // blue
+    "#6610f2", // indigo
+    "#6f42c1", // purple
+    "#d63384", // pink
+    "#fd7e14", // orange
+    "#20c997", // teal
+    "#198754", // green
+    "#ffc107", // yellow
+    "#dc3545", // red
+    "#343a40", // dark
+  ];
+  return colors[id % colors.length];
+}
 function Jobs() {
   // State to control post job modal
   const [showPostJobModal, setShowPostJobModal] = useState(false);
@@ -166,7 +180,11 @@ function Jobs() {
       <div className="row">
         {/* Filter section - left side */}
         <div className="col-lg-3 col-md-4 col-sm-12 mb-3">
-          <div className="card mb-3">
+          <div
+            className="card sticky-top"
+            style={{ top: 80, zIndex: 2, width: "100%" }}
+          >
+            {" "}
             <div className="row">
               <div className="mb-1 col-12">
                 <label className="form-label">Position</label>
@@ -214,7 +232,7 @@ function Jobs() {
                 </select>
               </div>
               <div className="mb-1 col-12">
-                <div className="d-flex gap-2 mt-25">
+                <div className="d-flex flex-wrap gap-2 mt-25">
                   <button
                     className="btn btn-primary"
                     onClick={handleApplyFilters}
@@ -358,13 +376,26 @@ function Jobs() {
                 >
                   <div className="card-body d-flex justify-content-between align-items-center">
                     <div className="d-flex" style={{ width: "100%" }}>
-                      <img
-                        src={job.avatar || "/tic/school_image.png"}
-                        alt="Profile"
-                        className="job-avatar me-3"
-                      />
+                      {/* Avatar replacement: Circle with first 2 letters of job title and random color */}
+                      <div
+                        className="job-avatar me-3 d-flex align-items-center justify-content-center"
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: "50%",
+                          backgroundColor: getAvatarColor(job.id),
+                          color: "#fff",
+                          fontWeight: 500,
+                          fontSize: 20,
+                          textTransform: "uppercase",
+                          flexShrink: 0,
+                          userSelect: "none",
+                        }}
+                      >
+                        {job.title?.slice(0, 2) || "?"}
+                      </div>
                       <div style={{ flex: 1 }}>
-                        <div className="posted_div">
+                        <div className="posted_div sm__d_none__">
                           <span className=" txt__regular__sub__">
                             Posted: {formatDateTime(job.date_posted).date} at{" "}
                             {formatDateTime(job.date_posted).time}
@@ -400,11 +431,15 @@ function Jobs() {
                               </span>
                             )}
                         </h5>
-                        <p className="job-school  mb-1">{job.school_name}</p>
-                        <p className="job-school mb-1">
-                          <MdLocationPin style={{ marginRight: 4 }} />{" "}
-                          {job.location}
+                        <p className="job-school  mb-1">
+                          {job_types.find((type) => type.value === job.job_type)
+                            ?.label || job.job_type}
+                          {job.job_type && job.location && " • "}
+                          {job.school_name}
+                          {job.school_name && job.location && " • "}
+                          {job.location}{" "}
                         </p>
+
                         <div
                           className="job-description mb-0"
                           style={{ overflowWrap: "anywhere" }}

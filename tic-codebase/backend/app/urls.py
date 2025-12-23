@@ -1,9 +1,12 @@
 from django.urls import path
 from . import views
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
     # Public/User endpoints
     path('login', views.login, name='login'),
+    path('token/refresh', TokenRefreshView.as_view(), name='token-refresh'),
+    path('token/verify', TokenVerifyView.as_view(), name='token-verify'),
     path('pre-register', views.pre_register, name='pre-register'),
     path('profile', views.get_profile, name='get-profile'),
     path('profile/update', views.update_profile, name='update-profile'),

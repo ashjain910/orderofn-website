@@ -60,18 +60,18 @@ export default function PreRegister() {
     position: "", // <-- add this
     phone: "",
     // Step2
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     gender: "",
     nationality: "",
-    secondNationality: "",
-    cvFile: null,
-    hearFrom: "",
+    second_nationality: "",
+    cv_file: null,
+    hear_from: "",
 
     // Step3
     roles: "",
     subjects: "",
-    ageGroup: "",
+    age_group: "",
     curriculum: [],
 
     // Step4
@@ -107,8 +107,8 @@ export default function PreRegister() {
         errors.push("Position is required");
     }
     if (step === 2) {
-      if (!formData.firstName) errors.push("First name is required");
-      if (!formData.lastName) errors.push("Last name is required");
+      if (!formData.first_name) errors.push("First name is required");
+      if (!formData.last_name) errors.push("Last name is required");
       if (!formData.gender) errors.push("Gender is required");
       if (!formData.nationality) errors.push("Nationality is required");
     }
@@ -171,9 +171,9 @@ export default function PreRegister() {
     try {
       const form = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        // Handle multi-select fields (roles, subjects, leadershipRoles)
+        // Handle multi-select fields (roles, subjects, leadership_roles)
         if (
-          ["roles", "subjects", "leadership_role", "ageGroup"].includes(key) &&
+          ["roles", "subjects", "leadership_role", "age_group"].includes(key) &&
           Array.isArray(value)
         ) {
           value.forEach((v) => {

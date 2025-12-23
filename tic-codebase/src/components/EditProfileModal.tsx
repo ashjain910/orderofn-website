@@ -51,7 +51,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       Object.entries(formData).forEach(([key, value]) => {
         // Handle multi-select fields (roles, subjects, leadership_role)
         if (
-          ["roles", "subjects", "leadership_role", "ageGroup"].includes(key) &&
+          ["roles", "subjects", "leadership_role", "age_group"].includes(key) &&
           Array.isArray(value)
         ) {
           value.forEach((v: any) => {
@@ -376,12 +376,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <Form.Label>Second Nationality</Form.Label>
                 <Form.Select
                   value={
-                    typeof formData.secondNationality === "string"
-                      ? formData.secondNationality
+                    typeof formData.second_nationality === "string"
+                      ? formData.second_nationality
                       : ""
                   }
                   onChange={(e) =>
-                    handleChange("secondNationality", e.target.value)
+                    handleChange("second_nationality", e.target.value)
                   }
                 >
                   <option value="">Please select</option>
@@ -399,19 +399,19 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <Form.Control
                   type="file"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleChange("cvFile", e.target.files?.[0] || null)
+                    handleChange("cv_file", e.target.files?.[0] || null)
                   }
                 />
-                {formData.cvFile && typeof formData.cvFile === "string" && (
+                {formData.cv_file && typeof formData.cv_file === "string" && (
                   <div className="mt-1">
-                    <small>{formData.cvFile.split("/").pop()}</small>
+                    <small>{formData.cv_file.split("/").pop()}</small>
                   </div>
                 )}
-                {formData.cvFile &&
-                  typeof formData.cvFile === "object" &&
-                  formData.cvFile.name && (
+                {formData.cv_file &&
+                  typeof formData.cv_file === "object" &&
+                  formData.cv_file.name && (
                     <div className="mt-1">
-                      <small>{formData.cvFile.name}</small>
+                      <small>{formData.cv_file.name}</small>
                     </div>
                   )}
               </Form.Group>
@@ -422,11 +422,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <Form.Label>Where did you hear about us?</Form.Label>
                 <Form.Select
                   value={
-                    typeof formData.hearFrom === "string"
-                      ? formData.hearFrom
+                    typeof formData.hear_from === "string"
+                      ? formData.hear_from
                       : ""
                   }
-                  onChange={(e) => handleChange("hearFrom", e.target.value)}
+                  onChange={(e) => handleChange("hear_from", e.target.value)}
                 >
                   <option value="">Please select</option>
                   <option>LinkedIn</option>
@@ -552,8 +552,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   ]}
                   closeMenuOnSelect={false}
                   value={
-                    Array.isArray(formData.ageGroup)
-                      ? formData.ageGroup
+                    Array.isArray(formData.age_group)
+                      ? formData.age_group
                           .map((ag: any) =>
                             typeof ag === "string"
                               ? [
@@ -572,7 +572,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   }
                   onChange={(selected: any) =>
                     handleChange(
-                      "ageGroup",
+                      "age_group",
                       Array.isArray(selected) ? selected : []
                     )
                   }

@@ -164,8 +164,8 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
   };
   const handleNextStep = () => {
     setTouched({
-      firstName: true,
-      lastName: true,
+      first_name: true,
+      last_name: true,
       gender: true,
       nationality: true,
     });
@@ -196,7 +196,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             >
               *
             </span>
-            {touched.firstName && !formData.firstName && (
+            {touched.first_name && !formData.first_name && (
               <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
                 First name is required
               </span>
@@ -206,11 +206,11 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             type="text"
             className="form-control"
             placeholder="First name"
-            value={formData.firstName}
+            value={formData.first_name}
             onChange={(e) =>
-              setFormData({ ...formData, firstName: e.target.value })
+              setFormData({ ...formData, first_name: e.target.value })
             }
-            onBlur={() => handleBlur("firstName")}
+            onBlur={() => handleBlur("first_name")}
           />
 
           {/* LAST NAME */}
@@ -221,7 +221,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             >
               *
             </span>
-            {touched.lastName && !formData.lastName && (
+            {touched.last_name && !formData.last_name && (
               <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
                 Last name is required
               </span>
@@ -231,11 +231,11 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             type="text"
             className="form-control"
             placeholder="Last name"
-            value={formData.lastName}
+            value={formData.last_name}
             onChange={(e) =>
-              setFormData({ ...formData, lastName: e.target.value })
+              setFormData({ ...formData, last_name: e.target.value })
             }
-            onBlur={() => handleBlur("lastName")}
+            onBlur={() => handleBlur("last_name")}
           />
 
           {/* GENDER */}
@@ -340,9 +340,9 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           <label className="form-label mt-2">Second nationality</label>
           <select
             className="form-control"
-            value={formData.secondNationality || ""}
+            value={formData.second_nationality || ""}
             onChange={(e) =>
-              setFormData({ ...formData, secondNationality: e.target.value })
+              setFormData({ ...formData, second_nationality: e.target.value })
             }
           >
             <option value="">Please select</option>
@@ -359,7 +359,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             type="file"
             className="form-control"
             onChange={(e) =>
-              setFormData({ ...formData, cvFile: e.target.files?.[0] || null })
+              setFormData({ ...formData, cv_file: e.target.files?.[0] || null })
             }
           />
 
@@ -367,9 +367,9 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           <label className="form-label">Where did you hear about us?</label>
           <select
             className="form-control"
-            value={formData.hearFrom}
+            value={formData.hear_from}
             onChange={(e) =>
-              setFormData({ ...formData, hearFrom: e.target.value })
+              setFormData({ ...formData, hear_from: e.target.value })
             }
           >
             <option value="">Please select</option>

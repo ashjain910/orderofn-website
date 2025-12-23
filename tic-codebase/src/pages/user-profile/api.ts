@@ -17,7 +17,7 @@ export async function updateUserProfile(data: any) {
             cvFile: "cvFile",
             ageGroup: "ageGroup",
             job_alerts: "job_alerts",
-            available_day: "available_day",
+            available_date: "available_date",
             roles: "roles",
             subjects: "subjects",
             leadershipRoles: "leadershipRoles",

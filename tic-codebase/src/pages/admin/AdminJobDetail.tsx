@@ -262,13 +262,27 @@ function AdminJobDetail() {
       return 0;
     });
   } else if (sortBy === "date") {
+    // Accept DD-MM-YYYY, YYYY-MM-DD, or fallback to earliest date if invalid
+    const parseDate = (d: string | undefined | null) => {
+      if (!d || typeof d !== "string") return new Date(0).getTime();
+      let parts = d.split("-");
+      if (parts.length === 3) {
+        // Try DD-MM-YYYY
+        let [p1, p2, p3] = parts.map(Number);
+        // If year is first (YYYY-MM-DD)
+        if (p1 > 1900 && p1 < 2100) {
+          return new Date(p1, p2 - 1, p3).getTime();
+        }
+        // If year is last (DD-MM-YYYY)
+        if (p3 > 1900 && p3 < 2100) {
+          return new Date(p3, p2 - 1, p1).getTime();
+        }
+      }
+      // Fallback: treat as earliest
+      return new Date(0).getTime();
+    };
     sortedTeachers = sortedTeachers.sort((a, b) => {
-      // date_applied format: DD-MM-YYYY
-      const parseDate = (d: string) => {
-        const [day, month, year] = d.split("-").map(Number);
-        return new Date(year, month - 1, day).getTime();
-      };
-      return parseDate(a.date_applied) - parseDate(b.date_applied);
+      return parseDate(a.applied_at) - parseDate(b.applied_at);
     });
   }
 
@@ -794,7 +808,7 @@ function AdminJobDetail() {
                   <option value="reviewed">Reviewed</option>
                   <option value="accepted">Accepted</option>
                   <option value="rejected">Rejected</option>
-                  <option value="date">Date Applied</option>
+                  {/* <option value="date">Date Applied</option> */}
                 </select>
                 <select
                   className="form-select form-select-sm w-auto"
@@ -1319,26 +1333,28 @@ function AdminJobDetail() {
                                   </div>
                                 )}
                             </div>
-                            {/* Schedule Interview button as separate button for reviewed/accepted */}
+                            {/* Schedule Interview button as separate button for reviewed/accepted, only if job is not expired or closed */}
                             {(teacher.status === "reviewed" ||
-                              teacher.status === "accepted") && (
-                              <a
-                                role="button"
-                                className="ms-2 float-end mt-3"
-                                onClick={() => {
-                                  setInterviewForm({
-                                    applicationId: teacher.id,
-                                    interview_date: null,
-                                    interview_time: "",
-                                    interview_format: "",
-                                    interview_panel: "",
-                                  });
-                                  setShowInterviewModal(true);
-                                }}
-                              >
-                                Schedule Interview
-                              </a>
-                            )}
+                              teacher.status === "accepted") &&
+                              !job?.is_expired &&
+                              job?.status !== "closed" && (
+                                <a
+                                  role="button"
+                                  className="ms-2 float-end mt-3"
+                                  onClick={() => {
+                                    setInterviewForm({
+                                      applicationId: teacher.id,
+                                      interview_date: null,
+                                      interview_time: "",
+                                      interview_format: "",
+                                      interview_panel: "",
+                                    });
+                                    setShowInterviewModal(true);
+                                  }}
+                                >
+                                  Schedule Interview
+                                </a>
+                              )}
                           </td>
                         </tr>
                       ))

@@ -98,11 +98,11 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
               { value: "16+ Years", label: "16+ Years" },
             ]}
             closeMenuOnSelect={false}
-            value={formData.ageGroup || []}
+            value={formData.age_group || []}
             onChange={(selected: any) =>
               setFormData({
                 ...formData,
-                ageGroup: Array.isArray(selected) ? selected : [],
+                age_group: Array.isArray(selected) ? selected : [],
               })
             }
             classNamePrefix={"react-select"}

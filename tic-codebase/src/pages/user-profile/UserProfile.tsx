@@ -49,12 +49,12 @@ const UserProfile: React.FC = () => {
       lastName: p.last_name || "",
       gender: p.teacher_profile?.gender || "",
       nationality: p.teacher_profile?.nationality || "",
-      secondNationality: p.teacher_profile?.second_nationality || "",
+      second_nationality: p.teacher_profile?.second_nationality || "",
       cvFile: p.teacher_profile?.cv_file || null,
-      hearFrom: p.teacher_profile?.hear_from || "",
+      hear_from: p.teacher_profile?.hear_from || "",
       roles: p.teacher_profile?.roles || [],
       subjects: p.teacher_profile?.subjects || [],
-      ageGroup: p.teacher_profile?.age_group || "",
+      age_group: p.teacher_profile?.age_group || "",
       curriculum: p.teacher_profile?.curriculum || [],
       leadership_role: p.teacher_profile?.leadership_role || [],
       job_alerts:
@@ -398,7 +398,8 @@ const UserProfile: React.FC = () => {
                     {profile.subscription_status.charAt(0).toUpperCase() +
                       profile.subscription_status.slice(1)}
                   </strong>{" "}
-                  and active. Enjoy full access!
+                  <br></br>
+                  Enjoy full access!
                 </div>
               ) : (
                 <div className="txt-muted text-center">

@@ -691,22 +691,7 @@ function JobDetail() {
         </div>
 
         <div className="col-lg-3 col-md-3 col-sm-12 col-12">
-          <div className="card p-4 mb-4">
-            {profile?.subscription_status &&
-              profile.subscription_status === "none" && (
-                <div className="txt-muted text-center">
-                  <h6 className="fw-bold">No active subscription</h6>
-                  <h6>Subscribe to apply for this job.</h6>
-                  <button
-                    onClick={() => navigate("/subscription-plans")}
-                    className="btn btn-primary mt-1"
-                  >
-                    Subscribe now
-                  </button>
-                </div>
-              )}
-          </div>
-          <div className="card shadow-sm border-0 job-simi-card">
+          <div className="card shadow-sm border-0 job-simi-card mb-4">
             <div className="card-body p-2">
               <h5 className=" mb-3">Similar Jobs</h5>
               {similarLoading ? (
@@ -782,6 +767,21 @@ function JobDetail() {
               )}
             </div>
           </div>
+          {profile?.subscription_status &&
+            profile.subscription_status === "none" && (
+              <div className="card p-4">
+                <div className="txt-muted text-center">
+                  <h6 className="fw-bold">No active subscription</h6>
+                  <h6>Subscribe to apply for this job.</h6>
+                  <button
+                    onClick={() => navigate("/subscription-plans")}
+                    className="btn btn-primary mt-1"
+                  >
+                    Subscribe now
+                  </button>
+                </div>
+              </div>
+            )}
         </div>
       </div>
     </div>

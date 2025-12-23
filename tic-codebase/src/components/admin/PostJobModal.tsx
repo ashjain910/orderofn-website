@@ -771,6 +771,11 @@ export default function PostJobModal({
                         dateFormat="yyyy-MM-dd"
                         isClearable
                         autoComplete="off"
+                        minDate={(() => {
+                          const d = new Date();
+                          d.setDate(d.getDate() + 1);
+                          return d;
+                        })()}
                       />
                       {errors.closing_date && (
                         <div
@@ -910,6 +915,11 @@ export default function PostJobModal({
                         dateFormat="yyyy-MM-dd"
                         placeholderText="Select start date"
                         isClearable
+                        minDate={(() => {
+                          const d = new Date();
+                          d.setDate(d.getDate() + 1);
+                          return d;
+                        })()}
                       />
                       {errors.job_start_date && (
                         <div
@@ -943,7 +953,6 @@ export default function PostJobModal({
                               "|",
                               "bulletedList",
                               "numberedList",
-                              "link",
                               "|",
                               "undo",
                               "redo",
@@ -991,7 +1000,6 @@ export default function PostJobModal({
                               "|",
                               "bulletedList",
                               "numberedList",
-                              "link",
                               "|",
                               "undo",
                               "redo",
@@ -1041,7 +1049,6 @@ export default function PostJobModal({
                               "|",
                               "bulletedList",
                               "numberedList",
-                              "link",
                               "|",
                               "undo",
                               "redo",

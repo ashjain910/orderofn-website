@@ -42,7 +42,7 @@
 .tiptap-toolbar button:not(:disabled):hover {
   background: #e2e6ea;
   color: #007bff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .tiptap-toolbar button:active {
   background: #dee2e6;

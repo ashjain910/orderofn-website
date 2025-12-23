@@ -894,21 +894,21 @@ function Jobs() {
               </li>
             </ul>
           </div>
-          <div className="card p-4 mb-4">
-            {(() => {
-              // Prefer profile.subscription_status, else check session/local storage
-              let subStatus =
-                sessionStorage.getItem("profile_subscription_status") ||
-                localStorage.getItem("profile_subscription_status") ||
+          {(() => {
+            // Prefer profile.subscription_status, else check session/local storage
+            let subStatus =
+              sessionStorage.getItem("profile_subscription_status") ||
+              localStorage.getItem("profile_subscription_status") ||
+              undefined;
+            if (!subStatus) {
+              subStatus =
+                sessionStorage.getItem("subscription_status") ||
+                localStorage.getItem("subscription_status") ||
                 undefined;
-              if (!subStatus) {
-                subStatus =
-                  sessionStorage.getItem("subscription_status") ||
-                  localStorage.getItem("subscription_status") ||
-                  undefined;
-              }
-              if (subStatus === "none") {
-                return (
+            }
+            if (subStatus === "none") {
+              return (
+                <div className="card p-4 mb-4">
                   <div className="txt-muted text-center">
                     <h6 className="fw-bold">No active subscription</h6>
                     <h6>Subscribe to get full access.</h6>
@@ -919,11 +919,11 @@ function Jobs() {
                       Subscribe now
                     </button>
                   </div>
-                );
-              }
-              return null;
-            })()}
-          </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
         </div>
       </div>
     </div>

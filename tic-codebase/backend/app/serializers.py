@@ -85,8 +85,8 @@ class PreRegisterSerializer(serializers.Serializer):
     # User fields
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, required=False, min_length=8, max_length=128)
-    firstName = serializers.CharField(max_length=100, min_length=1)
-    lastName = serializers.CharField(max_length=100, min_length=1)
+    first_name = serializers.CharField(max_length=100, min_length=1)
+    last_name = serializers.CharField(max_length=100, min_length=1)
     phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
 
     # Teacher Profile fields - Step 1
@@ -101,9 +101,9 @@ class PreRegisterSerializer(serializers.Serializer):
     # Step 2 - Personal Details
     gender = serializers.CharField(max_length=10)
     nationality = serializers.CharField(max_length=100, min_length=2)
-    secondNationality = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
-    cvFile = serializers.FileField(required=False, allow_null=True)
-    hearFrom = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    second_nationality = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
+    cv_file = serializers.FileField(required=False, allow_null=True)
+    hear_from = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
     # Step 3 - Teaching Experience
     roles = serializers.ListField(
@@ -116,7 +116,7 @@ class PreRegisterSerializer(serializers.Serializer):
         required=False,
         allow_empty=True
     )
-    ageGroup = serializers.ListField(
+    age_group = serializers.ListField(
         child=serializers.CharField(),
         required=False,
         allow_empty=True
@@ -128,29 +128,29 @@ class PreRegisterSerializer(serializers.Serializer):
     )
 
     # Step 4 - Leadership Experience
-    leadershipRole = serializers.ListField(
+    leadership_role = serializers.ListField(
         child=serializers.CharField(),
         required=False,
         allow_empty=True
     )
 
     # Step 5 - Availability
-    exampleRadio = serializers.BooleanField(default=False)
-    availableDate = serializers.DateField(required=False, allow_null=True)
+    job_alerts = serializers.BooleanField(default=False)
+    available_date = serializers.DateField(required=False, allow_null=True)
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("A user with this email already exists.")
         return value.lower()
 
-    def validate_firstName(self, value):
+    def validate_first_name(self, value):
         if not value.strip():
             raise serializers.ValidationError("First name cannot be empty.")
         if any(char.isdigit() for char in value):
             raise serializers.ValidationError("First name cannot contain numbers.")
         return value.strip()
 
-    def validate_lastName(self, value):
+    def validate_last_name(self, value):
         if not value.strip():
             raise serializers.ValidationError("Last name cannot be empty.")
         if any(char.isdigit() for char in value):
@@ -198,7 +198,7 @@ class PreRegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError("Nationality cannot be empty.")
         return value.strip()
 
-    def validate_cvFile(self, value):
+    def validate_cv_file(self, value):
         if value:
             # Check file size
             if value.size > self.MAX_FILE_SIZE:
@@ -227,7 +227,7 @@ class PreRegisterSerializer(serializers.Serializer):
         # Subject can be any string, just return as is
         return value if value else []
 
-    def validate_ageGroup(self, value):
+    def validate_age_group(self, value):
         # Age group can be any string, just return as is
         return value if value else []
 
@@ -241,7 +241,7 @@ class PreRegisterSerializer(serializers.Serializer):
                 )
         return value
 
-    def validate_leadershipRole(self, value):
+    def validate_leadership_role(self, value):
         if value:
             invalid_roles = [r for r in value if r.lower() not in self.VALID_LEADERSHIP_ROLES]
             if invalid_roles:
@@ -252,7 +252,7 @@ class PreRegisterSerializer(serializers.Serializer):
             return [r.lower() for r in value]
         return value
 
-    def validate_availableDate(self, value):
+    def validate_available_date(self, value):
         if value:
             from datetime import date
             current_date = date.today()
@@ -262,6 +262,8 @@ class PreRegisterSerializer(serializers.Serializer):
         return value
 
     def create(self, validated_data):
+        from django.db import transaction
+
         # Generate a random password if not provided
         import secrets
         password = validated_data.pop('password', secrets.token_urlsafe(16))
@@ -269,39 +271,42 @@ class PreRegisterSerializer(serializers.Serializer):
         # Extract user data
         user_data = {
             'email': validated_data.pop('email'),
-            'first_name': validated_data.pop('firstName'),
-            'last_name': validated_data.pop('lastName'),
+            'first_name': validated_data.pop('first_name'),
+            'last_name': validated_data.pop('last_name'),
             'phone': validated_data.pop('phone', ''),
         }
 
-        # Create user
-        user = User.objects.create_user(
-            password=password,
-            **user_data
-        )
+        # Use atomic transaction to ensure both User and TeacherProfile are created together
+        # If either fails, both are rolled back
+        with transaction.atomic():
+            # Create user
+            user = User.objects.create_user(
+                password=password,
+                **user_data
+            )
 
-        # Extract teacher profile data and convert camelCase to snake_case
-        profile_data = {
-            'user': user,
-            'qualified': validated_data.get('qualified'),
-            'english': validated_data.get('english'),
-            'position': validated_data.get('position', []),
-            'gender': validated_data.get('gender'),
-            'nationality': validated_data.get('nationality'),
-            'second_nationality': validated_data.get('secondNationality', ''),
-            'cv_file': validated_data.get('cvFile'),
-            'hear_from': validated_data.get('hearFrom', ''),
-            'roles': validated_data.get('roles', []),
-            'subjects': validated_data.get('subjects', []),
-            'age_group': validated_data.get('ageGroup', []),
-            'curriculum': validated_data.get('curriculum', []),
-            'leadership_role': validated_data.get('leadershipRole', []),
-            'job_alerts': validated_data.get('exampleRadio', False),
-            'available_date': validated_data.get('availableDate'),
-        }
+            # Extract teacher profile data
+            profile_data = {
+                'user': user,
+                'qualified': validated_data.get('qualified'),
+                'english': validated_data.get('english'),
+                'position': validated_data.get('position', []),
+                'gender': validated_data.get('gender'),
+                'nationality': validated_data.get('nationality'),
+                'second_nationality': validated_data.get('second_nationality', ''),
+                'cv_file': validated_data.get('cv_file'),
+                'hear_from': validated_data.get('hear_from', ''),
+                'roles': validated_data.get('roles', []),
+                'subjects': validated_data.get('subjects', []),
+                'age_group': validated_data.get('age_group', []),
+                'curriculum': validated_data.get('curriculum', []),
+                'leadership_role': validated_data.get('leadership_role', []),
+                'job_alerts': validated_data.get('job_alerts', False),
+                'available_date': validated_data.get('available_date'),
+            }
 
-        # Create teacher profile
-        teacher_profile = TeacherProfile.objects.create(**profile_data)
+            # Create teacher profile
+            teacher_profile = TeacherProfile.objects.create(**profile_data)
 
         return {
             'user': user,

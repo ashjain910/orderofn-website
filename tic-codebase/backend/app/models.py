@@ -195,6 +195,7 @@ class Job(models.Model):
     title = models.CharField(max_length=200)
     school_name = models.CharField(max_length=200)
     school_avatar = models.URLField(blank=True, null=True)
+    school_logo = models.ImageField(upload_to='school_logos/', blank=True, null=True)
     location = models.CharField(max_length=200)
 
     # Job Details

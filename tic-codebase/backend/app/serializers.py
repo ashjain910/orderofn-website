@@ -322,7 +322,7 @@ class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = [
-            'id', 'title', 'school_name', 'school_avatar', 'location',
+            'id', 'title', 'school_name', 'school_avatar', 'school_logo', 'location',
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
             'curriculum', 'education_stage', 'contract_type',
@@ -548,7 +548,7 @@ class AdminJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = [
-            'id', 'title', 'school_name', 'school_avatar', 'location',
+            'id', 'title', 'school_name', 'school_avatar', 'school_logo', 'location',
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
             'curriculum', 'education_stage', 'contract_type',
@@ -568,7 +568,7 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = [
-            'id', 'title', 'school_name', 'school_avatar', 'location',
+            'id', 'title', 'school_name', 'school_avatar', 'school_logo', 'location',
             'job_type', 'school_type', 'status', 'gender_preference',
             'summary', 'description', 'requirements', 'level', 'subjects',
             'curriculum', 'education_stage', 'contract_type',

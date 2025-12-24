@@ -19,14 +19,11 @@ import { useEffect } from "react";
 import TeacherProfileModal from "../../components/TeacherProfileModal";
 import AdminBaseApi from "../../services/admin-base";
 import { FaBookmark } from "react-icons/fa";
-import { LuMessageSquareText } from "react-icons/lu";
 import SendMessageModal from "../../components/SendMessageModal";
 
 export default function MyTeachers() {
   const [showMessageModal, setShowMessageModal] = useState(false);
-  const [messageTeacherIdx, setMessageTeacherIdx] = useState<number | null>(
-    null
-  );
+  const [messageTeacherIdx] = useState<number | null>(null);
 
   const [dropdownOpenIdx, setDropdownOpenIdx] = useState<number | null>(null);
   // Close action dropdown on outside click

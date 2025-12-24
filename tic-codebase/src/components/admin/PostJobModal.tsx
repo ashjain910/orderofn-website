@@ -177,7 +177,7 @@ export default function PostJobModal({
     return [];
   };
 
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  // const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [form, setForm] = useState(() => ({
     title: initialValues?.title || "",
     job_type: mapJobTypeToOptions(initialValues?.job_type),
@@ -422,7 +422,7 @@ export default function PostJobModal({
           school_name: "",
           school_logo: null,
         });
-        setLogoPreview(null);
+        // setLogoPreview(null);
         setErrors({});
         if (onSuccess) onSuccess();
         // setTimeout(() => {

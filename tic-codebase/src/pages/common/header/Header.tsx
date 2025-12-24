@@ -58,13 +58,13 @@ function NavScrollExample() {
               >
                 Jobs
               </Nav.Link>
-              <Nav.Link
+              {/* <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/settings"}
                 onClick={() => navigate("/settings")}
               >
                 My settings
-              </Nav.Link>
+              </Nav.Link> */}
               <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/subscription-plans"}

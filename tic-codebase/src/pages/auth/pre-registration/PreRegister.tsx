@@ -319,7 +319,7 @@ export default function PreRegister() {
               }}
             />
 
-            <h3 className="text-center mb-3">Pre-Registration</h3>
+            <h3 className="text-center mb-3">Registration</h3>
 
             <div className="card registration__card__">
               {step === 1 && (

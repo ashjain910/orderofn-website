@@ -1,6 +1,7 @@
 import { Form, Button } from "react-bootstrap";
 import Select from "react-select";
 import { useState } from "react";
+import { LEADERSHIP_OPTIONS } from "../../../common/subjectOptions";
 
 type Step4Props = {
   formData: any;
@@ -54,15 +55,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }: Step4Props) {
                 )}
               <Select
                 isMulti
-                options={[
-                  { value: "coordinator", label: "Coordinator" },
-                  { value: "hod", label: "HOD" },
-                  {
-                    value: "assistant_principal",
-                    label: "Assistant Principal",
-                  },
-                  { value: "principal", label: "Principal" },
-                ]}
+                options={LEADERSHIP_OPTIONS}
                 closeMenuOnSelect={false}
                 value={formData.leadership_role || []}
                 onChange={(selected: any) =>

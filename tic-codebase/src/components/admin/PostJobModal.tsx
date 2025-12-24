@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { SUBJECT_OPTIONS } from "../../common/subjectOptions";
+import {
+  SUBJECT_OPTIONS,
+  POSITIONTYPE_OPTIONS,
+} from "../../common/subjectOptions";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "./PostJobModal.css";
@@ -44,13 +47,11 @@ export interface PostJobModalInitialValues {
   location?: string;
   subjects?: string;
   school_name?: string;
+  school_logo?: File | null;
 }
 
-const positionTypeOptions = [
-  { value: "teacher", label: "Teacher" },
-  { value: "deputy_principal", label: "Deputy Principal" },
-  { value: "head_of_school", label: "Head of School" },
-];
+const positionTypeOptions = POSITIONTYPE_OPTIONS;
+
 const curriculumOptions = [
   { value: "American", label: "American" },
   { value: "Australian", label: "Australian" },
@@ -176,6 +177,7 @@ export default function PostJobModal({
     return [];
   };
 
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [form, setForm] = useState(() => ({
     title: initialValues?.title || "",
     job_type: mapJobTypeToOptions(initialValues?.job_type),
@@ -209,6 +211,7 @@ export default function PostJobModal({
     location: initialValues?.location || "",
     subjects: mapSubjectsToOptions(initialValues?.subjects),
     school_name: initialValues?.school_name || "",
+    school_logo: initialValues?.school_logo || null,
   }));
   const [errors, setErrors] = useState<any>({});
   React.useEffect(() => {
@@ -318,41 +321,77 @@ export default function PostJobModal({
         arr.map((item) => (item && item.value ? item.value : item));
       const getSingleValue = (arr: any[]) =>
         Array.isArray(arr) && arr[0] && arr[0].value ? arr[0].value : "";
-      if (initialValues && initialValues.id) {
-        // PATCH update job
-        response = await AdminBaseApi.patch(
-          `/jobs/${initialValues.id}/update`,
-          {
-            ...form,
-            job_type: getSingleValue(form.job_type),
-            curriculum: getSingleValue(form.curriculum),
-            education_stage: getSingleValue(form.education_stage),
-            school_type: getSingleValue(form.school_type),
-            benefits: toValueArray(form.benefits),
-            subjects: Array.isArray(form.subjects)
-              ? toValueArray(form.subjects)
-              : form.subjects,
-            closing_date: formatDate(form.closing_date),
-            job_start_date: formatDate(form.job_start_date),
-            school_name: form.school_name,
-          }
+      let isMultipart = !!form.school_logo;
+      if (isMultipart) {
+        // Prepare FormData for file upload
+        const formData = new FormData();
+        formData.append("title", form.title);
+        formData.append("job_type", getSingleValue(form.job_type));
+        formData.append("package", form.package);
+        formData.append("contract_type", form.contract_type);
+        formData.append("curriculum", getSingleValue(form.curriculum));
+        formData.append(
+          "education_stage",
+          getSingleValue(form.education_stage)
         );
+        formData.append("school_type", getSingleValue(form.school_type));
+        formData.append("closing_date", formatDate(form.closing_date));
+        formData.append("summary", form.summary);
+        formData.append("requirements", form.requirements);
+        formData.append("description", form.description);
+        formData.append("international_package", form.international_package);
+        formData.append("salary", form.salary);
+        formData.append("location", form.location);
+        formData.append("school_name", form.school_name);
+        formData.append("job_start_date", formatDate(form.job_start_date));
+        // Array fields
+        toValueArray(form.benefits).forEach((b: any) =>
+          formData.append("benefits", b)
+        );
+        (Array.isArray(form.subjects)
+          ? toValueArray(form.subjects)
+          : [form.subjects]
+        ).forEach((s: any) => formData.append("subjects", s));
+        // Logo file
+        if (form.school_logo) {
+          formData.append("school_logo", form.school_logo);
+        }
+        if (initialValues && initialValues.id) {
+          // PATCH update job
+          response = await AdminBaseApi.patch(
+            `/jobs/${initialValues.id}/update`,
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+          );
+        } else {
+          // POST create job
+          response = await AdminBaseApi.post("/jobs/create", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
       } else {
-        // POST create job
-        response = await AdminBaseApi.post("/jobs/create", {
+        // Send as JSON if no file
+        const payload = {
           ...form,
           job_type: getSingleValue(form.job_type),
           curriculum: getSingleValue(form.curriculum),
           education_stage: getSingleValue(form.education_stage),
           school_type: getSingleValue(form.school_type),
+          closing_date: formatDate(form.closing_date),
+          job_start_date: formatDate(form.job_start_date),
           benefits: toValueArray(form.benefits),
           subjects: Array.isArray(form.subjects)
             ? toValueArray(form.subjects)
             : form.subjects,
-          closing_date: formatDate(form.closing_date),
-          job_start_date: formatDate(form.job_start_date),
-          school_name: form.school_name,
-        });
+        };
+        if (initialValues && initialValues.id) {
+          response = await AdminBaseApi.patch(
+            `/jobs/${initialValues.id}/update`,
+            payload
+          );
+        } else {
+          response = await AdminBaseApi.post("/jobs/create", payload);
+        }
       }
       if (response.status === 200 || response.status === 201) {
         const msg =
@@ -381,7 +420,9 @@ export default function PostJobModal({
           location: "",
           subjects: [],
           school_name: "",
+          school_logo: null,
         });
+        setLogoPreview(null);
         setErrors({});
         if (onSuccess) onSuccess();
         // setTimeout(() => {
@@ -514,9 +555,9 @@ export default function PostJobModal({
                       )}
                     </div>
                   </div>
-                  {/* School Name */}
-                  <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div className="mb-3">
+                  {/* School Name & Logo */}
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-12 mb-2">
+                    <div>
                       <label className="form-label">School Name</label>
                       <input
                         type="text"
@@ -541,6 +582,42 @@ export default function PostJobModal({
                       )}
                     </div>
                   </div>
+                  {/* 
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <label className="form-label">School Logo</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="form-control"
+                      onChange={(e) => {
+                        const file = e.target.files && e.target.files[0];
+                        if (file) {
+                          setForm({ ...form, school_logo: file });
+                          const reader = new FileReader();
+                          reader.onloadend = () =>
+                            setLogoPreview(reader.result as string);
+                          reader.readAsDataURL(file);
+                        } else {
+                          setForm({ ...form, school_logo: null });
+                          setLogoPreview(null);
+                        }
+                      }}
+                    />
+                    {logoPreview && (
+                      <img
+                        src={logoPreview}
+                        alt="Logo Preview"
+                        style={{
+                          width: 80,
+                          height: 80,
+                          objectFit: "contain",
+                          marginTop: 8,
+                          borderRadius: 50,
+                          border: "1px solid #eee",
+                        }}
+                      />
+                    )}
+                  </div> */}
                   {/* Location */}
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">

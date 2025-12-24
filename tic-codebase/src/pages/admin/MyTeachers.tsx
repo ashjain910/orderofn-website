@@ -343,18 +343,18 @@ export default function MyTeachers() {
                             <td>
                               <p
                                 className={`txt__regular_sub ${
-                                  teacher.teacher_profile.english === "yes"
+                                  teacher.subscription_status === "active"
                                     ? "text-success"
                                     : "text-danger"
                                 }`}
                                 style={{ fontSize: 13, fontWeight: 500 }}
                               >
-                                {teacher.teacher_profile.english === "yes"
+                                {teacher.subscription_status === "active"
                                   ? "Subscribed"
                                   : "Not Subscribed"}
                               </p>
                             </td>
-                            <td>
+                            {/* <td>
                               <div className="d-flex align-items-center justify-content-end position-relative">
                                 <span
                                   style={{
@@ -373,7 +373,7 @@ export default function MyTeachers() {
                                 >
                                   <LuMessageSquareText size={20} />
                                 </span>
-                                {/* <span
+                                <span
                                   role="button"
                                   style={{
                                     display: "flex",
@@ -424,9 +424,9 @@ export default function MyTeachers() {
                                       Remove from list
                                     </button>
                                   </div>
-                                )} */}
+                                )}
                               </div>
-                            </td>
+                            </td> */}
                           </tr>
                         ))}
                       </tbody>

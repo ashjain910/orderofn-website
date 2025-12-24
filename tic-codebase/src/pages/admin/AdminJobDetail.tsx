@@ -425,6 +425,29 @@ function AdminJobDetail() {
                           interview_format: "",
                           interview_panel: "",
                         });
+                        // Refresh job data after scheduling interview
+                        try {
+                          setLoading(true);
+                          const response = await AdminBaseApi.get(
+                            `/jobs/${id}`
+                          );
+                          if (response.data) {
+                            setJob(response.data);
+                            if (
+                              response.data.applications &&
+                              Array.isArray(response.data.applications)
+                            ) {
+                              setTeachers(response.data.applications);
+                            } else {
+                              setTeachers([]);
+                            }
+                          }
+                        } catch (error) {
+                          setTeachers([]);
+                          console.error(error);
+                        } finally {
+                          setLoading(false);
+                        }
                       } else {
                         toast.error("Failed to send invitation.", toastOptions);
                       }
@@ -857,7 +880,7 @@ function AdminJobDetail() {
                               }}
                               onClick={() => {
                                 setSelectedTeacher(teacher);
-                                setShowProfileModal(true);
+                                // setShowProfileModal(true);
                               }}
                             >
                               {teacher?.applicant_name || "-"}
@@ -1339,8 +1362,9 @@ function AdminJobDetail() {
                                 )}
                             </div>
                             {/* Schedule Interview button as separate button for reviewed/accepted, only if job is not expired or closed */}
-                            {(teacher.status === "reviewed" ||
-                              teacher.status === "accepted") &&
+                            {!teacher.interview_invitation_sent &&
+                              (teacher.status === "reviewed" ||
+                                teacher.status === "accepted") &&
                               !job?.is_expired &&
                               job?.status !== "closed" && (
                                 <a
@@ -1360,6 +1384,11 @@ function AdminJobDetail() {
                                   Schedule Interview
                                 </a>
                               )}
+                            {teacher.interview_invitation_sent && (
+                              <small className="ms-2 float-end mt-3 text-muted">
+                                Interview scheduled
+                              </small>
+                            )}
                           </td>
                         </tr>
                       ))

@@ -8,22 +8,21 @@ import "react-datepicker/dist/react-datepicker.css";
 import api from "../services/api";
 import { toast } from "react-toastify";
 import { toastOptions } from "../utils/toastOptions";
-import {
-  LEADERSHIP_ROLE_OPTIONS,
-  getLeadershipRoleLabel,
-} from "../constants/leadershipRoles";
+import { getLeadershipRoleLabel } from "../constants/leadershipRoles";
 
 interface EditProfileModalProps {
   show: boolean;
   onClose: () => void;
   initialData: any;
   onSave: (data: any) => void;
+  leadershipOptions: Array<{ label: string; value: string }>;
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({
   show,
   onClose,
   initialData,
+  leadershipOptions,
 }) => {
   const [formData, setFormData] = useState<any>(initialData || {});
   const [saving, setSaving] = useState(false);
@@ -496,13 +495,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 <Form.Label>Leadership Roles</Form.Label>
                 <Select
                   isMulti
-                  options={LEADERSHIP_ROLE_OPTIONS}
+                  options={leadershipOptions}
                   value={
                     Array.isArray(formData.leadership_role)
                       ? formData.leadership_role
                           .map((role: any) =>
                             typeof role === "string"
-                              ? LEADERSHIP_ROLE_OPTIONS.find(
+                              ? leadershipOptions.find(
                                   (opt) => opt.value === role
                                 ) || null
                               : role

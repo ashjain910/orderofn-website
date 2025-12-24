@@ -1,10 +1,16 @@
-import { getLeadershipRoleLabel } from "../../constants/leadershipRoles";
 import React, { useEffect, useState, useMemo } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 import { fetchUserProfile } from "./api";
 import EditProfileModal from "../../components/EditProfileModal";
-import { ROLES_OPTIONS, SUBJECT_OPTIONS } from "../../common/subjectOptions";
+import {
+  ROLES_OPTIONS,
+  SUBJECT_OPTIONS,
+  LEADERSHIP_OPTIONS,
+} from "../../common/subjectOptions";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const POSITION_OPTIONS = [
   { label: "Teacher", value: "teacher" },
@@ -13,6 +19,10 @@ const POSITION_OPTIONS = [
 ];
 
 const UserProfile: React.FC = () => {
+  // Password form state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showEdit, setShowEdit] = useState(false);
@@ -98,6 +108,7 @@ const UserProfile: React.FC = () => {
         onClose={closeEdit}
         initialData={memoizedEditFormData}
         onSave={handleEditSave}
+        leadershipOptions={LEADERSHIP_OPTIONS}
       />
       <div className="container my-4">
         <div className="row g-4">
@@ -319,21 +330,24 @@ const UserProfile: React.FC = () => {
               <div className="d-flex mb-2 ">
                 <small className="text-muted">Leadership roles :</small>
                 <small className="ml-2">
-                  {Array.isArray(profile?.teacher_profile?.leadership_role)
-                    ? profile.teacher_profile.leadership_role.map(
-                        (role: string, idx: number) => (
-                          <span key={role}>
-                            {getLeadershipRoleLabel(role)}
-                            {idx <
-                            profile.teacher_profile.leadership_role.length - 1
-                              ? ", "
-                              : ""}
-                          </span>
-                        )
-                      )
-                    : getLeadershipRoleLabel(
-                        profile.teacher_profile?.leadership_role
-                      )}
+                  {(() => {
+                    const val = profile?.teacher_profile?.leadership_role;
+                    if (Array.isArray(val)) {
+                      return val
+                        .map((role: string) => {
+                          const found = LEADERSHIP_OPTIONS.find(
+                            (opt) => opt.value === role
+                          );
+                          return found ? found.label : role;
+                        })
+                        .join(", ");
+                    } else {
+                      const found = LEADERSHIP_OPTIONS.find(
+                        (opt) => opt.value === val
+                      );
+                      return found ? found.label : val;
+                    }
+                  })()}
                 </small>
               </div>
               <div className="d-flex mb-2 ">
@@ -353,24 +367,7 @@ const UserProfile: React.FC = () => {
                 </small>
               </div>
             </div>
-
-            {/* Bio */}
-            {/* <div className="card p-4">
-              <div className="d-flex justify-content-between mb-2">
-                <h6 className="mb-0">Bio</h6>
-                <button className="btn btn-light btn-sm">Edit</button>
-              </div>
-              <p className="text-muted mb-0">
-                Hi 👋, I'm Ronald, a passionate UX designer with 10 years of
-                experience in creating intuitive and user-centered digital
-                experiences.
-              </p>
-            </div> */}
-          </div>
-
-          {/* RIGHT SIDE */}
-          <div className="col-lg-4">
-            <div className="card p-4">
+            <div className="card p-4 mb-3">
               <h6>Resume</h6>
               {profile?.teacher_profile?.cv_file ? (
                 <>
@@ -388,6 +385,224 @@ const UserProfile: React.FC = () => {
               ) : (
                 <div className="text-muted">No CV uploaded.</div>
               )}
+            </div>
+            {/* Bio */}
+            {/* <div className="card p-4">
+              <div className="d-flex justify-content-between mb-2">
+                <h6 className="mb-0">Bio</h6>
+                <button className="btn btn-light btn-sm">Edit</button>
+              </div>
+              <p className="text-muted mb-0">
+                Hi 👋, I'm Ronald, a passionate UX designer with 10 years of
+                experience in creating intuitive and user-centered digital
+                experiences.
+              </p>
+            </div> */}
+          </div>
+
+          {/* RIGHT SIDE */}
+          <div className="col-lg-4">
+            <div className="card p-4 mb-3">
+              <h6>Email settings</h6>
+              <div className="row ">
+                <div className="col-lg-12 col-md-12 col-sm-12">
+                  <div className="form-check mt-2">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="weeklyMailCheckbox"
+                      checked={
+                        typeof profile?.receive_weekly_summary === "boolean"
+                          ? profile.receive_weekly_summary
+                          : profile?.receive_weekly_summary === "true"
+                          ? true
+                          : false
+                      }
+                      onChange={async (e) => {
+                        const newValue = e.target.checked;
+                        // Optimistically update UI for better UX
+                        setProfile((prev: any) => ({
+                          ...prev,
+                          receive_weekly_summary: newValue,
+                        }));
+                        try {
+                          const form = new FormData();
+                          form.append(
+                            "receive_weekly_summary",
+                            String(newValue)
+                          );
+                          const res = await (
+                            await import("../../services/api")
+                          ).default.patch("/profile/update", form, {
+                            headers: { "Content-Type": "multipart/form-data" },
+                          });
+                          if (res.status === 200 || res.status === 201) {
+                            if (
+                              res.data &&
+                              res.data.profile &&
+                              typeof res.data.profile.receive_weekly_summary !==
+                                "undefined"
+                            ) {
+                              setProfile((prev: any) => ({
+                                ...prev,
+                                receive_weekly_summary:
+                                  res.data.profile.receive_weekly_summary,
+                              }));
+                            }
+                            toast.success(
+                              "Email preference updated successfully."
+                            );
+                          } else {
+                            toast.error("Failed to update email preference.");
+                          }
+                        } catch (err) {
+                          toast.error("Failed to update email preference.");
+                        }
+                      }}
+                    />
+                    <label
+                      className="form-check-label "
+                      htmlFor="weeklyMailCheckbox"
+                    >
+                      Send mail weekly
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="card p-4 mb-3">
+              <h6>Password settings</h6>
+              <div className="row ">
+                <div className="col-lg-12 col-md-12 col-sm-12">
+                  <form
+                    className="mb-2"
+                    style={{ maxWidth: 400 }}
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (
+                        !currentPassword ||
+                        !newPassword ||
+                        !confirmPassword
+                      ) {
+                        toast.error("All fields are required.");
+                        return;
+                      }
+                      if (newPassword.length < 6) {
+                        toast.error(
+                          "New password must be at least 6 characters."
+                        );
+                        return;
+                      }
+                      if (newPassword !== confirmPassword) {
+                        toast.error(
+                          "New password and confirm password do not match."
+                        );
+                        return;
+                      }
+                      if (
+                        !window.confirm(
+                          "Are you sure you want to change your password?"
+                        )
+                      ) {
+                        return;
+                      }
+                      try {
+                        const res = await (
+                          await import("../../services/api")
+                        ).default.post("/update-password", {
+                          current: currentPassword,
+                          new: newPassword,
+                          confirm: confirmPassword,
+                        });
+                        if (res.status === 200) {
+                          toast.success(
+                            "Password updated successfully. Please log in again."
+                          );
+                          setCurrentPassword("");
+                          setNewPassword("");
+                          setConfirmPassword("");
+                          setTimeout(() => {
+                            Cookies.remove("access");
+                            Cookies.remove("refresh");
+                            sessionStorage.clear();
+                            localStorage.clear();
+                            window.location.href = "/";
+                          }, 2000);
+                        } else if (res.status === 400 && res.data) {
+                          let msg = "Failed to update password.";
+                          if (
+                            res.data.current &&
+                            Array.isArray(res.data.current)
+                          ) {
+                            msg = res.data.current[0];
+                          } else if (typeof res.data === "string") {
+                            msg = res.data;
+                          }
+                          toast.error(msg);
+                        } else {
+                          toast.error("Failed to update password. Try again.");
+                        }
+                      } catch (err: any) {
+                        let msg = "Failed to update password. Try again.";
+                        if (err && typeof err === "object") {
+                          if (err.response && err.response.data) {
+                            const data = err.response.data;
+                            if (data.current && Array.isArray(data.current)) {
+                              msg = data.current[0];
+                            } else if (typeof data === "string") {
+                              msg = data;
+                            } else if (data.message) {
+                              msg = data.message;
+                            }
+                          } else if (err.message) {
+                            msg = err.message;
+                          }
+                        }
+                        toast.error(msg);
+                      }
+                    }}
+                  >
+                    <div className="mb-2">
+                      <label className="form-label">Current Password</label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="mb-2">
+                      <label className="form-label">New Password</label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        minLength={6}
+                        required
+                      />
+                    </div>
+                    <div className="mb-2">
+                      <label className="form-label">Confirm New Password</label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        minLength={6}
+                        required
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100 mt-2"
+                    >
+                      Update Password
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
             <div className="card p-4 mt-4">
               {profile?.subscription_status &&
@@ -418,6 +633,7 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

@@ -715,3 +715,7 @@ textarea.form-control {
   pointer-events: none;
   z-index: auto !important;
 }
+
+.w-70 {
+  width: 70% !important;
+}

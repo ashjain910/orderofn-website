@@ -515,9 +515,9 @@ class AdminCandidateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'email', 'first_name', 'last_name', 'full_name',
-            'is_active', 'date_joined', 'teacher_profile', 'total_applications'
+            'is_active', 'date_joined', 'subscription_status', 'teacher_profile', 'total_applications'
         ]
-        read_only_fields = ['id', 'date_joined']
+        read_only_fields = ['id', 'date_joined', 'subscription_status']
 
     def get_total_applications(self, obj):
         return JobApplication.objects.filter(user=obj).count()
@@ -533,9 +533,10 @@ class AdminJobApplicationSerializer(serializers.ModelSerializer):
         model = JobApplication
         fields = [
             'id', 'applicant_email', 'applicant_name', 'applicant_profile',
-            'resume', 'cover_letter', 'status', 'applied_at', 'updated_at'
+            'resume', 'cover_letter', 'status', 'interview_invitation_sent',
+            'interview_invitation_sent_at', 'applied_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'applied_at', 'updated_at']
+        read_only_fields = ['id', 'interview_invitation_sent', 'interview_invitation_sent_at', 'applied_at', 'updated_at']
 
 
 class AdminJobSerializer(serializers.ModelSerializer):
@@ -585,14 +586,14 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def validate_job_type(self, value):
-        """Validate job type"""
-        valid_types = ['deputy_principal', 'teacher', 'head_of_school']
-        if value not in valid_types:
-            raise serializers.ValidationError(
-                f"Job type must be one of: {', '.join(valid_types)}"
-            )
-        return value
+    # def validate_job_type(self, value):
+    #     """Validate job type"""
+    #     valid_types = ['deputy_principal', 'teacher', 'head_of_school']
+    #     if value not in valid_types:
+    #         raise serializers.ValidationError(
+    #             f"Job type must be one of: {', '.join(valid_types)}"
+    #         )
+    #     return value
 
     def validate_school_type(self, value):
         """Validate school type"""

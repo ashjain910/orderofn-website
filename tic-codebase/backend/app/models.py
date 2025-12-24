@@ -264,6 +264,8 @@ class JobApplication(models.Model):
 
     # Status
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    interview_invitation_sent = models.BooleanField(default=False)
+    interview_invitation_sent_at = models.DateTimeField(blank=True, null=True)
 
     # Timestamps
     applied_at = models.DateTimeField(auto_now_add=True)

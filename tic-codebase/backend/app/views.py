@@ -510,6 +510,11 @@ def admin_send_interview_invitation(request, application_id):
         try:
             email_sent = send_interview_invitation_email(application, interview_details)
             if email_sent:
+                # Mark invitation as sent
+                application.interview_invitation_sent = True
+                application.interview_invitation_sent_at = datetime.now()
+                application.save()
+
                 logger.info(f"Interview invitation email sent to {application.user.email}")
                 return Response({
                     'message': 'Interview invitation email sent successfully',

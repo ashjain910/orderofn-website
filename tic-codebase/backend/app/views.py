@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Q
@@ -568,7 +568,7 @@ def admin_dashboard_stats(request):
 
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
-@parser_classes([MultiPartParser, FormParser])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
 def admin_create_job(request):
     """Create a new job posting"""
     serializer = AdminJobCreateUpdateSerializer(data=request.data)
@@ -585,7 +585,7 @@ def admin_create_job(request):
 
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAdminUser])
-@parser_classes([MultiPartParser, FormParser])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
 def admin_update_job(request, job_id):
     """Update an existing job posting"""
     try:

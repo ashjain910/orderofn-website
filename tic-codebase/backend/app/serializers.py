@@ -565,10 +565,6 @@ class AdminJobSerializer(serializers.ModelSerializer):
 class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer for creating and updating jobs (admin only)"""
 
-    # Override JSONField fields to handle string input from multipart form data
-    subjects = serializers.JSONField(required=False, allow_null=True)
-    benefits = serializers.JSONField(required=False, allow_null=True)
-
     class Meta:
         model = Job
         fields = [
@@ -580,6 +576,26 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
             'closing_date', 'job_start_date', 'date_posted', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
+
+    def validate_subjects(self, value):
+        """Parse subjects if it comes as a JSON string"""
+        if isinstance(value, str):
+            try:
+                import json
+                return json.loads(value)
+            except json.JSONDecodeError:
+                raise serializers.ValidationError("Invalid JSON format for subjects")
+        return value if value else []
+
+    def validate_benefits(self, value):
+        """Parse benefits if it comes as a JSON string"""
+        if isinstance(value, str):
+            try:
+                import json
+                return json.loads(value)
+            except json.JSONDecodeError:
+                raise serializers.ValidationError("Invalid JSON format for benefits")
+        return value if value else []
 
     def validate_status(self, value):
         """Validate job status"""

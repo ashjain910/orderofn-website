@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'phone', 'date_joined', 'subscription_status']
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'phone', 'date_joined', 'subscription_status', 'receive_weekly_summary']
         read_only_fields = ['id', 'date_joined', 'subscription_status']
 
 
@@ -55,7 +55,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'phone', 'date_joined', 'subscription_status', 'teacher_profile']
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'phone', 'date_joined', 'subscription_status', 'receive_weekly_summary', 'teacher_profile']
         read_only_fields = ['id', 'date_joined', 'subscription_status']
 
 
@@ -565,6 +565,10 @@ class AdminJobSerializer(serializers.ModelSerializer):
 class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer for creating and updating jobs (admin only)"""
 
+    # Override JSONField fields to handle string input from multipart form data
+    subjects = serializers.JSONField(required=False, allow_null=True)
+    benefits = serializers.JSONField(required=False, allow_null=True)
+
     class Meta:
         model = Job
         fields = [
@@ -585,15 +589,6 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
                 f"Status must be one of: {', '.join(valid_statuses)}"
             )
         return value
-
-    # def validate_job_type(self, value):
-    #     """Validate job type"""
-    #     valid_types = ['deputy_principal', 'teacher', 'head_of_school']
-    #     if value not in valid_types:
-    #         raise serializers.ValidationError(
-    #             f"Job type must be one of: {', '.join(valid_types)}"
-    #         )
-    #     return value
 
     def validate_school_type(self, value):
         """Validate school type"""
@@ -666,6 +661,7 @@ class UpdateProfileSerializer(serializers.Serializer):
     last_name = serializers.CharField(max_length=100, required=False)
     email = serializers.EmailField(required=False)
     phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
+    receive_weekly_summary = serializers.BooleanField(required=False)
 
     # Teacher Profile fields
     qualified = serializers.CharField(max_length=10, required=False)
@@ -812,7 +808,7 @@ class UpdateProfileSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         # Extract user fields
-        user_fields = ['first_name', 'last_name', 'email', 'phone']
+        user_fields = ['first_name', 'last_name', 'email', 'phone', 'receive_weekly_summary']
         user_data = {k: v for k, v in validated_data.items() if k in user_fields}
 
         # Update user if user fields are present

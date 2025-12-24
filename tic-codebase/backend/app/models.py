@@ -56,6 +56,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     subscription_end_date = models.DateTimeField(blank=True, null=True)
     subscription_cancel_at_period_end = models.BooleanField(default=False)
 
+    # Email settings
+    receive_weekly_summary = models.BooleanField(default=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
@@ -199,7 +202,7 @@ class Job(models.Model):
     location = models.CharField(max_length=200)
 
     # Job Details
-    job_type = models.CharField(max_length=20, choices=JOB_TYPE_CHOICES)
+    job_type = models.CharField(max_length=100)
     school_type = models.CharField(max_length=20, choices=SCHOOL_TYPE_CHOICES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     gender_preference = models.CharField(max_length=10, choices=GENDER_PREFERENCE_CHOICES, default='any')

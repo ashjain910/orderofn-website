@@ -568,6 +568,7 @@ def admin_dashboard_stats(request):
 
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
+@parser_classes([MultiPartParser, FormParser])
 def admin_create_job(request):
     """Create a new job posting"""
     serializer = AdminJobCreateUpdateSerializer(data=request.data)
@@ -584,6 +585,7 @@ def admin_create_job(request):
 
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAdminUser])
+@parser_classes([MultiPartParser, FormParser])
 def admin_update_job(request, job_id):
     """Update an existing job posting"""
     try:

@@ -68,7 +68,7 @@ const statusTabs = [
   { key: "applied", label: "Applied Jobs" },
 ];
 
-const JOBS_PER_PAGE = 5;
+const JOBS_PER_PAGE = 30;
 
 import { job_types, schoolTypes } from "../../constants/jobOptions";
 // const genders = ["any", "male", "female", "other"];

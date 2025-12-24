@@ -1,6 +1,41 @@
 import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import "./TeacherProfileModal.css";
+import { Modal } from "react-bootstrap";
 import SendMessageModal from "./SendMessageModal";
+import { ROLES_OPTIONS, SUBJECT_OPTIONS } from "../common/subjectOptions";
+import { getLeadershipRoleLabel } from "../constants/leadershipRoles";
+import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
+
+const POSITION_OPTIONS = [
+  { label: "Teacher", value: "teacher" },
+  { label: "Senior Leader", value: "leader" },
+  { label: "Other", value: "other" },
+];
+const AGE_GROUP_OPTIONS = [
+  { value: "3-5 Years", label: "3-5 Years" },
+  { value: "6-10 Years", label: "6-10 Years" },
+  { value: "11-15 Years", label: "11-15 Years" },
+  { value: "16+ Years", label: "16+ Years" },
+];
+
+interface Option {
+  label: string;
+  value: string;
+}
+
+function getLabels(
+  values: string | string[] | undefined,
+  options: Option[]
+): string {
+  if (!values) return "-";
+  const arr = Array.isArray(values) ? values : [values];
+  return arr
+    .map((v) => {
+      const found = options.find((o) => o.value === v);
+      return found ? found.label : v;
+    })
+    .join(", ");
+}
 
 interface TeacherProfileModalProps {
   show: boolean;
@@ -14,12 +49,31 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
   teacher,
 }) => {
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const [cvError, setCvError] = useState<string | null>(null);
   if (!show) return null;
   // Support both teacher_profile and applicant_profile as the profile source
   const profile =
     teacher && (teacher.teacher_profile || teacher.applicant_profile)
       ? teacher.teacher_profile || teacher.applicant_profile
       : {};
+
+  // Helper to get a random color based on teacher id (same as job listing)
+  function getAvatarColor(id: number) {
+    const colors = [
+      "#0d6efd", // blue
+      "#6610f2", // indigo
+      "#6f42c1", // purple
+      "#d63384", // pink
+      "#fd7e14", // orange
+      "#20c997", // teal
+      "#198754", // green
+      "#ffc107", // yellow
+      "#dc3545", // red
+      "#343a40", // dark
+    ];
+    if (typeof id !== "number" || isNaN(id)) return colors[0];
+    return colors[Math.abs(id) % colors.length];
+  }
 
   return (
     <Modal show={show} onHide={onClose} centered size="lg">
@@ -32,175 +86,226 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
             No teacher data available.
           </div>
         ) : (
-          <div
-            className="modal-content p-0"
-            style={{ background: "#f8f9fa", border: "none" }}
-          >
-            {/* Cover Banner */}
-            <div
-              className=" d-flex"
-              style={{
-                height: "120px",
-                background: "#e6f2ff",
-                borderTopLeftRadius: "8px",
-                borderTopRightRadius: "8px",
-                borderBottomLeftRadius: "20px",
-                borderBottomRightRadius: "20px",
-              }}
-            >
-              {/* Name + Email + Location */}
-              <div className="d-flex justify-content-between w-100 px-3 align-items-center">
-                <div className="col d-flex flex-grid gap-3 align-items-center p-2">
-                  {/* Avatar (first letter) */}
-                  <div className="col-auto">
-                    <div
-                      className="rounded-circle d-flex  align-items-center justify-content-center"
-                      style={{
-                        width: "100px",
-                        height: "100px",
-                        border: "4px solid #fff",
-                        background: "#0d3b85",
-                        color: "#fff",
-                        fontSize: "48px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {teacher.full_name
-                        ? teacher.full_name[0].toUpperCase()
-                        : "?"}
+          <div className="container my-4">
+            <div className="row g-4">
+              {/* LEFT SIDE */}
+              <div className="col-lg-12 d-flex  align-items-center">
+                <div
+                  className="rounded-circle d-flex align-items-center justify-content-center mb-1"
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    background: getAvatarColor(teacher.id),
+                    color: "#fff",
+                    fontSize: "28px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {teacher.full_name ? teacher.full_name[0].toUpperCase() : "?"}
+                </div>
+                <div style={{ marginLeft: "15px" }}>
+                  <h4>{teacher.full_name}</h4>
+                  <div className="text-muted small">{teacher.email}</div>
+                  {teacher.location && (
+                    <div className="text-muted small mt-1">
+                      {teacher.location}
                     </div>
-                  </div>
-                  <div className="">
-                    <h4 className="mb-1">{teacher.full_name}</h4>
-                    <p className="txt__regular__ mb-0">
-                      {teacher.email}
-                      {teacher.location ? ` • ${teacher.location}` : ""}
-                    </p>
-                    <div className="mt-2 d-flex gap-2">
-                      {profile.role && (
-                        <span className="txt__small__ ">
-                          {profile.role || "-"}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Send Message Button */}
-                <div className="justify-content-end">
-                  <Button
-                    variant="secondary"
-                    onClick={() => setShowMessageModal(true)}
-                  >
-                    Send Message
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="container bg-white p-4 rounded shadow-sm">
-              <div className="row py-2 border-bottom">
-                <div className="col-6 text-muted">Curriculum</div>
-                <div className="col-6 text-end fw-semibold">
-                  {Array.isArray(profile.curriculum)
-                    ? profile.curriculum.join(", ")
-                    : profile.curriculum || "-"}
-                </div>
-              </div>
-
-              {/* --- Section: Details --- */}
-              <h5 className="fw-semibold mt-4 mb-3">Details</h5>
-              <div className="row py-2">
-                <div className="col-6 text-muted">Qualified</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.qualified ? "Yes" : "No"}
-                </div>
-              </div>
-              <div className="row py-2">
-                <div className="col-6 text-muted">English</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.english || "-"}
-                </div>
-              </div>
-              <div className="row py-2">
-                <div className="col-6 text-muted">Position</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.position || "-"}
-                </div>
-              </div>
-              <div className="row py-2">
-                <div className="col-6 text-muted">Gender</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.gender || "-"}
-                </div>
-              </div>
-              <div className="row py-2">
-                <div className="col-6 text-muted">Nationality</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.nationality || "-"}
-                </div>
-              </div>
-              <div className="row py-2 border-bottom">
-                <div className="col-6 text-muted">Second Nationality</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.second_nationality ? "Yes" : "No"}
-                </div>
-              </div>
-
-              {/* --- Section: Availability --- */}
-              <h5 className="fw-semibold mt-4 mb-3">Availability</h5>
-              <div className="row py-2">
-                <div className="col-6 text-muted">Age Group</div>
-                <div className="col-6 text-end fw-semibold">
-                  {(teacher.teacher_profile &&
-                    teacher.teacher_profile.age_group) ||
-                    "-"}
-                </div>
-              </div>
-              <div className="row py-2">
-                <div className="col-6 text-muted">Available from</div>
-                <div className="col-6 text-end fw-semibold">
-                  {(teacher.teacher_profile &&
-                    teacher.teacher_profile.available_from) ||
-                    "-"}
-                </div>
-              </div>
-
-              {/* --- Section: Job Alerts --- */}
-              <h5 className="fw-semibold mt-4 mb-3">Job Alerts</h5>
-              <div className="row py-2 border-bottom">
-                <div className="col-6 text-muted">Job Alerts</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.job_alerts ? "Yes" : "No"}
-                </div>
-              </div>
-
-              {/* --- Section: Applications --- */}
-              <h5 className="fw-semibold mt-4 mb-3">Applications</h5>
-              <div className="row py-2">
-                <div className="col-6 text-muted">Total Applications</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.total_applications || "-"}
-                </div>
-              </div>
-              <div className="row py-2 ">
-                <div className="col-6 text-muted">CV File</div>
-                <div className="col-6 text-end fw-semibold">
-                  {profile.cv_file ? (
-                    <a
-                      href={profile.cv_file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Download
-                    </a>
-                  ) : (
-                    "-"
                   )}
                 </div>
               </div>
+              {/* RIGHT SIDE */}
+              <div className="col-lg-12">
+                <div className=" p-2 mb-3">
+                  <h6 className="mb-3">Personal Info</h6>
+                  <div className="d-flex mb-1">
+                    <small className="text-muted">First Name :</small>
+                    <small className="ml-2">{teacher.first_name}</small>
+                  </div>
+                  <div className="mb-1">
+                    <small className="text-muted">Last Name :</small>
+                    <small className="ml-2">{teacher.last_name}</small>
+                  </div>
+                  <div className="mb-1">
+                    <small className="text-muted">Gender :</small>
+                    <small className="ml-2">
+                      {profile.gender
+                        ? profile.gender.charAt(0).toUpperCase() +
+                          profile.gender.slice(1).toLowerCase()
+                        : "-"}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">
+                      Are you a fully qualified teacher / senior leader? :
+                    </small>
+                    <small className="ml-2">
+                      {profile.qualified
+                        ? profile.qualified.charAt(0).toUpperCase() +
+                          profile.qualified.slice(1).toLowerCase()
+                        : "-"}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">
+                      Are you a fluent English speaker? :
+                    </small>
+                    <small className="ml-2">
+                      {profile.english
+                        ? profile.english.charAt(0).toUpperCase() +
+                          profile.english.slice(1).toLowerCase()
+                        : "-"}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">
+                      What positions are you looking for? :
+                    </small>
+                    <small className="ml-2">
+                      {getLabels(profile.position, POSITION_OPTIONS)}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">Nationality :</small>
+                    <small className="ml-2">{profile.nationality}</small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">Second nationality :</small>
+                    <small className="ml-2">{profile.second_nationality}</small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">
+                      Where did you hear about us? :
+                    </small>
+                    <small className="ml-2">{profile.hear_from}</small>
+                  </div>
+                  <div className="d-flex flex-wrap mb-2 ">
+                    <small className="text-muted mr-2">Teacher Role :</small>
+                    <small className="">
+                      {getLabels(profile.roles, ROLES_OPTIONS)}
+                    </small>
+                  </div>
+                  <div className="d-flex flex-wrap mb-2 ">
+                    <small className="text-muted mr-2">Subjects :</small>
+                    <small className="">
+                      {getLabels(profile.subjects, SUBJECT_OPTIONS)}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">Age group :</small>
+                    <small className="ml-2">
+                      {getLabels(profile.age_group, AGE_GROUP_OPTIONS)}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">
+                      Curriculum experience :
+                    </small>
+                    <small className="ml-2">
+                      {Array.isArray(profile.curriculum)
+                        ? profile.curriculum.join(", ")
+                        : profile.curriculum}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">Leadership roles :</small>
+                    <small className="ml-2">
+                      {Array.isArray(profile.leadership_role)
+                        ? profile.leadership_role.map(
+                            (role: string, idx: number) => (
+                              <span key={role}>
+                                {getLeadershipRoleLabel(role)}
+                                {idx <
+                                (profile.leadership_role as string[]).length - 1
+                                  ? ", "
+                                  : ""}
+                              </span>
+                            )
+                          )
+                        : getLeadershipRoleLabel(
+                            profile.leadership_role as string
+                          )}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">Send me job alerts:</small>
+                    <small className="ml-2">
+                      {profile.job_alerts === true
+                        ? "Yes"
+                        : profile.job_alerts === false
+                        ? "No"
+                        : profile.job_alerts}
+                    </small>
+                  </div>
+                  <div className="d-flex mb-2 ">
+                    <small className="text-muted">
+                      I will be available from :
+                    </small>
+                    <small className="ml-2">
+                      {profile.available_from || profile.available_date || "-"}
+                    </small>
+                  </div>
+                </div>
+                <div className="col-lg-12">
+                  <h6 className="mt-3">Resume</h6>
+                  {profile?.cv_file ? (
+                    cvError ? (
+                      <>
+                        <div className="alert alert-danger mt-3">{cvError}</div>
+                        {/* Fallback to iframe for PDF */}
+                        {profile.cv_file.endsWith(".pdf") && (
+                          <iframe
+                            src={profile.cv_file}
+                            width="100%"
+                            height="400"
+                            style={{ border: "none" }}
+                            title="PDF Preview"
+                          />
+                        )}
+                      </>
+                    ) : profile.cv_file.endsWith(".docx") ? (
+                      <DocViewer
+                        documents={[{ uri: profile.cv_file }]}
+                        pluginRenderers={DocViewerRenderers}
+                        style={{ height: 300 }}
+                        // @ts-ignore
+                        onError={() =>
+                          setCvError(
+                            "Failed to preview document. Try downloading instead."
+                          )
+                        }
+                      />
+                    ) : profile.cv_file.endsWith(".pdf") ? (
+                      <iframe
+                        src={profile.cv_file}
+                        width="100%"
+                        height="400"
+                        style={{ border: "none" }}
+                        title="PDF Preview"
+                      />
+                    ) : (
+                      <div className="text-muted">
+                        Preview not supported for this file type.
+                      </div>
+                    )
+                  ) : (
+                    <div className="text-muted">No resume uploaded.</div>
+                  )}
+                  <div className="mt-2">
+                    {profile.cv_file ? (
+                      <a
+                        href={profile.cv_file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Download
+                      </a>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-
             {/* Common Send Message Modal */}
             <SendMessageModal
               show={showMessageModal}

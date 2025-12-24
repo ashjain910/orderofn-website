@@ -173,7 +173,13 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
   };
   return (
     <div className="step-left">
-      <div className="step-card">
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          marginBottom: 0,
+        }}
+      >
         <div className="progress-title">
           {" "}
           <span className="stepNumber">2</span> About you
@@ -307,7 +313,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </div>
 
           {/* NATIONALITY SELECT DROPDOWN */}
-          <label className="form-label mt-2">
+          <label className="form-label">
             Nationality
             <span
               style={{ color: "red", fontWeight: "bold", fontSize: "16px" }}
@@ -337,7 +343,7 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </select>
 
           {/* SECOND NATIONALITY SELECT DROPDOWN */}
-          <label className="form-label mt-2">Second nationality</label>
+          <label className="form-label">Second nationality</label>
           <select
             className="form-control"
             value={formData.second_nationality || ""}
@@ -354,14 +360,65 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
           </select>
 
           {/* CV UPLOAD */}
-          <label className="form-label">CV Upload</label>
-          <input
-            type="file"
-            className="form-control"
-            onChange={(e) =>
-              setFormData({ ...formData, cv_file: e.target.files?.[0] || null })
-            }
-          />
+          <label className="form-label">Resume Upload</label>
+          <div style={{ position: "relative", width: "100%" }}>
+            <input
+              id="cv-upload-input"
+              type="file"
+              style={{
+                position: "absolute",
+                left: "-9999px",
+                width: "1px",
+                height: "1px",
+                overflow: "hidden",
+                opacity: 0,
+                zIndex: -1,
+              }}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  cv_file: e.target.files?.[0] || null,
+                });
+                if (e.target) e.target.value = "";
+              }}
+              tabIndex={-1}
+            />
+            <label
+              htmlFor="cv-upload-input"
+              style={{
+                display: "block",
+                width: "100%",
+                background: "#f8f9fa",
+                border: "1px solid #ced4da",
+                borderRadius: 10,
+                padding: "8px 12px",
+                color: "#6c757d",
+                fontSize: 14,
+                height: 40,
+                lineHeight: "22px",
+                textAlign: "left",
+                cursor: "pointer",
+                zIndex: 1,
+                position: "relative",
+              }}
+            >
+              Click here to select your CV/resume.
+            </label>
+          </div>
+          {formData.cv_file && (
+            <div className="mt-2 d-flex align-items-center gap-2">
+              <span className="text-success" style={{ fontSize: 11 }}>
+                {formData.cv_file.name || "File selected"}
+              </span>
+              {/* <button
+                type="button"
+                className="btn btn-sm btn-outline-danger ms-2"
+                onClick={() => setFormData({ ...formData, cv_file: null })}
+              >
+                
+              </button> */}
+            </div>
+          )}
 
           {/* WHERE DID YOU HEAR ABOUT US */}
           <label className="form-label">Where did you hear about us?</label>

@@ -936,7 +936,7 @@ function AdminJobDetail() {
                                   className="modal fade show"
                                   style={{
                                     display: "block",
-                                    background: "rgba(0,0,0,0.5)",
+                                    background: "rgba(0,0,0,0.2)",
                                   }}
                                   tabIndex={-1}
                                 >
@@ -1044,35 +1044,40 @@ function AdminJobDetail() {
                                   </div>
                                 </div>
                               )}
-                              <span
-                                className="mx-2"
-                                style={{
-                                  width: "1px",
-                                  height: "14px",
-                                  background: "#ccc",
-                                }}
-                              ></span>
-                              <button
-                                className="btn btn-link p-0"
-                                style={{ fontSize: 12 }}
-                                onClick={() =>
-                                  setCoverLetterModal({
-                                    show: true,
-                                    url: teacher?.cover_letter || null,
-                                    name:
-                                      teacher?.applicant_name || "Cover Letter",
-                                  })
-                                }
-                              >
-                                View Cover Letter
-                              </button>
+                              {teacher?.cover_letter && (
+                                <>
+                                  <span
+                                    className="mx-2"
+                                    style={{
+                                      width: "1px",
+                                      height: "14px",
+                                      background: "#ccc",
+                                    }}
+                                  ></span>
+                                  <button
+                                    className="btn btn-link p-0"
+                                    style={{ fontSize: 12 }}
+                                    onClick={() =>
+                                      setCoverLetterModal({
+                                        show: true,
+                                        url: teacher?.cover_letter || null,
+                                        name:
+                                          teacher?.applicant_name ||
+                                          "Cover Letter",
+                                      })
+                                    }
+                                  >
+                                    View Cover Letter
+                                  </button>
+                                </>
+                              )}
                               {/* Cover Letter Preview Modal (rendered once at top level) */}
                               {coverLetterModal.show && (
                                 <div
                                   className="modal fade show"
                                   style={{
                                     display: "block",
-                                    background: "rgba(0,0,0,0.5)",
+                                    background: "rgba(0,0,0,0.2)",
                                   }}
                                   tabIndex={-1}
                                 >

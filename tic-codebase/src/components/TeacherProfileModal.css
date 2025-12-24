@@ -1,0 +1,4 @@
+.text-muted {
+  --bs-text-opacity: 1;
+  color: rgb(88 88 88 / 75%) !important;
+}

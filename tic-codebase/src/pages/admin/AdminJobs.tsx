@@ -11,7 +11,7 @@ const statusTabs = [
   { key: "closed", label: "Closed Jobs" },
 ];
 
-const JOBS_PER_PAGE = 5;
+const JOBS_PER_PAGE = 30;
 
 const tabIcons = {
   active: <FaRegBookmark />,

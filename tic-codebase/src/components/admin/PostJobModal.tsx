@@ -51,7 +51,20 @@ const positionTypeOptions = [
   { value: "deputy_principal", label: "Deputy Principal" },
   { value: "head_of_school", label: "Head of School" },
 ];
-const curriculumOptions = [{ value: "IB PYP", label: "IB PYP" }];
+const curriculumOptions = [
+  { value: "American", label: "American" },
+  { value: "Australian", label: "Australian" },
+  { value: "Canadian", label: "Canadian" },
+  { value: "IB Dip", label: "IB Dip" },
+  { value: "IB MYP", label: "IB MYP" },
+  { value: "IB PYP", label: "IB PYP" },
+  { value: "Indian", label: "Indian" },
+  { value: "IPC", label: "IPC" },
+  { value: "New zealand", label: "New zealand" },
+  { value: "South African", label: "South African" },
+  { value: "UK National", label: "UK National" },
+];
+
 const educationStageOptions = [
   { value: "Early Years", label: "Early Years" },
   { value: "Primary", label: "Primary" },
@@ -347,6 +360,7 @@ export default function PostJobModal({
           (initialValues && initialValues.id
             ? "Job updated successfully!"
             : "Job posted successfully!");
+        setLoading(false);
         toast.success(msg, toastOptions);
         setForm({
           title: "",

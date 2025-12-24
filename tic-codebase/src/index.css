@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #F3F5F7 !important;
+  background-color: #f3f5f7 !important;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -107,8 +107,6 @@ button:focus-visible {
   display: none !important;
 }
 
-
-
 .navbar-brand {
   margin-left: 20px;
 }
@@ -124,8 +122,6 @@ button:focus-visible {
 .mr-20 {
   margin-right: 20px !important;
 }
-
-
 
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link.show {
@@ -154,7 +150,7 @@ button:focus-visible {
 
 .card {
   padding: 15px !important;
-  border: 1px solid #D9D9D9 !important;
+  border: 1px solid #d9d9d9 !important;
 }
 
 ul {
@@ -173,13 +169,13 @@ ul {
   color: #828282 !important;
   border: none !important;
   border-radius: 0px !important;
-  border-right: 1px solid #D9D9D9 !important;
+  border-right: 1px solid #d9d9d9 !important;
   padding: 15px 20px !important;
 }
 
 .card__tab__ .active {
   position: relative;
-  color: #0F3F93 !important;
+  color: #0f3f93 !important;
 }
 
 .card__tab__ .active::before {
@@ -189,7 +185,7 @@ ul {
   left: 0;
   width: 100%;
   height: 3px;
-  background: #0F3F93;
+  background: #0f3f93;
   border-radius: 2px 2px 0 0;
 }
 
@@ -247,8 +243,8 @@ ul {
 .btn-secondary {
   font-size: 14px !important;
   background-color: #ffffff !important;
-  border-color: #C4C4C4 !important;
-  color: #79747E !important;
+  border-color: #c4c4c4 !important;
+  color: #79747e !important;
   height: 42px !important;
   padding: 10px 20px !important;
 }
@@ -270,7 +266,7 @@ ul {
   width: 18px !important;
   height: 18px !important;
   margin-top: 2px !important;
-  border: 1px solid #BDBDBD !important;
+  border: 1px solid #bdbdbd !important;
 }
 
 .form-check .form-check-label {
@@ -284,16 +280,15 @@ ul {
   border-color: #0d3b85 !important;
 }
 
-.form-check-input:checked[type=radio] {
+.form-check-input:checked[type="radio"] {
   background-color: #0d3b85 !important;
   border-color: #0d3b85 !important;
   font-size: 14px !important;
 }
 
-.form-check-input:checked[type=radio] {
+.form-check-input:checked[type="radio"] {
   background-color: #0d3b85 !important;
   border-color: #0d3b85 !important;
-
 }
 
 .pl_rem-8 {
@@ -337,8 +332,8 @@ h3 {
 }
 
 .stepNumber {
-  background-color: #0F3F93;
-  color: #FFFFFF;
+  background-color: #0f3f93;
+  color: #ffffff;
   width: 24px;
   height: 24px;
   display: flex;
@@ -364,7 +359,7 @@ h3 {
   color: var(--bs-progress-bar-color);
   text-align: center;
   white-space: nowrap;
-  background-color: #0F3F93 !important;
+  background-color: #0f3f93 !important;
 }
 
 .step-count {
@@ -398,7 +393,7 @@ h3 {
   margin-left: 0.5rem !important;
 }
 
-.form-check-input[type=radio] {
+.form-check-input[type="radio"] {
   border-radius: 50%;
   width: 18px !important;
   height: 18px !important;
@@ -467,13 +462,13 @@ h3 {
 }
 
 .teacher-applicants-table a {
-  color: #0F3F93 !important;
+  color: #0f3f93 !important;
   text-decoration: none;
   font-size: 14px !important;
   font-weight: 500 !important;
 }
 
-.table-hover>tbody>tr:hover>* {
+.table-hover > tbody > tr:hover > * {
   --bs-table-color-state: var(--bs-table-hover-color);
   --bs-table-bg-state: rgb(243 248 255) !important;
 }
@@ -560,20 +555,26 @@ textarea.form-control {
 .react-datepicker__year-text--selected,
 .react-datepicker__year-text--in-selecting-range,
 .react-datepicker__year-text--in-range {
-  background-color: #0F3F93 !important;
+  background-color: #0f3f93 !important;
 }
 
-.react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover,
-.react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover,
-.react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover,
-.react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover {
-  background-color: #0F3F93 !important;
+.react-datepicker__day--keyboard-selected:not([aria-disabled="true"]):hover,
+.react-datepicker__month-text--keyboard-selected:not(
+    [aria-disabled="true"]
+  ):hover,
+.react-datepicker__quarter-text--keyboard-selected:not(
+    [aria-disabled="true"]
+  ):hover,
+.react-datepicker__year-text--keyboard-selected:not(
+    [aria-disabled="true"]
+  ):hover {
+  background-color: #0f3f93 !important;
   color: #fff;
 }
 
 .react-datepicker__close-icon::after {
   cursor: pointer;
-  background-color: #0F3F93 !important;
+  background-color: #0f3f93 !important;
   color: #fff;
   border-radius: 50%;
   height: 20px !important;
@@ -680,7 +681,6 @@ textarea.form-control {
   padding-right: 5rem !important;
 }
 
-
 @media screen and (max-width: 680px) {
   .sm__d_none__ {
     display: none !important;
@@ -689,19 +689,29 @@ textarea.form-control {
     padding-left: 15px !important;
     padding-right: 15px !important;
   }
-   .preregister_form {
+  .preregister_form {
     padding-left: 25px !important;
     padding-right: 25px !important;
   }
 }
-@media  (max-width: 992px) {
+@media (max-width: 992px) {
   .container {
     margin-left: 15px !important;
     margin-right: 15px !important;
   }
-  @media  (min-width: 768px) {
-    .container, .container-md, .container-sm {
-        max-width: 98% !important;
+  @media (min-width: 768px) {
+    .container,
+    .container-md,
+    .container-sm {
+      max-width: 98% !important;
     }
+  }
 }
+.mr-2 {
+  margin-right: 0.5rem !important;
+}
+
+.ck.ck-dropdown .ck-dropdown__arrow {
+  pointer-events: none;
+  z-index: auto !important;
 }

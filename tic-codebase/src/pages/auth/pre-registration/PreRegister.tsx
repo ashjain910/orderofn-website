@@ -226,6 +226,12 @@ export default function PreRegister() {
       toast.error("Registration failed. Please try again.", toastOptions);
     } catch (error: any) {
       let message = "Registration failed. Please try again.";
+      if (error?.response?.status === 413) {
+        toast.error(
+          "File too large. Please upload a smaller file (within 1MB).",
+          toastOptions
+        );
+      }
       if (
         error?.response?.status === 400 &&
         error?.response?.data &&

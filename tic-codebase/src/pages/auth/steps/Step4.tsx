@@ -1,5 +1,6 @@
 import { Form, Button } from "react-bootstrap";
 import Select from "react-select";
+import { useState } from "react";
 
 type Step4Props = {
   formData: any;
@@ -9,6 +10,18 @@ type Step4Props = {
 };
 
 function Step4({ formData, setFormData, nextStep, prevStep }: Step4Props) {
+  const [touched, setTouched] = useState<any>({});
+  const handleBlur = (field: string) => {
+    setTouched((prev: any) => ({ ...prev, [field]: true }));
+  };
+  const handleNext = () => {
+    setTouched({
+      leadership_role: true,
+    });
+    if (formData.leadership_role && formData.leadership_role.length > 0) {
+      nextStep();
+    }
+  };
   return (
     <div className="">
       <div className="step-left">
@@ -29,7 +42,16 @@ function Step4({ formData, setFormData, nextStep, prevStep }: Step4Props) {
 
           <Form className="">
             <Form.Group className="">
-              <Form.Label>Leadership role</Form.Label>
+              <Form.Label>
+                Leadership role <span style={{ color: "red" }}>*</span>
+              </Form.Label>
+              {touched.leadership_role &&
+                (!formData.leadership_role ||
+                  formData.leadership_role.length === 0) && (
+                  <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
+                    Leadership role is required
+                  </span>
+                )}
               <Select
                 isMulti
                 options={[
@@ -49,6 +71,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }: Step4Props) {
                     leadership_role: Array.isArray(selected) ? selected : [],
                   })
                 }
+                onBlur={() => handleBlur("leadership_role")}
                 classNamePrefix={"react-select"}
                 placeholder="Select leadership role(s)..."
               />
@@ -58,7 +81,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }: Step4Props) {
               <Button variant="secondary" onClick={prevStep}>
                 Previous
               </Button>
-              <Button variant="primary" onClick={nextStep}>
+              <Button variant="primary" onClick={handleNext}>
                 Next
               </Button>
             </div>

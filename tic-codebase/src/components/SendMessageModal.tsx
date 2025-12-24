@@ -40,7 +40,6 @@ const SendMessageModal: React.FC<SendMessageModalProps> = ({
     <Modal
       show={show}
       onHide={onClose}
-      centered
       backdrop={true}
       style={{ zIndex: 1061 }} // Bootstrap modal default is 1050, so +1 for stacking
       backdropClassName="modal-backdrop-stacked"

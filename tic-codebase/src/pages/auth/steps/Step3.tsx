@@ -7,7 +7,31 @@ type StepProps = {
   setFormData: (data: any) => void;
 };
 
+import { useState } from "react";
+
 const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
+  const [touched, setTouched] = useState<any>({});
+  const handleBlur = (field: string) => {
+    setTouched((prev: any) => ({ ...prev, [field]: true }));
+  };
+  const handleNext = () => {
+    setTouched({
+      roles: true,
+      subjects: true,
+      age_group: true,
+    });
+    if (
+      formData.roles &&
+      formData.roles.length > 0 &&
+      formData.subjects &&
+      formData.subjects.length > 0 &&
+      formData.age_group &&
+      formData.age_group.length > 0
+    ) {
+      nextStep();
+    }
+  };
+
   const toggleCurriculum = (item: string) => {
     const exists = formData.curriculum?.includes(item);
     if (exists) {
@@ -54,41 +78,67 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
         <span className="step-count">Step 3 of 5</span>
         <div className="step-card">
           {/* ROLE (Multi-select) */}
-          <label className="form-label">Teacher Role</label>
+          <label className="form-label">
+            Teacher Role <span style={{ color: "red" }}>*</span>
+            {touched.roles &&
+              (!formData.roles || formData.roles.length === 0) && (
+                <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
+                  Role is required
+                </span>
+              )}
+          </label>
           <Select
             isMulti
             options={ROLES_OPTIONS}
             closeMenuOnSelect={false}
             value={formData.roles || []}
-            onChange={(selected: any) =>
+            onChange={(selected: any) => {
               setFormData({
                 ...formData,
                 roles: Array.isArray(selected) ? selected : [],
-              })
-            }
+              });
+            }}
+            onBlur={() => handleBlur("roles")}
             classNamePrefix={"react-select"}
             placeholder="Select role(s)..."
           />
 
           {/* SUBJECT (Multi-select) */}
-          <label className="form-label">Subject</label>
+          <label className="form-label">
+            Subject <span style={{ color: "red" }}>*</span>
+            {touched.subjects &&
+              (!formData.subjects || formData.subjects.length === 0) && (
+                <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
+                  Subject is required
+                </span>
+              )}
+          </label>
           <Select
             isMulti
             options={SUBJECT_OPTIONS}
             closeMenuOnSelect={false}
             value={formData.subjects || []}
-            onChange={(selected: any) =>
+            onChange={(selected: any) => {
               setFormData({
                 ...formData,
                 subjects: Array.isArray(selected) ? selected : [],
-              })
-            }
+              });
+            }}
+            onBlur={() => handleBlur("subjects")}
             classNamePrefix={"react-select"}
             placeholder="Select subject(s)..."
           />
 
           {/* AGE GROUP */}
-          <label className="form-label">Age group</label>
+          <label className="form-label">
+            Age group <span style={{ color: "red" }}>*</span>
+            {touched.age_group &&
+              (!formData.age_group || formData.age_group.length === 0) && (
+                <span style={{ color: "red", marginLeft: 8, fontSize: 13 }}>
+                  Age group is required
+                </span>
+              )}
+          </label>
           <Select
             isMulti
             options={[
@@ -99,12 +149,13 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
             ]}
             closeMenuOnSelect={false}
             value={formData.age_group || []}
-            onChange={(selected: any) =>
+            onChange={(selected: any) => {
               setFormData({
                 ...formData,
                 age_group: Array.isArray(selected) ? selected : [],
-              })
-            }
+              });
+            }}
+            onBlur={() => handleBlur("age_group")}
             classNamePrefix={"react-select"}
             placeholder="Select age group(s)..."
           />
@@ -134,7 +185,7 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
               Previous
             </button>
 
-            <button onClick={nextStep} className="btn btn-primary px-4">
+            <button onClick={handleNext} className="btn btn-primary px-4">
               Next
             </button>
           </div>

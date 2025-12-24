@@ -241,16 +241,16 @@ class PreRegisterSerializer(serializers.Serializer):
                 )
         return value
 
-    def validate_leadership_role(self, value):
-        if value:
-            invalid_roles = [r for r in value if r.lower() not in self.VALID_LEADERSHIP_ROLES]
-            if invalid_roles:
-                raise serializers.ValidationError(
-                    f"Invalid leadership role(s): {', '.join(invalid_roles)}. "
-                    f"Valid options: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
-                )
-            return [r.lower() for r in value]
-        return value
+    # def validate_leadership_role(self, value):
+    #     if value:
+    #         invalid_roles = [r for r in value if r.lower() not in self.VALID_LEADERSHIP_ROLES]
+    #         if invalid_roles:
+    #             raise serializers.ValidationError(
+    #                 f"Invalid leadership role(s): {', '.join(invalid_roles)}. "
+    #                 f"Valid options: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
+    #             )
+    #         return [r.lower() for r in value]
+    #     return value
 
     def validate_available_date(self, value):
         if value:
@@ -785,16 +785,16 @@ class UpdateProfileSerializer(serializers.Serializer):
                 )
         return value
 
-    def validate_leadership_role(self, value):
-        if value:
-            invalid_roles = [r for r in value if r.lower() not in self.VALID_LEADERSHIP_ROLES]
-            if invalid_roles:
-                raise serializers.ValidationError(
-                    f"Invalid leadership role(s): {', '.join(invalid_roles)}. "
-                    f"Valid options: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
-                )
-            return [r.lower() for r in value]
-        return value
+    # def validate_leadership_role(self, value):
+    #     if value:
+    #         invalid_roles = [r for r in value if r.lower() not in self.VALID_LEADERSHIP_ROLES]
+    #         if invalid_roles:
+    #             raise serializers.ValidationError(
+    #                 f"Invalid leadership role(s): {', '.join(invalid_roles)}. "
+    #                 f"Valid options: {', '.join(self.VALID_LEADERSHIP_ROLES)}"
+    #             )
+    #         return [r.lower() for r in value]
+    #     return value
 
     def validate_available_date(self, value):
         if value:

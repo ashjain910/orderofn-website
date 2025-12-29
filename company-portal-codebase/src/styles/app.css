@@ -1,0 +1,32 @@
+/* Add to your global CSS or in App.css */
+.calendar-status-circle {
+  width: 45px !important;
+  height: 45px !important;
+  margin: auto;
+  font-size: 1em;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 !important;
+}
+.react-calendar__tile {
+  position: relative;
+  z-index: 1;
+  padding: 0 !important;
+}
+.react-calendar__tile--active,
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+  background: #198754 !important; /* Bootstrap success */
+  color: #fff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 2px #19875433;
+}
+
+/* Add to your index.css or App.css */
+body, html {
+  margin: 0;
+  padding: 0 !important;
+  box-sizing: border-box;
+}

@@ -3,8 +3,8 @@ import "./TeacherProfileModal.css";
 import { Modal } from "react-bootstrap";
 import SendMessageModal from "./SendMessageModal";
 import { ROLES_OPTIONS, SUBJECT_OPTIONS } from "../common/subjectOptions";
-import { getLeadershipRoleLabel } from "../constants/leadershipRoles";
 import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
+import { LEADERSHIP_OPTIONS } from "../common/subjectOptions";
 
 const POSITION_OPTIONS = [
   { label: "Teacher", value: "teacher" },
@@ -211,19 +211,30 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                     <small className="ml-2">
                       {Array.isArray(profile.leadership_role)
                         ? profile.leadership_role.map(
-                            (role: string, idx: number) => (
-                              <span key={role}>
-                                {getLeadershipRoleLabel(role)}
-                                {idx <
-                                (profile.leadership_role as string[]).length - 1
-                                  ? ", "
-                                  : ""}
-                              </span>
-                            )
+                            (role: string, idx: number) => {
+                              const found = LEADERSHIP_OPTIONS.find(
+                                (opt) => opt.value === role
+                              );
+                              return (
+                                <span key={role}>
+                                  {found ? found.label : role}
+                                  {idx <
+                                  (profile.leadership_role as string[]).length -
+                                    1
+                                    ? ", "
+                                    : ""}
+                                </span>
+                              );
+                            }
                           )
-                        : getLeadershipRoleLabel(
-                            profile.leadership_role as string
-                          )}
+                        : (() => {
+                            const found = LEADERSHIP_OPTIONS.find(
+                              (opt) => opt.value === profile.leadership_role
+                            );
+                            return found
+                              ? found.label
+                              : profile.leadership_role;
+                          })()}
                     </small>
                   </div>
                   <div className="d-flex mb-2 ">

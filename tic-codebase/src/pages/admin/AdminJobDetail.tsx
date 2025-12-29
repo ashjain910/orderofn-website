@@ -31,6 +31,7 @@ import TeacherProfileModal from "../../components/TeacherProfileModal";
 import PostJobModal from "../../components/admin/PostJobModal";
 import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 import { toastOptions } from "../../utils/toastOptions";
+import { POSITIONTYPE_OPTIONS } from "../../common/subjectOptions";
 
 // Minimal ResumeModalState type
 type ResumeModalState = {
@@ -742,7 +743,7 @@ function AdminJobDetail() {
                 </p>
                 <p className="txt__regular__  mb-1">
                   <strong>Postion Type: </strong>
-                  {getLabelFromOptions(job.job_type, positionTypeOptions)}
+                  {getLabelFromOptions(job.job_type, POSITIONTYPE_OPTIONS)}
                 </p>
 
                 <p className="txt__regular__  mb-1">

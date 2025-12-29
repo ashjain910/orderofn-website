@@ -70,7 +70,8 @@ const statusTabs = [
 
 const JOBS_PER_PAGE = 30;
 
-import { job_types, schoolTypes } from "../../constants/jobOptions";
+import { schoolTypes } from "../../constants/jobOptions";
+import { POSITIONTYPE_OPTIONS } from "../../common/subjectOptions";
 // const genders = ["any", "male", "female", "other"];
 
 // Icons for each tab
@@ -631,7 +632,7 @@ function Jobs() {
                     onChange={(e) => setFilterjob_type(e.target.value)}
                   >
                     <option value="">Select position type</option>
-                    {job_types.map((type) => (
+                    {POSITIONTYPE_OPTIONS.map((type) => (
                       <option key={type.value} value={type.value}>
                         {type.label}
                       </option>
@@ -780,8 +781,9 @@ function Jobs() {
                           )}
                         </h5>
                         <p className="job-school  mb-1">
-                          {job_types.find((type) => type.value === job.job_type)
-                            ?.label || job.job_type}
+                          {POSITIONTYPE_OPTIONS.find(
+                            (type) => type.value === job.job_type
+                          )?.label || job.job_type}
                           {job.job_type && job.location && " • "}
                           {job.school_name}
                           {job.school_name && job.location && " • "}
@@ -870,6 +872,51 @@ function Jobs() {
           )}
         </div>
         <div className="col-lg-3 sm__d_none__">
+          <div className="card  mb-3 text-center p-3">
+            <img
+              src="/tic/cv_writing_guide.svg"
+              alt=""
+              style={{ width: 150, display: "block", margin: "0 auto" }}
+            />
+            <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
+              <a
+                href="/cv-writing-guide"
+                style={{ textDecoration: "auto", color: "#0d3b85" }}
+              >
+                CV writing guide
+              </a>
+            </h6>
+          </div>
+          <div className="card  mb-3 text-center p-3">
+            <img
+              src="/tic/cv_template.svg"
+              alt=""
+              style={{ width: 150, display: "block", margin: "0 auto" }}
+            />
+            <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
+              <a
+                href="/cv-writing-guide"
+                style={{ textDecoration: "auto", color: "#0d3b85" }}
+              >
+                International school interview questions
+              </a>
+            </h6>
+          </div>
+          <div className="card  mb-3 text-center p-3">
+            <img
+              src="/tic/sample_resume.svg"
+              alt=""
+              style={{ width: 150, display: "block", margin: "0 auto" }}
+            />
+            <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
+              <a
+                href="/cv-writing-guide"
+                style={{ textDecoration: "auto", color: "#0d3b85" }}
+              >
+                Download CV template
+              </a>
+            </h6>
+          </div>
           {/* Remove right column */}
           <div className="card note_card_ad mb-3">
             <p className="txt__regular__">
@@ -894,6 +941,7 @@ function Jobs() {
               </li>
             </ul>
           </div>
+
           {(() => {
             // Prefer profile.subscription_status, else check session/local storage
             let subStatus =

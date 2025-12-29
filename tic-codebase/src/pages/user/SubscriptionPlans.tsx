@@ -34,7 +34,7 @@ export default function PricingPlans() {
     {
       id: "premium",
       title: "Premium",
-      price: "$25",
+      price: "£30",
       month: "month",
       features: [
         "Create your unique profile",

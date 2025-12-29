@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import AdminBaseApi from "../../services/admin-base";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { job_types, schoolTypes } from "../../constants/jobOptions";
+import { schoolTypes } from "../../constants/jobOptions";
+import { POSITIONTYPE_OPTIONS } from "../../common/subjectOptions";
 
 const statusTabs = [
   { key: "active", label: "Active Jobs" },
@@ -209,7 +210,7 @@ function Jobs() {
                   onChange={(e) => setTempFilterJobType(e.target.value)}
                 >
                   <option value="">Select position type</option>
-                  {job_types.map((type) => (
+                  {POSITIONTYPE_OPTIONS.map((type) => (
                     <option key={type.value} value={type.value}>
                       {type.label}
                     </option>
@@ -432,8 +433,9 @@ function Jobs() {
                             )}
                         </h5>
                         <p className="job-school  mb-1">
-                          {job_types.find((type) => type.value === job.job_type)
-                            ?.label || job.job_type}
+                          {POSITIONTYPE_OPTIONS.find(
+                            (type) => type.value === job.job_type
+                          )?.label || job.job_type}
                           {job.job_type && job.location && " • "}
                           {job.school_name}
                           {job.school_name && job.location && " • "}

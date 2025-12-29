@@ -10,6 +10,7 @@ import { Row, Col } from "react-bootstrap";
 import "./JobDetail.css";
 import { job_types } from "../../constants/jobOptions";
 import { FaArrowLeft } from "react-icons/fa6";
+import { POSITIONTYPE_OPTIONS } from "../../common/subjectOptions";
 
 function JobDetail() {
   // Get job id from params (must be before any use of id)
@@ -323,8 +324,8 @@ function JobDetail() {
                 <div className="mb-1 d-flex flex-wrap  align-items-center">
                   <div className="job-info-item txt__regular__ me-4 mt-2">
                     <span className="txt__regular__bold__">Position type:</span>{" "}
-                    {job_types.find((t) => t.value === job.job_type)?.label ||
-                      job.job_type}
+                    {POSITIONTYPE_OPTIONS.find((t) => t.value === job.job_type)
+                      ?.label || job.job_type}
                   </div>
                 </div>
                 <div className="mb-1 d-flex flex-wrap  align-items-center">

@@ -65,7 +65,7 @@ const UserPage = () => {
             <span className="fw-bold text-info">Info:</span>
             <span className="ms-2 text-secondary">
               <div className="mb-1">
-                You have used {leaveCount.used} out of your {leaveCount.total} available leave days. Only {remaining} leave days remain. After using all 12 leave days, any additional leave taken will be considered paid leave.
+                You have used {leaveCount.used} out of your {leaveCount.total} available leave days. Only {remaining} leave days remain. After using all 12 leave days, any additional leave taken will be considered loss of pay.
               </div>
               {/* Submit your leave request using the form below. Track your leave status from the my status. */}
             </span>

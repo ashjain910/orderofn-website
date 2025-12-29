@@ -65,7 +65,7 @@ const MyLeaveSummary = () => {
         <div className="card-body">
           <div className="mb-3 text-center">
             <span className="fw-bold text-dark">Leave Count: {total}/{used} ({remaining} remaining)</span><br />
-            <span>You have used {used} out of your {total} available leave days. Only {remaining} leave days remain. After using all 12 leave days, any additional leave taken will be considered paid leave.</span>
+            <span>You have used {used} out of your {total} available leave days. Only {remaining} leave days remain. After using all 12 leave days, any additional leave taken will be considered loss of pay.</span>
           </div>
           <div className="table-responsive">
             <table className="table table-bordered table-sm mb-0">

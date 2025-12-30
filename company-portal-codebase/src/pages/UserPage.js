@@ -14,12 +14,22 @@ const UserPage = () => {
     setSummaryLoading(true);
     fetchUserLeaveRequests(auth.username)
       .then(data => {
+        const currentYear = new Date().getFullYear();
         let used = 0;
         (Array.isArray(data) ? data : []).forEach(req => {
           if (req.type === 'Leave') {
             const start = new Date(req.startDate);
             const end = req.endDate ? new Date(req.endDate) : new Date(req.startDate);
-            used += Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            for (
+              let d = new Date(start);
+              d <= end;
+              d.setDate(d.getDate() + 1)
+            ) {
+              const day = d.getDay();
+              if (d.getFullYear() !== currentYear) continue;
+              if (day === 0 || day === 6) continue; // skip weekends
+              used += 1;
+            }
           }
         });
         setLeaveCount({ used, total: 12 });
@@ -38,12 +48,22 @@ const UserPage = () => {
     setSummaryLoading(true);
     fetchUserLeaveRequests(auth.username)
       .then(data => {
+        const currentYear = new Date().getFullYear();
         let used = 0;
         (Array.isArray(data) ? data : []).forEach(req => {
           if (req.type === 'Leave') {
             const start = new Date(req.startDate);
             const end = req.endDate ? new Date(req.endDate) : new Date(req.startDate);
-            used += Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            for (
+              let d = new Date(start);
+              d <= end;
+              d.setDate(d.getDate() + 1)
+            ) {
+              const day = d.getDay();
+              if (d.getFullYear() !== currentYear) continue;
+              if (day === 0 || day === 6) continue; // skip weekends
+              used += 1;
+            }
           }
         });
         setLeaveCount({ used, total: 12 });

@@ -22,7 +22,8 @@ const MyLeaveSummary = () => {
     setLoading(true);
     fetchUserLeaveRequests(auth.username)
       .then(data => {
-        // Build stats month-wise
+        // Build stats month-wise, skip weekends, only current year
+        const currentYear = new Date().getFullYear();
         const monthStats = {};
         (Array.isArray(data) ? data : []).forEach(req => {
           const start = new Date(req.startDate);
@@ -32,9 +33,12 @@ const MyLeaveSummary = () => {
             d <= end;
             d.setDate(d.getDate() + 1)
           ) {
+            const day = d.getDay();
+            if (d.getFullYear() !== currentYear) continue;
+            if (req.type === 'Leave' && (day === 0 || day === 6)) continue; // skip weekends for leave
             const month = getMonthYear(d);
             if (!monthStats[month]) monthStats[month] = { leave: 0, wfh: 0, total: 0 };
-            if (req.type === 'Leave') monthStats[month].leave += 1;
+            if (req.type === 'Leave' && (day !== 0 && day !== 6)) monthStats[month].leave += 1;
             if (req.type === 'Work From Home') monthStats[month].wfh += 1;
             monthStats[month].total += 1;
           }
@@ -50,9 +54,15 @@ const MyLeaveSummary = () => {
 
   if (loading) return <PageLoader />;
 
-  // Calculate leave count summary
+  // Filter stats for current year only
+  const currentYear = new Date().getFullYear();
+  const yearStats = Object.keys(stats)
+    .filter(month => month.startsWith(currentYear + '-'))
+    .reduce((obj, key) => { obj[key] = stats[key]; return obj; }, {});
+
+  // Calculate leave count summary for current year (skip weekends)
   let used = 0;
-  (stats && Object.keys(stats).length > 0) && Object.values(stats).forEach(s => { used += s.leave; });
+  (yearStats && Object.keys(yearStats).length > 0) && Object.values(yearStats).forEach(s => { used += s.leave; });
   const total = 12;
   const remaining = total - used;
 
@@ -78,9 +88,9 @@ const MyLeaveSummary = () => {
                 </tr>
               </thead>
               <tbody>
-                {stats && Object.keys(stats).length > 0 ? (
+                {yearStats && Object.keys(yearStats).length > 0 ? (
                   <>
-                    {Object.entries(stats).sort(([a], [b]) => a.localeCompare(b)).map(([month, s]) => (
+                    {Object.entries(yearStats).sort(([a], [b]) => a.localeCompare(b)).map(([month, s]) => (
                       <tr key={month}>
                         <td>{formatMonthYear(month)}</td>
                         <td>{s.leave}</td>
@@ -92,24 +102,24 @@ const MyLeaveSummary = () => {
                       <td className="fw-bold text-end">Total</td>
                       <td className="fw-bold">
                         <span className="badge bg-info">
-                          {Object.values(stats).reduce((sum, s) => sum + s.leave, 0)}
+                          {Object.values(yearStats).reduce((sum, s) => sum + s.leave, 0)}
                         </span>
                       </td>
                       <td className="fw-bold">
                         <span className="badge bg-info">
-                          {Object.values(stats).reduce((sum, s) => sum + s.wfh, 0)}
+                          {Object.values(yearStats).reduce((sum, s) => sum + s.wfh, 0)}
                         </span>
                       </td>
                       <td className="fw-bold">
                         <span className="badge bg-info">
-                          {Object.values(stats).reduce((sum, s) => sum + s.total, 0)}
+                          {Object.values(yearStats).reduce((sum, s) => sum + s.total, 0)}
                         </span>
                       </td>
                     </tr>
                   </>
                 ) : (
                   <tr>
-                    <td colSpan={4} className="text-center text-muted">No leave data found.</td>
+                    <td colSpan={4} className="text-center text-muted">No leave data found for this year.</td>
                   </tr>
                 )}
               </tbody>

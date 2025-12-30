@@ -19,6 +19,8 @@ const AdminStatsPage = () => {
   const [userStats, setUserStats] = useState({});
   const [allData, setAllData] = useState([]);
   const [selectedUser, setSelectedUser] = useState('All');
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState('All');
   const { loading, setLoading } = useLoader(); // <-- Use loader context
 
   useEffect(() => {
@@ -64,10 +66,32 @@ const AdminStatsPage = () => {
   // Get all unique users for the dropdown
   const userOptions = ['All', ...Object.keys(userStats)];
 
-  // Filter stats by selected user
+  // Get all unique years and months from userStats
+  const allMonths = Object.values(userStats).flatMap(monthsObj => monthsObj ? Object.keys(monthsObj) : []);
+  const allYearsSet = new Set(allMonths.map(m => m.split('-')[0]));
+  const allYears = Array.from(allYearsSet).sort();
+  const monthNames = [
+    '', 'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  // Always show all 12 months (01 to 12)
+  const allMonthsList = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+
+  // Filter stats by selected user, year, and month
+  const filterStats = monthsObj => {
+    if (!monthsObj) return {};
+    return Object.keys(monthsObj)
+      .filter(month => {
+        const [year, m] = month.split('-');
+        const yearMatch = String(selectedYear) === year;
+        const monthMatch = selectedMonth === 'All' || selectedMonth === m;
+        return yearMatch && monthMatch;
+      })
+      .reduce((obj, key) => { obj[key] = monthsObj[key]; return obj; }, {});
+  };
   const filteredStats = selectedUser === 'All'
-    ? userStats
-    : { [selectedUser]: userStats[selectedUser] };
+    ? Object.fromEntries(Object.entries(userStats).map(([user, months]) => [user, filterStats(months)]))
+    : { [selectedUser]: filterStats(userStats[selectedUser]) };
 
   const colorArray = [
     '#519db8', '#51b8ad', '#5bce95', '#b6ce5b', '#cc803d',
@@ -95,14 +119,53 @@ const AdminStatsPage = () => {
                 style={{ maxWidth: 220, minWidth: 120 }}
                 value={selectedUser}
                 onChange={e => {
-                  setLoading(true); // Show loader on filter change
+                  setLoading(true);
                   setSelectedUser(e.target.value);
-                  setTimeout(() => setLoading(false), 300); // Simulate loading for UX
+                  setTimeout(() => setLoading(false), 300);
                 }}
                 disabled={loading}
               >
                 {userOptions.map(user => (
                   <option key={user} value={user}>{user}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="fw-bold mb-1" htmlFor="yearFilter">Filter by Year:</label>
+              <select
+                id="yearFilter"
+                className="form-select"
+                style={{ maxWidth: 120, minWidth: 80 }}
+                value={selectedYear}
+                onChange={e => {
+                  setLoading(true);
+                  setSelectedYear(e.target.value);
+                  setTimeout(() => setLoading(false), 300);
+                }}
+                disabled={loading}
+              >
+                {allYears.map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="fw-bold mb-1" htmlFor="monthFilter">Filter by Month:</label>
+              <select
+                id="monthFilter"
+                className="form-select"
+                style={{ maxWidth: 140, minWidth: 80 }}
+                value={selectedMonth}
+                onChange={e => {
+                  setLoading(true);
+                  setSelectedMonth(e.target.value);
+                  setTimeout(() => setLoading(false), 300);
+                }}
+                disabled={loading}
+              >
+                <option value="All">All</option>
+                {allMonthsList.map(m => (
+                  <option key={m} value={m}>{monthNames[parseInt(m, 10)]}</option>
                 ))}
               </select>
             </div>
@@ -121,18 +184,18 @@ const AdminStatsPage = () => {
                     <h5 className="mb-0 text-white">{user}</h5>
                     {/* Leave Balance summary for this user */}
                     {(() => {
-                      // Calculate leave used for this user
+                      // Calculate leave used for this user (current year only)
                       let used = 0;
                       if (months && typeof months === 'object') {
                         Object.values(months).forEach(s => { used += s.leave; });
                       }
                       const total = 12;
                       const remaining = total - used;
-                        return (
+                      return (
                         <span className="fw-bold text-white" style={{ fontSize: 14 }}>
                           Leave Balance: {used}/{total} ({remaining} remaining)
                         </span>
-                        );
+                      );
                     })()}
                   </div>
                   <div className="card-body">
@@ -147,33 +210,41 @@ const AdminStatsPage = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {Object.entries(months).sort(([a], [b]) => a.localeCompare(b)).map(([month, stats]) => (
-                            <tr key={month}>
-                              <td>{formatMonthYear(month)}</td>
-                              <td><span>{stats.leave}</span></td>
-                              <td><span>{stats.wfh}</span></td>
-                              <td><span>{stats.total}</span></td>
+                          {Object.entries(months).length > 0 ? (
+                            <>
+                              {Object.entries(months).sort(([a], [b]) => a.localeCompare(b)).map(([month, stats]) => (
+                                <tr key={month}>
+                                  <td>{formatMonthYear(month)}</td>
+                                  <td><span>{stats.leave}</span></td>
+                                  <td><span>{stats.wfh}</span></td>
+                                  <td><span>{stats.total}</span></td>
+                                </tr>
+                              ))}
+                              {/* Total row */}
+                              <tr>
+                                <td className="fw-bold text-end">Total</td>
+                                <td className="fw-bold">
+                                  <span className="badge bg-info">
+                                    {Object.values(months).reduce((sum, s) => sum + s.leave, 0)}
+                                  </span>
+                                </td>
+                                <td className="fw-bold">
+                                  <span className="badge bg-info">
+                                    {Object.values(months).reduce((sum, s) => sum + s.wfh, 0)}
+                                  </span>
+                                </td>
+                                <td className="fw-bold">
+                                  <span className="badge bg-info">
+                                    {Object.values(months).reduce((sum, s) => sum + s.total, 0)}
+                                  </span>
+                                </td>
+                              </tr>
+                            </>
+                          ) : (
+                            <tr>
+                              <td colSpan={4} className="text-center text-muted">No leave data found for this year.</td>
                             </tr>
-                          ))}
-                          {/* Total row */}
-                          <tr>
-                            <td className="fw-bold text-end">Total</td>
-                            <td className="fw-bold">
-                              <span className="badge bg-info">
-                                {Object.values(months).reduce((sum, s) => sum + s.leave, 0)}
-                              </span>
-                            </td>
-                            <td className="fw-bold">
-                              <span className="badge bg-info">
-                                {Object.values(months).reduce((sum, s) => sum + s.wfh, 0)}
-                              </span>
-                            </td>
-                            <td className="fw-bold">
-                              <span className="badge bg-info">
-                                {Object.values(months).reduce((sum, s) => sum + s.total, 0)}
-                              </span>
-                            </td>
-                          </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>

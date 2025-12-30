@@ -36,7 +36,8 @@ const AdminPage = () => {
   // Filter states
   const [selectedUser, setSelectedUser] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('all');
-  const [selectedYear, setSelectedYear] = useState('all');
+  const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
+  const [selectedType, setSelectedType] = useState('all');
 
   // Unique users for dropdown
   const [userList, setUserList] = useState([]);
@@ -116,6 +117,14 @@ const AdminPage = () => {
               <option value="2026">2026</option>
             </select>
           </div>
+          <div>
+            <label className="me-2 fw-bold">Type:</label>
+            <select className="form-select form-select-sm d-inline-block w-auto" value={selectedType} onChange={e => setSelectedType(e.target.value)}>
+              <option value="all">All</option>
+              <option value="Leave">Leave</option>
+              <option value="Work From Home">Work From Home</option>
+            </select>
+          </div>
         </div>
         <div className="card-body">
           {success && <div className="alert alert-success">{success}</div>}
@@ -141,7 +150,9 @@ const AdminPage = () => {
                     const start = new Date(leave.startDate);
                     const monthMatch = selectedMonth === 'all' || start.getMonth() === Number(selectedMonth);
                     const yearMatch = selectedYear === 'all' || start.getFullYear() === Number(selectedYear);
-                    return monthMatch && yearMatch;
+                    // Type filter
+                    const typeMatch = selectedType === 'all' || leave.type === selectedType;
+                    return monthMatch && yearMatch && typeMatch;
                   })
                   .map((leave, idx) => {
                     const leaveKey = `${leave.name}-${leave.startDate}-${leave.endDate}-${leave.reason}`;

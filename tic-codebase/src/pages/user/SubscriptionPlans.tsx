@@ -41,6 +41,7 @@ export default function PricingPlans() {
         "Search & apply for positions",
         "Receive monthly newsletter",
         "Receive email alerts for positions as they are posted",
+        "Note that the subscription is for one year. An email notification will be sent as a reminder that the candidate will need to resubscribe.",
       ],
       color: "#123a93",
     },

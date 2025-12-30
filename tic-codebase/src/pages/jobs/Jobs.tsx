@@ -880,6 +880,7 @@ function Jobs() {
             />
             <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
               <a
+                target="_blank"
                 href="/cv-writing-guide"
                 style={{ textDecoration: "auto", color: "#0d3b85" }}
               >
@@ -895,6 +896,7 @@ function Jobs() {
             />
             <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
               <a
+                target="_blank"
                 href="/cv-writing-guide"
                 style={{ textDecoration: "auto", color: "#0d3b85" }}
               >
@@ -910,6 +912,7 @@ function Jobs() {
             />
             <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
               <a
+                target="_blank"
                 href="/cv-writing-guide"
                 style={{ textDecoration: "auto", color: "#0d3b85" }}
               >

@@ -139,11 +139,11 @@ function AdminJobDetail() {
     }
     setLoading(false);
   };
-  const positionTypeOptions = [
-    { value: "teacher", label: "Teacher" },
-    { value: "deputy_principal", label: "Deputy Principal" },
-    { value: "head_of_school", label: "Head of School" },
-  ];
+  // const positionTypeOptions = [
+  //   { value: "teacher", label: "Teacher" },
+  //   { value: "deputy_principal", label: "Deputy Principal" },
+  //   { value: "head_of_school", label: "Head of School" },
+  // ];
   const schoolTypeMultiOptions = [
     { value: "public", label: "Public" },
     { value: "international", label: "International" },

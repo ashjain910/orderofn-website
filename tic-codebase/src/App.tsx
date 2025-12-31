@@ -1,3 +1,6 @@
+import PublicJobs from "./pages/public/PublicJobs";
+import PublicJobDetail from "./pages/public/PublicJobDetail";
+
 import React from "react";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
@@ -43,7 +46,11 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/pre-register" element={<PreRegister />} />
         <Route path="/admin" element={<AdminLogin />} />
-
+        {/* <Route path="/jobs" element={<Jobs />} /> */}
+        {/* <Route path="/jobs/:id" element={<JobDetail />} /> */}
+        {/* Public Jobs Listing and Details */}
+        <Route path="/public-jobs" element={<PublicJobs />} />
+        <Route path="/public-jobs/:id" element={<PublicJobDetail />} />
         {/* User Protected */}
         <Route element={<PrivateRoute />}>
           <Route element={<Header />}>

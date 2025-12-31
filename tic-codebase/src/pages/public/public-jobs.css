@@ -1,0 +1,4 @@
+/* Card hover background for Jobs */
+.job-card:hover {
+  background: #f3f8ff !important;
+}

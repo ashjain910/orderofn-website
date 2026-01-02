@@ -69,7 +69,7 @@ const HolidaysPage = () => {
             <div className="card-header bg-success text-white text-center" style={{ borderTopLeftRadius: 18, borderTopRightRadius: 18 }}>
               <h3 className="mb-0" style={{fontSize: '24px'}}>
                 <i className="bi bi-calendar-heart me-2"></i>
-                Holiday List
+                Holiday List -({new Date().getFullYear()})
               </h3>
             </div>
             <div className="card-body" style={{ background: '#f8fafc', borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>

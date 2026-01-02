@@ -54,7 +54,14 @@ const UserStatusPage = () => {
       fetchUserLeaveRequests(auth.username)
         .then(data => {
           if (Array.isArray(data)) {
-            const sortedLeaves = data.sort((a, b) => new Date(b.startDate) - new Date(a.startDate)); // Sort by startDate descending
+            const currentYear = new Date().getFullYear();
+            // Filter leaves to only those in the current year
+            const filteredLeaves = data.filter(leave => {
+              if (!leave.startDate) return false;
+              const leaveYear = new Date(leave.startDate).getFullYear();
+              return leaveYear === currentYear;
+            });
+            const sortedLeaves = filteredLeaves.sort((a, b) => new Date(b.startDate) - new Date(a.startDate)); // Sort by startDate descending
             setLeaves(sortedLeaves);
           } else {
             setLeaves([]);
@@ -106,7 +113,7 @@ const UserStatusPage = () => {
       {loading && <PageLoader />}
       <div className="card shadow" style={{ background: 'linear-gradient(135deg, #eaffea 60%, #fffbe7 100%)' }}>
         <div className="card-header bg-success text-white d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-          <h2 className="mb-0 text-center text-md-start flex-grow-1" style={{fontSize: '24px'}}>My Requests Status</h2>
+          <h2 className="mb-0 text-center text-md-start flex-grow-1" style={{fontSize: '24px'}}>My Requests Status - ({new Date().getFullYear()})</h2>
           <button
             className="btn btn-outline-light btn-sm ms-md-3"
             onClick={loadLeaves}

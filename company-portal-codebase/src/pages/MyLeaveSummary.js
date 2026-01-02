@@ -63,19 +63,19 @@ const MyLeaveSummary = () => {
   // Calculate leave count summary for current year (skip weekends)
   let used = 0;
   (yearStats && Object.keys(yearStats).length > 0) && Object.values(yearStats).forEach(s => { used += s.leave; });
-  const total = 12;
+  const total = 18;
   const remaining = total - used;
 
   return (
     <div className="container py-4">
       <div className="card shadow" style={{ background: 'linear-gradient(135deg, #f8fafc 60%, #cfe2ff 100%)' }}>
         <div className="card-header bg-primary text-white text-center">
-          <h2 className="mb-0" style={{ fontSize: '24px' }}>My Leave Summary</h2>
+          <h2 className="mb-0" style={{ fontSize: '24px' }}>My Leave Summary - ({new Date().getFullYear()})</h2>
         </div>
         <div className="card-body">
           <div className="mb-3 text-center">
             <span className="fw-bold text-dark">Leave Count: {total}/{used} ({remaining} remaining)</span><br />
-            <span>You have used {used} out of your {total} available leave days. Only {remaining} leave days remain. After using all 12 leave days, any additional leave taken will be considered loss of pay.</span>
+            <span>You have used {used} out of your {total} available leave days. Only {remaining} leave days remain. After using all 18 leave days, any additional leave taken will be considered loss of pay.</span>
           </div>
           <div className="table-responsive">
             <table className="table table-bordered table-sm mb-0">

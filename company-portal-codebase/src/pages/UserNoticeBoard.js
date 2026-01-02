@@ -45,6 +45,7 @@ const UserNoticeBoard = () => {
         return d && d.getFullYear() === thisYear && d.getMonth() === thisMonth;
       });
       setHolidays(holidaysThisMonth);
+      console.log(holidaysThisMonth)
       setLoading(false);
     }
     loadData();
@@ -85,19 +86,22 @@ const UserNoticeBoard = () => {
                 <i className="bi bi-calendar-event-fill me-2 text-info"></i>
                 <h5 className="mb-0">Holidays This Month</h5>
               </div>
-              {!loading && holidays.length === 0 && (
+              {!loading && holidays.filter(h => h.admin_status === "Holiday").length === 0 && (
                 <div className="alert alert-info mt-2">No holidays for this month.</div>
               )}
               <ul className="list-group list-group-flush">
-                {holidays.map(h => (
-                  <li key={h.sno} className="list-group-item d-flex justify-content-between align-items-center border-0">
-                    <span>
-                      <i className="bi bi-star-fill text-warning me-1"></i>
-                      <b>{h.holiday}</b> <span className="text-muted">({h.day})</span>
-                    </span>
-                    <span className="badge bg-light text-dark">{h.date}</span>
-                  </li>
-                ))}
+                {holidays
+                  .filter(h => h.admin_status === "Holiday")
+                  .filter(h => h.day !== 'Saturday' && h.day !== 'Sunday')
+                  .map(h => (
+                    <li key={h.sno} className="list-group-item d-flex justify-content-between align-items-center border-0">
+                      <span>
+                        <i className="bi bi-star-fill text-warning me-1"></i>
+                        <b>{h.holiday}</b> <span className="text-muted">({h.day})</span>
+                      </span>
+                      <span className="badge bg-light text-dark">{h.date}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
           </div>

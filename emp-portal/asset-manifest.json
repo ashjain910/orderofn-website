@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/emp-portal/static/css/main.82a34372.css",
-    "main.js": "/emp-portal/static/js/main.f33dfb42.js",
+    "main.js": "/emp-portal/static/js/main.93f19792.js",
     "static/media/company-logo-white.png": "/emp-portal/static/media/company-logo-white.98b8444cf5467f79e2a7.png",
     "index.html": "/emp-portal/index.html",
     "main.82a34372.css.map": "/emp-portal/static/css/main.82a34372.css.map",
-    "main.f33dfb42.js.map": "/emp-portal/static/js/main.f33dfb42.js.map"
+    "main.93f19792.js.map": "/emp-portal/static/js/main.93f19792.js.map"
   },
   "entrypoints": [
     "static/css/main.82a34372.css",
-    "static/js/main.f33dfb42.js"
+    "static/js/main.93f19792.js"
   ]
 }

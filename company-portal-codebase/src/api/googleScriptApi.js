@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const BASE_URL = 'https://script.google.com/macros/s/AKfycbx4LpNMAdvEfxlPNtJkBcrHK6i2Mtd6ilv2GWNZx4eoDd1QeaDvekUSHnU0Wks5CIsK/exec';
 
+// OrderofN API URL
+// https://script.google.com/macros/s/AKfycbx4LpNMAdvEfxlPNtJkBcrHK6i2Mtd6ilv2GWNZx4eoDd1QeaDvekUSHnU0Wks5CIsK/exec
 // Helper function to get auth details from localStorage
 export const getAuth = () => {
   const raw = localStorage.getItem('auth');

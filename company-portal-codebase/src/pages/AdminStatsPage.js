@@ -189,7 +189,7 @@ const AdminStatsPage = () => {
                       if (months && typeof months === 'object') {
                         Object.values(months).forEach(s => { used += s.leave; });
                       }
-                      const total = 12;
+                      const total = 18;
                       const remaining = total - used;
                       return (
                         <span className="fw-bold text-white" style={{ fontSize: 14 }}>

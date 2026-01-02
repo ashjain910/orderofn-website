@@ -6,7 +6,7 @@ import { fetchUserLeaveRequests } from '../api/googleScriptApi';
 
 const UserPage = () => {
   const { loading, setLoading } = useLoader();
-  const [leaveCount, setLeaveCount] = useState({ used: 0, total: 12 });
+  const [leaveCount, setLeaveCount] = useState({ used: 0, total: 18 });
   const [summaryLoading, setSummaryLoading] = useState(true);
   const auth = JSON.parse(localStorage.getItem('auth'));
 
@@ -32,11 +32,11 @@ const UserPage = () => {
             }
           }
         });
-        setLeaveCount({ used, total: 12 });
+        setLeaveCount({ used, total: 18 });
         setSummaryLoading(false);
       })
       .catch(() => {
-        setLeaveCount({ used: 0, total: 12 });
+        setLeaveCount({ used: 0, total: 18 });
         setSummaryLoading(false);
       });
   }, [auth.username]);
@@ -66,11 +66,11 @@ const UserPage = () => {
             }
           }
         });
-        setLeaveCount({ used, total: 12 });
+        setLeaveCount({ used, total: 18 });
         setSummaryLoading(false);
       })
       .catch(() => {
-        setLeaveCount({ used: 0, total: 12 });
+        setLeaveCount({ used: 0, total: 18 });
         setSummaryLoading(false);
       });
   };
@@ -85,7 +85,7 @@ const UserPage = () => {
             <span className="fw-bold text-info">Info:</span>
             <span className="ms-2 text-secondary">
               <div className="mb-1">
-                You have used {leaveCount.used} out of your {leaveCount.total} available leave days. Only {remaining} leave days remain. After using all 12 leave days, any additional leave taken will be considered loss of pay.
+                You have used {leaveCount.used} out of your {leaveCount.total} available leave days. Only {remaining} leave days remain. After using all 18 leave days, any additional leave taken will be considered loss of pay.
               </div>
               {/* Submit your leave request using the form below. Track your leave status from the my status. */}
             </span>

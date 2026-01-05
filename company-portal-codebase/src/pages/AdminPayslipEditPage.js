@@ -32,21 +32,23 @@ const AdminPayslipEditPage = () => {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
 
-  // Financial year logic (same as PayslipPage.js)
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth() + 1;
-  const fyStartYear = currentMonth < 4 ? currentYear - 1 : currentYear;
-  const fyEndYear = fyStartYear + 1;
-  const prevFyStartYear = fyStartYear - 1;
-  const prevFyEndYear = fyStartYear;
-  const fyString = (start, end) => `${String(start).slice(-2)}-${String(end).slice(-2)}`;
-  const financialYears = [
-    { label: `April ${prevFyStartYear} - March ${prevFyEndYear}`, value: fyString(prevFyStartYear, prevFyEndYear) },
-    { label: `April ${fyStartYear} - March ${fyEndYear}`, value: fyString(fyStartYear, fyEndYear) }
-  ];
-  const [selectedFY, setSelectedFY] = useState(financialYears[1].value);
-
+  // Financial year logic (dynamically calculated)
+  function getFinancialYears(count = 2) {
+    const today = new Date();
+    // If current month is Jan-Mar, financial year is previous year - current year
+    let startYear = today.getMonth() + 1 < 4 ? today.getFullYear() - 1 : today.getFullYear();
+    const years = [];
+    for (let i = 0; i < count; i++) {
+      const fyStart = startYear + i;
+      const fyEnd = fyStart + 1;
+      const label = `April ${fyStart} - March ${fyEnd}`;
+      const value = `${String(fyStart).slice(-2)}-${String(fyEnd).slice(-2)}`;
+      years.push({ label, value });
+    }
+    return years;
+  }
+  const financialYears = getFinancialYears(2);
+  const [selectedFY, setSelectedFY] = useState(financialYears[0].value);
   useEffect(() => {
     setUsersLoading(true);
     getAllUsers().then(res => {
@@ -147,6 +149,18 @@ const AdminPayslipEditPage = () => {
     formattedDoj = `${dd}-${mm}-${yyyy}`;
   }
 
+  // Hide "April 2026 - March 2027" if today is before April 2026
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1;
+  const currentYear = today.getFullYear();
+  const visibleFinancialYears = financialYears.filter(fy => {
+    if (fy.value === '26-27') {
+      // Only show if today is April 2026 or later
+      return currentYear > 2026 || (currentYear === 2026 && currentMonth >= 4);
+    }
+    return true;
+  });
+
   return (
     <div className="container py-4">
       <div className="row justify-content-center">
@@ -191,7 +205,7 @@ const AdminPayslipEditPage = () => {
                     onChange={e => setSelectedFY(e.target.value)}
                     disabled={editMode}
                   >
-                    {financialYears.map(fy => (
+                    {visibleFinancialYears.map(fy => (
                       <option key={fy.value} value={fy.value}>{fy.label}</option>
                     ))}
                   </select>
@@ -280,27 +294,27 @@ const AdminPayslipEditPage = () => {
                         </div>
                         <div className="col-md-4">
                           <label className="form-label">Basic</label>
-                          <input name="basic" type="number" className="form-control" value={form.basic} onChange={handleChange} />
+                          <input name="basic" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.basic} onChange={handleChange} />
                         </div>
                         <div className="col-md-4">
                           <label className="form-label">House Rent Allowance</label>
-                          <input name="houseRentAllowance" type="number" className="form-control" value={form.houseRentAllowance} onChange={handleChange} />
+                          <input name="houseRentAllowance" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.houseRentAllowance} onChange={handleChange} />
                         </div>
                         <div className="col-md-4">
                           <label className="form-label">Special Allowance</label>
-                          <input name="specialAllowance" type="number" className="form-control" value={form.specialAllowance} onChange={handleChange} />
+                          <input name="specialAllowance" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.specialAllowance} onChange={handleChange} />
                         </div>
                         <div className="col-md-4">
                           <label className="form-label">T.D.S</label>
-                          <input name="tds" type="number" className="form-control" value={form.tds} onChange={handleChange} />
+                          <input name="tds" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.tds} onChange={handleChange} />
                         </div>
                         <div className="col-md-4">
                           <label className="form-label">Advance</label>
-                          <input name="advance" type="number" className="form-control" value={form.advance} onChange={handleChange} />
+                          <input name="advance" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.advance} onChange={handleChange} />
                         </div>
                         <div className="col-md-4">
                           <label className="form-label">Leave</label>
-                          <input name="leave" type="number" className="form-control" value={form.leave} onChange={handleChange} />
+                          <input name="leave" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.leave} onChange={handleChange} />
                         </div>
                         {/* <div className="col-md-4">
                           <label className="form-label">Bank</label>

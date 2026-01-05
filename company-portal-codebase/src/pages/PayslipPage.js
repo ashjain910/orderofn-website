@@ -23,14 +23,21 @@ const PayslipPage = () => {
   // Format as "24-25"
   const fyString = (start, end) => `${String(start).slice(-2)}-${String(end).slice(-2)}`;
 
+  // Dynamically generate financial years: current and next (April-March)
   const financialYears = [
-    { label: `April ${prevFyStartYear} - March ${prevFyEndYear}`, value: fyString(prevFyStartYear, prevFyEndYear) },
-    { label: `April ${fyStartYear} - March ${fyEndYear}`, value: fyString(fyStartYear, fyEndYear) }
+    {
+      label: `April ${fyStartYear} - March ${fyEndYear}`,
+      value: fyString(fyStartYear, fyEndYear)
+    },
+    {
+      label: `April ${fyEndYear} - March ${fyEndYear + 1}`,
+      value: fyString(fyEndYear, fyEndYear + 1)
+    }
   ];
 
   // Default to current FY
   React.useEffect(() => {
-    setSelectedFY(financialYears[1].value);
+    setSelectedFY(financialYears[0].value);
     setLoadingData(false);
     // eslint-disable-next-line
   }, []);
@@ -100,6 +107,15 @@ const PayslipPage = () => {
     return true;
   });
 
+  // Hide "April 2026 - March 2027" if today is before April 2026
+  const visibleFinancialYears = financialYears.filter(fy => {
+    if (fy.value === '26-27') {
+      // Only show if today is April 2026 or later
+      return today.getFullYear() > 2026 || (today.getFullYear() === 2026 && currentMonth >= 4);
+    }
+    return true;
+  });
+
   return (
     <div className="container py-5">
       <div className="row justify-content-center">
@@ -115,7 +131,7 @@ const PayslipPage = () => {
                   onChange={e => setSelectedFY(e.target.value)}
                   style={{ fontWeight: 600, minWidth: 120 }}
                 >
-                  {financialYears.map(fy => (
+                  {visibleFinancialYears.map(fy => (
                     <option key={fy.value} value={fy.value}>{fy.label}</option>
                   ))}
                 </select>

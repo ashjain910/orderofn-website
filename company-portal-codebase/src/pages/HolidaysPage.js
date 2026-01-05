@@ -6,8 +6,9 @@ import PageLoader from './PageLoader';
 const statusOptions = ['Holiday', 'Working Day'];
 
 const statusColors = {
-  Holiday: 'success',
-  'Working Day': 'warning'
+  'Holiday': 'success',
+  'Working Day': 'warning',
+  'Not yet submitted': 'secondary',
 };
 
 function isExpired(holidayDate) {
@@ -105,7 +106,7 @@ const HolidaysPage = () => {
                               <span className="badge bg-primary fs-6">{h.date}</span>
                             </td>
                             <td>
-                              <span className="badge bg-info text-dark">{h.day}</span>
+                              <span className="badge bg-info text-white">{h.day}</span>
                             </td>
                             {isAdmin && (
                               <td>

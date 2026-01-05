@@ -3,7 +3,10 @@ import axios from 'axios';
 const BASE_URL = 'https://script.google.com/macros/s/AKfycbx4LpNMAdvEfxlPNtJkBcrHK6i2Mtd6ilv2GWNZx4eoDd1QeaDvekUSHnU0Wks5CIsK/exec';
 
 // OrderofN API URL
-// https://script.google.com/macros/s/AKfycbx4LpNMAdvEfxlPNtJkBcrHK6i2Mtd6ilv2GWNZx4eoDd1QeaDvekUSHnU0Wks5CIsK/exec
+// const BASE_URL = 'https://script.google.com/macros/s/AKfycbx4LpNMAdvEfxlPNtJkBcrHK6i2Mtd6ilv2GWNZx4eoDd1QeaDvekUSHnU0Wks5CIsK/exec';
+
+// Local API URL for testing
+// const BASE_URL = 'https://script.google.com/macros/s/AKfycby3aENJorby8T70bJfexiRYeHspMREgiNo3WaXKXVmv7PzFtIZk15Ep6R0mMF72ciqj/exec';
 // Helper function to get auth details from localStorage
 export const getAuth = () => {
   const raw = localStorage.getItem('auth');
@@ -16,6 +19,19 @@ export const getAuth = () => {
   }
 };
 
+// Helper to check for unauthorized response and redirect
+function handleUnauthorized(response) {
+  if (response?.data?.error === 'Unauthorized') {
+    alert(
+      "Authentication failed: Missing credentials or access key has been updated by admin. Please log out and log in again"
+    );
+    localStorage.removeItem('auth');
+    window.location.href = "/login";
+    return true;
+  }
+  return false;
+}
+
 // GET - fetch leave requests
 export const fetchLeaveRequests = async () => {
   const auth = getAuth();
@@ -27,6 +43,7 @@ export const fetchLeaveRequests = async () => {
   const params = new URLSearchParams({ action: 'getLeaveRequests' });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 };
 
@@ -48,6 +65,7 @@ export const submitLeaveRequest = async ({ name, type, startDate, endDate, reaso
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 };
 
@@ -55,6 +73,7 @@ export const submitLeaveRequest = async ({ name, type, startDate, endDate, reaso
 export const loginUser = async ({ username, password, role }) => {
   const params = new URLSearchParams({ action: 'login', username, password, role });
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 };
 
@@ -69,6 +88,7 @@ export const updateLeaveStatus = async (leave, status) => {
   const params = new URLSearchParams({ action: 'updateLeaveStatus', ...leave, status });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 };
 
@@ -84,6 +104,7 @@ export const ReapproveStatus = async ({ name, type, startDate, endDate, reason, 
   const params = new URLSearchParams({ action: 'reApproveStatus', name, type, startDate, endDate, reason, rowId, id,  status, });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 };
 
@@ -98,6 +119,7 @@ export const fetchUserLeaveRequests = async (username) => {
   const params = new URLSearchParams({ action: 'getUserLeaveRequests', username });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 };
 
@@ -116,6 +138,7 @@ export async function sendUserQuery(username, message) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -132,6 +155,7 @@ export async function fetchAllQueries() {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -150,6 +174,7 @@ export async function replyToUserQuery(rowId, reply) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -170,6 +195,7 @@ export async function sendUserExpense(username, amount, description, date) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -184,6 +210,7 @@ export async function fetchAllExpenses() {
   const params = new URLSearchParams({ action: 'getAllExpenses' });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -198,6 +225,7 @@ export async function fetchUserExpenses(username) {
   const params = new URLSearchParams({ action: 'getUserExpenses', username });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -217,6 +245,7 @@ export async function updateExpenseRemark(rowId, status, remark) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -243,6 +272,7 @@ export async function updateHolidayStatus(sno, status) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -261,6 +291,7 @@ export async function deleteLeaveRequest(username, startDate, endDate) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -295,6 +326,7 @@ export async function createUser(
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -313,6 +345,7 @@ export async function updateUserPassword(username, oldPassword, newPassword, ful
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -336,6 +369,7 @@ export async function fetchPayslipPdf(username, financialYear, userKey) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -347,6 +381,7 @@ export async function getPayslipForUser(username, financialYear) {
   });
   params.append('authCheck', JSON.stringify(getAuth()));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -357,12 +392,14 @@ export async function updatePayslipForUser(data) {
   });
   params.append('authCheck', JSON.stringify(getAuth()));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
 export async function getAllUsers() {
   const params = new URLSearchParams({ action: 'getAllUsers' });
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -388,6 +425,7 @@ export async function updatePayslipHeader(username, month, year, financialYear) 
 export async function fetchAllUsers() {
   const params = new URLSearchParams({ action: 'getAllUsers' });
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -405,6 +443,7 @@ export async function updateUser(username, updates) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 
@@ -422,6 +461,7 @@ export async function updateUserAndPayslip(username, updates) {
   });
   params.append('authCheck', JSON.stringify(auth));
   const response = await axios.get(`${BASE_URL}?${params}`);
+  if (handleUnauthorized(response)) return { success: false, error: 'Unauthorized' };
   return response.data;
 }
 

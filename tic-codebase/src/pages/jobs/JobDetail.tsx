@@ -8,7 +8,6 @@ import { HiLightBulb } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { Row, Col } from "react-bootstrap";
 import "./JobDetail.css";
-import { job_types } from "../../constants/jobOptions";
 import { FaArrowLeft } from "react-icons/fa6";
 import { POSITIONTYPE_OPTIONS } from "../../common/subjectOptions";
 
@@ -756,8 +755,9 @@ function JobDetail() {
 
                         <div className="small">
                           <span>Position - </span>
-                          {job_types.find((t) => t.value === sj.job_type)
-                            ?.label ||
+                          {POSITIONTYPE_OPTIONS.find(
+                            (t) => t.value === sj.job_type
+                          )?.label ||
                             sj.job_type ||
                             "Not specified"}
                         </div>

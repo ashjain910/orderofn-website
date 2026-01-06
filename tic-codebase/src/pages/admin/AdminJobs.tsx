@@ -294,16 +294,23 @@ function Jobs() {
             </div>
           ) : jobsData.length === 0 ? (
             <div
-              className="d-flex flex-column align-items-center justify-content-center"
+              className="d-flex text-center flex-column align-items-center justify-content-center"
               style={{ minHeight: 200 }}
             >
               {query.filterTitle ||
               query.filterjob_type ||
               query.filterSchoolType ? (
                 <>
-                  <div className="mb-2">No data found.</div>
+                  <div className="mb-2 mt-5">
+                    <img
+                      src="/tic/error.svg"
+                      alt="No data"
+                      style={{ width: 200, marginBottom: 10 }}
+                    />
+                    <h5>No data found.</h5>
+                  </div>
                   <button
-                    className="btn btn-outline-primary"
+                    className="btn btn-secondary"
                     onClick={handleClearFilters}
                   >
                     Clear filters
@@ -312,7 +319,12 @@ function Jobs() {
               ) : (
                 <>
                   <div className="mb-2">
-                    No jobs found. Post a job to see here.
+                    <img
+                      src="/tic/error.svg"
+                      alt="No data"
+                      style={{ width: 200, marginBottom: 10 }}
+                    />
+                    <h5>No jobs found. Post a job to see here.</h5>
                   </div>
                   <button
                     className="btn btn-primary"

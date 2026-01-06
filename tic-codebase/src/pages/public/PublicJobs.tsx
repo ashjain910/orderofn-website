@@ -317,12 +317,19 @@ function Jobs() {
               </div>
             ) : jobsData.length === 0 ? (
               <div
-                className="d-flex  flex-wrap flex-column align-items-center justify-content-center"
+                className="d-flex  text-center flex-wrap flex-column align-items-center justify-content-center"
                 style={{ minHeight: 200 }}
               >
-                <div className="mb-2">No jobs found.</div>
+                <div className="mb-2">
+                  <img
+                    src="/tic/error.svg"
+                    alt="No data"
+                    style={{ width: 200, marginBottom: 10 }}
+                  />
+                  <h5>No jobs found.</h5>
+                </div>
                 <button
-                  className="btn btn-outline-primary"
+                  className="btn btn-secondary"
                   onClick={handleClearFilters}
                 >
                   Reset Filters

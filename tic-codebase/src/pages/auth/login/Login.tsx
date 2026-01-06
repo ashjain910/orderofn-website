@@ -295,12 +295,21 @@ export default function Login() {
           </div>
 
           {/* RIGHT SIDE IMAGE */}
-          <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center position-relative">
+          <div
+            className="col-md-6 d-none d-md-flex justify-content-center align-items-center position-relative"
+            style={{
+              background: "#DDEFFF",
+            }}
+          >
             <img
-              src="/tic/login_img/Group_2.png"
+              style={{
+                maxWidth: "450px",
+                height: "450px",
+                position: "relative",
+              }}
+              src="/tic/Mobile_login_pana.png"
               alt="Illustration"
-              className="img-fluid w-100"
-              style={{ position: "relative" }}
+              className=""
             />
             <p className="login-image-text text-center">
               Find teaching jobs and manage bookings

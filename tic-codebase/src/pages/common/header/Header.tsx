@@ -75,7 +75,7 @@ function NavScrollExample() {
 
               <div className="d-flex align-items-center">
                 <img
-                  src="/tic/profile_image.jpg"
+                  src="/tic/profile_image.svg"
                   alt="User Avatar"
                   className="profile-image mr-2"
                   style={{

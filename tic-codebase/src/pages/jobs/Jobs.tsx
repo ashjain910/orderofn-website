@@ -704,9 +704,16 @@ function Jobs() {
               className="d-flex  flex-wrap flex-column align-items-center justify-content-center"
               style={{ minHeight: 200 }}
             >
-              <div className="mb-2">No jobs found.</div>
+              <img
+                src="/tic/error.svg"
+                alt="No data"
+                style={{ width: 200, marginBottom: 10 }}
+              />
+              <div className="mb-2 ">
+                <h5>No jobs found.</h5>
+              </div>
               <button
-                className="btn btn-outline-primary"
+                className="btn btn-secondary"
                 onClick={handleClearFilters}
               >
                 Reset Filters
@@ -881,7 +888,7 @@ function Jobs() {
             <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
               <a
                 target="_blank"
-                href="/cv-writing-guide"
+                href="/tic/TIC_CV_Tips.pdf"
                 style={{ textDecoration: "auto", color: "#0d3b85" }}
               >
                 CV writing guide
@@ -897,7 +904,7 @@ function Jobs() {
             <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
               <a
                 target="_blank"
-                href="/cv-writing-guide"
+                href="http://3.107.173.67/2025/12/24/preparing-for-online-teaching-interviews/"
                 style={{ textDecoration: "auto", color: "#0d3b85" }}
               >
                 International school interview questions
@@ -913,7 +920,7 @@ function Jobs() {
             <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
               <a
                 target="_blank"
-                href="/cv-writing-guide"
+                href="/tic/WORD_TIC_CV_Template.docx"
                 style={{ textDecoration: "auto", color: "#0d3b85" }}
               >
                 Download CV template

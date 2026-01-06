@@ -117,11 +117,11 @@ export default function PreRegister() {
   };
   const stepImages = [
     "",
-    "/tic/login_img/Group_1.png",
-    "/tic/login_img/Group_3.png",
-    "/tic/login_img/Group_4.png",
-    "/tic/login_img/Group_5.png",
-    "/tic/login_img/Group_6.png",
+    "/tic/Startup_life-pana.svg",
+    "/tic/About_me.svg",
+    "/tic/Teacher_student.svg",
+    "/tic/leadership.png",
+    "/tic/Calendar.png",
   ];
   const stepTexts = [
     "",
@@ -375,8 +375,10 @@ export default function PreRegister() {
 
           {/* RIGHT SIDE — STATIC IMAGE */}
           <div
-            className="col-md-6 d-none d-md-block p-0 position-relative"
-            style={{ height: "100vh", minHeight: "400px" }}
+            className="col-md-6 d-none d-md-block p-0 position-relative justify-content-center align-items-center d-md-flex"
+            style={{
+              background: "#DDEFFF",
+            }}
           >
             <p
               className="login-image-text text-center"
@@ -401,10 +403,10 @@ export default function PreRegister() {
               src={stepImages[step]}
               alt="Registration Visual"
               style={{
-                width: "100%",
                 objectFit: "cover",
-                height: "100vh",
-                minHeight: "400px",
+                maxWidth: "450px",
+                height: "450px",
+                position: "relative",
               }}
             />
           </div>

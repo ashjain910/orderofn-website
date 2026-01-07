@@ -114,6 +114,7 @@ function Jobs() {
 
   const fetchJobs = async (q: typeof query) => {
     setLoading(true);
+    console.log("Fetching jobs with query:", q);
     try {
       const response = await AdminBaseApi.get("/jobs", {
         params: {

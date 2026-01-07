@@ -294,10 +294,7 @@ function Jobs() {
               </div>
             </div>
           ) : jobsData.length === 0 ? (
-            <div
-              className="d-flex text-center flex-column align-items-center justify-content-center"
-              style={{ minHeight: 200 }}
-            >
+            <div className="d-flex text-center flex-column align-items-center justify-content-center">
               {query.filterTitle ||
               query.filterjob_type ||
               query.filterSchoolType ? (
@@ -327,20 +324,20 @@ function Jobs() {
                     />
                     <h5>No jobs found. Post a job to see here.</h5>
                   </div>
-                  <button
+                  {/* <button
                     className="btn btn-primary"
                     onClick={() => setShowPostJobModal(true)}
                   >
                     Post Job
-                  </button>
-                  {/* Post Job Modal */}
-                  {showPostJobModal && (
-                    <PostJobModal
-                      show={showPostJobModal}
-                      onClose={() => setShowPostJobModal(false)}
-                    />
-                  )}
+                  </button> */}
                 </>
+              )}
+              {/* Post Job Modal */}
+              {showPostJobModal && (
+                <PostJobModal
+                  show={showPostJobModal}
+                  onClose={() => setShowPostJobModal(false)}
+                />
               )}
             </div>
           ) : (

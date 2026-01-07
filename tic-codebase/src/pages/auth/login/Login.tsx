@@ -248,12 +248,12 @@ export default function Login() {
                   </label>
                 </div>
 
-                <a
+                {/* <a
                   href="#"
                   className="text-primary txt__regular__ text-decoration-none"
                 >
                   Forgot Password
-                </a>
+                </a> */}
               </div>
 
               {/* Login Button */}
@@ -290,7 +290,7 @@ export default function Login() {
               </a>
             </p>
             <p className="text-center text-muted txt__regular__ login-footer">
-              © tic 2025
+              © tic 2026
             </p>
           </div>
 

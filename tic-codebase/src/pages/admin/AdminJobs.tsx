@@ -6,6 +6,7 @@ import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { schoolTypes } from "../../constants/jobOptions";
 import { POSITIONTYPE_OPTIONS } from "../../common/subjectOptions";
+import PostJobModal from "../../components/admin/PostJobModal";
 
 const statusTabs = [
   { key: "active", label: "Active Jobs" },
@@ -334,41 +335,10 @@ function Jobs() {
                   </button>
                   {/* Post Job Modal */}
                   {showPostJobModal && (
-                    <div
-                      className="modal fade show"
-                      style={{ display: "block" }}
-                      tabIndex={-1}
-                    >
-                      <div className="modal-dialog">
-                        <div className="modal-content">
-                          <div className="modal-header">
-                            <h5 className="modal-title">Post Job</h5>
-                            <button
-                              type="button"
-                              className="btn-close"
-                              onClick={() => setShowPostJobModal(false)}
-                            ></button>
-                          </div>
-                          <div className="modal-body">
-                            {/* TODO: Add post job form here */}
-                            <p>Post job form goes here.</p>
-                          </div>
-                          <div className="modal-footer">
-                            <button
-                              type="button"
-                              className="btn btn-secondary"
-                              onClick={() => setShowPostJobModal(false)}
-                            >
-                              Close
-                            </button>
-                            <button type="button" className="btn btn-primary">
-                              Submit
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="modal-backdrop fade show"></div>
-                    </div>
+                    <PostJobModal
+                      show={showPostJobModal}
+                      onClose={() => setShowPostJobModal(false)}
+                    />
                   )}
                 </>
               )}

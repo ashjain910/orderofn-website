@@ -87,7 +87,7 @@ function NavScrollExample() {
                 />
 
                 <NavDropdown
-                  title={user?.full_name || "User"}
+                  title={user?.full_name || user?.email || "User"}
                   id="navbarScrollingDropdown"
                 >
                   <NavDropdown.Item onClick={() => navigate("/user-profile")}>

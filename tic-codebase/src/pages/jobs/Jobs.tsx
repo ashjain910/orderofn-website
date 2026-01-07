@@ -365,23 +365,41 @@ function Jobs() {
       );
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data.message || "Saved successfully!");
+        // Refresh jobs list and counts without reloading the page
+        setLoading(true);
+        setPage(1);
+        await sendFiltersToApi({
+          title: filterTitle,
+          jobType: filterjob_type,
+          schoolType: filterSchoolType,
+          gender: filterGender,
+          status: activeTab,
+          page: 1,
+          action: "apply",
+          page_size: JOBS_PER_PAGE,
+          is_applied: activeTab === "applied" ? true : undefined,
+          is_saved: activeTab === "saved" ? true : undefined,
+        });
+        await fetchTabCounts();
+        setLoading(false);
+
         // Update the saved job in jobsData if response.data.saved_job exists
-        if (response.data.saved_job && response.data.saved_job.id) {
-          setJobsData((prevJobs) => {
-            const idx = prevJobs.findIndex(
-              (j) => j.id === response.data.saved_job.id
-            );
-            if (idx !== -1) {
-              const updatedJobs = [...prevJobs];
-              updatedJobs[idx] = {
-                ...updatedJobs[idx],
-                ...response.data.saved_job,
-              };
-              return updatedJobs;
-            }
-            return prevJobs;
-          });
-        }
+        // if (response.data.saved_job && response.data.saved_job.id) {
+        //   setJobsData((prevJobs) => {
+        //     const idx = prevJobs.findIndex(
+        //       (j) => j.id === response.data.saved_job.id
+        //     );
+        //     if (idx !== -1) {
+        //       const updatedJobs = [...prevJobs];
+        //       updatedJobs[idx] = {
+        //         ...updatedJobs[idx],
+        //         ...response.data.saved_job,
+        //       };
+        //       return updatedJobs;
+        //     }
+        //     return prevJobs;
+        //   });
+        // }
       } else if (
         response.status === 400 &&
         response.data &&
@@ -409,49 +427,49 @@ function Jobs() {
       setLoading(false);
     }
   };
-  const handleUnSaveJob = async (jobId: number) => {
-    setSavingJobId(jobId);
-    try {
-      const accessToken =
-        Cookies.get("access") ||
-        localStorage.getItem("access") ||
-        sessionStorage.getItem("access");
-      const response = await BaseApi.post(
-        `/jobs/${jobId}/unsave`,
-        { job_id: jobId },
-        accessToken
-          ? { headers: { Authorization: `Bearer ${accessToken}` } }
-          : undefined
-      );
-      if (response.status === 200 || response.status === 201) {
-        toast.success("Unsaved successfully!");
-      } else if (
-        response.status === 400 &&
-        response.data &&
-        response.data.error
-      ) {
-        toast.error(response.data.error);
-      } else {
-        toast.error("Failed to unsave job. Please try again.");
-      }
-    } catch (error: any) {
-      // If error response is available, show error message
-      if (
-        error.response &&
-        error.response.status === 400 &&
-        error.response.data &&
-        error.response.data.error
-      ) {
-        toast.error(error.response.data.error);
-      } else {
-        toast.error("Failed to unsave job. Please try again.");
-      }
-      console.error(error);
-    } finally {
-      setSavingJobId(null);
-      setLoading(false);
-    }
-  };
+  // const handleUnSaveJob = async (jobId: number) => {
+  //   setSavingJobId(jobId);
+  //   try {
+  //     const accessToken =
+  //       Cookies.get("access") ||
+  //       localStorage.getItem("access") ||
+  //       sessionStorage.getItem("access");
+  //     const response = await BaseApi.post(
+  //       `/jobs/${jobId}/unsave`,
+  //       { job_id: jobId },
+  //       accessToken
+  //         ? { headers: { Authorization: `Bearer ${accessToken}` } }
+  //         : undefined
+  //     );
+  //     if (response.status === 200 || response.status === 201) {
+  //       toast.success("Unsaved successfully!");
+  //     } else if (
+  //       response.status === 400 &&
+  //       response.data &&
+  //       response.data.error
+  //     ) {
+  //       toast.error(response.data.error);
+  //     } else {
+  //       toast.error("Failed to unsave job. Please try again.");
+  //     }
+  //   } catch (error: any) {
+  //     // If error response is available, show error message
+  //     if (
+  //       error.response &&
+  //       error.response.status === 400 &&
+  //       error.response.data &&
+  //       error.response.data.error
+  //     ) {
+  //       toast.error(error.response.data.error);
+  //     } else {
+  //       toast.error("Failed to unsave job. Please try again.");
+  //     }
+  //     console.error(error);
+  //   } finally {
+  //     setSavingJobId(null);
+  //     setLoading(false);
+  //   }
+  // };
   // API call to send filters and update jobs data
   // API call for job details
   const handleViewJobDetails = async (jobId: number) => {
@@ -585,10 +603,12 @@ function Jobs() {
                     {/* Icon before tab text */}
                     {tabIcons[tab.key as keyof typeof tabIcons]}
                     <span>{tab.label}</span>
-                    {/* Count in rounded grey background */}
-                    <span className="count__badge__">
-                      {tabCounts[tab.key as keyof typeof tabCounts] ?? 0}
-                    </span>
+                    {/* Show count only for active tab */}
+                    {activeTab === tab.key && (
+                      <span className="count__badge__">
+                        {tabCounts[tab.key as keyof typeof tabCounts] ?? 0}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -815,7 +835,7 @@ function Jobs() {
                         onClick={(e) => {
                           e.stopPropagation();
                           if (job.is_saved) {
-                            handleUnSaveJob(job.id);
+                            // handleUnSaveJob(job.id);
                           } else {
                             handleSaveJob(job.id);
                           }

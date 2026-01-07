@@ -904,7 +904,7 @@ function Jobs() {
             <h6 className="text__regular__ mt-2" style={{ fontWeight: 600 }}>
               <a
                 target="_blank"
-                href="http://3.107.173.67/2025/12/24/preparing-for-online-teaching-interviews/"
+                href="https://ticrecruitment.com/2025/12/24/preparing-for-online-teaching-interviews/"
                 style={{ textDecoration: "auto", color: "#0d3b85" }}
               >
                 International school interview questions

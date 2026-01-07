@@ -655,7 +655,8 @@ def create_checkout_session(request):
             'payment_method_types': ['card'],
             'mode': 'subscription',
             'line_items': [{
-                'price': 'price_1SeYHCS3b9o0AI70juiCFthQ',
+                #'price': 'price_1SeYHCS3b9o0AI70juiCFthQ',
+                'price': 'price_1SmvgjS3OwqA60SpYtQpGVbe',  # Updated price ID
                 'quantity': 1,
             }],
             'client_reference_id': str(user.id),  # To identify user in webhook
@@ -669,8 +670,8 @@ def create_checkout_session(request):
                     'user_email': user.email,
                 }
             },
-            'success_url': 'https://orderofn.com/tic/#/jobs?checkout=success&session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url': 'https://orderofn.com/tic/#/jobs?checkout=canceled',
+            'success_url': 'https://app.ticrecruitment.com/#/jobs?checkout=success&session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url': 'https://app.ticrecruitment.com/#/jobs?checkout=canceled',
         }
 
         # If user already has a Stripe customer ID, use it; otherwise use email

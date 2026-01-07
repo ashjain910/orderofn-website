@@ -3,7 +3,7 @@ import PostJobModal from "../../components/admin/PostJobModal";
 import Nav from "react-bootstrap/esm/Nav";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-
+import "./admin-header.css";
 export default function AdminHeader() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,10 +34,10 @@ export default function AdminHeader() {
   return (
     <>
       <nav
-        className="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4"
+        className="navbar navbar-expand-lg navbar-light bg-white-on-res shadow-sm mb-4"
         style={{ minHeight: 60 }}
       >
-        <div className="container-fluid">
+        <div className="container-fluid header_top">
           <Link
             to="/admin/jobs"
             className="navbar-brand d-flex align-items-center"
@@ -47,7 +47,12 @@ export default function AdminHeader() {
               alt="Admin Logo"
               style={{ width: 120, marginRight: 12 }}
             />
-            <span style={{ fontWeight: 600, fontSize: 20 }}>Admin Panel</span>
+            <span
+              className="hide_on_res"
+              style={{ fontWeight: 600, fontSize: 20 }}
+            >
+              Admin Panel
+            </span>
           </Link>
           <button
             className="navbar-toggler"
@@ -61,7 +66,7 @@ export default function AdminHeader() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="adminNavbar">
-            <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center justify-content-end w-100">
+            <ul className="navbar-nav ms-auto mt-30 mb-2 mb-lg-0 align-items-center justify-content-end w-100">
               {/* <Nav.Link
                 className="mr-20"
                 active={location.pathname === "/admin/dashboard"}

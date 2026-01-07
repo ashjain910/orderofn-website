@@ -1,0 +1,23 @@
+@media (max-width: 992px) {
+  .bg-white-on-res {
+    background-color: #0d3b85;
+  }
+  .hide_on_res {
+    display: none;
+  }
+  .mt-30 {
+    margin-top: 30px !important;
+  }
+  .header_top {
+    background: #0d3b85 !important;
+    /* margin-top: 60px; */
+  }
+}
+.header_top {
+  background: #ffffff;
+  /* margin-top: 60px; */
+}
+.bg-white-on-res {
+  --bs-bg-opacity: 1;
+  background-color: #ffffff;
+}

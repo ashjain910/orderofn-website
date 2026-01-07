@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to TIC Recruitment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        .welcome-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .welcome-box h2 {
+            color: white;
+            font-size: 28px;
+            margin: 10px 0;
+        }
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .info-box {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #3498db;
+            font-size: 18px;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .cta-button:hover {
+            background-color: #2980b9;
+        }
+        .footer {
+            background-color: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 5px 5px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TIC Recruitment</h1>
+    </div>
+
+    <div class="content">
+        <p>Dear {% if teacher_name %}{{ teacher_name }}{% else %}Educator{% endif %},</p>
+
+        <div class="welcome-box">
+            <div class="welcome-icon">🌟</div>
+            <h2>Welcome to TIC Recruitment!</h2>
+            <p style="margin-bottom: 0; font-size: 16px;">Your Gateway to International Teaching Opportunities</p>
+        </div>
+
+        <p>We're thrilled to have you join our community of passionate educators seeking exciting teaching opportunities around the world.</p>
+
+        <div class="info-box">
+            <h3>What's Next?</h3>
+            <p>TIC Recruitment connects qualified teachers with prestigious international schools across the globe. Here's what you can look forward to:</p>
+
+            <ul class="feature-list">
+                <li>Access to exclusive teaching positions at top international schools</li>
+                <li>Personalized job matching based on your qualifications and preferences</li>
+                <li>Expert guidance throughout the recruitment process</li>
+                <li>Support with visa, relocation, and onboarding</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://www.ticrecruitment.com" class="cta-button">Explore Opportunities</a>
+        </div>
+
+        <p><strong>Getting Started:</strong></p>
+        <ol>
+            <li>Create your profile on our platform</li>
+            <li>Upload your CV and teaching credentials</li>
+            <li>Browse available positions</li>
+            <li>Apply to roles that match your expertise</li>
+        </ol>
+
+        <p>Our team is here to support you every step of the way. If you have any questions or need assistance, please don't hesitate to reach out.</p>
+
+        <p>We're excited to help you take the next step in your teaching career!</p>
+
+        <p>Warm regards,<br>
+        <strong>The TIC Recruitment Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p><a href="https://www.ticrecruitment.com" style="color: #3498db; text-decoration: none;">www.ticrecruitment.com</a></p>
+        <p>Questions? Contact us at info@ticrecruitment.com</p>
+        <p style="margin-top: 15px; font-size: 11px;">
+            You're receiving this email because you signed up for TIC Recruitment updates.<br>
+            If you'd prefer not to receive these emails, you can <a href="#" style="color: #3498db;">unsubscribe here</a>.
+        </p>
+    </div>
+</body>
+</html>

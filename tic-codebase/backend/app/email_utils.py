@@ -304,6 +304,52 @@ def send_rejection_email(application):
 
 
 @send_email_safe
+def send_welcome_email(email, first_name=''):
+    """
+    Send a welcome email to a new subscriber/user.
+
+    Args:
+        email: str - recipient email address
+        first_name: str (optional) - recipient's first name for personalization
+
+    Returns:
+        bool: True if email was sent successfully, False otherwise
+    """
+    try:
+        # Prepare context for email template
+        context = {
+            'teacher_name': first_name.strip() if first_name else '',
+        }
+
+        # Render email templates
+        subject = 'Welcome to TIC Recruitment - Your Gateway to International Teaching'
+        text_content = render_to_string('emails/welcome_email.txt', context)
+        html_content = render_to_string('emails/welcome_email.html', context)
+
+        # Create email message
+        recipient_email = get_recipient_email(email)
+        email_message = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[recipient_email]
+        )
+
+        # Attach HTML version
+        email_message.attach_alternative(html_content, "text/html")
+
+        # Send email
+        email_message.send(fail_silently=False)
+
+        logger.info(f"Welcome email sent to {email}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Failed to send welcome email to {email}: {str(e)}")
+        raise  # Re-raise to be handled by the decorator
+
+
+@send_email_safe
 def send_application_status_update_email(application, old_status, new_status):
     """
     Send an email notification when application status changes.

@@ -302,3 +302,37 @@ class SavedJob(models.Model):
 
     def __str__(self):
         return f"{self.user.email} saved {self.job.title}"
+
+
+class WelcomeEmailLog(models.Model):
+    """Track welcome emails sent to recipients"""
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('sent', 'Sent'),
+        ('failed', 'Failed'),
+    ]
+
+    email = models.EmailField()
+    first_name = models.CharField(max_length=100, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    error_message = models.TextField(blank=True, null=True)
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(blank=True, null=True)
+
+    # Campaign tracking
+    campaign_name = models.CharField(max_length=100, blank=True, default='launch')
+
+    class Meta:
+        db_table = 'welcome_email_logs'
+        verbose_name = 'Welcome Email Log'
+        verbose_name_plural = 'Welcome Email Logs'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['email', 'status']),
+            models.Index(fields=['campaign_name']),
+        ]
+
+    def __str__(self):
+        return f"{self.email} - {self.status}"

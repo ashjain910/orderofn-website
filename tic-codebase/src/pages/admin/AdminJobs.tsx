@@ -273,7 +273,9 @@ function Jobs() {
                     >
                       {tabIcons[tab.key as keyof typeof tabIcons]}
                       <span>{tab.label}</span>
-                      <span className="count__badge__">{count}</span>
+                      {activeTab === tab.key && (
+                        <span className="count__badge__">{count}</span>
+                      )}
                     </li>
                   );
                 })}

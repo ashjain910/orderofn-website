@@ -95,71 +95,79 @@ const AdminLogin = () => {
             style={{ width: "120px", marginBottom: "20px" }}
           />
           <h3 className="mb-3">Admin Login</h3>
-          <label className="form-label w-100" style={{ fontSize: 13 }}>
-            Email
-          </label>
-          <input
-            type="email"
-            className="form-control mb-3"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <label className="form-label w-100" style={{ fontSize: 13 }}>
-            Password
-          </label>
-          <input
-            type="password"
-            className="form-control mb-2"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <div className="d-flex  align-items-center mb-3 w-100">
-            <div className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="rememberAdmin"
-                checked={rememberMe}
-                onChange={() => {
-                  setRememberMe((prev) => {
-                    const newVal = !prev;
-                    if (!newVal) {
-                      localStorage.removeItem("admin_remember_email");
-                      localStorage.removeItem("admin_remember_password");
-                    }
-                    return newVal;
-                  });
-                }}
-              />
-              <label
-                className="form-check-label"
-                htmlFor="rememberAdmin"
-                style={{ fontSize: 13 }}
-              >
-                Remember me
-              </label>
-            </div>
-          </div>
-          <button
-            className="btn btn-primary w-100 mb-3"
-            onClick={() => handleLogin(email, password)}
-            disabled={loading}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin(email, password);
+            }}
+            style={{ width: "100%" }}
           >
-            {loading ? (
-              <>
-                <span
-                  className="spinner-border spinner-border-sm me-2"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-                Logging in...
-              </>
-            ) : (
-              "Login"
-            )}
-          </button>
+            <label className="form-label w-100" style={{ fontSize: 13 }}>
+              Email
+            </label>
+            <input
+              type="email"
+              className="form-control mb-3"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label className="form-label w-100" style={{ fontSize: 13 }}>
+              Password
+            </label>
+            <input
+              type="password"
+              className="form-control mb-2"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <div className="d-flex  align-items-center mb-3 w-100">
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="rememberAdmin"
+                  checked={rememberMe}
+                  onChange={() => {
+                    setRememberMe((prev) => {
+                      const newVal = !prev;
+                      if (!newVal) {
+                        localStorage.removeItem("admin_remember_email");
+                        localStorage.removeItem("admin_remember_password");
+                      }
+                      return newVal;
+                    });
+                  }}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="rememberAdmin"
+                  style={{ fontSize: 13 }}
+                >
+                  Remember me
+                </label>
+              </div>
+            </div>
+            <button
+              className="btn btn-primary w-100 mb-3"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
+            </button>
+          </form>
         </div>
       </div>
     </div>

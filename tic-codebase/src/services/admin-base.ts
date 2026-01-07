@@ -78,7 +78,7 @@ adminBaseApi.interceptors.response.use(
                     Cookies.remove("access");
                     Cookies.remove("refresh");
                     sessionStorage.clear();
-                    window.location.href = "/tic/admin/";
+                    window.location.href = "/admin/";
                     return Promise.reject(error);
                 }
             } catch (refreshError) {
@@ -86,7 +86,7 @@ adminBaseApi.interceptors.response.use(
                 Cookies.remove("access");
                 Cookies.remove("refresh");
                 sessionStorage.clear();
-                window.location.href = "/tic/admin/";
+                window.location.href = "/admin/";
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
@@ -100,9 +100,9 @@ adminBaseApi.interceptors.response.use(
             Cookies.remove("refresh");
             sessionStorage.clear();
             if (window.location.pathname.startsWith("/admin")) {
-                window.location.href = "/tic/#/admin/";
+                window.location.href = "/#/admin/";
             } else {
-                window.location.href = "/tic/";
+                window.location.href = "/";
             }
         }
         return Promise.reject(error);

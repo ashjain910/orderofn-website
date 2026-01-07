@@ -33,7 +33,7 @@ function NavScrollExample() {
         <Container fluid>
           <Navbar.Brand onClick={() => navigate("/")}>
             <img
-              src="/tic/image_logo.png"
+              src="/image_logo.png"
               alt="TIC Logo"
               style={{ width: "60px", height: "60px" }}
             />
@@ -75,7 +75,7 @@ function NavScrollExample() {
 
               <div className="d-flex align-items-center">
                 <img
-                  src="/tic/profile_image.svg"
+                  src="/profile_image.svg"
                   alt="User Avatar"
                   className="profile-image mr-2"
                   style={{

@@ -43,7 +43,7 @@ export default function AdminHeader() {
             className="navbar-brand d-flex align-items-center"
           >
             <img
-              src="/tic/tic_logo.png"
+              src="/tic_logo.png"
               alt="Admin Logo"
               style={{ width: 120, marginRight: 12 }}
             />

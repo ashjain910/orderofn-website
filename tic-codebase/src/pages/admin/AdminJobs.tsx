@@ -304,7 +304,7 @@ function Jobs() {
                 <>
                   <div className="mb-2 mt-5">
                     <img
-                      src="/tic/error.svg"
+                      src="/error.svg"
                       alt="No data"
                       style={{ width: 200, marginBottom: 10 }}
                     />
@@ -321,7 +321,7 @@ function Jobs() {
                 <>
                   <div className="mb-2">
                     <img
-                      src="/tic/error.svg"
+                      src="/error.svg"
                       alt="No data"
                       style={{ width: 200, marginBottom: 10 }}
                     />

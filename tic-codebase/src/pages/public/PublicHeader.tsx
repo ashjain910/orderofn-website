@@ -12,7 +12,7 @@ function NavScrollExample() {
         <Container fluid>
           <Navbar.Brand onClick={() => navigate("/")}>
             <img
-              src="/tic/image_logo.png"
+              src="/image_logo.png"
               alt="TIC Logo"
               style={{ width: "60px", height: "60px" }}
             />

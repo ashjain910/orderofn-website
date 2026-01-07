@@ -90,7 +90,7 @@ const AdminLogin = () => {
           style={{ width: 350, margin: "0 auto" }}
         >
           <img
-            src="/tic/tic_logo.png"
+            src="/tic_logo.png"
             alt="TIC Logo"
             style={{ width: "120px", marginBottom: "20px" }}
           />

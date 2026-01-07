@@ -176,7 +176,7 @@ function JobDetail() {
             <a
               style={{ textDecoration: "none", width: "fit-content" }}
               role="button"
-              href="/tic/#/public-jobs"
+              href="/#/public-jobs"
               className=""
             >
               <FaArrowLeft style={{ marginRight: 5 }} />

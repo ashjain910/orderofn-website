@@ -322,7 +322,7 @@ function Jobs() {
               >
                 <div className="mb-2">
                   <img
-                    src="/tic/error.svg"
+                    src="/error.svg"
                     alt="No data"
                     style={{ width: 200, marginBottom: 10 }}
                   />
@@ -456,7 +456,7 @@ function Jobs() {
           <div className="col-lg-3 sm__d_none__">
             <div className="card  mb-3 text-center p-3">
               <img
-                src="/tic/cv_writing_guide.svg"
+                src="/cv_writing_guide.svg"
                 alt=""
                 style={{ width: 150, display: "block", margin: "0 auto" }}
               />
@@ -472,7 +472,7 @@ function Jobs() {
             </div>
             <div className="card  mb-3 text-center p-3">
               <img
-                src="/tic/cv_template.svg"
+                src="/cv_template.svg"
                 alt=""
                 style={{ width: 150, display: "block", margin: "0 auto" }}
               />
@@ -488,7 +488,7 @@ function Jobs() {
             </div>
             <div className="card  mb-3 text-center p-3">
               <img
-                src="/tic/sample_resume.svg"
+                src="/sample_resume.svg"
                 alt=""
                 style={{ width: 150, display: "block", margin: "0 auto" }}
               />

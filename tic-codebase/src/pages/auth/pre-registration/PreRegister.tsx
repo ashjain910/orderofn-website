@@ -117,11 +117,11 @@ export default function PreRegister() {
   };
   const stepImages = [
     "",
-    "/tic/Startup_life-pana.svg",
-    "/tic/About_me.svg",
-    "/tic/Teacher_student.svg",
-    "/tic/leadership.png",
-    "/tic/Calendar.png",
+    "/Startup_life-pana.svg",
+    "/About_me.svg",
+    "/Teacher_student.svg",
+    "/leadership.png",
+    "/Calendar.png",
   ];
   const stepTexts = [
     "",
@@ -310,7 +310,7 @@ export default function PreRegister() {
           >
             {/* Logo */}
             <img
-              src="/tic/tic_logo.png"
+              src="/tic_logo.png"
               alt="TIC Logo"
               style={{
                 width: "200px",
@@ -368,7 +368,7 @@ export default function PreRegister() {
             </div>
             <div className="text-center mt-3">
               <span className="text-muted txt__small__">
-                Have an account? <a href="/tic/">Login</a>
+                Have an account? <a href="/">Login</a>
               </span>
             </div>
           </div>

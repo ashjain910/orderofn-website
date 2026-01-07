@@ -23,7 +23,7 @@ export default function AdminDashboard() {
           }}
         >
           <img
-            src="/tic/tic_logo.png"
+            src="/tic_logo.png"
             alt="Admin Logo"
             style={{ width: 80, marginBottom: 16 }}
           />

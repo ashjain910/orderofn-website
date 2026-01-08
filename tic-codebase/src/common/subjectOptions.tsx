@@ -81,9 +81,9 @@ export const ROLES_OPTIONS = [
   { value: "academic_registrar", label: "Academic registrar" },
   { value: "business_manager", label: "Business manager" },
   { value: "careers_counsellor", label: "Careers Counsellor" },
+  { value: "deputy_head_primary", label: "Deputy Head of Primary" },
   { value: "deputy_head_secondary", label: "Deputy Head of Secondary" },
   { value: "deputy_head_school", label: "Deputy Head of School" },
-  // Removed duplicate entry for Deputy Head of Primary
   { value: "director", label: "Director" },
   { value: "director_of_studies", label: "Director of Studies" },
   { value: "grade_level_coordinator", label: "Grade level Coordinator" },
@@ -115,9 +115,9 @@ export const LEADERSHIP_OPTIONS = [
   { value: "academic_registrar", label: "Academic registrar" },
   { value: "business_manager", label: "Business manager" },
   { value: "careers_counsellor", label: "Careers Counsellor" },
+  { value: "deputy_head_primary", label: "Deputy Head of Primary" },
   { value: "deputy_head_secondary", label: "Deputy Head of Secondary" },
   { value: "deputy_head_school", label: "Deputy Head of School" },
-  // Removed duplicate entry for Deputy Head of Primary
   { value: "director", label: "Director" },
   { value: "director_of_studies", label: "Director of Studies" },
   { value: "grade_level_coordinator", label: "Grade level Coordinator" },
@@ -143,6 +143,7 @@ export const LEADERSHIP_OPTIONS = [
   { value: "teacher", label: "Teacher" },
   { value: "vice_director", label: "Vice Director" },
   { value: "vice_principal", label: "Vice Principal" },
+  { value: "not_applicable", label: "Not Applicable" },
 ];
 
 //  Teacher role options for select fields
@@ -150,9 +151,9 @@ export const POSITIONTYPE_OPTIONS = [
   { value: "academic_registrar", label: "Academic registrar" },
   { value: "business_manager", label: "Business manager" },
   { value: "careers_counsellor", label: "Careers Counsellor" },
+  { value: "deputy_head_primary", label: "Deputy Head of Primary" },
   { value: "deputy_head_secondary", label: "Deputy Head of Secondary" },
   { value: "deputy_head_school", label: "Deputy Head of School" },
-  // Removed duplicate entry for Deputy Head of Primary
   { value: "director", label: "Director" },
   { value: "director_of_studies", label: "Director of Studies" },
   { value: "grade_level_coordinator", label: "Grade level Coordinator" },

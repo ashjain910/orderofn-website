@@ -617,7 +617,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                     "IB PYP",
                     "Indian",
                     "IPC",
-                    "New zealand",
+                    "New Zealand",
                     "South African",
                     "UK National",
                   ].map((item, idx) => (

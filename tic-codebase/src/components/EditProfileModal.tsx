@@ -278,8 +278,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                     type="radio"
                     label="Other"
                     name="gender"
-                    value="other"
-                    checked={formData.gender === "other"}
+                    value="others"
+                    checked={formData.gender === "others"}
                     onChange={(e) => handleChange("gender", e.target.value)}
                   />
                 </div>

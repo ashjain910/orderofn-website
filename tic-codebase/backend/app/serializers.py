@@ -72,9 +72,9 @@ class PreRegisterSerializer(serializers.Serializer):
         'head_of_subject', 'head_of_year', 'head_teacher', 'house_master', 'house_mistress',
         'ib_coordinator', 'inspector', 'phase_coordinator', 'principal', 'principal_inspector',
         'psychologist', 'second_in_department', 'senior_inspector', 'teacher', 'vice_director',
-        'vice_principal'
+        'vice_principal','not_applicable'
     ]
-    VALID_LEADERSHIP_ROLES = ['coordinator', 'hod', 'assistant_principal', 'principal']
+    VALID_LEADERSHIP_ROLES = ['coordinator', 'hod', 'assistant_principal', 'principal','not_applicable']
     VALID_CURRICULA = [
         'American', 'Australian', 'Canadian', 'IB Dip', 'IB MYP',
         'IB PYP', 'Indian', 'IPC', 'New Zealand', 'South African', 'UK National'
@@ -642,9 +642,9 @@ class UpdateProfileSerializer(serializers.Serializer):
         'head_of_subject', 'head_of_year', 'head_teacher', 'house_master', 'house_mistress',
         'ib_coordinator', 'inspector', 'phase_coordinator', 'principal', 'principal_inspector',
         'psychologist', 'second_in_department', 'senior_inspector', 'teacher', 'vice_director',
-        'vice_principal'
+        'vice_principal','not_applicable'
     ]
-    VALID_LEADERSHIP_ROLES = ['coordinator', 'hod', 'assistant_principal', 'principal']
+    VALID_LEADERSHIP_ROLES = ['coordinator', 'hod', 'assistant_principal', 'principal', 'not_applicable']
     VALID_CURRICULA = [
         'American', 'Australian', 'Canadian', 'IB Dip', 'IB MYP',
         'IB PYP', 'Indian', 'IPC', 'New Zealand', 'South African', 'UK National'

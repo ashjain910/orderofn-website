@@ -67,7 +67,7 @@ class PreRegisterSerializer(serializers.Serializer):
     VALID_ROLES = [
         'academic_registrar', 'business_manager', 'careers_counsellor', 'deputy_head_primary',
         'deputy_head_secondary', 'deputy_head_school', 'director', 'director_of_studies',
-        'educational_psychologist', 'head_of_department', 'head_of_early_years', 'grade_level_coordinator'
+        'educational_psychologist', 'head_of_department', 'head_of_early_years', 'grade_level_coordinator',
         'head_of_prep_school', 'head_of_primary', 'head_of_secondary', 'head_of_section',
         'head_of_subject', 'head_of_year', 'head_teacher', 'house_master', 'house_mistress',
         'ib_coordinator', 'inspector', 'phase_coordinator', 'principal', 'principal_inspector',

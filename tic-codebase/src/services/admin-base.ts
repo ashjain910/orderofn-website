@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
 const adminBaseApi = axios.create({
-    baseURL: "https://tic-api.orderofn.com/api/admin", // Example backend base URL
+    baseURL: "http://192.168.0.108:8000/api/admin", // Example backend base URL
     headers: {
         "Content-Type": "application/json",
     },
@@ -64,7 +64,7 @@ adminBaseApi.interceptors.response.use(
             isRefreshing = true;
             try {
                 const refreshResponse = await axios.post(
-                    "https://tic-api.orderofn.com/api/token/refresh",
+                    "http://192.168.0.108:8000/api/token/refresh",
                     { refresh: Cookies.get("refresh") }
                 );
                 const newAccess = refreshResponse.data.access;

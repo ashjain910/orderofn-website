@@ -56,7 +56,7 @@ const Step3 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
     "IB PYP",
     "Indian",
     "IPC",
-    "New zealand",
+    "New Zealand",
     "South African",
     "UK National",
   ];

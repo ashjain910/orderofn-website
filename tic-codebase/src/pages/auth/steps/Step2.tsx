@@ -410,13 +410,11 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
               <span className="text-success" style={{ fontSize: 11 }}>
                 {formData.cv_file.name || "File selected"}
               </span>
-              {/* <button
+              <button
                 type="button"
                 className="btn btn-sm btn-outline-danger ms-2"
                 onClick={() => setFormData({ ...formData, cv_file: null })}
-              >
-                
-              </button> */}
+              ></button>
             </div>
           )}
 

@@ -100,11 +100,7 @@ export default function PricingPlans() {
             Discover simple and flexible pricing. Tailored to meet your unique
             application goals. Clear, customizable plans built for educators.
           </p>
-          <small className="text-muted">
-            Note that the subscription is for one year. An email notification
-            will be sent as a reminder that the candidate will need to
-            resubscribe.
-          </small>
+
           <Row className="justify-content-center mt-4 g-4">
             {plans.map((plan) => (
               <Col md={4} key={plan.id}>

@@ -1,5 +1,6 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Cookies from "js-cookie";
 interface Step5Props {
   formData: any;
   setFormData: (data: any) => void;
@@ -7,7 +8,15 @@ interface Step5Props {
   prevStep: () => void;
 }
 
+import { useState } from "react";
+
 function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
+  const handleSubmit = () => {
+    Cookies.set("accept_terms", acceptTerms ? "true" : "false");
+    nextStep();
+  };
   // const days = Array.from({ length: 31 }, (_, i) => i + 1);
   // const months = [
   //   { label: "January", value: "01" },
@@ -64,21 +73,23 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
                 <input
                   className="form-check-input"
                   type="radio"
-                  name="availability"
-                  id="availabilityNo"
+                  name="job_alerts"
+                  id="job_alertsNo"
                   value="no"
-                  checked={formData.availability === "no"}
+                  checked={formData.job_alerts === "no"}
                   onChange={(e) =>
-                    setFormData({ ...formData, availability: e.target.value })
+                    setFormData({ ...formData, job_alerts: e.target.value })
                   }
                 />
-                <label className="form-check-label" htmlFor="availabilityNo">
+                <label className="form-check-label" htmlFor="job_alertsNo">
                   No
                 </label>
               </div>
             </div>
-            <label className="form-label w-100">I will be available from</label>
-            <div className="date-row w-100 ">
+            <label className="form-label w-100 ">
+              I will be available from
+            </label>
+            <div className="date-row w-100">
               <DatePicker
                 selected={
                   formData.available_date
@@ -102,11 +113,39 @@ function Step5({ formData, setFormData, nextStep, prevStep }: Step5Props) {
               />
             </div>
 
+            {/* Terms and Conditions Checkbox */}
+            <div className="form-check mb-2  mt-4">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="acceptTerms"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+              />
+              <label
+                className="form-check-label"
+                style={{ color: "#000000" }}
+                htmlFor="acceptTerms"
+              >
+                By clicking this, I have read and accept the{" "}
+                <a
+                  href="https://ticrecruitment.com/accept-terms-and-conditions/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Terms and Conditions.
+                </a>
+              </label>
+            </div>
             <div className="button-row d-flex justify-content-between mt-3">
               <button className="btn btn-secondary" onClick={prevStep}>
                 Previous
               </button>
-              <button className="btn btn-primary" onClick={nextStep}>
+              <button
+                className="btn btn-primary"
+                onClick={handleSubmit}
+                disabled={!acceptTerms}
+              >
                 Submit
               </button>
             </div>

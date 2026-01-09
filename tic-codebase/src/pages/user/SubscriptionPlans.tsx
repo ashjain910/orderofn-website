@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, Button, Row, Col } from "react-bootstrap";
 import { FaCheck } from "react-icons/fa";
 // Stripe integration
@@ -48,20 +48,55 @@ export default function PricingPlans() {
     },
   ];
 
-  // Read subscription_status from localStorage
-  // Read subscription_status from cookies
-  const subscriptionStatus =
-    typeof window !== "undefined" ? Cookies.get("subscription_status") : null;
-  // If active, premium is active, else default to basic
-  const isPremiumActive = subscriptionStatus === "active";
-  const [selected, setSelected] = useState(
-    isPremiumActive ? "premium" : "basic"
+  // Subscription status state
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(
+    null
   );
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(
-    isPremiumActive ? plans[1] : plans[0]
-  );
+  const [isPremiumActive, setIsPremiumActive] = useState(false);
+  const [selected, setSelected] = useState("basic");
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(plans[0]);
   const [showPayment, setShowPayment] = useState(false);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(true);
+
+  // On mount, fetch profile and set subscription status
+  useEffect(() => {
+    let isMounted = true;
+    setLoadingStatus(true);
+    BaseApi.get("/profile")
+      .then((res) => {
+        if (res && res.data && res.data.subscription_status) {
+          Cookies.set("subscription_status", res.data.subscription_status, {
+            secure: true,
+          });
+          if (isMounted) setSubscriptionStatus(res.data.subscription_status);
+        } else {
+          if (isMounted) setSubscriptionStatus(null);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setSubscriptionStatus(null);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingStatus(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Update isPremiumActive and selected plan based on subscription status
+  useEffect(() => {
+    if (subscriptionStatus === "active") {
+      setIsPremiumActive(true);
+      setSelected("premium");
+      setSelectedPlan(plans[1]);
+    } else {
+      setIsPremiumActive(false);
+      setSelected("basic");
+      setSelectedPlan(plans[0]);
+    }
+  }, [subscriptionStatus]);
 
   // Handle plan selection
 
@@ -86,6 +121,19 @@ export default function PricingPlans() {
       setLoadingCheckout(false);
     }
   };
+
+  if (loadingStatus) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: 300 }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-5 text-center">

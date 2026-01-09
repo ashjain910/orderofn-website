@@ -138,15 +138,15 @@ export default function Login() {
       }
       if (error?.response?.data && typeof error.response.data === "object") {
         const data = error.response.data;
-        Object.entries(data).forEach(([field, errors]) => {
+        Object.entries(data).forEach(([errors]) => {
           if (Array.isArray(errors)) {
-            errors.forEach((err: string, idx: number) => {
+            errors.forEach((idx: number) => {
               setTimeout(() => {
-                toast.error(`${field}: ${err}`, toastOptions);
+                toast.error("Invalid email or password", toastOptions);
               }, idx * 500);
             });
           } else {
-            toast.error(`${field}: ${errors}`, toastOptions);
+            toast.error("Invalid email or password", toastOptions);
           }
         });
       }

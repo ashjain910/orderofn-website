@@ -588,7 +588,14 @@ function JobDetail() {
                         <div className="mt-2">
                           {resumeFile && resumeFile.name && (
                             <div className="uploaded-file__ d-flex align-items-center">
-                              <span className="file-name__">
+                              <span
+                                className="file-name__"
+                                style={{
+                                  fontWeight: 700,
+                                  fontSize: 15,
+                                  color: "rgb(18, 58, 147)",
+                                }}
+                              >
                                 {resumeFile.name}
                               </span>
                               <a
@@ -665,7 +672,8 @@ function JobDetail() {
                             <FaRegFileAlt size={30} />
                           </span>
                           <span className="upload-text__">
-                            Drag and drop or Upload Cover Letter (Optional)
+                            Click here or drag and drop to upload Cover Letter
+                            (Optional)
                           </span>
                           <span className="upload-note__">
                             Upload .pdf or .docx files
@@ -688,7 +696,14 @@ function JobDetail() {
                         <div className="mt-2">
                           {coverFile && coverFile.name && (
                             <div className="uploaded-file__ d-flex align-items-center">
-                              <span className="file-name__">
+                              <span
+                                className="file-name__"
+                                style={{
+                                  fontWeight: 700,
+                                  fontSize: 15,
+                                  color: "rgb(18, 58, 147)",
+                                }}
+                              >
                                 {coverFile.name}
                               </span>
                               <a

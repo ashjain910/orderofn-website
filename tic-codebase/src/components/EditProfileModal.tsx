@@ -397,6 +397,17 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <Col md={12}>
               <Form.Group className="mb-3">
                 <Form.Label>CV File</Form.Label>
+                {/* Show uploaded file name directly under the label */}
+                {formData.cvFile && (
+                  <div
+                    className="mb-2"
+                    style={{ fontWeight: 500, color: "#123a93", fontSize: 12 }}
+                  >
+                    {typeof formData.cvFile === "string"
+                      ? formData.cvFile.split("/").pop()
+                      : formData.cvFile.name}
+                  </div>
+                )}
                 <div
                   className={`upload-box__ d-flex flex-column align-items-center justify-content-center mb-2`}
                   style={{

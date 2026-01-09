@@ -75,7 +75,8 @@ BaseApi.interceptors.response.use(
                     processQueue("No access token in refresh response", null);
                     Cookies.remove("access");
                     Cookies.remove("refresh");
-                    sessionStorage.removeItem("user");
+                    Cookies.remove("user");
+                    Cookies.remove("subscription_status");
                     toast.error("Session expired. Please log in again.");
                     // Use SPA navigation event for logout
                     window.dispatchEvent(new CustomEvent("tic-logout"));
@@ -85,7 +86,8 @@ BaseApi.interceptors.response.use(
                 processQueue(refreshError, null);
                 Cookies.remove("access");
                 Cookies.remove("refresh");
-                sessionStorage.removeItem("user");
+                Cookies.remove("user");
+                Cookies.remove("subscription_status");
                 toast.error("Session expired. Please log in again.");
                 window.dispatchEvent(new CustomEvent("tic-logout"));
                 return Promise.reject(refreshError);

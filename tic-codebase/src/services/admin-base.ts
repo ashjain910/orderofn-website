@@ -77,7 +77,8 @@ adminBaseApi.interceptors.response.use(
                     processQueue("No access token in refresh response", null);
                     Cookies.remove("access");
                     Cookies.remove("refresh");
-                    sessionStorage.clear();
+                    Cookies.remove("user");
+                    Cookies.remove("subscription_status");
                     window.location.href = "/tic/admin/";
                     return Promise.reject(error);
                 }
@@ -85,7 +86,8 @@ adminBaseApi.interceptors.response.use(
                 processQueue(refreshError, null);
                 Cookies.remove("access");
                 Cookies.remove("refresh");
-                sessionStorage.clear();
+                Cookies.remove("user");
+                Cookies.remove("subscription_status");
                 window.location.href = "/tic/admin/";
                 return Promise.reject(refreshError);
             } finally {
@@ -98,7 +100,8 @@ adminBaseApi.interceptors.response.use(
             toast.error(detail, { position: "top-right" });
             Cookies.remove("access");
             Cookies.remove("refresh");
-            sessionStorage.clear();
+            Cookies.remove("user");
+            Cookies.remove("subscription_status");
             if (window.location.pathname.startsWith("/admin")) {
                 window.location.href = "/tic/#/admin/";
             } else {

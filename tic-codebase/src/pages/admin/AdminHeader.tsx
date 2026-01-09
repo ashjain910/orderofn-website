@@ -18,7 +18,7 @@ export default function AdminHeader() {
     navigate("admin/");
   };
   useEffect(() => {
-    const admin = sessionStorage.getItem("user");
+    const admin = Cookies.get("user");
     if (admin) {
       try {
         const parsed = JSON.parse(admin);

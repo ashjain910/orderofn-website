@@ -12,6 +12,10 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { POSITIONTYPE_OPTIONS } from "../../common/subjectOptions";
 
 function JobDetail() {
+  // Drag and drop state for cover letter upload
+  const [coverDragActive, setCoverDragActive] = React.useState(false);
+  // Drag and drop state for resume upload
+  const [dragActive, setDragActive] = React.useState(false);
   // Get job id from params (must be before any use of id)
   const { id } = useParams();
 
@@ -502,24 +506,56 @@ function JobDetail() {
                           className="form-check-label"
                           htmlFor="upload-resume"
                         >
-                          Upload Resume
+                          Upload CV
                         </label>
                       </div>
                       <div className="mb-2">
                         <span className="txt__regular__">
-                          Upload your updated resume for this application.
+                          Upload your updated CV for this application.
                         </span>
                       </div>
                       <div
-                        className="upload-box__ d-flex flex-column align-items-center justify-content-center mb-2"
+                        className={`upload-box__ d-flex flex-column align-items-center justify-content-center mb-2 ${
+                          applyMethod === "upload" ? "" : "disabled"
+                        }`}
                         style={{
                           opacity: applyMethod === "upload" ? 1 : 0.3,
                           transition: "opacity 0.2s",
+                          border: dragActive
+                            ? "2px dashed #123a93"
+                            : "2px dashed #ccc",
+                          background: dragActive ? "##d8ecff" : "#d8ecff",
+                        }}
+                        onDragOver={(e) => {
+                          if (applyMethod !== "upload") return;
+                          e.preventDefault();
+                          setDragActive(true);
+                        }}
+                        onDragLeave={(e) => {
+                          if (applyMethod !== "upload") return;
+                          e.preventDefault();
+                          setDragActive(false);
+                        }}
+                        onDrop={(e) => {
+                          if (applyMethod !== "upload") return;
+                          e.preventDefault();
+                          setDragActive(false);
+                          if (job.is_expired) return;
+                          const file = e.dataTransfer.files?.[0];
+                          if (file) {
+                            setResumeFile(file);
+                          }
                         }}
                       >
                         <label
                           htmlFor="resume-upload"
                           className="upload-label__ w-100"
+                          style={{
+                            cursor:
+                              applyMethod === "upload"
+                                ? "pointer"
+                                : "not-allowed",
+                          }}
                         >
                           <span className="upload-icon__">
                             <FaRegFileAlt size={30} />
@@ -594,16 +630,42 @@ function JobDetail() {
                           to get hired. (Optional)
                         </span>
                       </div>
-                      <div className="upload-box__ d-flex flex-column align-items-center justify-content-center mb-2">
+                      <div
+                        className="upload-box__ d-flex flex-column align-items-center justify-content-center mb-2"
+                        style={{
+                          border: coverDragActive
+                            ? "2px dashed #123a93"
+                            : "2px dashed #ccc",
+                          background: coverDragActive ? "##d8ecff" : "#d8ecff",
+                          transition: "border 0.2s, background 0.2s",
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setCoverDragActive(true);
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          setCoverDragActive(false);
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setCoverDragActive(false);
+                          const file = e.dataTransfer.files?.[0];
+                          if (file) {
+                            setCoverFile(file);
+                          }
+                        }}
+                      >
                         <label
                           htmlFor="cover-upload"
                           className="upload-label__ w-100"
+                          style={{ cursor: "pointer" }}
                         >
                           <span className="upload-icon__">
                             <FaRegFileAlt size={30} />
                           </span>
                           <span className="upload-text__">
-                            Upload Cover Letter (Optional)
+                            Drag and drop or Upload Cover Letter (Optional)
                           </span>
                           <span className="upload-note__">
                             Upload .pdf or .docx files

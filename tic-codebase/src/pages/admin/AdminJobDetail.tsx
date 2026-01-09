@@ -952,7 +952,7 @@ function AdminJobDetail() {
                                   setSelectedResumeApplicant(teacher);
                                 }}
                               >
-                                View Resume
+                                View CV
                               </button>
                               {/* Resume Preview Modal (rendered once at top level, not inside map) */}
                               {resumeModal.show && selectedResumeApplicant && (
@@ -968,7 +968,7 @@ function AdminJobDetail() {
                                     <div className="modal-content">
                                       <div className="modal-header">
                                         <h5 className="modal-title">
-                                          {resumeModal.name}'s Resume
+                                          {resumeModal.name}'s CV
                                         </h5>
                                         <button
                                           type="button"
@@ -1043,7 +1043,7 @@ function AdminJobDetail() {
                                           </>
                                         ) : (
                                           <div className="text-danger">
-                                            No resume available.
+                                            No CV available.
                                           </div>
                                         )}
                                       </div>

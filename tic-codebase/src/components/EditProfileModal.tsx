@@ -9,6 +9,8 @@ import api from "../services/api";
 import { toast } from "react-toastify";
 import { toastOptions } from "../utils/toastOptions";
 import { getLeadershipRoleLabel } from "../constants/leadershipRoles";
+import { FaRegFileAlt } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 
 interface EditProfileModalProps {
   show: boolean;
@@ -392,29 +394,90 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 </Form.Select>
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={12}>
               <Form.Group className="mb-3">
                 <Form.Label>CV File</Form.Label>
-                <Form.Control
-                  type="file"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleChange("cv_file", e.target.files?.[0] || null)
-                  }
-                />
-                {formData.cv_file && typeof formData.cv_file === "string" && (
-                  <div className="mt-1">
-                    <small>{formData.cv_file.split("/").pop()}</small>
-                  </div>
-                )}
-                {formData.cv_file &&
-                  typeof formData.cv_file === "object" &&
-                  formData.cv_file.name && (
-                    <div className="mt-1">
-                      <small>{formData.cv_file.name}</small>
+                <div
+                  className={`upload-box__ d-flex flex-column align-items-center justify-content-center mb-2`}
+                  style={{
+                    opacity: 1,
+                    transition: "opacity 0.2s",
+                    border: "2px dashed #ccc",
+                    background: "#d8ecff",
+                    padding: 16,
+                  }}
+                >
+                  <label
+                    htmlFor="cv-upload"
+                    className="upload-label__ w-100"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span className="upload-icon__">
+                      <FaRegFileAlt size={30} />
+                    </span>
+                    <span className="upload-text__">
+                      Click here to upload resume
+                    </span>
+                    <span className="upload-note__">
+                      Upload .pdf or .docx files
+                    </span>
+                    <input
+                      id="cv-upload"
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      className="upload-input__"
+                      style={{ display: "none" }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("cv_file", e.target.files?.[0] || null)
+                      }
+                    />
+                  </label>
+                  {/* Show file name and remove button if CV file exists */}
+                  {formData.cv_file && (
+                    <div className="mt-2 d-flex align-items-center gap-2">
+                      {typeof formData.cv_file === "string" ? (
+                        <>
+                          <a
+                            href={formData.cv_file}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="fw-semibold"
+                            style={{
+                              textDecoration: "underline",
+                              color: "#123a93",
+                            }}
+                          >
+                            {formData.cv_file.split("/").pop()}
+                          </a>
+                        </>
+                      ) : formData.cv_file.name ? (
+                        <span
+                          className="fw-semibold"
+                          style={{ color: "#123a93" }}
+                        >
+                          {formData.cv_file.name}
+                        </span>
+                      ) : null}
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => {
+                          handleChange("cv_file", null);
+                          const input = document.getElementById(
+                            "cv-upload"
+                          ) as HTMLInputElement | null;
+                          if (input) input.value = "";
+                        }}
+                        style={{ padding: "2px 8px", fontSize: 14 }}
+                      >
+                        <IoClose size={16} />
+                      </Button>
                     </div>
                   )}
+                </div>
               </Form.Group>
             </Col>
+
             <Col md={6}>
               {/* Where did you hear about us? (Select) */}
               <Form.Group className="mb-3">

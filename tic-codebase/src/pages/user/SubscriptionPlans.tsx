@@ -5,6 +5,7 @@ import { FaCheck } from "react-icons/fa";
 // Stripe imports removed
 import BaseApi from "../../services/api";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 // Stripe CheckoutForm removed
 
@@ -48,10 +49,9 @@ export default function PricingPlans() {
   ];
 
   // Read subscription_status from localStorage
+  // Read subscription_status from cookies
   const subscriptionStatus =
-    typeof window !== "undefined"
-      ? sessionStorage.getItem("subscription_status")
-      : null;
+    typeof window !== "undefined" ? Cookies.get("subscription_status") : null;
   // If active, premium is active, else default to basic
   const isPremiumActive = subscriptionStatus === "active";
   const [selected, setSelected] = useState(

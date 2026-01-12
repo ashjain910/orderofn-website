@@ -31,7 +31,8 @@ import AdminJobDetail from "./pages/admin/AdminJobDetail";
 import PostJob from "./pages/admin/post-jobs";
 import UserProfile from "./pages/user-profile/UserProfile";
 import SubscriptionPlans from "./pages/user/SubscriptionPlans";
-
+import ForgotPassword from "./pages/auth/login/ForgotPassword";
+import ResetPassword from "./pages/auth/login/ResetPassword";
 // const [count, setCount] = useState(0);
 
 function App() {
@@ -51,6 +52,8 @@ function App() {
         {/* Public Jobs Listing and Details */}
         <Route path="/public-jobs" element={<PublicJobs />} />
         <Route path="/public-jobs/:id" element={<PublicJobDetail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         {/* User Protected */}
         <Route element={<PrivateRoute />}>
           <Route element={<Header />}>
@@ -63,7 +66,6 @@ function App() {
             <Route path="/subscription-plans" element={<SubscriptionPlans />} />
           </Route>
         </Route>
-
         {/* Admin Protected */}
         <Route element={<PrivateAdminRoute />}>
           <Route element={<AdminHeader />}>
@@ -75,7 +77,6 @@ function App() {
             <Route path="/admin/post-job/:id" element={<PostJob />} />
           </Route>
         </Route>
-
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

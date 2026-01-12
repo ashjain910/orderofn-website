@@ -80,12 +80,11 @@ const schoolTypeMultiOptions = [
 export default function PostJobModal({
   show,
   onClose,
-  onSuccess,
   initialValues,
 }: PostJobModalProps) {
+  // Helper functions
   const mapSubjectsToOptions = (subjects: any) => {
     if (!subjects) return [];
-    // If already array of {label, value}
     if (
       Array.isArray(subjects) &&
       subjects.length > 0 &&
@@ -94,20 +93,16 @@ export default function PostJobModal({
     ) {
       return subjects;
     }
-    // If comma-separated string
     if (typeof subjects === "string") {
       try {
-        // Try to parse as JSON array
         const parsed = JSON.parse(subjects);
         if (Array.isArray(parsed)) {
           return SUBJECT_OPTIONS.filter((opt) => parsed.includes(opt.value));
         }
       } catch {
-        // Not JSON, treat as single subject string
         return SUBJECT_OPTIONS.filter((opt) => opt.value === subjects);
       }
     }
-    // If array of strings
     if (Array.isArray(subjects)) {
       return SUBJECT_OPTIONS.filter((opt) => subjects.includes(opt.value));
     }
@@ -177,7 +172,7 @@ export default function PostJobModal({
     return [];
   };
 
-  // const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  // State
   const [form, setForm] = useState(() => ({
     title: initialValues?.title || "",
     job_type: mapJobTypeToOptions(initialValues?.job_type),
@@ -308,6 +303,7 @@ export default function PostJobModal({
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
+
     try {
       const formatDate = (date: Date | null) => {
         if (!date) return "";
@@ -319,6 +315,11 @@ export default function PostJobModal({
       let response;
       const toValueArray = (arr: any[]) =>
         arr.map((item) => (item && item.value ? item.value : item));
+      // For curriculum and other multi-selects, always send array of values
+      const getMultiValue = (arr: any[]) =>
+        Array.isArray(arr)
+          ? arr.map((item) => (item && item.value ? item.value : item))
+          : [];
       const getSingleValue = (arr: any[]) =>
         Array.isArray(arr) && arr[0] && arr[0].value ? arr[0].value : "";
       let isMultipart = !!form.school_logo;
@@ -329,7 +330,9 @@ export default function PostJobModal({
         formData.append("job_type", getSingleValue(form.job_type));
         formData.append("package", form.package);
         formData.append("contract_type", form.contract_type);
-        formData.append("curriculum", getSingleValue(form.curriculum));
+        getMultiValue(form.curriculum).forEach((c: any) =>
+          formData.append("curriculum", c)
+        );
         formData.append(
           "education_stage",
           getSingleValue(form.education_stage)
@@ -374,7 +377,7 @@ export default function PostJobModal({
         const payload = {
           ...form,
           job_type: getSingleValue(form.job_type),
-          curriculum: getSingleValue(form.curriculum),
+          curriculum: getMultiValue(form.curriculum),
           education_stage: getSingleValue(form.education_stage),
           school_type: getSingleValue(form.school_type),
           closing_date: formatDate(form.closing_date),
@@ -399,7 +402,7 @@ export default function PostJobModal({
           (initialValues && initialValues.id
             ? "Job updated successfully!"
             : "Job posted successfully!");
-        setLoading(false);
+
         toast.success(msg, toastOptions);
         setForm({
           title: "",
@@ -424,13 +427,12 @@ export default function PostJobModal({
         });
         // setLogoPreview(null);
         setErrors({});
-        if (onSuccess) onSuccess();
-        // setTimeout(() => {
-        //   // Force a page refresh by navigating to the same path with a unique query param
-        //   window.location.reload();
-        //   setLoading(false);
-        // }, 3000);
-        onClose();
+        // Do not call onSuccess here; let reload close the modal
+        setTimeout(() => {
+          setErrors({});
+          window.location.reload();
+          // Do not call onClose here; let reload close the modal
+        }, 3000);
       }
     } catch (err: any) {
       setLoading(false);
@@ -449,7 +451,6 @@ export default function PostJobModal({
           })
           .join(" | ");
       }
-      setLoading(false);
       toast.error(errorMsg || "Something went wrong", toastOptions);
     }
   };
@@ -731,35 +732,27 @@ export default function PostJobModal({
                   <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div className="mb-3">
                       <label className="form-label">Curriculum</label>
-                      <select
-                        className={`form-select ${
-                          errors.curriculum ? "is-invalid" : ""
-                        }`}
-                        value={form.curriculum[0]?.value || ""}
-                        onChange={(e) => {
-                          const selected = curriculumOptions.find(
-                            (opt) => opt.value === e.target.value
-                          );
-                          setForm({
-                            ...form,
-                            curriculum: selected ? [selected] : [],
-                          });
+                      <Select
+                        isMulti
+                        options={curriculumOptions}
+                        closeMenuOnSelect={false}
+                        value={form.curriculum}
+                        onChange={(selected: any) => {
+                          setForm({ ...form, curriculum: selected });
                           if (errors.curriculum)
                             setErrors((prev: any) => ({
                               ...prev,
                               curriculum: undefined,
                             }));
                         }}
-                      >
-                        <option value="">Select curriculum</option>
-                        {curriculumOptions.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
+                        classNamePrefix={"react-select"}
+                        placeholder="Select curriculum(s)"
+                      />
                       {errors.curriculum && (
-                        <div className="invalid-feedback">
+                        <div
+                          className="invalid-feedback"
+                          style={{ display: "block" }}
+                        >
                           {errors.curriculum}
                         </div>
                       )}

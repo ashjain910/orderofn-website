@@ -71,3 +71,7 @@
   font-size: 12px;
   line-height: 1.5;
 }
+ul {
+  margin-bottom: 0px !important;
+  padding-left: 15px !important;
+}

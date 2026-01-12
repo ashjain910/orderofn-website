@@ -432,3 +432,56 @@ www.ticrecruitment.com
     except Exception as e:
         logger.error(f"Failed to send status update email: {str(e)}")
         return False
+
+
+@send_email_safe
+def send_password_reset_email(email, first_name='', token=''):
+    """
+    Send a password reset email with a reset link.
+
+    Args:
+        email: str - recipient email address
+        first_name: str (optional) - recipient's first name for personalization
+        token: str - password reset token
+
+    Returns:
+        bool: True if email was sent successfully, False otherwise
+    """
+    try:
+        # Get frontend URL from settings or use default
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
+        reset_link = f"{frontend_url}/#/reset-password?token={token}"
+
+        # Prepare context for email template
+        context = {
+            'teacher_name': first_name.strip() if first_name else '',
+            'reset_link': reset_link,
+            'token': token,
+        }
+
+        # Render email templates
+        subject = 'Reset Your Password - TIC Recruitment'
+        text_content = render_to_string('emails/password_reset.txt', context)
+        html_content = render_to_string('emails/password_reset.html', context)
+
+        # Create email message
+        recipient_email = get_recipient_email(email)
+        email_message = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[recipient_email]
+        )
+
+        # Attach HTML version
+        email_message.attach_alternative(html_content, "text/html")
+
+        # Send email
+        email_message.send(fail_silently=False)
+
+        logger.info(f"Password reset email sent to {email}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Failed to send password reset email to {email}: {str(e)}")
+        raise  # Re-raise to be handled by the decorator

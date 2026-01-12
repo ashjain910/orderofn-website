@@ -8,12 +8,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
-from .models import Job, JobApplication, SavedJob, User
+from .models import Job, JobApplication, SavedJob, User, PasswordResetToken
 from .serializers import (
     LoginSerializer, UserSerializer, PreRegisterSerializer, TeacherProfileSerializer,
     JobSerializer, JobApplicationSerializer, UpdatePasswordSerializer, SavedJobSerializer,
     AdminCandidateSerializer, AdminJobSerializer, AdminJobApplicationSerializer,
-    AdminJobCreateUpdateSerializer, ProfileSerializer, UpdateProfileSerializer
+    AdminJobCreateUpdateSerializer, ProfileSerializer, UpdateProfileSerializer,
+    PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 )
 from django.shortcuts import redirect
 from .email_utils import send_job_application_email, send_application_status_update_email, send_interview_invitation_email
@@ -1109,3 +1110,136 @@ def checkout_success(request):
 def checkout_cancel(request):
     """Stripe Checkout cancel redirect endpoint."""
     return redirect('/?state=failure')
+
+
+# Password Reset Views
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def password_reset_request(request):
+    """Request a password reset - sends email with reset token"""
+    serializer = PasswordResetRequestSerializer(data=request.data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    email = serializer.validated_data['email']
+
+    try:
+        user = User.objects.get(email=email)
+
+        # Generate unique token
+        import secrets
+        from django.utils import timezone
+        from datetime import timedelta
+
+        token = secrets.token_urlsafe(32)
+        expires_at = timezone.now() + timedelta(hours=24)
+
+        # Create password reset token
+        reset_token = PasswordResetToken.objects.create(
+            user=user,
+            token=token,
+            expires_at=expires_at
+        )
+
+        # Send password reset email
+        from .email_utils import send_password_reset_email
+        send_password_reset_email(user.email, user.first_name or '', token)
+
+        return Response({
+            'message': 'Password reset email sent. Please check your inbox.'
+        }, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        # Still return success to avoid email enumeration
+        return Response({
+            'message': 'Password reset email sent. Please check your inbox.'
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.error(f"Error sending password reset email: {str(e)}")
+        return Response({
+            'error': 'Failed to send password reset email. Please try again later.'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def password_reset_confirm(request):
+    """Confirm password reset with token and set new password"""
+    serializer = PasswordResetConfirmSerializer(data=request.data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    token = serializer.validated_data['token']
+    new_password = serializer.validated_data['password']
+
+    try:
+        from django.utils import timezone
+
+        # Get token object
+        reset_token = PasswordResetToken.objects.get(token=token)
+
+        # Check if valid
+        if not reset_token.is_valid:
+            return Response({
+                'error': 'This reset link has expired or already been used.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update user password
+        user = reset_token.user
+        user.set_password(new_password)
+        user.save()
+
+        # Mark token as used
+        reset_token.used = True
+        reset_token.used_at = timezone.now()
+        reset_token.save()
+
+        logger.info(f"Password reset successful for user: {user.email}")
+
+        return Response({
+            'message': 'Password has been reset successfully. You can now log in with your new password.'
+        }, status=status.HTTP_200_OK)
+
+    except PasswordResetToken.DoesNotExist:
+        return Response({
+            'error': 'Invalid reset link.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        logger.error(f"Error confirming password reset: {str(e)}")
+        return Response({
+            'error': 'Failed to reset password. Please try again.'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def password_reset_validate_token(request):
+    """Validate if a password reset token is valid"""
+    token = request.data.get('token')
+
+    if not token:
+        return Response({
+            'error': 'Token is required.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        reset_token = PasswordResetToken.objects.get(token=token)
+
+        if reset_token.is_valid:
+            return Response({
+                'valid': True,
+                'message': 'Token is valid.'
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'valid': False,
+                'message': 'This reset link has expired or already been used.'
+            }, status=status.HTTP_200_OK)
+
+    except PasswordResetToken.DoesNotExist:
+        return Response({
+            'valid': False,
+            'message': 'Invalid reset link.'
+        }, status=status.HTTP_200_OK)

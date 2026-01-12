@@ -336,3 +336,32 @@ class WelcomeEmailLog(models.Model):
 
     def __str__(self):
         return f"{self.email} - {self.status}"
+
+
+class PasswordResetToken(models.Model):
+    """Track password reset tokens"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='password_reset_tokens')
+    token = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used = models.BooleanField(default=False)
+    used_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'password_reset_tokens'
+        verbose_name = 'Password Reset Token'
+        verbose_name_plural = 'Password Reset Tokens'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['token']),
+            models.Index(fields=['user', 'used']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.email} - {self.token[:8]}..."
+
+    @property
+    def is_valid(self):
+        """Check if token is still valid"""
+        from django.utils import timezone
+        return not self.used and timezone.now() < self.expires_at

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, TeacherProfile, Job, JobApplication, SavedJob
+from .models import User, TeacherProfile, Job, JobApplication, SavedJob, PasswordResetToken
 
 
 class LoginSerializer(serializers.Serializer):
@@ -833,3 +833,38 @@ class UpdateProfileSerializer(serializers.Serializer):
                 pass  # Teacher profile doesn't exist, skip
 
         return instance
+
+
+# Password Reset Serializers
+class PasswordResetRequestSerializer(serializers.Serializer):
+    """Serializer for requesting password reset"""
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        """Check if email exists"""
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("No account found with this email address.")
+        return value
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """Serializer for confirming password reset with token"""
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True)
+
+    def validate_token(self, value):
+        """Validate token exists and is valid"""
+        try:
+            token_obj = PasswordResetToken.objects.get(token=value)
+            if not token_obj.is_valid:
+                raise serializers.ValidationError("This reset link has expired or already been used.")
+            return value
+        except PasswordResetToken.DoesNotExist:
+            raise serializers.ValidationError("Invalid reset link.")
+
+    def validate(self, data):
+        """Validate passwords match"""
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError({"password_confirm": "Passwords do not match."})
+        return data

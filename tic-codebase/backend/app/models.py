@@ -215,7 +215,7 @@ class Job(models.Model):
     # Additional Details
     level = models.CharField(max_length=100, blank=True)
     subjects = models.JSONField(default=list, blank=True)
-    curriculum = models.CharField(max_length=100, blank=True)
+    curriculum = models.JSONField(default=list, blank=True)
     education_stage = models.CharField(max_length=100, blank=True)
     contract_type = models.CharField(max_length=100, blank=True)
 

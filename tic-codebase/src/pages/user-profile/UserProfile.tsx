@@ -368,7 +368,12 @@ const UserProfile: React.FC = () => {
               </div>
             </div>
             <div className="card p-4 mb-3">
-              <h6>Resume</h6>
+              <div className="d-flex justify-content-between mb-3">
+                <h6 className="mb-0">CV File</h6>
+                <button className="btn btn-light btn-sm" onClick={openEdit}>
+                  Edit
+                </button>
+              </div>
               {profile?.teacher_profile?.cv_file ? (
                 <>
                   <DocViewer
@@ -524,7 +529,8 @@ const UserProfile: React.FC = () => {
                           setTimeout(() => {
                             Cookies.remove("access");
                             Cookies.remove("refresh");
-                            sessionStorage.clear();
+                            Cookies.remove("user");
+                            Cookies.remove("subscription_status");
                             localStorage.clear();
                             window.location.href = "/";
                           }, 2000);

@@ -2,16 +2,16 @@
   border: 1px dashed #000000;
   border-radius: 6px;
   padding: 10px 10px;
-  background: #D8ECFF;
+  background: #d8ecff;
   min-height: 120px;
   position: relative;
   width: 100%;
 }
-.form-check-input[type=radio] {
-    border-radius: 50%;
-    width: 18px !important;
-    height: 18px !important;
-    border: 2px solid #0a80f6;
+.form-check-input[type="radio"] {
+  border-radius: 50%;
+  width: 18px !important;
+  height: 18px !important;
+  border: 2px solid #0a80f6;
 }
 .upload-label__ {
   width: 100%;
@@ -40,19 +40,19 @@
 }
 
 .txt__regular__bold__ {
-    font-weight: 500 !important;
-    font-size: 14px !important;
-    color: #8e8e8e;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  color: #8e8e8e;
 }
 .form-check-label {
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    color: #0d3b85 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #0d3b85 !important;
 }
 .job-sub-title {
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    color: #0d3b85;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #0d3b85;
 }
 .job-simi-card {
   border-left: 3px solid #3b82f6;
@@ -60,14 +60,14 @@
 
 .job-simi-card h6 {
   font-size: 14px;
-  line-height: 1;
+  line-height: 1.4;
 }
 
 .job-simi-card small {
   font-size: 12px;
-    line-height: 1.5;
+  line-height: 1.5;
 }
 .job-simi-card .small {
   font-size: 12px;
-    line-height: 1.5;
+  line-height: 1.5;
 }

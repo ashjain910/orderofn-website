@@ -265,8 +265,8 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
                 type="radio"
                 name="gender"
                 id="genderMale"
-                value="Male"
-                checked={formData.gender === "Male"}
+                value="male"
+                checked={formData.gender === "male"}
                 onChange={(e) =>
                   setFormData({ ...formData, gender: e.target.value })
                 }
@@ -282,8 +282,8 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
                 type="radio"
                 name="gender"
                 id="genderFemale"
-                value="Female"
-                checked={formData.gender === "Female"}
+                value="female"
+                checked={formData.gender === "female"}
                 onChange={(e) =>
                   setFormData({ ...formData, gender: e.target.value })
                 }
@@ -299,8 +299,8 @@ const Step2 = ({ nextStep, prevStep, formData, setFormData }: StepProps) => {
                 type="radio"
                 name="gender"
                 id="genderOthers"
-                value="Others"
-                checked={formData.gender === "Others"}
+                value="others"
+                checked={formData.gender === "others"}
                 onChange={(e) =>
                   setFormData({ ...formData, gender: e.target.value })
                 }

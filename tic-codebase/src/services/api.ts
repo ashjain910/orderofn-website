@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
 const BaseApi = axios.create({
-    baseURL: "http://192.168.0.108:8000/api", // Example backend base URL
+    baseURL: "https://tic-api.orderofn.com/api", // Example backend base URL
     headers: {
         "Content-Type": "application/json",
     },
@@ -61,7 +61,7 @@ BaseApi.interceptors.response.use(
             isRefreshing = true;
             try {
                 const refreshResponse = await axios.post(
-                    "http://192.168.0.108:8000/api/token/refresh",
+                    "https://tic-api.orderofn.com/api/token/refresh",
                     { refresh: Cookies.get("refresh") },
                     { headers: { "Content-Type": "application/json" } }
                 );
@@ -75,7 +75,8 @@ BaseApi.interceptors.response.use(
                     processQueue("No access token in refresh response", null);
                     Cookies.remove("access");
                     Cookies.remove("refresh");
-                    sessionStorage.removeItem("user");
+                    Cookies.remove("user");
+                    Cookies.remove("subscription_status");
                     toast.error("Session expired. Please log in again.");
                     // Use SPA navigation event for logout
                     window.dispatchEvent(new CustomEvent("tic-logout"));
@@ -85,7 +86,8 @@ BaseApi.interceptors.response.use(
                 processQueue(refreshError, null);
                 Cookies.remove("access");
                 Cookies.remove("refresh");
-                sessionStorage.removeItem("user");
+                Cookies.remove("user");
+                Cookies.remove("subscription_status");
                 toast.error("Session expired. Please log in again.");
                 window.dispatchEvent(new CustomEvent("tic-logout"));
                 return Promise.reject(refreshError);

@@ -70,16 +70,19 @@ export default function Login() {
         Cookies.set("access", response.data.access, { secure: true });
         Cookies.set("refresh", response.data.refresh, { secure: true });
         if (response.status === 200 && response.data.user) {
-          sessionStorage.setItem("user", JSON.stringify(response.data.user));
+          Cookies.set("user", JSON.stringify(response.data.user), {
+            secure: true,
+          });
         }
 
         // Store teacher_profile from either top-level or nested in user
         const teacherProfile = response.data.user;
         if (teacherProfile) {
           if (teacherProfile.subscription_status) {
-            sessionStorage.setItem(
+            Cookies.set(
               "subscription_status",
-              teacherProfile.subscription_status
+              teacherProfile.subscription_status,
+              { secure: true }
             );
           }
         }
@@ -115,6 +118,10 @@ export default function Login() {
             Cookies.remove("access");
             Cookies.remove("refresh");
             sessionStorage.removeItem("user");
+            Cookies.remove("user");
+            Cookies.remove("subscription_status");
+            Cookies.remove("user");
+            Cookies.remove("subscription_status");
             navigate("/", { replace: true });
             toast.error("Session expired. Please log in again.", toastOptions);
             return;
@@ -131,15 +138,15 @@ export default function Login() {
       }
       if (error?.response?.data && typeof error.response.data === "object") {
         const data = error.response.data;
-        Object.entries(data).forEach(([field, errors]) => {
+        Object.entries(data).forEach(([errors]) => {
           if (Array.isArray(errors)) {
-            errors.forEach((err: string, idx: number) => {
+            errors.forEach((idx: number) => {
               setTimeout(() => {
-                toast.error(`${field}: ${err}`, toastOptions);
+                toast.error("Invalid email or password", toastOptions);
               }, idx * 500);
             });
           } else {
-            toast.error(`${field}: ${errors}`, toastOptions);
+            toast.error("Invalid email or password", toastOptions);
           }
         });
       }

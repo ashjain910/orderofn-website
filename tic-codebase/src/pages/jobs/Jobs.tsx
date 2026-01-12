@@ -150,10 +150,9 @@ function Jobs() {
       BaseApi.get("/profile")
         .then((res) => {
           if (res && res.data && res.data.subscription_status) {
-            sessionStorage.setItem(
-              "subscription_status",
-              res.data.subscription_status
-            );
+            Cookies.set("subscription_status", res.data.subscription_status, {
+              secure: true,
+            });
           }
           setPaymentStatus("success");
         })
@@ -975,14 +974,9 @@ function Jobs() {
           {(() => {
             // Prefer profile.subscription_status, else check session/local storage
             let subStatus =
-              sessionStorage.getItem("profile_subscription_status") ||
-              localStorage.getItem("profile_subscription_status") ||
-              undefined;
+              Cookies.get("profile_subscription_status") || undefined;
             if (!subStatus) {
-              subStatus =
-                sessionStorage.getItem("subscription_status") ||
-                localStorage.getItem("subscription_status") ||
-                undefined;
+              subStatus = Cookies.get("subscription_status") || undefined;
             }
             if (subStatus === "none") {
               return (

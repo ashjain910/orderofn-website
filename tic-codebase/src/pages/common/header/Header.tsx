@@ -9,17 +9,16 @@ import "./Header.css";
 function NavScrollExample() {
   const navigate = useNavigate();
   const location = useLocation();
-  // Get user from sessionStorage
+  // Get user from cookies
   const user = (() => {
     try {
-      return JSON.parse(sessionStorage.getItem("user") || "null");
+      return JSON.parse(Cookies.get("user") || "null");
     } catch {
       return null;
     }
   })();
-  // Get subscription_status from sessionStorage
-  const subscriptionStatus =
-    sessionStorage.getItem("subscription_status") || "";
+  // Get subscription_status from cookies
+  const subscriptionStatus = Cookies.get("subscription_status") || "";
 
   const logout = () => {
     Cookies.remove("access");

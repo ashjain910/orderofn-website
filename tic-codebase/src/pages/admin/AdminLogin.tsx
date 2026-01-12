@@ -51,7 +51,9 @@ const AdminLogin = () => {
           localStorage.removeItem("admin_remember_password");
         }
         if (response.data.user) {
-          sessionStorage.setItem("user", JSON.stringify(response.data.user));
+          Cookies.set("user", JSON.stringify(response.data.user), {
+            secure: true,
+          });
         }
         navigate("/admin/jobs");
       }

@@ -61,7 +61,7 @@ const curriculumOptions = [
   { value: "IB PYP", label: "IB PYP" },
   { value: "Indian", label: "Indian" },
   { value: "IPC", label: "IPC" },
-  { value: "New zealand", label: "New zealand" },
+  { value: "New Zealand", label: "New Zealand" },
   { value: "South African", label: "South African" },
   { value: "UK National", label: "UK National" },
 ];

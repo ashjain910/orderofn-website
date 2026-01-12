@@ -257,7 +257,7 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                   </div>
                 </div>
                 <div className="col-lg-12">
-                  <h6 className="mt-3">Resume</h6>
+                  <h6 className="mt-3">CV</h6>
                   {profile?.cv_file ? (
                     cvError ? (
                       <>
@@ -299,7 +299,7 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                       </div>
                     )
                   ) : (
-                    <div className="text-muted">No resume uploaded.</div>
+                    <div className="text-muted">No CV uploaded.</div>
                   )}
                   <div className="mt-2">
                     {profile.cv_file ? (

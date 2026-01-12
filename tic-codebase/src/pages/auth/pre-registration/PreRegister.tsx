@@ -205,15 +205,18 @@ export default function PreRegister() {
         Cookies.set("access", response.data.access, { secure: true });
         Cookies.set("refresh", response.data.refresh, { secure: true });
         toast.success("Registration successful!", toastOptionsSucces);
-        sessionStorage.setItem("user", JSON.stringify(response.data.user));
+        Cookies.set("user", JSON.stringify(response.data.user), {
+          secure: true,
+        });
 
         // Store teacher_profile from either top-level or nested in user
         const teacherProfile = response.data.user;
         if (teacherProfile) {
           if (teacherProfile.subscription_status) {
-            sessionStorage.setItem(
+            Cookies.set(
               "subscription_status",
-              teacherProfile.subscription_status
+              teacherProfile.subscription_status,
+              { secure: true }
             );
           }
         }

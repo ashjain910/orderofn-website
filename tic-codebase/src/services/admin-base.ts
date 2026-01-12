@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
 const adminBaseApi = axios.create({
-    baseURL: "http://192.168.0.108:8000/api/admin", // Example backend base URL
+    baseURL: "https://tic-api.orderofn.com/api/admin", // Example backend base URL
     headers: {
         "Content-Type": "application/json",
     },
@@ -64,7 +64,7 @@ adminBaseApi.interceptors.response.use(
             isRefreshing = true;
             try {
                 const refreshResponse = await axios.post(
-                    "http://192.168.0.108:8000/api/token/refresh",
+                    "https://tic-api.orderofn.com/api/token/refresh",
                     { refresh: Cookies.get("refresh") }
                 );
                 const newAccess = refreshResponse.data.access;
@@ -77,16 +77,18 @@ adminBaseApi.interceptors.response.use(
                     processQueue("No access token in refresh response", null);
                     Cookies.remove("access");
                     Cookies.remove("refresh");
-                    sessionStorage.clear();
-                    window.location.href = "/admin/";
+                    Cookies.remove("user");
+                    Cookies.remove("subscription_status");
+                    window.location.href = "/tic/admin/";
                     return Promise.reject(error);
                 }
             } catch (refreshError) {
                 processQueue(refreshError, null);
                 Cookies.remove("access");
                 Cookies.remove("refresh");
-                sessionStorage.clear();
-                window.location.href = "/admin/";
+                Cookies.remove("user");
+                Cookies.remove("subscription_status");
+                window.location.href = "/tic/admin/";
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
@@ -98,11 +100,12 @@ adminBaseApi.interceptors.response.use(
             toast.error(detail, { position: "top-right" });
             Cookies.remove("access");
             Cookies.remove("refresh");
-            sessionStorage.clear();
+            Cookies.remove("user");
+            Cookies.remove("subscription_status");
             if (window.location.pathname.startsWith("/admin")) {
-                window.location.href = "/#/admin/";
+                window.location.href = "/tic/#/admin/";
             } else {
-                window.location.href = "/";
+                window.location.href = "/tic/";
             }
         }
         return Promise.reject(error);

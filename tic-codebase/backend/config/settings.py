@@ -228,3 +228,6 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')  # SES SMTP username
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')  # SES SMTP password
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@ticrecruitment.com')
 AWS_SES_REGION_NAME = config('AWS_SES_REGION_NAME', default='us-east-1')
+
+# Frontend URL for password reset links
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')

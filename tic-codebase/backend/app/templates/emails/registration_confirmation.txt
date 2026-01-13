@@ -1,0 +1,31 @@
+Dear {% if teacher_name %}{{ teacher_name }}{% else %}Educator{% endif %},
+
+✓ REGISTRATION SUCCESSFUL!
+
+Thank you for registering with TIC Recruitment. Your profile is now active and you can start exploring international teaching opportunities right away.
+
+YOUR ACCOUNT DETAILS
+---------------------
+Email: {{ user_email }}
+Registration Date: {{ registration_date }}
+
+You can now log in to your account and access all our services.
+
+NEXT STEPS:
+-----------
+1. Complete your teaching profile
+2. Upload your CV and credentials
+3. Set your job preferences
+4. Start applying to positions
+
+Browse teaching jobs now:
+https://app.ticrecruitment.com
+
+If you have any questions or need assistance, our team is here to help. Simply reply to this email or contact us at info@ticrecruitment.com.
+
+Best regards,
+The TIC Recruitment Team
+
+---
+www.ticrecruitment.com
+Questions? Contact us at info@ticrecruitment.com

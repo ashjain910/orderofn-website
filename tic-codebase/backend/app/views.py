@@ -17,7 +17,7 @@ from .serializers import (
     PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 )
 from django.shortcuts import redirect
-from .email_utils import send_job_application_email, send_application_status_update_email, send_interview_invitation_email, send_welcome_email
+from .email_utils import send_job_application_email, send_application_status_update_email, send_interview_invitation_email, send_welcome_email, send_registration_confirmation_email
 import logging
 import json
 from datetime import datetime
@@ -62,15 +62,21 @@ def pre_register(request):
         # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
 
-        # Send welcome email to the new user
+        # Send registration confirmation email to the new user
         try:
-            email_sent = send_welcome_email(user.email, user.first_name)
+            registration_date = user.date_joined.strftime('%B %d, %Y')
+            email_sent = send_registration_confirmation_email(
+                user.email,
+                user.first_name,
+                user.email,
+                registration_date
+            )
             if email_sent:
-                logger.info(f"Welcome email sent successfully to {user.email}")
+                logger.info(f"Registration confirmation email sent successfully to {user.email}")
             else:
-                logger.warning(f"Failed to send welcome email to {user.email}")
+                logger.warning(f"Failed to send registration confirmation email to {user.email}")
         except Exception as e:
-            logger.error(f"Error sending welcome email: {str(e)}")
+            logger.error(f"Error sending registration confirmation email: {str(e)}")
             # Don't fail the registration if email fails
 
         # Serialize response data

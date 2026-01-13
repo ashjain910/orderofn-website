@@ -350,6 +350,56 @@ def send_welcome_email(email, first_name=''):
 
 
 @send_email_safe
+def send_registration_confirmation_email(email, first_name='', user_email='', registration_date=''):
+    """
+    Send a registration confirmation email when a user creates an account.
+
+    Args:
+        email: str - recipient email address
+        first_name: str (optional) - recipient's first name for personalization
+        user_email: str - user's registered email
+        registration_date: str - date of registration
+
+    Returns:
+        bool: True if email was sent successfully, False otherwise
+    """
+    try:
+        # Prepare context for email template
+        context = {
+            'teacher_name': first_name.strip() if first_name else '',
+            'user_email': user_email,
+            'registration_date': registration_date,
+        }
+
+        # Render email templates
+        subject = 'Registration Successful - TIC Recruitment'
+        text_content = render_to_string('emails/registration_confirmation.txt', context)
+        html_content = render_to_string('emails/registration_confirmation.html', context)
+
+        # Create email message
+        recipient_email = get_recipient_email(email)
+        email_message = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[recipient_email]
+        )
+
+        # Attach HTML version
+        email_message.attach_alternative(html_content, "text/html")
+
+        # Send email
+        email_message.send(fail_silently=False)
+
+        logger.info(f"Registration confirmation email sent to {email}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Failed to send registration confirmation email to {email}: {str(e)}")
+        raise  # Re-raise to be handled by the decorator
+
+
+@send_email_safe
 def send_application_status_update_email(application, old_status, new_status):
     """
     Send an email notification when application status changes.

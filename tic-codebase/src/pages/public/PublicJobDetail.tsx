@@ -261,9 +261,46 @@ function JobDetail() {
               <div className="mb-1 d-flex flex-wrap  align-items-center">
                 <div className="job-info-item txt__regular__ me-4 mt-2">
                   <span className="txt__regular__bold__">Curriculum:</span>{" "}
-                  {Array.isArray(job.curriculum)
-                    ? job.curriculum.filter((s: any) => s).join(", ")
-                    : job.curriculum}
+                  {(() => {
+                    let curr = job.curriculum;
+                    // If curriculum is a string, try to parse
+                    if (typeof curr === "string") {
+                      try {
+                        const parsed = JSON.parse(curr);
+                        if (Array.isArray(parsed)) curr = parsed;
+                      } catch {
+                        // not JSON, leave as is
+                      }
+                    }
+                    // If curriculum is an array, check for stringified arrays inside
+                    if (Array.isArray(curr)) {
+                      // Flatten any stringified arrays inside
+                      let flat: any[] = [];
+                      curr.forEach((item: any) => {
+                        if (typeof item === "string" && item.startsWith("[")) {
+                          try {
+                            const parsed = JSON.parse(item);
+                            if (Array.isArray(parsed)) {
+                              flat.push(...parsed);
+                            } else {
+                              flat.push(item);
+                            }
+                          } catch {
+                            flat.push(item);
+                          }
+                        } else {
+                          flat.push(item);
+                        }
+                      });
+                      return flat
+                        .filter((s: any) => s)
+                        .map((c: any) =>
+                          typeof c === "object" && c.label ? c.label : c
+                        )
+                        .join(", ");
+                    }
+                    return curr;
+                  })()}
                 </div>
               </div>
               {/* Job Info Row - Simple List */}
@@ -316,12 +353,12 @@ function JobDetail() {
               <div className="card note_card mt-4 mb-4 p-3 text-center">
                 <div className="txt-muted text-center">
                   <h6 className="fw-bold mb-2">
-                    Create your free account to apply for jobs and receive the
-                    latest job alerts.
+                    Create your account to apply for jobs and receive the latest
+                    job alerts.
                   </h6>
                   <div className="mb-3">
                     Hundreds of international schools and education
-                    organizations use Teachers International Consultancy to find
+                    organisations use Teachers International Consultancy to find
                     top teaching talent.
                   </div>
                   <button

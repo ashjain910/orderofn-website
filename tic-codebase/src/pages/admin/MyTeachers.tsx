@@ -49,18 +49,27 @@ export default function MyTeachers() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
   const [teachers, setTeachers] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const PAGE_SIZE = 50;
   const [filters, setFilters] = useState({
     search: "",
     qualified: "",
     position: "",
     page: 1,
+    page_size: PAGE_SIZE,
+  });
+  // Local state for filter form inputs
+  const [filterInputs, setFilterInputs] = useState({
+    search: "",
+    qualified: "",
+    position: "",
   });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchTeachers();
     // eslint-disable-next-line
-  }, [filters.search, filters.qualified, filters.page]);
+  }, [filters.search, filters.qualified, filters.position, filters.page]);
 
   const fetchTeachers = async () => {
     setLoading(true);
@@ -71,13 +80,16 @@ export default function MyTeachers() {
           search: filters.search,
           qualified: filters.qualified,
           position: filters.position,
+          page_size: PAGE_SIZE,
         },
       });
       setTeachers(
         res.data.results && res.data.results.length ? res.data.results : []
       );
+      setTotalCount(res.data.count || 0);
     } catch (err) {
       setTeachers([]);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
@@ -85,20 +97,29 @@ export default function MyTeachers() {
 
   // Handle Apply Filters button
   const handleApplyFilters = () => {
-    // Reset to page 1 and fetch with current filters
-    setFilters((f) => ({ ...f, page: 1 }));
-    fetchTeachers();
+    setFilters((f) => ({
+      ...f,
+      search: filterInputs.search,
+      qualified: filterInputs.qualified,
+      position: filterInputs.position,
+      page: 1,
+    }));
   };
 
   // Handle Clear Filters button
   const handleClearFilters = () => {
+    setFilterInputs({
+      search: "",
+      qualified: "",
+      position: "",
+    });
     setFilters({
       search: "",
       qualified: "",
       position: "",
       page: 1,
+      page_size: PAGE_SIZE,
     });
-    fetchTeachers();
   };
 
   useEffect(() => {
@@ -135,9 +156,9 @@ export default function MyTeachers() {
                   <input
                     type="text"
                     placeholder="Search by name / email"
-                    value={filters.search}
+                    value={filterInputs.search}
                     onChange={(e) =>
-                      setFilters((f) => ({ ...f, search: e.target.value }))
+                      setFilterInputs((f) => ({ ...f, search: e.target.value }))
                     }
                     className="form-control"
                   />
@@ -146,9 +167,12 @@ export default function MyTeachers() {
                   <label className="form-label">Qualified</label>
                   <select
                     className="form-select"
-                    value={filters.qualified}
+                    value={filterInputs.qualified}
                     onChange={(e) =>
-                      setFilters((f) => ({ ...f, qualified: e.target.value }))
+                      setFilterInputs((f) => ({
+                        ...f,
+                        qualified: e.target.value,
+                      }))
                     }
                   >
                     <option value="">All</option>
@@ -160,9 +184,12 @@ export default function MyTeachers() {
                   <label className="form-label">Position</label>
                   <select
                     className="form-select"
-                    value={filters.position}
+                    value={filterInputs.position}
                     onChange={(e) =>
-                      setFilters((f) => ({ ...f, position: e.target.value }))
+                      setFilterInputs((f) => ({
+                        ...f,
+                        position: e.target.value,
+                      }))
                     }
                   >
                     <option value="">All</option>
@@ -171,6 +198,7 @@ export default function MyTeachers() {
                     <option value="other">Other</option>
                   </select>
                 </div>
+                {/* Page Size input removed as per request; page_size is sent to backend only */}
                 <div className="mb-1 col-12">
                   <div className="d-flex flex-wrap gap-2 mt-25">
                     <button
@@ -228,207 +256,204 @@ export default function MyTeachers() {
                     </button>
                   </div>
                 ) : (
-                  <div className="table-responsive">
-                    <table className="table align-middle table-striped table-hover">
-                      <tbody>
-                        {teachers.map((teacher, idx) => (
-                          <tr
-                            key={idx}
-                            onClick={() => {
-                              setSelectedTeacher(teacher);
-                              setShowProfileModal(true);
-                            }}
-                            style={{
-                              cursor: "pointer",
-                            }}
-                          >
-                            <td className="txt__regular__">{idx + 1}</td>
-                            <td>
-                              <div
-                                style={{
-                                  fontWeight: 600,
-                                  cursor: "pointer",
-                                  color: "#0F3F93",
-                                }}
-                              >
-                                {teacher.full_name}
-                              </div>
-
-                              <div className="d-flex flex-column">
+                  <>
+                    <div className="table-responsive">
+                      <table className="table align-middle table-striped table-hover">
+                        <tbody>
+                          {teachers.map((teacher, idx) => (
+                            <tr
+                              key={idx}
+                              onClick={() => {
+                                setSelectedTeacher(teacher);
+                                setShowProfileModal(true);
+                              }}
+                              style={{
+                                cursor: "pointer",
+                              }}
+                            >
+                              <td className="txt__regular__">
+                                {(filters.page - 1) * PAGE_SIZE + idx + 1}
+                              </td>
+                              <td>
                                 <div
-                                  className="text-muted mb-1"
-                                  style={{ display: "flex", flexWrap: "wrap" }}
+                                  style={{
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                    color: "#0F3F93",
+                                  }}
                                 >
+                                  {teacher.full_name}
+                                </div>
+
+                                <div className="d-flex flex-column">
                                   <div
-                                    className="d-block d-sm-inline"
+                                    className="text-muted mb-1"
                                     style={{
-                                      fontSize: 14,
-                                      color: "#000000",
-                                      marginTop: "5px",
+                                      display: "flex",
+                                      flexWrap: "wrap",
                                     }}
                                   >
-                                    {teacher.email}
-                                  </div>
-                                  {teacher.phone && (
-                                    <span
-                                      className="mx-2 d-none d-sm-inline"
+                                    <div
+                                      className="d-block d-sm-inline"
                                       style={{
-                                        width: "1px",
-                                        height: "14px",
-                                        background: "#ccc",
-                                        marginTop: "2px",
+                                        fontSize: 14,
+                                        color: "#000000",
+                                        marginTop: "5px",
                                       }}
-                                    ></span>
-                                  )}
-                                  <div
-                                    className="d-block d-sm-inline"
-                                    style={{ fontSize: 14, color: "#000000" }}
-                                  >
-                                    {teacher.phone}
+                                    >
+                                      {teacher.email}
+                                    </div>
+                                    {teacher.phone && (
+                                      <span
+                                        className="mx-2 d-none d-sm-inline"
+                                        style={{
+                                          width: "1px",
+                                          height: "14px",
+                                          background: "#ccc",
+                                          marginTop: "2px",
+                                        }}
+                                      ></span>
+                                    )}
+                                    <div
+                                      className="d-block d-sm-inline"
+                                      style={{ fontSize: 14, color: "#000000" }}
+                                    >
+                                      {teacher.phone}
+                                    </div>
                                   </div>
+                                  {/* <div className="d-flex align-items-center text-muted mb-1">
+                                    <span
+                                      style={{
+                                        fontSize: 14,
+                                        color: "#555",
+                                        marginRight: 4,
+                                      }}
+                                    >
+                                      Subject:
+                                    </span>
+                                    <p style={{ fontSize: 14, color: "#000000" }}>
+                                      {teacher.teacher_profile.subject}
+                                    </p>
+                                  </div> */}
                                 </div>
-                                {/* <div className="d-flex align-items-center text-muted mb-1">
+                              </td>
+                              <td className="txt__regular__">
+                                <p style={{ fontSize: 14, color: "#000000" }}>
+                                  {Array.isArray(
+                                    teacher.teacher_profile.position
+                                  )
+                                    ? teacher.teacher_profile.position
+                                        .map(
+                                          (pos: any) =>
+                                            positionTypeOptions.find(
+                                              (opt) => opt.value === pos
+                                            )?.label || pos
+                                        )
+                                        .join(", ")
+                                    : positionTypeOptions.find(
+                                        (opt) =>
+                                          opt.value ===
+                                          teacher.teacher_profile.position
+                                      )?.label ||
+                                      teacher.teacher_profile.position ||
+                                      ""}
+                                </p>
+                                <p style={{ marginTop: "5px" }}>
                                   <span
                                     style={{
-                                      fontSize: 14,
-                                      color: "#555",
+                                      fontSize: 12,
+                                      color: "#333333",
                                       marginRight: 4,
                                     }}
                                   >
-                                    Subject:
+                                    Qualifed:{" "}
+                                    {teacher.teacher_profile.qualified === "yes"
+                                      ? "Yes"
+                                      : "No"}
                                   </span>
-                                  <p style={{ fontSize: 14, color: "#000000" }}>
-                                    {teacher.teacher_profile.subject}
-                                  </p>
-                                </div> */}
-                              </div>
-                            </td>
-                            <td className="txt__regular__">
-                              <p style={{ fontSize: 14, color: "#000000" }}>
-                                {Array.isArray(teacher.teacher_profile.position)
-                                  ? teacher.teacher_profile.position
-                                      .map(
-                                        (pos: any) =>
-                                          positionTypeOptions.find(
-                                            (opt) => opt.value === pos
-                                          )?.label || pos
-                                      )
-                                      .join(", ")
-                                  : positionTypeOptions.find(
-                                      (opt) =>
-                                        opt.value ===
-                                        teacher.teacher_profile.position
-                                    )?.label ||
-                                    teacher.teacher_profile.position ||
-                                    ""}
-                              </p>
-                              <p style={{ marginTop: "5px" }}>
-                                <span
-                                  style={{
-                                    fontSize: 12,
-                                    color: "#333333",
-                                    marginRight: 4,
-                                  }}
+                                </p>
+                              </td>
+                              <td>
+                                <p
+                                  className={`txt__regular_sub ${
+                                    teacher.subscription_status === "active"
+                                      ? "text-success"
+                                      : "text-danger"
+                                  }`}
+                                  style={{ fontSize: 13, fontWeight: 500 }}
                                 >
-                                  Qualifed:{" "}
-                                  {teacher.teacher_profile.qualified === "yes"
-                                    ? "Yes"
-                                    : "No"}
-                                </span>
-                              </p>
-                            </td>
-                            <td>
-                              <p
-                                className={`txt__regular_sub ${
-                                  teacher.subscription_status === "active"
-                                    ? "text-success"
-                                    : "text-danger"
-                                }`}
-                                style={{ fontSize: 13, fontWeight: 500 }}
+                                  {teacher.subscription_status === "active"
+                                    ? "Subscribed"
+                                    : "Not Subscribed"}
+                                </p>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Pagination */}
+                    {totalCount > PAGE_SIZE && (
+                      <nav className="mt-3">
+                        <ul className="pagination">
+                          <li
+                            className={`page-item${
+                              filters.page === 1 ? " disabled" : ""
+                            }`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() =>
+                                setFilters((f) => ({ ...f, page: f.page - 1 }))
+                              }
+                              disabled={filters.page === 1}
+                            >
+                              Previous
+                            </button>
+                          </li>
+                          {Array.from({
+                            length: Math.ceil(totalCount / PAGE_SIZE),
+                          }).map((_, idx) => (
+                            <li
+                              key={idx + 1}
+                              className={`page-item${
+                                filters.page === idx + 1 ? " active" : ""
+                              }`}
+                            >
+                              <button
+                                className="page-link"
+                                onClick={() =>
+                                  setFilters((f) => ({ ...f, page: idx + 1 }))
+                                }
                               >
-                                {teacher.subscription_status === "active"
-                                  ? "Subscribed"
-                                  : "Not Subscribed"}
-                              </p>
-                            </td>
-                            {/* <td>
-                              <div className="d-flex align-items-center justify-content-end position-relative">
-                                <span
-                                  style={{
-                                    marginLeft: 10,
-                                    color: "#0F3F93",
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                  role="button"
-                                  title="Send Message"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setMessageTeacherIdx(idx);
-                                    setShowMessageModal(true);
-                                  }}
-                                >
-                                  <LuMessageSquareText size={20} />
-                                </span>
-                                <span
-                                  role="button"
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    fontWeight: 600,
-                                    fontSize: 14,
-                                    color: "#0F3F93",
-                                    cursor: "pointer",
-                                    marginLeft: teacher.selectedAction ? 0 : 8,
-                                  }}
-                                  onClick={() =>
-                                    setDropdownOpenIdx(
-                                      dropdownOpenIdx === idx ? null : idx
-                                    )
-                                  }
-                                >
-                                  Action{" "}
-                                  <FaChevronDown style={{ marginLeft: 4 }} />
-                                </span>
-                                {dropdownOpenIdx === idx && (
-                                  <div
-                                    className="dropdown-menu show"
-                                    style={{
-                                      minWidth: 120,
-                                      position: "absolute",
-                                      top: 20,
-                                      right: 0,
-                                      zIndex: 10,
-                                    }}
-                                  >
-                                    <button
-                                      className="dropdown-item txt__regular__"
-                                      onClick={() => {
-                                        const updatedTeachers = teachers.map(
-                                          (t, i) =>
-                                            i === idx
-                                              ? {
-                                                  ...t,
-                                                  selectedAction:
-                                                    "Remove from list",
-                                                }
-                                              : t
-                                        );
-                                        setTeachers(updatedTeachers);
-                                        setDropdownOpenIdx(null);
-                                      }}
-                                    >
-                                      Remove from list
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-                            </td> */}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                                {idx + 1}
+                              </button>
+                            </li>
+                          ))}
+                          <li
+                            className={`page-item${
+                              filters.page === Math.ceil(totalCount / PAGE_SIZE)
+                                ? " disabled"
+                                : ""
+                            }`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() =>
+                                setFilters((f) => ({ ...f, page: f.page + 1 }))
+                              }
+                              disabled={
+                                filters.page ===
+                                Math.ceil(totalCount / PAGE_SIZE)
+                              }
+                            >
+                              Next
+                            </button>
+                          </li>
+                        </ul>
+                      </nav>
+                    )}
+                  </>
                 )}
               </div>
             </div>

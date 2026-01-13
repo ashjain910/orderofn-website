@@ -255,12 +255,13 @@ export default function Login() {
                   </label>
                 </div>
 
-                {/* <a
-                  href="#"
+                <a
+                  role="button"
                   className="text-primary txt__regular__ text-decoration-none"
+                  onClick={() => navigate("/forgot-password")}
                 >
                   Forgot Password
-                </a> */}
+                </a>
               </div>
 
               {/* Login Button */}

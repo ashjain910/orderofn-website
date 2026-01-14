@@ -24,7 +24,7 @@ export default function PricingPlans() {
       id: "basic",
       title: "Basic",
       price: "Free",
-      month: "month",
+      month: "year",
       features: [
         "Create your unique profile",
         "Search positions",
@@ -36,7 +36,7 @@ export default function PricingPlans() {
       id: "premium",
       title: "Premium",
       price: "£30",
-      month: "month",
+      month: "year",
       features: [
         "Create your unique profile",
         "Search & apply for positions",

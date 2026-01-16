@@ -857,7 +857,10 @@ function Jobs() {
                     <li className={`page-item${page === 1 ? " disabled" : ""}`}>
                       <button
                         className="page-link"
-                        onClick={() => fetchJobsWithFiltersAndPage(page - 1)}
+                        onClick={() => {
+                          setLoading(true);
+                          fetchJobsWithFiltersAndPage(page - 1);
+                        }}
                         disabled={page === 1}
                       >
                         Previous
@@ -872,7 +875,10 @@ function Jobs() {
                       >
                         <button
                           className="page-link"
-                          onClick={() => fetchJobsWithFiltersAndPage(idx + 1)}
+                          onClick={() => {
+                            setLoading(true);
+                            fetchJobsWithFiltersAndPage(idx + 1);
+                          }}
                         >
                           {idx + 1}
                         </button>
@@ -885,7 +891,10 @@ function Jobs() {
                     >
                       <button
                         className="page-link"
-                        onClick={() => fetchJobsWithFiltersAndPage(page + 1)}
+                        onClick={() => {
+                          setLoading(true);
+                          fetchJobsWithFiltersAndPage(page + 1);
+                        }}
                         disabled={page === totalPages}
                       >
                         Next

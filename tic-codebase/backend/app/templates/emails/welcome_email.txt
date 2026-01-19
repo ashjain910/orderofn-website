@@ -3,35 +3,11 @@ TIC RECRUITMENT
 
 Dear {% if teacher_name %}{{ teacher_name }}{% else %}Educator{% endif %},
 
-WELCOME TO TIC RECRUITMENT!
-Your Gateway to International Teaching Opportunities
+As one of our valued TIC teachers, we're upgrading to a new more secure platform.
 
-We're thrilled to have you join our community of passionate educators seeking
-exciting teaching opportunities around the world.
+To make sure you don't miss any opportunities, please click the link below to quickly update your profile.
 
-WHAT'S NEXT?
-------------
-TIC Recruitment connects qualified teachers with prestigious international
-schools across the globe. Here's what you can look forward to:
-
-✓ Access to exclusive teaching positions at top international schools
-✓ Personalized job matching based on your qualifications and preferences
-✓ Expert guidance throughout the recruitment process
-✓ Support with visa, relocation, and onboarding
-
-GETTING STARTED:
-----------------
-1. Create your profile on our platform
-2. Upload your CV and teaching credentials
-3. Browse available positions
-4. Apply to roles that match your expertise
-
-Visit our website: https://www.ticrecruitment.com
-
-Our team is here to support you every step of the way. If you have any
-questions or need assistance, please don't hesitate to reach out.
-
-We're excited to help you take the next step in your teaching career!
+Click here to upgrade your TIC profile: https://ticrecruitment.com/
 
 Warm regards,
 The TIC Recruitment Team
@@ -39,6 +15,3 @@ The TIC Recruitment Team
 ================================================================================
 www.ticrecruitment.com
 Questions? Contact us at info@ticrecruitment.com
-
-You're receiving this email because you signed up for TIC Recruitment updates.
-If you'd prefer not to receive these emails, you can unsubscribe at any time.

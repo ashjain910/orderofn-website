@@ -322,7 +322,7 @@ def send_welcome_email(email, first_name=''):
         }
 
         # Render email templates
-        subject = 'Welcome to TIC Recruitment - Your Gateway to International Teaching'
+        subject = 'Action Required: Upgrade Your TIC Profile'
         text_content = render_to_string('emails/welcome_email.txt', context)
         html_content = render_to_string('emails/welcome_email.html', context)
 

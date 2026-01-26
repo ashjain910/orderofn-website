@@ -229,11 +229,19 @@ export default function PreRegister() {
       toast.error("Registration failed. Please try again.", toastOptions);
     } catch (error: any) {
       let message = "Registration failed. Please try again.";
-      if (error?.response?.status === 413) {
+      // Try to detect 413 error from different Axios error shapes
+      if (
+        error?.response?.status === 413 ||
+        error?.request?.status === 413 ||
+        error?.message?.includes("413") ||
+        (error?.code === "ERR_NETWORK" && error?.message === "Network Error")
+      ) {
         toast.error(
           "File too large. Please upload a smaller file (within 1MB).",
           toastOptions
         );
+        setLoading(false);
+        return;
       }
       if (
         error?.response?.status === 400 &&

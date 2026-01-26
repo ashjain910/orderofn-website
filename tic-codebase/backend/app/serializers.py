@@ -80,7 +80,7 @@ class PreRegisterSerializer(serializers.Serializer):
         'IB PYP', 'Indian', 'IPC', 'New Zealand', 'South African', 'UK National'
     ]
     ALLOWED_FILE_EXTENSIONS = ['pdf', 'doc', 'docx']
-    MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
     # User fields
     email = serializers.EmailField()
@@ -347,7 +347,7 @@ class JobSerializer(serializers.ModelSerializer):
 
 class JobApplicationSerializer(serializers.ModelSerializer):
     ALLOWED_FILE_EXTENSIONS = ['pdf', 'doc', 'docx']
-    MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
     job_title = serializers.CharField(source='job.title', read_only=True)
     job_school = serializers.CharField(source='job.school_name', read_only=True)
@@ -650,7 +650,7 @@ class UpdateProfileSerializer(serializers.Serializer):
         'IB PYP', 'Indian', 'IPC', 'New Zealand', 'South African', 'UK National'
     ]
     ALLOWED_FILE_EXTENSIONS = ['pdf', 'doc', 'docx']
-    MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
     # User fields
     first_name = serializers.CharField(max_length=100, required=False)

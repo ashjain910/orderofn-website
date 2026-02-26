@@ -63,7 +63,6 @@
             margin: 10px 0 20px 0;
             border: 1px solid #eee;
             border-radius: 4px;
-            white-space: pre-line;
         }
         .cta-button {
             display: inline-block;
@@ -115,10 +114,10 @@
         </div>
 
         <p class="section-title">Job Description</p>
-        <div class="description-block">{{ description }}</div>
+        <div class="description-block">{{ description|safe }}</div>
 
         <p class="section-title">Requirements</p>
-        <div class="description-block">{{ requirements }}</div>
+        <div class="description-block">{{ requirements|safe }}</div>
 
         <p>If you are interested in this role or would like more information, please reply to this email or contact us at <a href="mailto:enquiries@ticrecruitment.com" style="color: #3498db;">enquiries@ticrecruitment.com</a>.</p>
 

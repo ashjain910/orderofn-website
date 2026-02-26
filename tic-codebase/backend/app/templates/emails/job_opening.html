@@ -1,137 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Job Opportunity - TIC Recruitment</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            background-color: #ffffff;
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            border-radius: 5px 5px 0 0;
-            border-bottom: 3px solid #0047AB;
-        }
-        .logo {
-            max-width: 300px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-        .content {
-            background-color: #f9f9f9;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-top: none;
-        }
-        .highlight-box {
-            background-color: #e8f0fe;
-            padding: 20px;
-            margin: 20px 0;
-            border-left: 4px solid #0047AB;
-            border-radius: 4px;
-        }
-        .job-info {
-            background-color: white;
-            padding: 15px;
-            margin: 20px 0;
-            border-left: 4px solid #3498db;
-        }
-        .job-info p {
-            margin: 8px 0;
-        }
-        .section-title {
-            color: #2c3e50;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 20px 0 8px 0;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 4px;
-        }
-        .description-block {
-            background-color: white;
-            padding: 15px;
-            margin: 10px 0 20px 0;
-            border: 1px solid #eee;
-            border-radius: 4px;
-        }
-        .cta-button {
-            display: inline-block;
-            background-color: #0047AB;
-            color: white;
-            padding: 12px 28px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        .footer {
-            background-color: #ecf0f1;
-            padding: 20px;
-            text-align: center;
-            border-radius: 0 0 5px 5px;
-            font-size: 12px;
-            color: #7f8c8d;
-        }
-        h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        h2 {
-            color: #2c3e50;
-            font-size: 18px;
-            margin-top: 0;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #ffffff;
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+        border-bottom: 3px solid #0047ab;
+      }
+      .logo {
+        max-width: 300px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+      .content {
+        background-color: #f9f9f9;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-top: none;
+      }
+      .highlight-box {
+        background-color: #e8f0fe;
+        padding: 20px;
+        margin: 20px 0;
+        border-left: 4px solid #0047ab;
+        border-radius: 4px;
+      }
+      .job-info {
+        background-color: white;
+        padding: 15px;
+        margin: 20px 0;
+        border-left: 4px solid #3498db;
+      }
+      .job-info p {
+        margin: 8px 0;
+      }
+      .section-title {
+        color: #2c3e50;
+        font-size: 16px;
+        font-weight: bold;
+        margin: 20px 0 8px 0;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 4px;
+      }
+      .description-block {
+        background-color: white;
+        padding: 15px;
+        margin: 10px 0 20px 0;
+        border: 1px solid #eee;
+        border-radius: 4px;
+      }
+      .cta-button {
+        display: inline-block;
+        background-color: #0047ab;
+        color: white;
+        padding: 12px 28px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+      .footer {
+        background-color: #ecf0f1;
+        padding: 20px;
+        text-align: center;
+        border-radius: 0 0 5px 5px;
+        font-size: 12px;
+        color: #7f8c8d;
+      }
+      h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      h2 {
+        color: #2c3e50;
+        font-size: 18px;
+        margin-top: 0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="header">
-        <img src="https://app.ticrecruitment.com/tic_logo.png" alt="TIC - Teachers International Consultancy" class="logo" />
+      <img
+        src="https://app.ticrecruitment.com/tic_logo.png"
+        alt="TIC - Teachers International Consultancy"
+        class="logo"
+      />
     </div>
 
     <div class="content">
-        <p>Dear {{ teacher_name }},</p>
+      <p>Dear {{ teacher_name }},</p>
 
-        <div class="highlight-box">
-            <h2 style="margin-top: 0;">A New Position That May Interest You</h2>
-            <p style="margin-bottom: 0;">We have an exciting opportunity that we think could be a great fit for your profile. Please take a moment to review the details below.</p>
-        </div>
-
-        <div class="job-info">
-            <h2>Position Details</h2>
-            <p><strong>Job Title:</strong> {{ job_title }}</p>
-            <p><strong>School:</strong> {{ school_name }}</p>
-            <p><strong>Location:</strong> {{ location }}</p>
-        </div>
-
-        <p class="section-title">Job Description</p>
-        <div class="description-block">{{ description|safe }}</div>
-
-        <p class="section-title">Requirements</p>
-        <div class="description-block">{{ requirements|safe }}</div>
-
-        <p style="text-align: center;">
-            <a href="{{ job_url }}" class="cta-button">View & Apply for This Role</a>
+      <div class="highlight-box">
+        <h2 style="margin-top: 0">A New Position That May Interest You</h2>
+        <p style="margin-bottom: 0">
+          We have an exciting opportunity that we think could be a great fit for
+          your profile. Please take a moment to review the details below.
         </p>
+      </div>
 
-        <p>If you are interested in this role or would like more information, please reply to this email or contact us at <a href="mailto:enquiries@ticrecruitment.com" style="color: #3498db;">enquiries@ticrecruitment.com</a>.</p>
+      <div class="job-info">
+        <h2>Position Details</h2>
+        <p><strong>Job Title:</strong> {{ job_title }}</p>
+        <p><strong>School:</strong> {{ school_name }}</p>
+        <p><strong>Location:</strong> {{ location }}</p>
+      </div>
 
-        <p>Kind regards,<br>
-        <strong>The TIC Recruitment Team</strong></p>
+      <p class="section-title">Job Description</p>
+      <div class="description-block">{{ description|safe }}</div>
+
+      <p class="section-title">Requirements</p>
+      <div class="description-block">{{ requirements|safe }}</div>
+
+      <p style="text-align: center">
+        <a
+          href="https://app.ticrecruitment.com/#/public-jobs/{{ job_id }}"
+          class="cta-button"
+          >View & Apply for This Role</a
+        >
+      </p>
+
+      <p>
+        If you are interested in this role or would like more information,
+        please reply to this email or contact us at
+        <a href="mailto:enquiries@ticrecruitment.com" style="color: #3498db"
+          >enquiries@ticrecruitment.com</a
+        >.
+      </p>
+
+      <p>
+        Kind regards,<br />
+        <strong>The TIC Recruitment Team</strong>
+      </p>
     </div>
 
     <div class="footer">
-        <p><a href="https://www.ticrecruitment.com" style="color: #3498db; text-decoration: none;">www.ticrecruitment.com</a></p>
-        <p>You are receiving this email because you are registered with TIC Recruitment.</p>
+      <p>
+        <a
+          href="https://www.ticrecruitment.com"
+          style="color: #3498db; text-decoration: none"
+          >www.ticrecruitment.com</a
+        >
+      </p>
+      <p>
+        You are receiving this email because you are registered with TIC
+        Recruitment.
+      </p>
     </div>
-</body>
+  </body>
 </html>

@@ -485,6 +485,49 @@ www.ticrecruitment.com
 
 
 @send_email_safe
+def send_job_opening_email(recipient_email, teacher_name, job):
+    """
+    Send a job opening notification email to a candidate.
+
+    Args:
+        recipient_email: str - recipient email address
+        teacher_name: str - candidate's name for personalisation
+        job: Job object - the job being advertised
+
+    Returns:
+        bool: True if email was sent successfully, False otherwise
+    """
+    try:
+        context = {
+            'teacher_name': teacher_name,
+            'job_title': job.title,
+            'school_name': job.school_name,
+            'location': job.location,
+            'description': job.description,
+            'requirements': job.requirements,
+        }
+
+        subject = f'New Job Opportunity - {job.title} at {job.school_name}'
+        html_content = render_to_string('emails/job_opening.html', context)
+
+        email_message = EmailMultiAlternatives(
+            subject=subject,
+            body=f"Dear {teacher_name},\n\nA new position has been posted: {job.title} at {job.school_name} ({job.location}).\n\nDescription:\n{job.description}\n\nRequirements:\n{job.requirements}\n\nKind regards,\nThe TIC Recruitment Team",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[get_recipient_email(recipient_email)]
+        )
+        email_message.attach_alternative(html_content, "text/html")
+        email_message.send(fail_silently=False)
+
+        logger.info(f"Job opening email sent to {recipient_email} for job {job.id}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Failed to send job opening email to {recipient_email}: {str(e)}")
+        return False
+
+
+@send_email_safe
 def send_password_reset_email(email, first_name='', token=''):
     """
     Send a password reset email with a reset link.

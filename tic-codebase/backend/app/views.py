@@ -17,7 +17,7 @@ from .serializers import (
     PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 )
 from django.shortcuts import redirect
-from .email_utils import send_job_application_email, send_application_status_update_email, send_interview_invitation_email, send_welcome_email, send_registration_confirmation_email
+from .email_utils import send_job_application_email, send_application_status_update_email, send_interview_invitation_email, send_welcome_email, send_registration_confirmation_email, send_job_opening_email
 import logging
 import json
 from datetime import datetime
@@ -342,6 +342,8 @@ def admin_candidates_list(request):
     - qualified: Filter by qualified (yes/no)
     - position: Filter by position (teacher/leader/other)
     - gender: Filter by gender
+    - subjects: Filter by subject (matches candidates whose subjects array contains the value)
+    - subscribed: Filter by active subscription (true = active/trialing, false = all others)
     """
     candidates = User.objects.filter(teacher_profile__isnull=False).select_related('teacher_profile')
 
@@ -368,6 +370,19 @@ def admin_candidates_list(request):
     gender = request.query_params.get('gender', None)
     if gender:
         candidates = candidates.filter(teacher_profile__gender=gender)
+
+    # Filter by subjects (JSON array field)
+    subjects = request.query_params.get('subjects', None)
+    if subjects:
+        candidates = candidates.filter(teacher_profile__subjects__contains=subjects)
+
+    # Filter by subscribed (active subscription_status)
+    subscribed = request.query_params.get('subscribed', None)
+    if subscribed is not None and subscribed != '':
+        if subscribed.lower() == 'true':
+            candidates = candidates.filter(subscription_status__in=['active', 'trialing'])
+        else:
+            candidates = candidates.exclude(subscription_status__in=['active', 'trialing'])
 
     # Order by most recent
     candidates = candidates.order_by('-date_joined')
@@ -550,6 +565,64 @@ def admin_send_interview_invitation(request, application_id):
 
     except JobApplication.DoesNotExist:
         return Response({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def admin_send_job_email(request):
+    """
+    Send a job opening email to a list of candidates.
+
+    Request body:
+    - job_id: int - ID of the job to advertise
+    - teacher_ids: list[int] (optional) - IDs of registered candidates to email
+    - emails: list[str] (optional) - Additional email addresses to email
+
+    At least one of teacher_ids or emails must be provided.
+    """
+    job_id = request.data.get('job_id')
+    teacher_ids = request.data.get('teacher_ids', [])
+    emails = request.data.get('emails', [])
+
+    if not job_id:
+        return Response({'error': 'job_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not teacher_ids and not emails:
+        return Response({'error': 'At least one of teacher_ids or emails must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        job = Job.objects.get(id=job_id)
+    except Job.DoesNotExist:
+        return Response({'error': 'Job not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    sent = []
+    failed = []
+
+    # Send to registered candidates by teacher_id
+    if teacher_ids:
+        candidates = User.objects.filter(id__in=teacher_ids)
+        for candidate in candidates:
+            name = candidate.full_name or candidate.first_name or candidate.email.split('@')[0]
+            success = send_job_opening_email(candidate.email, name, job)
+            if success:
+                sent.append(candidate.email)
+            else:
+                failed.append(candidate.email)
+
+    # Send to additional raw email addresses
+    for email in emails:
+        success = send_job_opening_email(email, '', job)
+        if success:
+            sent.append(email)
+        else:
+            failed.append(email)
+
+    return Response({
+        'sent': sent,
+        'failed': failed,
+        'total_sent': len(sent),
+        'total_failed': len(failed),
+    }, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

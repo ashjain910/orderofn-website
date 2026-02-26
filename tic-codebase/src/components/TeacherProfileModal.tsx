@@ -25,7 +25,7 @@ interface Option {
 
 function getLabels(
   values: string | string[] | undefined,
-  options: Option[]
+  options: Option[],
 ): string {
   if (!values) return "-";
   const arr = Array.isArray(values) ? values : [values];
@@ -41,20 +41,29 @@ interface TeacherProfileModalProps {
   show: boolean;
   onClose: () => void;
   teacher: any;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  full_name?: string;
 }
 
 const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
   show,
   onClose,
   teacher,
+  first_name,
+  last_name,
+  email,
+  full_name,
 }) => {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [cvError, setCvError] = useState<string | null>(null);
   if (!show) return null;
   // Support both teacher_profile and applicant_profile as the profile source
   const profile =
-    teacher && (teacher.teacher_profile || teacher.applicant_profile)
-      ? teacher.teacher_profile || teacher.applicant_profile
+    teacher &&
+    (teacher.teacher_profile || teacher.applicant_profile.teacher_profile)
+      ? teacher.teacher_profile || teacher.applicant_profile.teacher_profile
       : {};
 
   // Helper to get a random color based on teacher id (same as job listing)
@@ -101,11 +110,13 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                     fontWeight: "bold",
                   }}
                 >
-                  {teacher.full_name ? teacher.full_name[0].toUpperCase() : "?"}
+                  {(full_name || teacher.full_name || "?")[0].toUpperCase()}
                 </div>
                 <div style={{ marginLeft: "15px" }}>
-                  <h4>{teacher.full_name}</h4>
-                  <div className="text-muted small">{teacher.email}</div>
+                  <h4>{full_name || teacher.full_name}</h4>
+                  <div className="text-muted small">
+                    {email || teacher.email}
+                  </div>
                   {teacher.location && (
                     <div className="text-muted small mt-1">
                       {teacher.location}
@@ -119,11 +130,15 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                   <h6 className="mb-3">Personal Info</h6>
                   <div className="d-flex mb-1">
                     <small className="text-muted">First Name :</small>
-                    <small className="ml-2">{teacher.first_name}</small>
+                    <small className="ml-2">
+                      {first_name || teacher.first_name}
+                    </small>
                   </div>
                   <div className="mb-1">
                     <small className="text-muted">Last Name :</small>
-                    <small className="ml-2">{teacher.last_name}</small>
+                    <small className="ml-2">
+                      {last_name || teacher.last_name}
+                    </small>
                   </div>
                   <div className="mb-1">
                     <small className="text-muted">Gender :</small>
@@ -213,7 +228,7 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                         ? profile.leadership_role.map(
                             (role: string, idx: number) => {
                               const found = LEADERSHIP_OPTIONS.find(
-                                (opt) => opt.value === role
+                                (opt) => opt.value === role,
                               );
                               return (
                                 <span key={role}>
@@ -225,11 +240,11 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                                     : ""}
                                 </span>
                               );
-                            }
+                            },
                           )
                         : (() => {
                             const found = LEADERSHIP_OPTIONS.find(
-                              (opt) => opt.value === profile.leadership_role
+                              (opt) => opt.value === profile.leadership_role,
                             );
                             return found
                               ? found.label
@@ -243,8 +258,8 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                       {profile.job_alerts === true
                         ? "Yes"
                         : profile.job_alerts === false
-                        ? "No"
-                        : profile.job_alerts}
+                          ? "No"
+                          : profile.job_alerts}
                     </small>
                   </div>
                   <div className="d-flex mb-2 ">
@@ -273,7 +288,8 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                           />
                         )}
                       </>
-                    ) : profile.cv_file.endsWith(".docx") ? (
+                    ) : profile.cv_file.endsWith(".docx") ||
+                      profile.cv_file.endsWith(".doc") ? (
                       <DocViewer
                         documents={[{ uri: profile.cv_file }]}
                         pluginRenderers={DocViewerRenderers}
@@ -281,7 +297,7 @@ const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                         // @ts-ignore
                         onError={() =>
                           setCvError(
-                            "Failed to preview document. Try downloading instead."
+                            "Failed to preview document. Try downloading instead.",
                           )
                         }
                       />

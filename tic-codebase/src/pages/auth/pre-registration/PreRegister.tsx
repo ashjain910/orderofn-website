@@ -237,7 +237,7 @@ export default function PreRegister() {
         (error?.code === "ERR_NETWORK" && error?.message === "Network Error")
       ) {
         toast.error(
-          "File too large. Please upload a smaller file (within 1MB).",
+          "File too large. Please upload a smaller file (within 10MB).",
           toastOptions
         );
         setLoading(false);

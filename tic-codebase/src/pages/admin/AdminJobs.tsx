@@ -392,7 +392,7 @@ function Jobs() {
                           {job.title}
                           <span className={`badge casual__badge__ ms-2 `}>
                             {schoolTypes.find(
-                              (t) => t.value === job.school_type
+                              (t) => t.value === job.school_type,
                             )?.label || job.school_type}
                           </span>
                           {job.is_expired && (
@@ -415,7 +415,7 @@ function Jobs() {
                         </h5>
                         <p className="job-school  mb-1">
                           {POSITIONTYPE_OPTIONS.find(
-                            (type) => type.value === job.job_type
+                            (type) => type.value === job.job_type,
                           )?.label || job.job_type}
                           {job.job_type && job.location && " • "}
                           {job.school_name}

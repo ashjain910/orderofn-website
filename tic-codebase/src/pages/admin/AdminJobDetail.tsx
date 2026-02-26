@@ -20,6 +20,7 @@ function getRandomColor(str: string) {
   return colors[index];
 }
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaChevronDown } from "react-icons/fa";
@@ -40,6 +41,7 @@ type ResumeModalState = {
   name: string;
 };
 function AdminJobDetail() {
+  const navigate = useNavigate();
   // Loader for interview invitation
   const [interviewLoading, setInterviewLoading] = useState(false);
   // Interview modal validation state (must be at top level)
@@ -107,10 +109,10 @@ function AdminJobDetail() {
         typeof closingDate === "string"
           ? closingDate
           : `${closingDate.getFullYear()}-${String(
-              closingDate.getMonth() + 1
+              closingDate.getMonth() + 1,
             ).padStart(2, "0")}-${String(closingDate.getDate()).padStart(
               2,
-              "0"
+              "0",
             )}`;
       const response = await AdminBaseApi.patch(`/jobs/${job.id}/update`, {
         status: "closed",
@@ -119,7 +121,7 @@ function AdminJobDetail() {
       if (response.status === 200) {
         toast.success(
           response.data?.message || "Job closed successfully",
-          toastOptions
+          toastOptions,
         );
         // Refetch job details
         const jobRes = await AdminBaseApi.get(`/jobs/${job.id}`);
@@ -397,7 +399,7 @@ function AdminJobDetail() {
                         const year = dateObj.getFullYear();
                         const month = String(dateObj.getMonth() + 1).padStart(
                           2,
-                          "0"
+                          "0",
                         );
                         const day = String(dateObj.getDate()).padStart(2, "0");
                         formattedDate = `${year}-${month}-${day}`;
@@ -412,12 +414,12 @@ function AdminJobDetail() {
                       };
                       const res = await AdminBaseApi.post(
                         `/applications/${interviewForm.applicationId}/send-interview-invitation`,
-                        payload
+                        payload,
                       );
                       if (res.status === 200 || res.status === 201) {
                         toast.success(
                           res.data?.message || "Interview invitation sent!",
-                          toastOptions
+                          toastOptions,
                         );
                         setShowInterviewModal(false);
                         setInterviewErrors({
@@ -430,7 +432,7 @@ function AdminJobDetail() {
                         try {
                           setLoading(true);
                           const response = await AdminBaseApi.get(
-                            `/jobs/${id}`
+                            `/jobs/${id}`,
                           );
                           if (response.data) {
                             setJob(response.data);
@@ -491,7 +493,7 @@ function AdminJobDetail() {
                       selected={
                         interviewForm.interview_time
                           ? new Date(
-                              `1970-01-01T${interviewForm.interview_time}`
+                              `1970-01-01T${interviewForm.interview_time}`,
                             )
                           : null
                       }
@@ -647,6 +649,17 @@ function AdminJobDetail() {
       <div className="row">
         <div className="col-lg-5 col-md-5 col-sm-12 col-12 ">
           <div className="col-12 d-flex justify-content-end mb-3">
+            {/* Send Email Action Button */}
+            {job?.id && (
+              <button
+                className="btn btn-primary me-3"
+                onClick={() => {
+                  navigate(`/admin/teachers?job=${job.id}`);
+                }}
+              >
+                Send Email
+              </button>
+            )}
             {job?.is_expired && (
               <>
                 <button className="btn btn-secondary me-3">Expired</button>
@@ -788,7 +801,7 @@ function AdminJobDetail() {
                       return flat
                         .filter((s: any) => s)
                         .map((c: any) =>
-                          typeof c === "object" && c.label ? c.label : c
+                          typeof c === "object" && c.label ? c.label : c,
                         )
                         .join(", ");
                     }
@@ -917,8 +930,8 @@ function AdminJobDetail() {
                                 marginBottom: 4,
                               }}
                               onClick={() => {
-                                setSelectedTeacher(teacher);
-                                // setShowProfileModal(true);
+                                setSelectedTeacher(teacher.applicant_profile);
+                                setShowProfileModal(true);
                               }}
                             >
                               {teacher?.applicant_name || "-"}
@@ -1047,7 +1060,7 @@ function AdminJobDetail() {
                                                 {/* Fallback to iframe for PDF */}
                                                 {resumeModal.url &&
                                                   resumeModal.url.endsWith(
-                                                    ".pdf"
+                                                    ".pdf",
                                                   ) && (
                                                     <iframe
                                                       src={resumeModal.url}
@@ -1063,7 +1076,7 @@ function AdminJobDetail() {
                                                 documents={[
                                                   resumeModal.url &&
                                                   resumeModal.url.endsWith(
-                                                    ".docx"
+                                                    ".docx",
                                                   )
                                                     ? {
                                                         uri: resumeModal.url,
@@ -1187,7 +1200,7 @@ function AdminJobDetail() {
                                                 {/* Fallback to iframe for PDF */}
                                                 {coverLetterModal.url &&
                                                   coverLetterModal.url.endsWith(
-                                                    ".pdf"
+                                                    ".pdf",
                                                   ) && (
                                                     <iframe
                                                       src={coverLetterModal.url}
@@ -1210,7 +1223,7 @@ function AdminJobDetail() {
                                                 // @ts-ignore
                                                 onError={(e) =>
                                                   setDocError(
-                                                    "Failed to preview document. Try downloading instead."
+                                                    "Failed to preview document. Try downloading instead.",
                                                   )
                                                 }
                                               />
@@ -1314,7 +1327,7 @@ function AdminJobDetail() {
                                   )
                                     return;
                                   setDropdownOpenIdx(
-                                    dropdownOpenIdx === idx ? null : idx
+                                    dropdownOpenIdx === idx ? null : idx,
                                   );
                                 }}
                               >
@@ -1352,13 +1365,13 @@ function AdminJobDetail() {
                                             const response =
                                               await AdminBaseApi.patch(
                                                 `/applications/${applicationId}/status`,
-                                                { status: statusObj.value }
+                                                { status: statusObj.value },
                                               );
                                             if (response.status === 200) {
                                               toast.success(
                                                 response.data?.message ||
                                                   "Status updated successfully",
-                                                toastOptions
+                                                toastOptions,
                                               );
                                               // Use response.data.application to update the teacher
                                               const updatedApp =
@@ -1367,19 +1380,19 @@ function AdminJobDetail() {
                                                 teachers.map((t, i) =>
                                                   i === idx && updatedApp
                                                     ? { ...t, ...updatedApp }
-                                                    : t
+                                                    : t,
                                                 );
                                               setTeachers(updatedTeachers);
                                             } else {
                                               toast.error(
                                                 "Failed to update status",
-                                                toastOptions
+                                                toastOptions,
                                               );
                                             }
                                           } catch (err) {
                                             toast.error(
                                               "Failed to update status",
-                                              toastOptions
+                                              toastOptions,
                                             );
                                           }
                                           setStatusLoadingIdx(null);

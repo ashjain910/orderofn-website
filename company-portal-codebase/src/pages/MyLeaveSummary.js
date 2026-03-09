@@ -35,12 +35,40 @@ const MyLeaveSummary = () => {
           ) {
             const day = d.getDay();
             if (d.getFullYear() !== currentYear) continue;
-            if (req.type === 'Leave' && (day === 0 || day === 6)) continue; // skip weekends for leave
+            // skip weekends for leave types
+            if ((req.type.startsWith('Leave') || req.type.startsWith('Half Day')) && (day === 0 || day === 6)) continue;
             const month = getMonthYear(d);
             if (!monthStats[month]) monthStats[month] = { leave: 0, wfh: 0, total: 0 };
-            if (req.type === 'Leave' && (day !== 0 && day !== 6)) monthStats[month].leave += 1;
-            if (req.type === 'Work From Home') monthStats[month].wfh += 1;
-            monthStats[month].total += 1;
+            // Leave types
+            if (
+              req.type === 'Leave' ||
+              req.type === 'Leave - Full Day'
+            ) {
+              monthStats[month].leave += 1;
+              monthStats[month].total += 1;
+            } else if (
+              req.type === 'Half Day AM' ||
+              req.type === 'Half Day PM' ||
+              req.type === 'Leave - Half Day AM' ||
+              req.type === 'Leave - Half Day PM'
+            ) {
+              monthStats[month].leave += 0.5;
+              monthStats[month].total += 0.5;
+            }
+            // WFH types
+            else if (
+              req.type === 'Work From Home' ||
+              req.type === 'WFH - Full Day'
+            ) {
+              monthStats[month].wfh += 1;
+              monthStats[month].total += 1;
+            } else if (
+              req.type === 'WFH - Half Day AM' ||
+              req.type === 'WFH - Half Day PM'
+            ) {
+              monthStats[month].wfh += 0.5;
+              monthStats[month].total += 0.5;
+            }
           }
         });
         setStats(monthStats);
@@ -65,7 +93,7 @@ const MyLeaveSummary = () => {
   (yearStats && Object.keys(yearStats).length > 0) && Object.values(yearStats).forEach(s => { used += s.leave; });
   const total = 18;
   const remaining = total - used;
-
+console.log('Year Stats:', yearStats, 'Used:', used, 'Remaining:', remaining);
   return (
     <div className="container py-4">
       <div className="card shadow" style={{ background: 'linear-gradient(135deg, #f8fafc 60%, #cfe2ff 100%)' }}>

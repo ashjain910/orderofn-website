@@ -126,8 +126,12 @@ const LeaveRequestForm = ({ onLeaveSubmitted, setLoadingUser }) => {
                                             required
                                             style={{ backgroundColor: '#e7f1ff' }}
                                         >
-                                            <option value="Leave">Leave</option>
-                                            <option value="Work From Home">Work From Home</option>
+                                            <option value="Leave">Leave - Full Day</option>
+                                            <option value="Half Day AM">Leave - Half Day AM</option>
+                                            <option value="Half Day PM">Leave - Half Day PM</option>
+                                            <option value="Work From Home">Work From Home</option>                                            
+                                            <option value="WFH - Half Day AM">WFH - Half Day AM </option>
+                                            <option value="WFH - Half Day PM">WFH - Half Day PM </option>
                                         </select>
                                     </div>
                                     <div className="col-md-6">

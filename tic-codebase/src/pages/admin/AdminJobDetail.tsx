@@ -10,13 +10,14 @@ function getRandomColor(str: string) {
     "#198754", // green
     "#ffc107", // yellow
     "#dc3545", // red
-    "#343a40", // dark
+    "#343a40", // darkk
   ];
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   const index = Math.abs(hash) % colors.length;
+  console.log(`Color for "${str}": ${colors[index]}`);
   return colors[index];
 }
 import React, { useEffect, useState } from "react";

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, TeacherProfile, Job, JobApplication, SavedJob, PasswordResetToken
+from .models import User, TeacherProfile, Job, JobApplication, SavedJob, PasswordResetToken, JobEmailLog
 
 
 class LoginSerializer(serializers.Serializer):
@@ -625,6 +625,12 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
                     f"Valid options: {', '.join(valid_benefits)}"
                 )
         return value
+
+
+class JobEmailLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobEmailLog
+        fields = ['id', 'email', 'name', 'sent_at', 'success']
 
 
 # Profile Serializers

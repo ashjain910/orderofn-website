@@ -251,6 +251,21 @@ class Job(models.Model):
         return False
 
 
+class JobEmailLog(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='email_logs')
+    email = models.EmailField()
+    name = models.CharField(max_length=200, blank=True)
+    sent_at = models.DateTimeField(auto_now_add=True)
+    success = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'job_email_logs'
+        ordering = ['-sent_at']
+
+    def __str__(self):
+        return f"{self.email} -> {self.job.title} at {self.sent_at}"
+
+
 class JobApplication(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),

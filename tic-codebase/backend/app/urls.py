@@ -36,4 +36,5 @@ urlpatterns = [
     path('admin/applications/<int:application_id>/send-interview-invitation', views.admin_send_interview_invitation, name='admin-send-interview-invitation'),
     path('admin/dashboard/stats', views.admin_dashboard_stats, name='admin-dashboard-stats'),
     path('admin/send-job-email', views.admin_send_job_email, name='admin-send-job-email'),
+    path('admin/jobs/<int:job_id>/email-logs', views.admin_job_email_logs, name='admin-job-email-logs'),
 ]

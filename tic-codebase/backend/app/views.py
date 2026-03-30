@@ -8,13 +8,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
-from .models import Job, JobApplication, SavedJob, User, PasswordResetToken
+from .models import Job, JobApplication, SavedJob, User, PasswordResetToken, JobEmailLog
 from .serializers import (
     LoginSerializer, UserSerializer, PreRegisterSerializer, TeacherProfileSerializer,
     JobSerializer, JobApplicationSerializer, UpdatePasswordSerializer, SavedJobSerializer,
     AdminCandidateSerializer, AdminJobSerializer, AdminJobApplicationSerializer,
     AdminJobCreateUpdateSerializer, ProfileSerializer, UpdateProfileSerializer,
-    PasswordResetRequestSerializer, PasswordResetConfirmSerializer
+    PasswordResetRequestSerializer, PasswordResetConfirmSerializer, JobEmailLogSerializer
 )
 from django.shortcuts import redirect
 from .email_utils import send_job_application_email, send_application_status_update_email, send_interview_invitation_email, send_welcome_email, send_registration_confirmation_email, send_job_opening_email
@@ -604,6 +604,7 @@ def admin_send_job_email(request):
         for candidate in candidates:
             name = candidate.full_name or candidate.first_name or candidate.email.split('@')[0]
             success = send_job_opening_email(candidate.email, name, job)
+            JobEmailLog.objects.create(job=job, email=candidate.email, name=name, success=success)
             if success:
                 sent.append(candidate.email)
             else:
@@ -612,6 +613,7 @@ def admin_send_job_email(request):
     # Send to additional raw email addresses
     for email in emails:
         success = send_job_opening_email(email, '', job)
+        JobEmailLog.objects.create(job=job, email=email, name='', success=success)
         if success:
             sent.append(email)
         else:
@@ -622,6 +624,25 @@ def admin_send_job_email(request):
         'failed': failed,
         'total_sent': len(sent),
         'total_failed': len(failed),
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def admin_job_email_logs(request, job_id):
+    """Get all emails sent for a specific job."""
+    try:
+        job = Job.objects.get(id=job_id)
+    except Job.DoesNotExist:
+        return Response({'error': 'Job not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    logs = JobEmailLog.objects.filter(job=job)
+    serializer = JobEmailLogSerializer(logs, many=True)
+    return Response({
+        'job_id': job_id,
+        'job_title': job.title,
+        'total': logs.count(),
+        'emails': serializer.data,
     }, status=status.HTTP_200_OK)
 
 

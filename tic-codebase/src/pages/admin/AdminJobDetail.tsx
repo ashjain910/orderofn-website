@@ -19,9 +19,9 @@ function getRandomColor(str: string) {
   const index = Math.abs(hash) % colors.length;
   return colors[index];
 }
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Accordion from "react-bootstrap/Accordion";
 import { useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaChevronDown } from "react-icons/fa";
 import { useParams } from "react-router-dom";
@@ -43,7 +43,6 @@ type ResumeModalState = {
 function AdminJobDetail() {
   const navigate = useNavigate();
   // Loader for interview invitation
-  const [interviewLoading, setInterviewLoading] = useState(false);
   // Interview modal validation state (must be at top level)
   const [interviewErrors, setInterviewErrors] = useState({
     interview_date: "",
@@ -195,6 +194,46 @@ function AdminJobDetail() {
   };
   // Teachers state will be set from API job.applications
   const [teachers, setTeachers] = useState<any[]>([]);
+  // ... keep other state and logic ...
+
+  // ... other state and logic ...
+
+  const [job, setJob] = React.useState<any | null>(null);
+
+  // Email stats: fetch from jobs/<job_id>/email-logs
+  type EmailSentTo = {
+    name: string;
+    email: string;
+    sent_at?: string;
+  };
+  const [emailsSentTo, setEmailsSentTo] = useState<EmailSentTo[]>([]);
+  useEffect(() => {
+    if (!job?.id) return;
+    const fetchEmailLogs = async () => {
+      try {
+        const res = await AdminBaseApi.get(`/jobs/${job.id}/email-logs`);
+        if (res.data && Array.isArray(res.data.emails)) {
+          setEmailsSentTo(
+            res.data.emails.map((e: any) => ({
+              name:
+                e.name ||
+                e.full_name ||
+                e.applicant_name ||
+                e.email ||
+                "Unknown",
+              email: e.email,
+              sent_at: e.sent_at,
+            })),
+          );
+        } else {
+          setEmailsSentTo([]);
+        }
+      } catch {
+        setEmailsSentTo([]);
+      }
+    };
+    fetchEmailLogs();
+  }, [job?.id]);
   const [sortBy, setSortBy] = useState<string>("");
   const [filterBy, setFilterBy] = useState<string>("");
   const [dropdownOpenIdx, setDropdownOpenIdx] = useState<number | null>(null);
@@ -220,7 +259,7 @@ function AdminJobDetail() {
   }, [dropdownOpenIdx]);
   const { id } = useParams();
 
-  const [job, setJob] = React.useState<any | null>(null);
+  // const navigate = useNavigate();
   // const navigate = useNavigate();
 
   const hasFetched = React.useRef(false);
@@ -290,7 +329,10 @@ function AdminJobDetail() {
   }
 
   const [showEditModal, setShowEditModal] = useState(false);
-  const handleEditJob = () => {
+  const [repostMode, setRepostMode] = useState(false);
+  // Open edit modal for edit or repost
+  const handleEditJob = (isRepost = false) => {
+    setRepostMode(isRepost);
     setShowEditModal(true);
   };
 
@@ -378,149 +420,125 @@ function AdminJobDetail() {
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    const errors: any = {};
+                    // Validate form
+                    let errors = {
+                      interview_date: "",
+                      interview_time: "",
+                      interview_format: "",
+                      interview_panel: "",
+                    };
+                    let hasError = false;
                     if (!interviewForm.interview_date) {
-                      errors.interview_date = "Interview date is required.";
+                      errors.interview_date = "Interview date is required";
+                      hasError = true;
                     }
                     if (!interviewForm.interview_time) {
-                      errors.interview_time = "Interview time is required.";
+                      errors.interview_time = "Interview time is required";
+                      hasError = true;
                     }
-
+                    if (!interviewForm.interview_format) {
+                      errors.interview_format = "Interview format is required";
+                      hasError = true;
+                    }
+                    if (!interviewForm.interview_panel) {
+                      errors.interview_panel = "Interview panel is required";
+                      hasError = true;
+                    }
                     setInterviewErrors(errors);
-                    const firstError = Object.values(errors)[0];
-                    if (firstError) {
-                      return;
-                    }
+                    if (hasError) return;
+
+                    // Prepare payload
+                    const payload = {
+                      interview_date: interviewForm.interview_date
+                        ? interviewForm.interview_date
+                            .toISOString()
+                            .split("T")[0]
+                        : null,
+                      interview_time: interviewForm.interview_time,
+                      interview_format: interviewForm.interview_format,
+                      interview_panel: interviewForm.interview_panel,
+                    };
                     try {
-                      setInterviewLoading(true);
-                      const dateObj = interviewForm.interview_date;
-                      let formattedDate = "";
-                      if (dateObj instanceof Date) {
-                        const year = dateObj.getFullYear();
-                        const month = String(dateObj.getMonth() + 1).padStart(
-                          2,
-                          "0",
-                        );
-                        const day = String(dateObj.getDate()).padStart(2, "0");
-                        formattedDate = `${year}-${month}-${day}`;
-                      } else if (typeof dateObj === "string") {
-                        formattedDate = dateObj;
-                      }
-                      const payload = {
-                        interview_date: formattedDate,
-                        interview_time: interviewForm.interview_time,
-                        interview_format: interviewForm.interview_format,
-                        interview_panel: interviewForm.interview_panel,
-                      };
+                      // Assume endpoint: /applications/<applicationId>/schedule-interview
                       const res = await AdminBaseApi.post(
-                        `/applications/${interviewForm.applicationId}/send-interview-invitation`,
+                        `/applications/${interviewForm.applicationId}/schedule-interview`,
                         payload,
                       );
                       if (res.status === 200 || res.status === 201) {
                         toast.success(
-                          res.data?.message || "Interview invitation sent!",
+                          "Interview scheduled successfully",
                           toastOptions,
                         );
                         setShowInterviewModal(false);
-                        setInterviewErrors({
-                          interview_date: "",
-                          interview_time: "",
-                          interview_format: "",
-                          interview_panel: "",
-                        });
-                        // Refresh job data after scheduling interview
-                        try {
-                          setLoading(true);
-                          const response = await AdminBaseApi.get(
-                            `/jobs/${id}`,
-                          );
-                          if (response.data) {
-                            setJob(response.data);
-                            if (
-                              response.data.applications &&
-                              Array.isArray(response.data.applications)
-                            ) {
-                              setTeachers(response.data.applications);
-                            } else {
-                              setTeachers([]);
-                            }
+                        // Optionally update teacher/interview state here
+                        // Refetch job/applications if needed
+                        const response = await AdminBaseApi.get(
+                          `/jobs/${job.id}`,
+                        );
+                        if (response.data) {
+                          setJob(response.data);
+                          if (
+                            response.data.applications &&
+                            Array.isArray(response.data.applications)
+                          ) {
+                            setTeachers(response.data.applications);
+                          } else {
+                            setTeachers([]);
                           }
-                        } catch (error) {
-                          setTeachers([]);
-                          console.error(error);
-                        } finally {
-                          setLoading(false);
                         }
                       } else {
-                        toast.error("Failed to send invitation.", toastOptions);
+                        toast.error(
+                          "Failed to schedule interview",
+                          toastOptions,
+                        );
                       }
                     } catch (err) {
-                      toast.error("Failed to send invitation.", toastOptions);
-                    } finally {
-                      setInterviewLoading(false);
+                      toast.error("Failed to schedule interview", toastOptions);
                     }
                   }}
                 >
                   <div className="mb-3">
                     <label className="form-label">Interview Date</label>
-                    <DatePicker
-                      selected={interviewForm.interview_date}
-                      onChange={(date) => {
+                    <input
+                      type="date"
+                      className={`form-control${interviewErrors.interview_date ? " is-invalid" : ""}`}
+                      value={
+                        interviewForm.interview_date
+                          ? interviewForm.interview_date
+                              .toISOString()
+                              .split("T")[0]
+                          : ""
+                      }
+                      onChange={(e) =>
                         setInterviewForm((f) => ({
                           ...f,
-                          interview_date: date,
-                        }));
-                        setInterviewErrors((e) => ({
-                          ...e,
-                          interview_date: date
-                            ? ""
-                            : "Interview date is required.",
-                        }));
-                      }}
-                      className="form-control"
-                      dateFormat="EEEE, d MMMM yyyy"
-                      placeholderText="Select date"
+                          interview_date: e.target.value
+                            ? new Date(e.target.value)
+                            : null,
+                        }))
+                      }
                     />
                     {interviewErrors.interview_date && (
-                      <div className="text-danger small mt-1">
+                      <div className="invalid-feedback">
                         {interviewErrors.interview_date}
                       </div>
                     )}
                   </div>
                   <div className="mb-3">
                     <label className="form-label">Interview Time</label>
-                    <DatePicker
-                      selected={
-                        interviewForm.interview_time
-                          ? new Date(
-                              `1970-01-01T${interviewForm.interview_time}`,
-                            )
-                          : null
-                      }
-                      onChange={(date: Date | null) => {
+                    <input
+                      type="time"
+                      className={`form-control${interviewErrors.interview_time ? " is-invalid" : ""}`}
+                      value={interviewForm.interview_time}
+                      onChange={(e) =>
                         setInterviewForm((f) => ({
                           ...f,
-                          interview_time: date
-                            ? date.toTimeString().slice(0, 5)
-                            : "",
-                        }));
-                        setInterviewErrors((er) => ({
-                          ...er,
-                          interview_time: date
-                            ? ""
-                            : "Interview time is required.",
-                        }));
-                      }}
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={1}
-                      timeCaption="Time"
-                      dateFormat="HH:mm"
-                      className="form-control"
-                      placeholderText="Select time"
+                          interview_time: e.target.value,
+                        }))
+                      }
                     />
                     {interviewErrors.interview_time && (
-                      <div className="text-danger small mt-1">
+                      <div className="invalid-feedback">
                         {interviewErrors.interview_time}
                       </div>
                     )}
@@ -529,24 +547,18 @@ function AdminJobDetail() {
                     <label className="form-label">Interview Format</label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control${interviewErrors.interview_format ? " is-invalid" : ""}`}
                       value={interviewForm.interview_format}
-                      onChange={(e) => {
+                      onChange={(e) =>
                         setInterviewForm((f) => ({
                           ...f,
                           interview_format: e.target.value,
-                        }));
-                        setInterviewErrors((er) => ({
-                          ...er,
-                          interview_format: e.target.value
-                            ? ""
-                            : "Interview format is required.",
-                        }));
-                      }}
-                      placeholder="e.g. Online via Zoom"
+                        }))
+                      }
+                      placeholder="e.g. In-person, Zoom, Phone"
                     />
                     {interviewErrors.interview_format && (
-                      <div className="text-danger small mt-1">
+                      <div className="invalid-feedback">
                         {interviewErrors.interview_format}
                       </div>
                     )}
@@ -555,45 +567,25 @@ function AdminJobDetail() {
                     <label className="form-label">Interview Panel</label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control${interviewErrors.interview_panel ? " is-invalid" : ""}`}
                       value={interviewForm.interview_panel}
-                      onChange={(e) => {
+                      onChange={(e) =>
                         setInterviewForm((f) => ({
                           ...f,
                           interview_panel: e.target.value,
-                        }));
-                        setInterviewErrors((er) => ({
-                          ...er,
-                          interview_panel: e.target.value
-                            ? ""
-                            : "Interview panel is required.",
-                        }));
-                      }}
-                      placeholder="e.g. Principal and Head of Department"
+                        }))
+                      }
+                      placeholder="e.g. John Doe, Jane Smith"
                     />
                     {interviewErrors.interview_panel && (
-                      <div className="text-danger small mt-1">
+                      <div className="invalid-feedback">
                         {interviewErrors.interview_panel}
                       </div>
                     )}
                   </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => setShowInterviewModal(false)}
-                    >
-                      Cancel
-                    </button>
+                  <div className="d-flex justify-content-end">
                     <button type="submit" className="btn btn-primary">
-                      {interviewLoading ? (
-                        <span
-                          className="spinner-border spinner-border-sm me-2"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
-                      ) : null}
-                      {interviewLoading ? "Sending..." : "Send Invitation"}
+                      Schedule Interview
                     </button>
                   </div>
                 </form>
@@ -602,6 +594,7 @@ function AdminJobDetail() {
           </div>
         </div>
       )}
+
       {/* Close Job Confirmation Modal */}
       {showCloseModal && (
         <div
@@ -650,7 +643,7 @@ function AdminJobDetail() {
         <div className="col-lg-5 col-md-5 col-sm-12 col-12 ">
           <div className="col-12 d-flex justify-content-end mb-3">
             {/* Send Email Action Button */}
-            {job?.id && (
+            {job?.id && job?.status !== "closed" && !job?.is_expired && (
               <button
                 className="btn btn-primary me-3"
                 onClick={() => {
@@ -682,20 +675,36 @@ function AdminJobDetail() {
               </button>
             )}
             {job?.status !== "closed" && !job?.is_expired && (
-              <button className="btn btn-primary me-2" onClick={handleEditJob}>
+              <button
+                className="btn btn-primary me-2"
+                onClick={() => handleEditJob(false)}
+              >
                 Edit Job
               </button>
             )}
-            {/* Edit Job Modal */}
+            {(job?.status === "closed" || job?.is_expired) && (
+              <button
+                className="btn btn-primary me-2"
+                onClick={() => handleEditJob(true)}
+              >
+                Repost
+              </button>
+            )}
+            {/* Edit/Repost Job Modal */}
             {showEditModal && (
               <PostJobModal
                 show={showEditModal}
-                onClose={() => setShowEditModal(false)}
-                onSuccess={async () => {
-                  // Refetch job details after successful edit
+                onClose={() => {
                   setShowEditModal(false);
+                  setRepostMode(false);
+                }}
+                repostMode={repostMode}
+                onSuccess={async () => {
+                  setShowEditModal(false);
+                  setRepostMode(false);
                   setLoading(true);
                   try {
+                    // Always refetch job details after successful edit or repost
                     const response = await AdminBaseApi.get(`/jobs/${id}`);
                     if (response.data) {
                       setJob(response.data);
@@ -715,12 +724,13 @@ function AdminJobDetail() {
                     setLoading(false);
                   }
                 }}
-                // Pass initialValues for editing
                 initialValues={job}
               />
             )}
           </div>
-          <div className={`card job__${job?.status}__`}>
+          <div
+            className={`card job__${job?.status}__  job__${job?.is_expired}__`}
+          >
             <div className="row">
               <div className="col-lg-9 col-md-9 col-sm-9 col-12">
                 <div className="d-flex" style={{ width: "100%" }}>
@@ -1449,6 +1459,72 @@ function AdminJobDetail() {
               </div>
             </div>
           </div>
+          {/* Email Stats Accordion - show at top of applicants section */}
+          <Accordion className="mt-3">
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>
+                Email Stats ({emailsSentTo.length} sent)
+              </Accordion.Header>
+              <Accordion.Body>
+                {emailsSentTo.length === 0 ? (
+                  <div className="text-muted">No emails sent yet.</div>
+                ) : (
+                  <ul className="list-group">
+                    {emailsSentTo.map((t, idx) => {
+                      let sentDate = "";
+                      if (t.sent_at) {
+                        const d = new Date(t.sent_at);
+                        const months = [
+                          "Jan",
+                          "Feb",
+                          "Mar",
+                          "Apr",
+                          "May",
+                          "Jun",
+                          "Jul",
+                          "Aug",
+                          "Sep",
+                          "Oct",
+                          "Nov",
+                          "Dec",
+                        ];
+                        const hours = d.getHours().toString().padStart(2, "0");
+                        const minutes = d
+                          .getMinutes()
+                          .toString()
+                          .padStart(2, "0");
+                        sentDate = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} ${hours}:${minutes}`;
+                      }
+                      return (
+                        <li
+                          key={idx}
+                          className="list-group-item d-flex flex-column flex-md-row align-items-md-center align-items-start"
+                        >
+                          <span style={{ fontWeight: 500, marginRight: 8 }}>
+                            {t.name}
+                          </span>
+                          <span
+                            className="text-muted"
+                            style={{ fontSize: 13, marginRight: 8 }}
+                          >
+                            {t.email}
+                          </span>
+                          {sentDate && (
+                            <span
+                              className="badge bg-light text-dark ms-md-auto mt-1 mt-md-0"
+                              style={{ fontSize: 12 }}
+                            >
+                              Sent: {sentDate}
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
         </div>
       </div>
       {/* Teacher Profile Modal */}

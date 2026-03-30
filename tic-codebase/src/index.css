@@ -607,8 +607,8 @@ textarea.form-control {
 }
 
 .job__closed__ {
-  background-color: #fff4f5 !important;
-  border: 2px solid #ffacac !important;
+  background-color: #e8e8e8 !important;
+  border: 2px solid #bfbfbf !important;
 }
 
 .txt__small__ {
@@ -718,4 +718,9 @@ textarea.form-control {
 
 .w-70 {
   width: 70% !important;
+}
+
+.job__true__ {
+  background-color: #fff4f5 !important;
+  border: 2px solid #ffacac !important;
 }

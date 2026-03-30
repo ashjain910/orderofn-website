@@ -364,7 +364,7 @@ def admin_candidates_list(request):
     # Filter by position
     position = request.query_params.get('position', None)
     if position:
-        candidates = candidates.filter(teacher_profile__position=position)
+        candidates = candidates.filter(teacher_profile__position__contains=position)
 
     # Filter by gender
     gender = request.query_params.get('gender', None)

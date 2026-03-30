@@ -330,7 +330,7 @@ class JobSerializer(serializers.ModelSerializer):
             'date_posted', 'closing_date', 'job_start_date', 'is_expired', 'is_applied', 'is_saved',
             'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_is_applied(self, obj):
         request = self.context.get('request')
@@ -556,7 +556,7 @@ class AdminJobSerializer(serializers.ModelSerializer):
             'date_posted', 'closing_date', 'job_start_date', 'is_expired', 'applications_count',
             'applications', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_applications_count(self, obj):
         return obj.applications.count()
@@ -575,7 +575,7 @@ class AdminJobCreateUpdateSerializer(serializers.ModelSerializer):
             'international_package', 'benefits', 'package',
             'closing_date', 'job_start_date', 'date_posted', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'date_posted', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
     def validate_status(self, value):
         """Validate job status"""

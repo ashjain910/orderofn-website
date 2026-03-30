@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
@@ -225,7 +226,7 @@ class Job(models.Model):
     package = models.CharField(max_length=200, blank=True)
 
     # Dates
-    date_posted = models.DateTimeField(auto_now_add=True)
+    date_posted = models.DateTimeField(default=timezone.now)
     closing_date = models.DateField(blank=True, null=True)
     job_start_date = models.DateField(blank=True, null=True)
 

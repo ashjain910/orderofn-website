@@ -17,7 +17,6 @@ function getRandomColor(str: string) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   const index = Math.abs(hash) % colors.length;
-  console.log(`Color for "${str}": ${colors[index]}`);
   return colors[index];
 }
 import React, { useEffect, useState } from "react";
@@ -1489,12 +1488,8 @@ function AdminJobDetail() {
                           "Nov",
                           "Dec",
                         ];
-                        const hours = d.getHours().toString().padStart(2, "0");
-                        const minutes = d
-                          .getMinutes()
-                          .toString()
-                          .padStart(2, "0");
-                        sentDate = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} ${hours}:${minutes}`;
+                        // Only show date in 'dd MMM yyyy' format
+                        sentDate = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
                       }
                       return (
                         <li

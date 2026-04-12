@@ -7,7 +7,7 @@ declare global {
 // Add position type options for label lookup
 const positionTypeOptions = [
   { value: "teacher", label: "Teacher" },
-  { value: "senior_leader", label: "Senior Leader" },
+  { value: "leader", label: "Senior Leader" },
   { value: "other", label: "Other" },
 ];
 
@@ -896,7 +896,15 @@ export default function MyTeachers() {
                     onChange={(e) => {
                       const value = e.target.value;
                       setFilterInputs((f) => ({ ...f, search: value }));
-                      setFilters((f) => ({ ...f, search: value, page: 1 }));
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setFilters((f) => ({
+                          ...f,
+                          search: filterInputs.search,
+                          page: 1,
+                        }));
+                      }
                     }}
                     className="form-control"
                   />

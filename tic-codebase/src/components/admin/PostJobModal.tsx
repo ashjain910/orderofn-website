@@ -23,8 +23,9 @@ const benefitOptions = [
 export interface PostJobModalProps {
   show: boolean;
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (formData: any) => void;
   initialValues?: PostJobModalInitialValues;
+  repostMode?: boolean;
 }
 
 export interface PostJobModalInitialValues {
@@ -80,7 +81,9 @@ const schoolTypeMultiOptions = [
 export default function PostJobModal({
   show,
   onClose,
+  onSuccess,
   initialValues,
+  repostMode = false,
 }: PostJobModalProps) {
   // Helper functions
   const mapSubjectsToOptions = (subjects: any) => {
@@ -124,7 +127,7 @@ export default function PostJobModal({
     }
     if (Array.isArray(schoolType)) {
       return schoolTypeMultiOptions.filter((opt) =>
-        schoolType.includes(opt.value)
+        schoolType.includes(opt.value),
       );
     }
     return [];
@@ -161,12 +164,12 @@ export default function PostJobModal({
     }
     if (typeof educationStage === "string") {
       return educationStageOptions.filter(
-        (opt) => opt.value === educationStage
+        (opt) => opt.value === educationStage,
       );
     }
     if (Array.isArray(educationStage)) {
       return educationStageOptions.filter((opt) =>
-        educationStage.includes(opt.value)
+        educationStage.includes(opt.value),
       );
     }
     return [];
@@ -195,7 +198,7 @@ export default function PostJobModal({
       ? initialValues.benefits.map((b: any) =>
           typeof b === "object" && b.value && b.label
             ? b
-            : { value: b, label: b }
+            : { value: b, label: b },
         )
       : [],
     job_start_date: initialValues?.job_start_date
@@ -331,11 +334,11 @@ export default function PostJobModal({
         formData.append("package", form.package);
         formData.append("contract_type", form.contract_type);
         getMultiValue(form.curriculum).forEach((c: any) =>
-          formData.append("curriculum", c)
+          formData.append("curriculum", c),
         );
         formData.append(
           "education_stage",
-          getSingleValue(form.education_stage)
+          getSingleValue(form.education_stage),
         );
         formData.append("school_type", getSingleValue(form.school_type));
         formData.append("closing_date", formatDate(form.closing_date));
@@ -349,7 +352,7 @@ export default function PostJobModal({
         formData.append("job_start_date", formatDate(form.job_start_date));
         // Array fields
         toValueArray(form.benefits).forEach((b: any) =>
-          formData.append("benefits", b)
+          formData.append("benefits", b),
         );
         (Array.isArray(form.subjects)
           ? toValueArray(form.subjects)
@@ -361,10 +364,16 @@ export default function PostJobModal({
         }
         if (initialValues && initialValues.id) {
           // PATCH update job
+          if (repostMode) {
+            formData.append("status", "active");
+            // Use actual ISO string with time
+            const today = new Date();
+            formData.append("date_posted", today.toISOString());
+          }
           response = await AdminBaseApi.patch(
             `/jobs/${initialValues.id}/update`,
             formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
+            { headers: { "Content-Type": "multipart/form-data" } },
           );
         } else {
           // POST create job
@@ -388,9 +397,17 @@ export default function PostJobModal({
             : form.subjects,
         };
         if (initialValues && initialValues.id) {
+          // If repostMode, force status active
+          if (repostMode) {
+            (payload as any).status = "active";
+            // Add date_posted as today in the same format as closing_date
+            const today = new Date();
+            // Format as YYYY-MM-DDT00:00:00Z
+            (payload as any).date_posted = today.toISOString();
+          }
           response = await AdminBaseApi.patch(
             `/jobs/${initialValues.id}/update`,
-            payload
+            payload,
           );
         } else {
           response = await AdminBaseApi.post("/jobs/create", payload);
@@ -427,12 +444,8 @@ export default function PostJobModal({
         });
         // setLogoPreview(null);
         setErrors({});
-        // Do not call onSuccess here; let reload close the modal
-        setTimeout(() => {
-          setErrors({});
-          window.location.reload();
-          // Do not call onClose here; let reload close the modal
-        }, 3000);
+        // Call onSuccess with form data (for repost logic)
+        if (onSuccess) onSuccess(form);
       }
     } catch (err: any) {
       setLoading(false);
@@ -529,7 +542,7 @@ export default function PostJobModal({
                         value={form.job_type[0]?.value || ""}
                         onChange={(e) => {
                           const selected = positionTypeOptions.find(
-                            (opt) => opt.value === e.target.value
+                            (opt) => opt.value === e.target.value,
                           );
                           setForm({
                             ...form,
@@ -769,7 +782,7 @@ export default function PostJobModal({
                         value={form.education_stage[0]?.value || ""}
                         onChange={(e) => {
                           const selected = educationStageOptions.find(
-                            (opt) => opt.value === e.target.value
+                            (opt) => opt.value === e.target.value,
                           );
                           setForm({
                             ...form,
@@ -807,7 +820,7 @@ export default function PostJobModal({
                         value={form.school_type[0]?.value || ""}
                         onChange={(e) => {
                           const selected = schoolTypeMultiOptions.find(
-                            (opt) => opt.value === e.target.value
+                            (opt) => opt.value === e.target.value,
                           );
                           setForm({
                             ...form,
@@ -1172,8 +1185,8 @@ export default function PostJobModal({
                         ? "Updating..."
                         : "Posting..."
                       : initialValues && initialValues.id
-                      ? "Update Job"
-                      : "Post Job"}
+                        ? "Update Job"
+                        : "Post Job"}
                   </button>
                 </div>
               </form>

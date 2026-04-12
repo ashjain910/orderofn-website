@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A small confession! - TIC Recruitment</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #ffffff;
+        padding: 30px 20px;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+        border-bottom: 3px solid #0047AB;
+      }
+      .logo {
+        max-width: 300px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+      .content {
+        background-color: #f9f9f9;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-top: none;
+      }
+      .cta-button {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+      .cta-button:hover {
+        background-color: #2980b9;
+      }
+      .footer {
+        background-color: #ecf0f1;
+        padding: 20px;
+        text-align: center;
+        border-radius: 0 0 5px 5px;
+        font-size: 12px;
+        color: #7f8c8d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img src="https://app.ticrecruitment.com/tic_logo.png" alt="TIC - Teachers International Consultancy" class="logo" />
+    </div>
+
+    <div class="content">
+      <p>
+        Hello {% if teacher_name %}{{ teacher_name }}{% else %}there{% endif %},
+      </p>
+
+      <p>
+        We have a small confession… during the merge to our brand new website, we unfortunately lost a number of our wonderful teachers and school leaders — Technology is amazing — until it decides to be a little too enthusiastic with the delete button!
+      </p>
+
+      <p>
+        If you were previously subscribed to TIC Recruitment, we would absolutely love to have you back. Our commitment remains exactly the same: connecting qualified educators with exceptional international schools around the world.
+      </p>
+
+      <p>
+        The world of international education is always changing, but our goal hasn't. We are here to support great teachers in finding great schools.
+      </p>
+
+      <p>
+        If you could take a moment to re-subscribe on our new website, we would be incredibly grateful (and our database would stop looking quite so lonely).
+      </p>
+
+      <p>Thank you for being part of the TIC community — we hope to see you back soon.</p>
+
+      <div style="text-align: center; margin: 30px 0">
+        <a href="https://app.ticrecruitment.com/" class="cta-button">Re-subscribe to TIC Recruitment</a>
+      </div>
+
+      <p>
+        Warm regards,<br />
+        <strong>The TIC Recruitment Team</strong>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>
+        <a href="https://www.ticrecruitment.com" style="color: #3498db; text-decoration: none">www.ticrecruitment.com</a>
+      </p>
+      <p>Questions? Contact us at info@ticrecruitment.com</p>
+    </div>
+  </body>
+</html>

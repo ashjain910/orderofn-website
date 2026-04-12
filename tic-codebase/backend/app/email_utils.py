@@ -505,6 +505,7 @@ def send_job_opening_email(recipient_email, teacher_name, job):
             'location': job.location,
             'description': job.description,
             'requirements': job.requirements,
+            'job_id': job.id,
         }
 
         subject = f'New Job Opportunity - {job.title} at {job.school_name}'
@@ -577,4 +578,43 @@ def send_password_reset_email(email, first_name='', token=''):
 
     except Exception as e:
         logger.error(f"Failed to send password reset email to {email}: {str(e)}")
+        raise  # Re-raise to be handled by the decorator
+
+
+@send_email_safe
+def send_reminder_email(email, first_name=''):
+    """
+    Send a re-subscription reminder email to lapsed members.
+
+    Args:
+        email: str - recipient email address
+        first_name: str (optional) - recipient's first name for personalization
+
+    Returns:
+        bool: True if email was sent successfully, False otherwise
+    """
+    try:
+        context = {
+            'teacher_name': first_name.strip() if first_name else '',
+        }
+
+        subject = 'A small confession!'
+        text_content = render_to_string('emails/reminder_email.txt', context)
+        html_content = render_to_string('emails/reminder_email.html', context)
+
+        recipient_email = get_recipient_email(email)
+        email_message = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[recipient_email]
+        )
+        email_message.attach_alternative(html_content, "text/html")
+        email_message.send(fail_silently=False)
+
+        logger.info(f"Reminder email sent to {email}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Failed to send reminder email to {email}: {str(e)}")
         raise  # Re-raise to be handled by the decorator

@@ -1,0 +1,30 @@
+TIC RECRUITMENT
+================================================================================
+
+Hello {% if teacher_name %}{{ teacher_name }}{% else %}there{% endif %},
+
+We have a small confession... during the merge to our brand new website, we
+unfortunately lost a number of our wonderful teachers and school leaders —
+Technology is amazing — until it decides to be a little too enthusiastic with
+the delete button!
+
+If you were previously subscribed to TIC Recruitment, we would absolutely love
+to have you back. Our commitment remains exactly the same: connecting qualified
+educators with exceptional international schools around the world.
+
+The world of international education is always changing, but our goal hasn't.
+We are here to support great teachers in finding great schools.
+
+If you could take a moment to re-subscribe on our new website, we would be
+incredibly grateful (and our database would stop looking quite so lonely).
+
+Thank you for being part of the TIC community — we hope to see you back soon.
+
+Re-subscribe here: https://app.ticrecruitment.com/
+
+Warm regards,
+The TIC Recruitment Team
+
+================================================================================
+www.ticrecruitment.com
+Questions? Contact us at info@ticrecruitment.com

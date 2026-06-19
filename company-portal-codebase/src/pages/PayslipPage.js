@@ -25,15 +25,15 @@ const PayslipPage = () => {
 
   // Dynamically generate financial years: current and next (April-March)
   const financialYears = [
-    {
-      label: `April ${fyStartYear} - March ${fyEndYear}`,
-      value: fyString(fyStartYear, fyEndYear)
-    },
-    {
-      label: `April ${fyEndYear} - March ${fyEndYear + 1}`,
-      value: fyString(fyEndYear, fyEndYear + 1)
-    }
-  ];
+  {
+    label: `April ${fyStartYear} - March ${fyEndYear}`,
+    value: fyString(fyStartYear, fyEndYear)
+  },
+  {
+    label: `April ${fyStartYear - 1} - March ${fyStartYear}`,
+    value: fyString(fyStartYear - 1, fyStartYear)
+  }
+];
 
   // Default to current FY
   React.useEffect(() => {
@@ -95,17 +95,23 @@ const PayslipPage = () => {
 
   // Filter months: for current FY, only up to previous month; for previous FY, show all
   const months = selectedFY ? getMonthsForFY(selectedFY) : [];
-  const filteredMonths = months.filter(m => {
-    if (selectedFY === fyString(fyStartYear, fyEndYear)) {
-      // Current FY: only up to previous month
-      if (m.year < today.getFullYear() || (m.year === today.getFullYear() && m.num < currentMonth)) {
-        return true;
-      }
-      return false;
-    }
-    // Previous FY: show all
-    return true;
-  });
+const filteredMonths = months.filter(m => {
+  const currentFY = fyString(fyStartYear, fyEndYear);
+  const previousFY = fyString(fyStartYear - 1, fyStartYear);
+
+  if (selectedFY === currentFY) {
+    return (
+      m.year < currentYear ||
+      (m.year === currentYear && m.num < currentMonth)
+    );
+  }
+
+  if (selectedFY === previousFY) {
+    return m.year === fyStartYear && m.num === 3;
+  }
+
+  return false;
+});
 
   // Hide "April 2026 - March 2027" if today is before April 2026
   const visibleFinancialYears = financialYears.filter(fy => {
@@ -129,10 +135,12 @@ const PayslipPage = () => {
                   className="form-select form-select-sm d-inline-block w-auto ms-2"
                   value={selectedFY || ''}
                   onChange={e => setSelectedFY(e.target.value)}
-                  style={{ fontWeight: 600, minWidth: 120 }}
+                  style={{ fontWeight: 600, minWidth: 220 }}
                 >
-                  {visibleFinancialYears.map(fy => (
-                    <option key={fy.value} value={fy.value}>{fy.label}</option>
+                  {financialYears.map(fy => (
+                    <option key={fy.value} value={fy.value}>
+                      {fy.label}
+                    </option>
                   ))}
                 </select>
               </h4>

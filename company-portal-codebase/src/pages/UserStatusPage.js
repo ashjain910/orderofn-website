@@ -193,31 +193,32 @@ const UserStatusPage = () => {
                       </td>
                       <td>{leave.type || 'N/A'}</td>
                       <td>
-                        {leave.status === 'Pending' ? (
-                          <>
-                            <button
-                              className="btn btn-sm btn-danger"
-                              onClick={async () => {
-                                if (window.confirm('Are you sure you want to withdraw this leave request?')) {
-                                  setLoading(true);
-                                  const res = await deleteLeaveRequest(auth.username, leave.startDate, leave.endDate);
-                                  if (res.success) {
-                                    loadLeaves();
-                                  } else {
-                                    alert('Failed to withdraw leave.');
-                                  }
-                                }
-                              }}
-                            >
-                              Withdraw
-                            </button>
-                          </>
-                        ) : leave.status === 'Approved' ? (
+                        {(() => {
+                          const now = new Date();
+                          const today = new Date(now.toDateString());
+                          const startDay = new Date(new Date(leave.startDate).toDateString());
+                          const isPast = startDay < today;
+                          const isToday = startDay.getTime() === today.getTime();
+                          const pastNoon = now.getHours() >= 12;
+                          return isPast || (isToday && pastNoon);
+                        })() ? (
+                          'No action available'
+                        ) : leave.status === 'Pending' ? (
                           <button
-                            className="btn btn-sm btn-warning"
-                            onClick={() => handleEdit(leave)}
+                            className="btn btn-sm btn-danger"
+                            onClick={async () => {
+                              if (window.confirm('Are you sure you want to withdraw this leave request?')) {
+                                setLoading(true);
+                                const res = await deleteLeaveRequest(auth.username, leave.startDate, leave.endDate);
+                                if (res.success) {
+                                  loadLeaves();
+                                } else {
+                                  alert('Failed to withdraw leave.');
+                                }
+                              }
+                            }}
                           >
-                            Edit
+                            Withdraw
                           </button>
                         ) : 'No action available'}
                       </td>

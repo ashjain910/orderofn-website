@@ -12,6 +12,8 @@ function formatMonthYear(monthStr) {
   return new Date(year, parseInt(month, 10) - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
 }
 
+const TOTAL_LEAVE = 18;
+
 const MyLeaveSummary = () => {
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(false);
@@ -38,7 +40,8 @@ const MyLeaveSummary = () => {
             else if (['WFH - Half Day AM', 'WFH - Half Day PM'].includes(req.type)) { monthStats[month].wfh += 0.5; monthStats[month].total += 0.5; }
           }
         });
-        setStats(monthStats); setLoading(false);
+        setStats(monthStats);
+        setLoading(false);
       })
       .catch(() => { setStats({}); setLoading(false); });
   }, [auth.username]);
@@ -46,65 +49,130 @@ const MyLeaveSummary = () => {
   if (loading) return <PageLoader />;
 
   const currentYear = new Date().getFullYear();
-  const yearStats = Object.keys(stats).filter(m => m.startsWith(currentYear + '-')).reduce((obj, k) => { obj[k] = stats[k]; return obj; }, {});
-  const used = Object.values(yearStats).reduce((s, v) => s + v.leave, 0);
-  const wfhTotal = Object.values(yearStats).reduce((s, v) => s + v.wfh, 0);
-  const total = 18;
-  const remaining = total - used;
+  const yearStats = Object.keys(stats)
+    .filter(m => m.startsWith(currentYear + '-'))
+    .reduce((obj, k) => { obj[k] = stats[k]; return obj; }, {});
+
+  const used      = Object.values(yearStats).reduce((s, v) => s + v.leave, 0);
+  const wfhTotal  = Object.values(yearStats).reduce((s, v) => s + v.wfh,   0);
+  const remaining = TOTAL_LEAVE - used;
+  const pct       = Math.min(100, Math.round((used / TOTAL_LEAVE) * 100));
+  const barColor  = pct >= 90 ? '#dc2626' : pct >= 65 ? '#d97706' : '#16a34a';
 
   return (
     <div className="portal-page">
       <div className="row justify-content-center g-0">
         <div className="col-12 col-lg-9 col-xl-8">
 
-          {/* Stat cards */}
-          <div className="row g-3 mb-4">
-            <div className="col-6 col-sm-3">
-              <div className="portal-stat-card used">
-                <div className="portal-stat-icon used"><i className="bi bi-calendar-x"></i></div>
-                <div><div className="portal-stat-label">Leave Used</div><div className="portal-stat-value">{used}</div></div>
+          {/* Page header card */}
+          <div className="portal-card mb-4">
+            <div className="portal-card-header" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <i className="bi bi-person-lines-fill" style={{ fontSize: '1.1rem' }}></i>
+                <div>
+                  <h4 style={{ margin: 0 }}>My Leave Summary</h4>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: 1, fontWeight: 400 }}>
+                    {auth?.username} · {currentYear}
+                  </div>
+                </div>
               </div>
+              <span style={{
+                background: 'rgba(255,255,255,0.15)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                borderRadius: 20,
+                padding: '4px 14px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                letterSpacing: '0.3px'
+              }}>
+                FY {currentYear}
+              </span>
             </div>
-            <div className="col-6 col-sm-3">
-              <div className="portal-stat-card remaining">
-                <div className="portal-stat-icon remaining"><i className="bi bi-calendar-check"></i></div>
-                <div><div className="portal-stat-label">Remaining</div><div className="portal-stat-value">{remaining}</div></div>
+            <div className="portal-card-body">
+              {/* Progress bar */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8a9ab5', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                    Leave Used — {used} of {TOTAL_LEAVE} days
+                  </span>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: barColor }}>{pct}%</span>
+                </div>
+                <div style={{ height: 10, background: '#e5e9f0', borderRadius: 6, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 6, transition: 'width 0.5s ease' }} />
+                </div>
               </div>
-            </div>
-            <div className="col-6 col-sm-3">
-              <div className="portal-stat-card wfh">
-                <div className="portal-stat-icon wfh"><i className="bi bi-house-check"></i></div>
-                <div><div className="portal-stat-label">WFH Days</div><div className="portal-stat-value">{wfhTotal}</div></div>
-              </div>
-            </div>
-            <div className="col-6 col-sm-3">
-              <div className="portal-stat-card total">
-                <div className="portal-stat-icon total"><i className="bi bi-calendar2"></i></div>
-                <div><div className="portal-stat-label">Total</div><div className="portal-stat-value">{total}</div></div>
+
+              {/* Stat chips */}
+              <div className="user-stat-chips">
+                <div className="user-stat-chip chip-leave">
+                  <i className="bi bi-calendar-x"></i>
+                  <span className="chip-val">{used}</span>
+                  <span className="chip-label">Leave</span>
+                </div>
+                <div className="user-stat-chip chip-wfh">
+                  <i className="bi bi-house"></i>
+                  <span className="chip-val">{wfhTotal}</span>
+                  <span className="chip-label">WFH</span>
+                </div>
+                <div className="user-stat-chip chip-total">
+                  <i className="bi bi-stack"></i>
+                  <span className="chip-val">{used + wfhTotal}</span>
+                  <span className="chip-label">Total</span>
+                </div>
+                <div className={`user-stat-chip ${remaining <= 3 ? 'chip-danger' : 'chip-remaining'}`}>
+                  <i className={`bi ${remaining <= 3 ? 'bi-exclamation-triangle' : 'bi-check-circle'}`}></i>
+                  <span className="chip-val">{remaining}</span>
+                  <span className="chip-label">Left</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Info banner */}
+          {/* Warning banner */}
           {remaining <= 5 && (
-            <div className="portal-info-banner mb-4">
-              <i className="bi bi-info-circle-fill" style={{ fontSize: '1.1rem', flexShrink: 0 }}></i>
-              <span>
-                You have used <strong>{used}</strong> of <strong>{total}</strong> leave days.{' '}
-                {remaining === 0 ? 'No leave days left — any additional leave is loss of pay.' : `Only ${remaining} day${remaining === 1 ? '' : 's'} remaining.`}
+            <div className="portal-info-banner mb-4" style={{
+              background: remaining === 0 ? '#fff5f5' : '#fffbeb',
+              borderColor: remaining === 0 ? '#fca5a5' : '#fcd34d',
+              color: remaining === 0 ? '#dc2626' : '#b45309'
+            }}>
+              <i className={`bi ${remaining === 0 ? 'bi-exclamation-triangle-fill' : 'bi-exclamation-circle-fill'}`}
+                style={{ fontSize: '1rem', flexShrink: 0 }}></i>
+              <span style={{ fontSize: '0.87rem' }}>
+                You have used <strong>{used}</strong> of <strong>{TOTAL_LEAVE}</strong> leave days.{' '}
+                {remaining === 0
+                  ? 'No leave days remaining — any additional leave will be loss of pay.'
+                  : `Only ${remaining} day${remaining === 1 ? '' : 's'} remaining.`}
               </span>
             </div>
           )}
 
           {/* Monthly breakdown */}
           <div className="portal-card">
-            <div className="portal-card-header">
-              <i className="bi bi-bar-chart-line" style={{ fontSize: '1.1rem' }}></i>
-              <h5>Monthly Breakdown — {currentYear}</h5>
+            <div className="portal-card-header" style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <i className="bi bi-bar-chart-line" style={{ fontSize: '1.1rem' }}></i>
+                <h5 style={{ margin: 0 }}>Monthly Breakdown</h5>
+              </div>
+              {Object.keys(yearStats).length > 0 && (
+                <span style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: 20,
+                  padding: '3px 12px',
+                  fontSize: '0.78rem',
+                  fontWeight: 600
+                }}>
+                  {Object.keys(yearStats).length} month{Object.keys(yearStats).length !== 1 ? 's' : ''}
+                </span>
+              )}
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
               {Object.keys(yearStats).length === 0 ? (
-                <div className="portal-empty"><i className="bi bi-inbox" style={{ fontSize: '2rem', display: 'block', marginBottom: 8 }}></i>No leave data for this year.</div>
+                <div className="portal-empty">
+                  <i className="bi bi-inbox" style={{ fontSize: '2.4rem', display: 'block', marginBottom: 10, color: '#c5cdd8' }}></i>
+                  <div style={{ fontWeight: 600, color: '#374151', marginBottom: 4 }}>No leave data for {currentYear}</div>
+                  <div style={{ fontSize: '0.82rem' }}>Your leave records will appear here once submitted.</div>
+                </div>
               ) : (
                 <div className="table-responsive">
                   <table className="portal-table">
@@ -119,17 +187,27 @@ const MyLeaveSummary = () => {
                     <tbody>
                       {Object.entries(yearStats).sort(([a], [b]) => a.localeCompare(b)).map(([month, s]) => (
                         <tr key={month}>
-                          <td className="fw-semibold">{formatMonthYear(month)}</td>
-                          <td className="text-center">{s.leave > 0 ? <span className="badge bg-danger">{s.leave}</span> : <span style={{ color: '#8a9ab5' }}>—</span>}</td>
-                          <td className="text-center">{s.wfh > 0 ? <span className="badge bg-warning text-dark">{s.wfh}</span> : <span style={{ color: '#8a9ab5' }}>—</span>}</td>
-                          <td className="text-center"><span className="badge" style={{ background: '#eef0ff', color: '#000033', fontWeight: 700 }}>{s.total}</span></td>
+                          <td style={{ fontWeight: 500, fontSize: '0.87rem' }}>{formatMonthYear(month)}</td>
+                          <td className="text-center">
+                            {s.leave > 0
+                              ? <span className="stats-badge badge-leave">{s.leave}</span>
+                              : <span className="stats-dash">—</span>}
+                          </td>
+                          <td className="text-center">
+                            {s.wfh > 0
+                              ? <span className="stats-badge badge-wfh">{s.wfh}</span>
+                              : <span className="stats-dash">—</span>}
+                          </td>
+                          <td className="text-center">
+                            <span className="stats-badge badge-total">{s.total}</span>
+                          </td>
                         </tr>
                       ))}
-                      <tr style={{ background: '#f1f4f9', fontWeight: 700 }}>
-                        <td className="fw-bold">Total</td>
-                        <td className="text-center"><span className="badge bg-danger">{used}</span></td>
-                        <td className="text-center"><span className="badge bg-warning text-dark">{wfhTotal}</span></td>
-                        <td className="text-center"><span className="badge" style={{ background: '#000033', color: '#fff', fontWeight: 700 }}>{used + wfhTotal}</span></td>
+                      <tr className="stats-total-row">
+                        <td style={{ fontSize: '0.87rem' }}>Total</td>
+                        <td className="text-center"><span className="stats-badge badge-leave">{used}</span></td>
+                        <td className="text-center"><span className="stats-badge badge-wfh">{wfhTotal}</span></td>
+                        <td className="text-center"><span className="stats-badge badge-total-dark">{used + wfhTotal}</span></td>
                       </tr>
                     </tbody>
                   </table>
@@ -137,6 +215,7 @@ const MyLeaveSummary = () => {
               )}
             </div>
           </div>
+
         </div>
       </div>
     </div>

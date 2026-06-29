@@ -69,61 +69,105 @@ const PayslipPage = () => {
     return false;
   });
 
+  const activeFYLabel = financialYears.find(f => f.value === selectedFY)?.label || '';
+
   return (
     <div className="portal-page">
       <div className="row justify-content-center g-0">
         <div className="col-12 col-md-8 col-lg-6">
           <div className="portal-card">
-            <div className="portal-card-header" style={{ flexWrap: 'wrap', gap: 12 }}>
+
+            {/* Header */}
+            <div className="portal-card-header">
               <i className="bi bi-file-earmark-pdf-fill" style={{ fontSize: '1.2rem' }}></i>
-              <h5 style={{ flexGrow: 1 }}>Payslips</h5>
-              <select
-                className="portal-select"
-                value={selectedFY || ''}
-                onChange={e => setSelectedFY(e.target.value)}
-                style={{ height: 36, width: 'auto', minWidth: 200, fontSize: '0.85rem', background: 'rgba(255,255,255,0.12)', color: '#fff', borderColor: 'rgba(255,255,255,0.3)' }}
-              >
-                {financialYears.map(fy => <option key={fy.value} value={fy.value} style={{ color: '#000' }}>{fy.label}</option>)}
-              </select>
+              <h5>Payslips</h5>
+              {!loadingData && filteredMonths.length > 0 && (
+                <span style={{
+                  marginLeft: 'auto',
+                  background: 'rgba(255,255,255,0.15)',
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  borderRadius: 20,
+                  padding: '3px 12px',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.3px'
+                }}>
+                  {filteredMonths.length} payslip{filteredMonths.length !== 1 ? 's' : ''}
+                </span>
+              )}
             </div>
+
             <div className="portal-card-body">
-              {error && <div className="portal-alert-error">{error}</div>}
+              {error && <div className="portal-alert-error"><i className="bi bi-exclamation-circle me-2"></i>{error}</div>}
+
+              {/* FY Tabs */}
+              <div className="d-flex mb-3">
+                {financialYears.map(fy => (
+                  <button
+                    key={fy.value}
+                    className={`portal-tab ${selectedFY === fy.value ? 'active' : 'inactive'}`}
+                    onClick={() => setSelectedFY(fy.value)}
+                  >
+                    <i className="bi bi-calendar2-range"></i>
+                    FY {fy.value}
+                  </button>
+                ))}
+              </div>
+
+              {/* FY period info */}
+              {activeFYLabel && (
+                <div className="portal-info-banner mb-4" style={{ padding: '9px 14px' }}>
+                  <i className="bi bi-info-circle-fill" style={{ flexShrink: 0, marginTop: 1 }}></i>
+                  <span style={{ fontSize: '0.83rem' }}>{activeFYLabel}</span>
+                </div>
+              )}
+
               {loadingData ? (
-                <div className="portal-empty"><span className="spinner-border spinner-border-sm me-2"></span>Loading…</div>
+                <div className="portal-empty">
+                  <span className="spinner-border spinner-border-sm me-2"></span>Loading…
+                </div>
               ) : filteredMonths.length === 0 ? (
-                <div className="portal-empty"><i className="bi bi-file-earmark-x" style={{ fontSize: '2rem', display: 'block', marginBottom: 8 }}></i>No payslips available yet.</div>
+                <div className="portal-empty">
+                  <i className="bi bi-file-earmark-x" style={{ fontSize: '2.4rem', display: 'block', marginBottom: 10, color: '#c5cdd8' }}></i>
+                  <div style={{ fontWeight: 600, color: '#374151', marginBottom: 4 }}>No payslips available</div>
+                  <div style={{ fontSize: '0.82rem' }}>Payslips for this period haven't been uploaded yet.</div>
+                </div>
               ) : (
-                <div className="table-responsive">
-                  <table className="portal-table">
-                    <thead>
-                      <tr>
-                        <th>Month</th>
-                        <th className="text-end">Download</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredMonths.map((m, idx) => {
-                        const date = new Date(m.year, m.num - 1, 1);
-                        const label = `${date.toLocaleString('default', { month: 'long' })} ${m.year}`;
-                        return (
-                          <tr key={label}>
-                            <td>
-                              <i className="bi bi-calendar-event me-2" style={{ color: '#000033' }}></i>
-                              <span className="fw-semibold">{label}</span>
-                            </td>
-                            <td className="text-end">
-                              <button className="portal-btn portal-btn-sm portal-btn-success" onClick={() => handleDownload(m.num, m.year, idx)} disabled={loadingIdx === idx}>
-                                {loadingIdx === idx ? <><span className="spinner-border spinner-border-sm"></span> Downloading…</> : <><i className="bi bi-download"></i> Download</>}
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                <div className="payslip-list">
+                  {filteredMonths.map((m, idx) => {
+                    const date = new Date(m.year, m.num - 1, 1);
+                    const monthLong  = date.toLocaleString('default', { month: 'long' });
+                    const monthShort = date.toLocaleString('default', { month: 'short' }).toUpperCase();
+                    const isDownloading = loadingIdx === idx;
+                    return (
+                      <div key={`${m.num}-${m.year}`} className="payslip-row">
+                        <div className="payslip-month-badge">
+                          <div className="payslip-month-short">{monthShort}</div>
+                          <div className="payslip-month-year">{m.year}</div>
+                        </div>
+                        <div className="payslip-row-info">
+                          <div className="payslip-row-title">{monthLong} {m.year}</div>
+                          <div className="payslip-row-sub">
+                            <i className="bi bi-file-earmark-pdf me-1"></i>PDF Payslip · FY {selectedFY}
+                          </div>
+                        </div>
+                        <button
+                          className="portal-btn portal-btn-sm"
+                          onClick={() => handleDownload(m.num, m.year, idx)}
+                          disabled={isDownloading}
+                        >
+                          {isDownloading
+                            ? <><span className="spinner-border spinner-border-sm"></span> Preparing…</>
+                            : <><i className="bi bi-download"></i> Download</>
+                          }
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
+
           </div>
         </div>
       </div>

@@ -45,7 +45,7 @@ const UserPage = () => {
         <div className="col-12 col-lg-9 col-xl-8">
 
           {/* Stat cards */}
-          <div className="row g-3 mb-4">
+          {/* <div className="row g-3 mb-4">
             <div className="col-12 col-sm-4">
               <div className="portal-stat-card used">
                 <div className="portal-stat-icon used"><i className="bi bi-calendar-x"></i></div>
@@ -73,7 +73,7 @@ const UserPage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Warning banner */}
           {!summaryLoading && remaining <= 5 && (

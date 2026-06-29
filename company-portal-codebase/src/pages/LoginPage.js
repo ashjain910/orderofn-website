@@ -5,15 +5,7 @@ import { useLoader } from '../context/LoaderProvider';
 import PageLoader from './PageLoader';
 
 const inputStyle = {
-  height: 52,
-  borderRadius: 10,
-  border: '1.5px solid #e0e6ed',
-  background: '#f7f9fc',
-  fontSize: '0.97rem',
   paddingLeft: 16,
-  outline: 'none',
-  width: '100%',
-  boxSizing: 'border-box',
 };
 
 const labelStyle = {
@@ -58,7 +50,8 @@ const PasswordInput = ({ value, onChange, show, onToggle, placeholder, name }) =
       placeholder={placeholder}
       required
       autoComplete={name}
-      style={{ ...inputStyle, paddingRight: 64 }}
+      className="login-input"
+      style={{ paddingLeft: 16, paddingRight: 64 }}
     />
     <button
       type="button"
@@ -209,7 +202,11 @@ const LoginPage = () => {
         </div>
 
         <p style={{ position: 'absolute', bottom: 22, color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', letterSpacing: 0.3 }}>
-          © {new Date().getFullYear()} Order of N. All rights reserved.
+          © {new Date().getFullYear()}{' '}
+          <a href="http://orderofn.com/" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>
+            ORDEROFN
+          </a>
+          . All rights reserved.
         </p>
       </div>
 
@@ -242,15 +239,18 @@ const LoginPage = () => {
             <form onSubmit={handleSubmit} autoComplete="off">
               <div style={{ marginBottom: 18 }}>
                 <label style={labelStyle}>Role</label>
-                <select
-                  value={role}
-                  onChange={e => setRole(e.target.value)}
-                  disabled={loading}
-                  style={{ ...inputStyle, appearance: 'auto' }}
-                >
-                  <option value="user">Employee</option>
-                  <option value="admin">Admin</option>
-                </select>
+                <div className="login-select-wrap">
+                  <select
+                    value={role}
+                    onChange={e => setRole(e.target.value)}
+                    disabled={loading}
+                    className="login-input"
+                    style={inputStyle}
+                  >
+                    <option value="user">Employee</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
               </div>
 
               <div style={{ marginBottom: 18 }}>
@@ -263,6 +263,7 @@ const LoginPage = () => {
                   required
                   disabled={loading}
                   autoComplete="off"
+                  className="login-input"
                   style={inputStyle}
                 />
               </div>
@@ -304,6 +305,7 @@ const LoginPage = () => {
                   required
                   disabled={loading}
                   autoComplete="off"
+                  className="login-input"
                   style={inputStyle}
                 />
               </div>
@@ -329,7 +331,8 @@ const LoginPage = () => {
                   required
                   disabled={loading}
                   autoComplete="off"
-                  style={{ ...inputStyle, letterSpacing: 4, fontSize: '1.1rem' }}
+                  className="login-input"
+                  style={{ paddingLeft: 16, letterSpacing: 4, fontSize: '1.1rem' }}
                 />
               </div>
               <button onClick={handleVerifyOtp} disabled={loading} style={{ ...primaryBtn, opacity: loading ? 0.7 : 1 }}>

@@ -66,6 +66,7 @@ const Navbar = () => {
         alignItems:  'center',
         minHeight:    62,
         padding:     '0 28px',
+        flexWrap:    'wrap',
       }}>
 
         {/* ── FAR LEFT: logo only ── */}
@@ -98,9 +99,8 @@ const Navbar = () => {
         </button>
 
         {/* ── FAR RIGHT: all nav links + user button ── */}
-        <div className="collapse navbar-collapse d-lg-flex" id="mainNavbar"
-          style={{ flex: '0 0 auto', flexGrow: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div className="collapse navbar-collapse d-lg-flex nav-collapse" id="mainNavbar">
+          <div className="nav-links-wrapper">
 
             {/* Role-based links */}
             {auth && roleLinks[auth.role]?.map((item, idx) =>
@@ -165,9 +165,7 @@ const Navbar = () => {
             )}
 
             {/* Divider before user button */}
-            {auth && (
-              <div style={{ width: 1, height: 26, background: 'rgba(255,255,255,0.2)', margin: '0 8px' }} />
-            )}
+            {auth && <div className="nav-divider" />}
 
             {/* ── USER BUTTON — red pill, always last on right ── */}
             {auth && (

@@ -11,16 +11,16 @@ function formatDate(dateStr) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-const statusColors = {
-  Approved: 'bg-success text-white',
-  Pending: 'bg-warning text-dark',
-  Rejected: 'bg-danger text-white',
-  Hold: 'bg-secondary text-white'
+const STATUS_META = {
+  Approved: { cls: 'leave-approved', color: '#16a34a', light: '#f0fff4', icon: 'bi-check-circle-fill' },
+  Pending:  { cls: 'leave-pending',  color: '#f59e0b', light: '#fffbeb', icon: 'bi-clock-fill' },
+  Rejected: { cls: 'leave-rejected', color: '#dc2626', light: '#fff5f5', icon: 'bi-x-circle-fill' },
+  Hold:     { cls: 'leave-hold',     color: '#6c757d', light: '#f1f3f5', icon: 'bi-pause-circle-fill' },
 };
 
 const UserCalendarPage = () => {
   const [leaves, setLeaves] = useState([]);
-  const [hoverInfo, setHoverInfo] = useState({ status: '', reason: '', show: false, x: 0, y: 0 });
+  const [tooltip, setTooltip] = useState({ show: false, status: '', reason: '', x: 0, y: 0 });
   const auth = JSON.parse(localStorage.getItem('auth'));
   const { loading, setLoading } = useLoader();
 
@@ -34,58 +34,49 @@ const UserCalendarPage = () => {
         })
         .catch(() => setLoading(false));
     }
-    // eslint-disable-next-line
-  }, []);
+  }, []); // eslint-disable-line
 
-  // Map leave dates to status and reason
   const leaveMap = {};
   leaves.forEach(leave => {
     const start = new Date(leave.startDate);
-    // If endDate is missing, empty, or invalid, use startDate
     let end = leave.endDate && !isNaN(new Date(leave.endDate)) && leave.endDate !== 'Invalid Date'
       ? new Date(leave.endDate)
       : new Date(leave.startDate);
-
-    for (
-      let d = new Date(start);
-      d <= end;
-      d.setDate(d.getDate() + 1)
-    ) {
-      const key = formatDate(d);
-      leaveMap[key] = { status: leave.status, reason: leave.reason };
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      leaveMap[formatDate(d)] = { status: leave.status, reason: leave.reason };
     }
   });
 
-  // Highlight leave days
+  const counts = { Approved: 0, Pending: 0, Rejected: 0, Hold: 0 };
+  leaves.forEach(l => { if (Object.prototype.hasOwnProperty.call(counts, l.status)) counts[l.status]++; });
+
   function tileClassName({ date, view }) {
     if (view === 'month') {
-      const dateStr = formatDate(date);
-      if (leaveMap[dateStr]) {
-        return statusColors[leaveMap[dateStr].status] + ' calendar-status-circle';
-      }
+      const info = leaveMap[formatDate(date)];
+      if (info) return STATUS_META[info.status]?.cls || '';
     }
     return null;
   }
 
-  // Show tooltip with leave status and reason on hover
   function tileContent({ date, view }) {
     if (view === 'month') {
-      const dateStr = formatDate(date);
-      if (leaveMap[dateStr]) {
+      const info = leaveMap[formatDate(date)];
+      if (info) {
         return (
           <div
             onMouseEnter={e => {
-              const rect = e.target.getBoundingClientRect();
-              setHoverInfo({
-                status: leaveMap[dateStr].status,
-                reason: leaveMap[dateStr].reason,
+              const tile = e.currentTarget.parentElement;
+              const rect = tile ? tile.getBoundingClientRect() : e.currentTarget.getBoundingClientRect();
+              setTooltip({
                 show: true,
+                status: info.status,
+                reason: info.reason,
                 x: rect.left + rect.width / 2,
                 y: rect.top
               });
             }}
-            onMouseLeave={() => setHoverInfo({ status: '', reason: '', show: false, x: 0, y: 0 })}
-            style={{ width: '100%', height: '100%' }}
+            onMouseLeave={() => setTooltip(t => ({ ...t, show: false }))}
+            style={{ position: 'absolute', inset: 0, zIndex: 4, background: 'transparent', cursor: 'default' }}
           />
         );
       }
@@ -93,75 +84,84 @@ const UserCalendarPage = () => {
     return null;
   }
 
+  const totalLeaves = leaves.length;
+
   return (
-    <div className="container py-4">
+    <div className="portal-page">
       {loading && <PageLoader />}
       <div className="row justify-content-center">
-        <div className="col-12 col-md-8">
-          <div className="card shadow-lg border-0" style={{ borderRadius: 18 }}>
-            <div className="card-header bg-primary text-white text-center" style={{ borderTopLeftRadius: 18, borderTopRightRadius: 18 }}>
-              <h3 className="mb-0">
-                <i className="bi bi-calendar3-event me-2"></i>My Leave Calendar
-              </h3>
+        <div className="col-12 col-lg-9 col-xl-8">
+
+          <div className="portal-card">
+            <div className="portal-card-header">
+              <i className="bi bi-calendar3-event" style={{ fontSize: '1.1rem' }}></i>
+              <h3>My Leave Calendar</h3>
+              {totalLeaves > 0 && (
+                <span style={{
+                  marginLeft: 'auto',
+                  background: 'rgba(255,255,255,0.15)',
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  borderRadius: 20,
+                  padding: '3px 12px',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.3px'
+                }}>
+                  {totalLeaves} request{totalLeaves !== 1 ? 's' : ''}
+                </span>
+              )}
             </div>
-            <div className="card-body" style={{ background: '#f8fafc', borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>
-              <div className="d-flex justify-content-center mb-3">
+
+            <div className="portal-card-body">
+
+              {/* Stats strip */}
+              <div className="cal-stats-row">
+                {Object.entries(STATUS_META).map(([status, meta]) => (
+                  <div key={status} className="cal-stat-pill" style={{ borderColor: meta.color, background: meta.light }}>
+                    <i className={`bi ${meta.icon}`} style={{ color: meta.color, fontSize: '0.9rem' }}></i>
+                    <span className="cal-stat-label">{status}</span>
+                    <span className="cal-stat-count" style={{ color: meta.color }}>{counts[status]}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Calendar */}
+              <div className="cal-wrapper">
                 <Calendar
-                  className="w-100 border-0 calendar-custom"
+                  className="cal-custom border-0 w-100"
                   tileClassName={tileClassName}
                   tileContent={tileContent}
                 />
-                {hoverInfo.show && (
-                  <div
-                    style={{
-                      position: 'fixed',
-                      left: hoverInfo.x,
-                      top: hoverInfo.y - 40,
-                      background: '#222',
-                      color: '#fff',
-                      padding: '8px 16px',
-                      borderRadius: 6,
-                      zIndex: 9999,
-                      pointerEvents: 'none',
-                      fontSize: 15,
-                      maxWidth: 320,
-                      whiteSpace: 'pre-line'
-                    }}
-                  >
-                    <div><b>Status:</b> {hoverInfo.status}</div>
-                    <div><b>Reason:</b> {hoverInfo.reason}</div>
+              </div>
+
+              {/* Legend */}
+              <div className="cal-legend">
+                {Object.entries(STATUS_META).map(([status, meta]) => (
+                  <div key={status} className="cal-legend-item">
+                    <span className="cal-legend-dot" style={{ background: meta.color }}></span>
+                    <span>{status}</span>
                   </div>
-                )}
+                ))}
               </div>
-              <div className="mt-3 text-center">
-                <span className="badge bg-success me-2" style={{ width: 24, height: 24, borderRadius: '50%' }}>&nbsp;</span> Approved &nbsp;
-                <span className="badge bg-warning text-dark me-2" style={{ width: 24, height: 24, borderRadius: '50%' }}>&nbsp;</span> Pending &nbsp;
-                <span className="badge bg-danger me-2" style={{ width: 24, height: 24, borderRadius: '50%' }}>&nbsp;</span> Rejected &nbsp;
-                <span className="badge bg-secondary me-2" style={{ width: 24, height: 24, borderRadius: '50%' }}>&nbsp;</span> Hold
-              </div>
+
             </div>
           </div>
+
         </div>
       </div>
-      {/* Custom calendar day highlight */}
-      <style>
-        {`
-        .calendar-custom .react-calendar__tile {
-          border-radius: 50% !important;
-          transition: background 0.2s;
-        }
-        .calendar-status-circle {
-          width: 2.2em !important;
-          height: 2.2em !important;
-          margin: auto;
-          font-size: 1em;
-          border-radius: 50% !important;
-        }
-        .react-calendar__tile--now {
-          box-shadow: 0 0 0 2px #6610f2;
-        }
-        `}
-      </style>
+
+      {/* Tooltip */}
+      {tooltip.show && (
+        <div className="cal-tooltip" style={{ left: tooltip.x, top: tooltip.y - 58 }}>
+          <div className="cal-tooltip-row">
+            <span className="cal-tooltip-dot" style={{ background: STATUS_META[tooltip.status]?.color }}></span>
+            <strong>{tooltip.status}</strong>
+          </div>
+          {tooltip.reason && (
+            <div className="cal-tooltip-reason">{tooltip.reason}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

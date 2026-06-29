@@ -18,6 +18,9 @@ const monthNames = ['', 'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'];
 const allMonthsList = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
 
+const AVATAR_PALETTE = ['#3b82f6', '#8b5cf6', '#ec4899', '#0d9488', '#f59e0b', '#ef4444', '#22c55e', '#6366f1'];
+const avatarColor = (name) => AVATAR_PALETTE[(name || 'U').charCodeAt(0) % AVATAR_PALETTE.length];
+
 const AdminStatsPage = () => {
   const [userStats, setUserStats] = useState({});
   const [allData, setAllData] = useState([]);
@@ -33,7 +36,7 @@ const AdminStatsPage = () => {
       .catch(() => setLoading(false));
   };
 
-  useEffect(() => { refreshLeaveData(); }, [setLoading]);
+  useEffect(() => { refreshLeaveData(); }, [setLoading]); // eslint-disable-line
 
   useEffect(() => {
     if (!allData.length) return;
@@ -74,41 +77,55 @@ const AdminStatsPage = () => {
     ? Object.fromEntries(Object.entries(userStats).map(([u, m]) => [u, filterStats(m)]))
     : { [selectedUser]: filterStats(userStats[selectedUser]) };
 
+  const totalEmployees = Object.keys(filteredStats).length;
+  const grandLeave = Object.values(filteredStats).reduce((s, m) => s + Object.values(m).reduce((a, v) => a + v.leave, 0), 0);
+  const grandWfh   = Object.values(filteredStats).reduce((s, m) => s + Object.values(m).reduce((a, v) => a + v.wfh,   0), 0);
+  const grandTotal = grandLeave + grandWfh;
+
   return (
     <div className="portal-page">
       {loading && <PageLoader />}
       <div className="row justify-content-center g-0">
         <div className="col-12 col-xl-11">
 
-          <div className="d-flex justify-content-between align-items-center mb-3" style={{ flexWrap: 'wrap', gap: 10 }}>
-            <div>
-              <h4 style={{ fontWeight: 700, color: '#0d1b3e', margin: 0 }}>Leave Statistics</h4>
-              <p style={{ color: '#8a9ab5', fontSize: '0.88rem', margin: '2px 0 0' }}>Yearly breakdown per employee</p>
-            </div>
-            <button className="portal-btn portal-btn-sm" onClick={refreshLeaveData} disabled={loading}>
-              <i className="bi bi-arrow-clockwise"></i> Refresh
-            </button>
-          </div>
-
-          {/* Filters */}
+          {/* Title + Filters */}
           <div className="portal-card mb-4">
-            <div className="portal-card-body" style={{ padding: '14px 20px' }}>
-              <div className="d-flex flex-wrap gap-3 align-items-end">
+            <div className="portal-card-header" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <i className="bi bi-bar-chart-fill" style={{ fontSize: '1.1rem' }}></i>
                 <div>
-                  <label className="portal-label" style={{ marginBottom: 4 }}>User</label>
-                  <select className="portal-select" style={{ width: 180, height: 38, fontSize: '0.85rem' }} value={selectedUser} onChange={e => setSelectedUser(e.target.value)} disabled={loading}>
+                  <h4 style={{ margin: 0 }}>Leave Statistics</h4>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: 1, fontWeight: 400 }}>
+                    Yearly breakdown per employee
+                  </div>
+                </div>
+              </div>
+              <button className="portal-btn portal-btn-sm" onClick={refreshLeaveData} disabled={loading}>
+                <i className="bi bi-arrow-clockwise"></i> Refresh
+              </button>
+            </div>
+            <div className="portal-card-body" style={{ padding: '18px 24px' }}>
+              <div className="d-flex flex-wrap align-items-end" style={{ gap: '0', rowGap: 16 }}>
+                <div style={{ paddingRight: 28 }}>
+                  <label className="portal-label" style={{ marginBottom: 4 }}><i className="bi bi-person"></i> User</label>
+                  <select className="portal-select" style={{ width: 180, height: 38, fontSize: '0.85rem' }}
+                    value={selectedUser} onChange={e => setSelectedUser(e.target.value)} disabled={loading}>
                     {userOptions.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label className="portal-label" style={{ marginBottom: 4 }}>Year</label>
-                  <select className="portal-select" style={{ width: 110, height: 38, fontSize: '0.85rem' }} value={selectedYear} onChange={e => setSelectedYear(e.target.value)} disabled={loading}>
+                <div style={{ width: 1, height: 52, background: '#e5e9f0', flexShrink: 0, alignSelf: 'center' }} />
+                <div style={{ paddingLeft: 28, paddingRight: 28 }}>
+                  <label className="portal-label" style={{ marginBottom: 4 }}><i className="bi bi-calendar3"></i> Year</label>
+                  <select className="portal-select" style={{ width: 110, height: 38, fontSize: '0.85rem' }}
+                    value={selectedYear} onChange={e => setSelectedYear(e.target.value)} disabled={loading}>
                     {allYears.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label className="portal-label" style={{ marginBottom: 4 }}>Month</label>
-                  <select className="portal-select" style={{ width: 150, height: 38, fontSize: '0.85rem' }} value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} disabled={loading}>
+                <div style={{ width: 1, height: 52, background: '#e5e9f0', flexShrink: 0, alignSelf: 'center' }} />
+                <div style={{ paddingLeft: 28 }}>
+                  <label className="portal-label" style={{ marginBottom: 4 }}><i className="bi bi-calendar-month"></i> Month</label>
+                  <select className="portal-select" style={{ width: 150, height: 38, fontSize: '0.85rem' }}
+                    value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} disabled={loading}>
                     <option value="All">All Months</option>
                     {allMonthsList.map(m => <option key={m} value={m}>{monthNames[parseInt(m, 10)]}</option>)}
                   </select>
@@ -117,88 +134,176 @@ const AdminStatsPage = () => {
             </div>
           </div>
 
-          {/* User stat cards grid */}
           {loading ? (
             <div className="text-center py-5"><PageLoader /></div>
           ) : Object.keys(filteredStats).length === 0 ? (
-            <div className="portal-empty"><i className="bi bi-inbox" style={{ fontSize: '2rem', display: 'block', marginBottom: 8 }}></i>No leave data found.</div>
+            <div className="portal-card">
+              <div className="portal-card-body">
+                <div className="portal-empty">
+                  <i className="bi bi-inbox" style={{ fontSize: '2.4rem', display: 'block', marginBottom: 10, color: '#c5cdd8' }}></i>
+                  <div style={{ fontWeight: 600, color: '#374151', marginBottom: 4 }}>No leave data found</div>
+                  <div style={{ fontSize: '0.82rem' }}>Try adjusting the filters above.</div>
+                </div>
+              </div>
+            </div>
           ) : (
-            <div className="row g-3">
-              {Object.entries(filteredStats).map(([user, months]) => {
-                const usedLeave = Object.values(months).reduce((s, v) => s + v.leave, 0);
-                const usedWfh   = Object.values(months).reduce((s, v) => s + v.wfh,   0);
-                const usedTotal = Object.values(months).reduce((s, v) => s + v.total,  0);
-                const remaining = TOTAL_LEAVE - usedLeave;
-                const pct = Math.min(100, Math.round((usedLeave / TOTAL_LEAVE) * 100));
+            <>
+              {/* Summary strip */}
+              <div className="cal-stats-row mb-4">
+                <div className="cal-stat-pill" style={{ borderColor: '#000033', background: '#eef0ff' }}>
+                  <i className="bi bi-people-fill" style={{ color: '#000033', fontSize: '0.9rem' }}></i>
+                  <span className="cal-stat-label">Employees</span>
+                  <span className="cal-stat-count" style={{ color: '#000033' }}>{totalEmployees}</span>
+                </div>
+                <div className="cal-stat-pill" style={{ borderColor: '#dc2626', background: '#fff5f5' }}>
+                  <i className="bi bi-calendar-x-fill" style={{ color: '#dc2626', fontSize: '0.9rem' }}></i>
+                  <span className="cal-stat-label">Leave Days</span>
+                  <span className="cal-stat-count" style={{ color: '#dc2626' }}>{grandLeave}</span>
+                </div>
+                <div className="cal-stat-pill" style={{ borderColor: '#d97706', background: '#fffbeb' }}>
+                  <i className="bi bi-house-fill" style={{ color: '#d97706', fontSize: '0.9rem' }}></i>
+                  <span className="cal-stat-label">WFH Days</span>
+                  <span className="cal-stat-count" style={{ color: '#d97706' }}>{grandWfh}</span>
+                </div>
+                <div className="cal-stat-pill" style={{ borderColor: '#6c757d', background: '#f1f3f5' }}>
+                  <i className="bi bi-stack" style={{ color: '#6c757d', fontSize: '0.9rem' }}></i>
+                  <span className="cal-stat-label">Total Days</span>
+                  <span className="cal-stat-count" style={{ color: '#6c757d' }}>{grandTotal}</span>
+                </div>
+              </div>
 
-                return (
-                  <div className="col-12 col-lg-6" key={user}>
-                    <div className="portal-card">
-                      <div className="portal-card-header" style={{ justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1rem' }}>
-                            {user[0]?.toUpperCase()}
+              {/* User stat cards — equal height grid */}
+              <div className="row g-4">
+                {Object.entries(filteredStats).map(([user, months]) => {
+                  const usedLeave = Object.values(months).reduce((s, v) => s + v.leave, 0);
+                  const usedWfh   = Object.values(months).reduce((s, v) => s + v.wfh,   0);
+                  const usedTotal = Object.values(months).reduce((s, v) => s + v.total,  0);
+                  const remaining = TOTAL_LEAVE - usedLeave;
+                  const pct = Math.min(100, Math.round((usedLeave / TOTAL_LEAVE) * 100));
+                  const barColor = pct >= 80 ? '#dc2626' : pct >= 60 ? '#d97706' : '#16a34a';
+                  const color = avatarColor(user);
+
+                  return (
+                    <div className="col-12 col-lg-6 d-flex" key={user}>
+                      <div className="portal-card w-100 d-flex flex-column">
+
+                        {/* Card header */}
+                        <div className="portal-card-header" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <div style={{
+                              width: 38, height: 38, borderRadius: '50%',
+                              background: color,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontWeight: 800, fontSize: '1rem', color: '#fff',
+                              flexShrink: 0, boxShadow: `0 0 0 3px rgba(255,255,255,0.2)`
+                            }}>
+                              {user[0]?.toUpperCase()}
+                            </div>
+                            <h5 style={{ margin: 0 }}>{user}</h5>
                           </div>
-                          <h5 style={{ margin: 0 }}>{user}</h5>
-                        </div>
-                        <div style={{ display: 'flex', gap: 12, fontSize: '0.8rem' }}>
-                          <span style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '3px 10px' }}>
-                            Leave: {usedLeave}/{TOTAL_LEAVE}
-                          </span>
-                          <span style={{ background: remaining <= 3 ? 'rgba(220,38,38,0.3)' : 'rgba(255,255,255,0.1)', borderRadius: 8, padding: '3px 10px' }}>
-                            Left: {remaining}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="portal-card-body" style={{ padding: '16px 20px' }}>
-                        {/* Mini progress bar */}
-                        <div style={{ marginBottom: 14 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#8a9ab5', marginBottom: 4 }}>
-                            <span>Leave used</span><span>{pct}%</span>
-                          </div>
-                          <div style={{ height: 6, background: '#e5e9f0', borderRadius: 4, overflow: 'hidden' }}>
-                            <div style={{ height: '100%', width: `${pct}%`, background: pct >= 80 ? '#dc2626' : pct >= 60 ? '#d97706' : '#000033', borderRadius: 4, transition: 'width 0.4s' }}></div>
+                          <div style={{ display: 'flex', gap: 8, fontSize: '0.78rem', flexWrap: 'wrap' }}>
+                            <span style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, padding: '3px 10px', fontWeight: 600 }}>
+                              {usedLeave} / {TOTAL_LEAVE} days
+                            </span>
+                            <span style={{
+                              background: remaining <= 3 ? 'rgba(220,38,38,0.35)' : 'rgba(22,163,74,0.25)',
+                              border: `1px solid ${remaining <= 3 ? 'rgba(220,38,38,0.4)' : 'rgba(22,163,74,0.3)'}`,
+                              borderRadius: 8, padding: '3px 10px', fontWeight: 600
+                            }}>
+                              {remaining} left
+                            </span>
                           </div>
                         </div>
 
-                        {Object.entries(months).length === 0 ? (
-                          <div className="portal-empty" style={{ padding: '16px 0' }}>No data for selected period.</div>
-                        ) : (
-                          <div className="table-responsive">
-                            <table className="portal-table">
-                              <thead>
-                                <tr>
-                                  <th>Month</th>
-                                  <th className="text-center">Leave</th>
-                                  <th className="text-center">WFH</th>
-                                  <th className="text-center">Total</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {Object.entries(months).sort(([a], [b]) => a.localeCompare(b)).map(([month, s]) => (
-                                  <tr key={month}>
-                                    <td style={{ fontSize: '0.85rem' }}>{formatMonthYear(month)}</td>
-                                    <td className="text-center">{s.leave > 0 ? <span className="badge bg-danger">{s.leave}</span> : <span style={{ color: '#8a9ab5' }}>—</span>}</td>
-                                    <td className="text-center">{s.wfh > 0 ? <span className="badge bg-warning text-dark">{s.wfh}</span> : <span style={{ color: '#8a9ab5' }}>—</span>}</td>
-                                    <td className="text-center"><span className="badge" style={{ background: '#eef0ff', color: '#000033', fontWeight: 700 }}>{s.total}</span></td>
+                        {/* Card body */}
+                        <div className="portal-card-body" style={{ padding: '16px 20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+
+                          {/* Progress bar */}
+                          <div style={{ marginBottom: 16 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8a9ab5', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Leave Used</span>
+                              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: barColor }}>{pct}%</span>
+                            </div>
+                            <div style={{ height: 8, background: '#e5e9f0', borderRadius: 6, overflow: 'hidden' }}>
+                              <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 6, transition: 'width 0.5s ease' }} />
+                            </div>
+                          </div>
+
+                          {/* Stat chips */}
+                          <div className="user-stat-chips">
+                            <div className="user-stat-chip chip-leave">
+                              <i className="bi bi-calendar-x"></i>
+                              <span className="chip-val">{usedLeave}</span>
+                              <span className="chip-label">Leave</span>
+                            </div>
+                            <div className="user-stat-chip chip-wfh">
+                              <i className="bi bi-house"></i>
+                              <span className="chip-val">{usedWfh}</span>
+                              <span className="chip-label">WFH</span>
+                            </div>
+                            <div className="user-stat-chip chip-total">
+                              <i className="bi bi-stack"></i>
+                              <span className="chip-val">{usedTotal}</span>
+                              <span className="chip-label">Total</span>
+                            </div>
+                            <div className={`user-stat-chip ${remaining <= 3 ? 'chip-danger' : 'chip-remaining'}`}>
+                              <i className={`bi ${remaining <= 3 ? 'bi-exclamation-triangle' : 'bi-check-circle'}`}></i>
+                              <span className="chip-val">{remaining}</span>
+                              <span className="chip-label">Left</span>
+                            </div>
+                          </div>
+
+                          {/* Monthly breakdown table */}
+                          {Object.entries(months).length === 0 ? (
+                            <div className="portal-empty" style={{ padding: '16px 0', flex: 1 }}>No data for this period.</div>
+                          ) : (
+                            <div className="table-responsive" style={{ flex: 1 }}>
+                              <table className="portal-table">
+                                <thead>
+                                  <tr>
+                                    <th>Month</th>
+                                    <th className="text-center">Leave</th>
+                                    <th className="text-center">WFH</th>
+                                    <th className="text-center">Total</th>
                                   </tr>
-                                ))}
-                                <tr style={{ background: '#f1f4f9' }}>
-                                  <td className="fw-bold" style={{ fontSize: '0.85rem' }}>Total</td>
-                                  <td className="text-center"><span className="badge bg-danger">{usedLeave}</span></td>
-                                  <td className="text-center"><span className="badge bg-warning text-dark">{usedWfh}</span></td>
-                                  <td className="text-center"><span className="badge" style={{ background: '#000033', color: '#fff', fontWeight: 700 }}>{usedTotal}</span></td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
+                                </thead>
+                                <tbody>
+                                  {Object.entries(months).sort(([a], [b]) => a.localeCompare(b)).map(([month, s]) => (
+                                    <tr key={month}>
+                                      <td style={{ fontSize: '0.85rem', fontWeight: 500 }}>{formatMonthYear(month)}</td>
+                                      <td className="text-center">
+                                        {s.leave > 0
+                                          ? <span className="stats-badge badge-leave">{s.leave}</span>
+                                          : <span className="stats-dash">—</span>}
+                                      </td>
+                                      <td className="text-center">
+                                        {s.wfh > 0
+                                          ? <span className="stats-badge badge-wfh">{s.wfh}</span>
+                                          : <span className="stats-dash">—</span>}
+                                      </td>
+                                      <td className="text-center">
+                                        <span className="stats-badge badge-total">{s.total}</span>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                  <tr className="stats-total-row">
+                                    <td style={{ fontSize: '0.85rem' }}>Total</td>
+                                    <td className="text-center"><span className="stats-badge badge-leave">{usedLeave}</span></td>
+                                    <td className="text-center"><span className="stats-badge badge-wfh">{usedWfh}</span></td>
+                                    <td className="text-center"><span className="stats-badge badge-total-dark">{usedTotal}</span></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            </>
           )}
 
         </div>

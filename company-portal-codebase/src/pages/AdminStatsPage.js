@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchLeaveRequests } from '../api/googleScriptApi';
 import PageLoader from '../pages/PageLoader';
-import { useLoader } from '../context/LoaderProvider'; // <-- Add this import
+import { useLoader } from '../context/LoaderProvider';
 
 function getMonthYear(dateStr) {
   const date = new Date(dateStr);
@@ -9,11 +9,14 @@ function getMonthYear(dateStr) {
 }
 
 function formatMonthYear(monthStr) {
-  // monthStr is in "YYYY-MM" format
   const [year, month] = monthStr.split('-');
-  const date = new Date(year, parseInt(month, 10) - 1, 1);
-  return `${date.toLocaleString('default', { month: 'long' })} ${year}`;
+  return `${new Date(year, parseInt(month, 10) - 1, 1).toLocaleString('default', { month: 'long' })} ${year}`;
 }
+
+const TOTAL_LEAVE = 18;
+const monthNames = ['', 'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'];
+const allMonthsList = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
 
 const AdminStatsPage = () => {
   const [userStats, setUserStats] = useState({});
@@ -21,22 +24,16 @@ const AdminStatsPage = () => {
   const [selectedUser, setSelectedUser] = useState('All');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState('All');
-  const { loading, setLoading } = useLoader(); // <-- Use loader context
+  const { loading, setLoading } = useLoader();
 
-  // Function to refresh leave data
   const refreshLeaveData = () => {
     setLoading(true);
     fetchLeaveRequests()
-      .then(data => {
-        setAllData(data);
-        setLoading(false);
-      })
+      .then(data => { setAllData(data); setLoading(false); })
       .catch(() => setLoading(false));
   };
 
-  useEffect(() => {
-    refreshLeaveData();
-  }, [setLoading]);
+  useEffect(() => { refreshLeaveData(); }, [setLoading]);
 
   useEffect(() => {
     if (!allData.length) return;
@@ -44,265 +41,166 @@ const AdminStatsPage = () => {
     allData.forEach(req => {
       if (!stats[req.name]) stats[req.name] = {};
       const start = new Date(req.startDate);
-      let end = req.endDate && !isNaN(new Date(req.endDate)) && req.endDate !== 'Invalid Date'
-        ? new Date(req.endDate)
-        : new Date(req.startDate);
-
-      for (
-        let d = new Date(start);
-        d <= end;
-        d.setDate(d.getDate() + 1)
-      ) {
+      let end = req.endDate && !isNaN(new Date(req.endDate)) ? new Date(req.endDate) : new Date(req.startDate);
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         const day = d.getDay();
-        // skip weekends for leave types
         if ((req.type.startsWith('Leave') || req.type.startsWith('Half Day')) && (day === 0 || day === 6)) continue;
         const month = getMonthYear(d);
         if (!stats[req.name][month]) stats[req.name][month] = { leave: 0, wfh: 0, total: 0 };
-        // Leave types
-        if (
-          req.type === 'Leave' ||
-          req.type === 'Leave - Full Day'
-        ) {
-          stats[req.name][month].leave += 1;
-          stats[req.name][month].total += 1;
-        } else if (
-          req.type === 'Half Day AM' ||
-          req.type === 'Half Day PM' ||
-          req.type === 'Leave - Half Day AM' ||
-          req.type === 'Leave - Half Day PM'
-        ) {
-          stats[req.name][month].leave += 0.5;
-          stats[req.name][month].total += 0.5;
-        }
-        // WFH types
-        else if (
-          req.type === 'Work From Home' ||
-          req.type === 'WFH - Full Day'
-        ) {
-          stats[req.name][month].wfh += 1;
-          stats[req.name][month].total += 1;
-        } else if (
-          req.type === 'WFH - Half Day AM' ||
-          req.type === 'WFH - Half Day PM'
-        ) {
-          stats[req.name][month].wfh += 0.5;
-          stats[req.name][month].total += 0.5;
-        }
+        if (['Leave', 'Leave - Full Day'].includes(req.type)) { stats[req.name][month].leave += 1; stats[req.name][month].total += 1; }
+        else if (['Half Day AM', 'Half Day PM', 'Leave - Half Day AM', 'Leave - Half Day PM'].includes(req.type)) { stats[req.name][month].leave += 0.5; stats[req.name][month].total += 0.5; }
+        else if (['Work From Home', 'WFH - Full Day'].includes(req.type)) { stats[req.name][month].wfh += 1; stats[req.name][month].total += 1; }
+        else if (['WFH - Half Day AM', 'WFH - Half Day PM'].includes(req.type)) { stats[req.name][month].wfh += 0.5; stats[req.name][month].total += 0.5; }
       }
     });
     setUserStats(stats);
   }, [allData]);
 
-  // Get all unique users for the dropdown
   const userOptions = ['All', ...Object.keys(userStats)];
+  const allMonths = Object.values(userStats).flatMap(m => m ? Object.keys(m) : []);
+  const allYears = Array.from(new Set(allMonths.map(m => m.split('-')[0]))).sort();
 
-  // Get all unique years and months from userStats
-  const allMonths = Object.values(userStats).flatMap(monthsObj => monthsObj ? Object.keys(monthsObj) : []);
-  const allYearsSet = new Set(allMonths.map(m => m.split('-')[0]));
-  const allYears = Array.from(allYearsSet).sort();
-  const monthNames = [
-    '', 'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-  // Always show all 12 months (01 to 12)
-  const allMonthsList = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
-
-  // Filter stats by selected user, year, and month
   const filterStats = monthsObj => {
     if (!monthsObj) return {};
     return Object.keys(monthsObj)
       .filter(month => {
         const [year, m] = month.split('-');
-        const yearMatch = String(selectedYear) === year;
-        const monthMatch = selectedMonth === 'All' || selectedMonth === m;
-        return yearMatch && monthMatch;
+        return String(selectedYear) === year && (selectedMonth === 'All' || selectedMonth === m);
       })
-      .reduce((obj, key) => { obj[key] = monthsObj[key]; return obj; }, {});
+      .reduce((obj, k) => { obj[k] = monthsObj[k]; return obj; }, {});
   };
+
   const filteredStats = selectedUser === 'All'
-    ? Object.fromEntries(Object.entries(userStats).map(([user, months]) => [user, filterStats(months)]))
+    ? Object.fromEntries(Object.entries(userStats).map(([u, m]) => [u, filterStats(m)]))
     : { [selectedUser]: filterStats(userStats[selectedUser]) };
 
-  const colorArray = [
-    '#519db8', '#51b8ad', '#5bce95', '#b6ce5b', '#cc803d',
-    '#cc493d', '#447bb5', '#4135cc', '#8d28b5', '#b528a7',
-    '#b52867', '#b52830', '#E6B3B3', '#6680B3', '#66991A',
-    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
-  ];
-
-  // Remove global loader, show loader only on table
-
   return (
-    <div className="container-fluid mt-4 px-2 px-md-4">
-      <div className="card shadow" style={{ width: '100%', background: 'linear-gradient(135deg, #f8fafc 60%, #cfe2ff 100%)' }}>
-        <div className="card-header bg-success text-white text-center d-flex justify-content-between align-items-center">
-          <h2 className="mb-0" style={{ fontSize: '24px' }}>Leave Statistics</h2>
-          <button
-            className="btn btn-light btn-sm ms-2"
-            style={{ fontWeight: 'bold' }}
-            onClick={refreshLeaveData}
-            disabled={loading}
-            title="Refresh leave data"
-          >
-            &#x21bb; Refresh
-          </button>
-        </div>
-        <div className="card-body">
-          <div className="mb-4 d-flex flex-column flex-sm-row flex-wrap align-items-stretch align-items-sm-center gap-2">
+    <div className="portal-page">
+      {loading && <PageLoader />}
+      <div className="row justify-content-center g-0">
+        <div className="col-12 col-xl-11">
+
+          <div className="d-flex justify-content-between align-items-center mb-3" style={{ flexWrap: 'wrap', gap: 10 }}>
             <div>
-              <label className="fw-bold mb-1" htmlFor="userFilter">Filter by User:</label>
-              <select
-                id="userFilter"
-                className="form-select"
-                style={{ maxWidth: 220, minWidth: 120 }}
-                value={selectedUser}
-                onChange={e => {
-                  setLoading(true);
-                  setSelectedUser(e.target.value);
-                  setTimeout(() => setLoading(false), 300);
-                }}
-                disabled={loading}
-              >
-                {userOptions.map(user => (
-                  <option key={user} value={user}>{user}</option>
-                ))}
-              </select>
+              <h4 style={{ fontWeight: 700, color: '#0d1b3e', margin: 0 }}>Leave Statistics</h4>
+              <p style={{ color: '#8a9ab5', fontSize: '0.88rem', margin: '2px 0 0' }}>Yearly breakdown per employee</p>
             </div>
-            <div>
-              <label className="fw-bold mb-1" htmlFor="yearFilter">Filter by Year:</label>
-              <select
-                id="yearFilter"
-                className="form-select"
-                style={{ maxWidth: 120, minWidth: 80 }}
-                value={selectedYear}
-                onChange={e => {
-                  setLoading(true);
-                  setSelectedYear(e.target.value);
-                  setTimeout(() => setLoading(false), 300);
-                }}
-                disabled={loading}
-              >
-                {allYears.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="fw-bold mb-1" htmlFor="monthFilter">Filter by Month:</label>
-              <select
-                id="monthFilter"
-                className="form-select"
-                style={{ maxWidth: 140, minWidth: 80 }}
-                value={selectedMonth}
-                onChange={e => {
-                  setLoading(true);
-                  setSelectedMonth(e.target.value);
-                  setTimeout(() => setLoading(false), 300);
-                }}
-                disabled={loading}
-              >
-                <option value="All">All</option>
-                {allMonthsList.map(m => (
-                  <option key={m} value={m}>{monthNames[parseInt(m, 10)]}</option>
-                ))}
-              </select>
-            </div>
+            <button className="portal-btn portal-btn-sm" onClick={refreshLeaveData} disabled={loading}>
+              <i className="bi bi-arrow-clockwise"></i> Refresh
+            </button>
           </div>
-          <div className="row">
-              {loading ? (
-                <div className="w-100 text-center py-5">
-                  <PageLoader />
+
+          {/* Filters */}
+          <div className="portal-card mb-4">
+            <div className="portal-card-body" style={{ padding: '14px 20px' }}>
+              <div className="d-flex flex-wrap gap-3 align-items-end">
+                <div>
+                  <label className="portal-label" style={{ marginBottom: 4 }}>User</label>
+                  <select className="portal-select" style={{ width: 180, height: 38, fontSize: '0.85rem' }} value={selectedUser} onChange={e => setSelectedUser(e.target.value)} disabled={loading}>
+                    {userOptions.map(u => <option key={u} value={u}>{u}</option>)}
+                  </select>
                 </div>
-              ) : (
-                <>
-                  {Object.entries(filteredStats).map(([user, months], idx) => (
-              <div className="col-12 col-md-6 mb-4" key={user}>
-                <div
-                  className="card h-100 shadow-sm"
-                  style={{ borderColor: colorArray[idx % colorArray.length], borderWidth: 2, borderStyle: 'solid' }}
-                >
-                  <div
-                    className="card-header d-flex justify-content-between align-items-center"
-                    style={{ background: colorArray[idx % colorArray.length] }}
-                  >
-                    <h5 className="mb-0 text-white">{user}</h5>
-                    {/* Leave Balance summary for this user */}
-                    {(() => {
-                      // Calculate leave used for this user (current year only)
-                      let used = 0;
-                      if (months && typeof months === 'object') {
-                        Object.values(months).forEach(s => { used += s.leave; });
-                      }
-                      const total = 18;
-                      const remaining = total - used;
-                      return (
-                        <span className="fw-bold text-white" style={{ fontSize: 14 }}>
-                          Leave Balance: {used}/{total} ({remaining} remaining)
-                        </span>
-                      );
-                    })()}
-                  </div>
-                  <div className="card-body">
-                    <div className="table-responsive">
-                      <table className="table table-bordered table-sm mb-0">
-                        <thead>
-                          <tr>
-                            <th>Month</th>
-                            <th>Leave</th>
-                            <th>Work From Home</th>
-                            <th>Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(months).length > 0 ? (
-                            <>
-                              {Object.entries(months).sort(([a], [b]) => a.localeCompare(b)).map(([month, stats]) => (
-                                <tr key={month}>
-                                  <td>{formatMonthYear(month)}</td>
-                                  <td><span>{stats.leave}</span></td>
-                                  <td><span>{stats.wfh}</span></td>
-                                  <td><span>{stats.total}</span></td>
-                                </tr>
-                              ))}
-                              {/* Total row */}
-                              <tr>
-                                <td className="fw-bold text-end">Total</td>
-                                <td className="fw-bold">
-                                  <span className="badge bg-info">
-                                    {Object.values(months).reduce((sum, s) => sum + s.leave, 0)}
-                                  </span>
-                                </td>
-                                <td className="fw-bold">
-                                  <span className="badge bg-info">
-                                    {Object.values(months).reduce((sum, s) => sum + s.wfh, 0)}
-                                  </span>
-                                </td>
-                                <td className="fw-bold">
-                                  <span className="badge bg-info">
-                                    {Object.values(months).reduce((sum, s) => sum + s.total, 0)}
-                                  </span>
-                                </td>
-                              </tr>
-                            </>
-                          ) : (
-                            <tr>
-                              <td colSpan={4} className="text-center text-muted">No leave data found for this year.</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                <div>
+                  <label className="portal-label" style={{ marginBottom: 4 }}>Year</label>
+                  <select className="portal-select" style={{ width: 110, height: 38, fontSize: '0.85rem' }} value={selectedYear} onChange={e => setSelectedYear(e.target.value)} disabled={loading}>
+                    {allYears.map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="portal-label" style={{ marginBottom: 4 }}>Month</label>
+                  <select className="portal-select" style={{ width: 150, height: 38, fontSize: '0.85rem' }} value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} disabled={loading}>
+                    <option value="All">All Months</option>
+                    {allMonthsList.map(m => <option key={m} value={m}>{monthNames[parseInt(m, 10)]}</option>)}
+                  </select>
                 </div>
               </div>
-            ))}
-            {Object.keys(filteredStats).length === 0 && (
-              <div className="text-center text-muted">No leave data found.</div>
-            )}
-                </>
-              )}
+            </div>
           </div>
+
+          {/* User stat cards grid */}
+          {loading ? (
+            <div className="text-center py-5"><PageLoader /></div>
+          ) : Object.keys(filteredStats).length === 0 ? (
+            <div className="portal-empty"><i className="bi bi-inbox" style={{ fontSize: '2rem', display: 'block', marginBottom: 8 }}></i>No leave data found.</div>
+          ) : (
+            <div className="row g-3">
+              {Object.entries(filteredStats).map(([user, months]) => {
+                const usedLeave = Object.values(months).reduce((s, v) => s + v.leave, 0);
+                const usedWfh   = Object.values(months).reduce((s, v) => s + v.wfh,   0);
+                const usedTotal = Object.values(months).reduce((s, v) => s + v.total,  0);
+                const remaining = TOTAL_LEAVE - usedLeave;
+                const pct = Math.min(100, Math.round((usedLeave / TOTAL_LEAVE) * 100));
+
+                return (
+                  <div className="col-12 col-lg-6" key={user}>
+                    <div className="portal-card">
+                      <div className="portal-card-header" style={{ justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1rem' }}>
+                            {user[0]?.toUpperCase()}
+                          </div>
+                          <h5 style={{ margin: 0 }}>{user}</h5>
+                        </div>
+                        <div style={{ display: 'flex', gap: 12, fontSize: '0.8rem' }}>
+                          <span style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '3px 10px' }}>
+                            Leave: {usedLeave}/{TOTAL_LEAVE}
+                          </span>
+                          <span style={{ background: remaining <= 3 ? 'rgba(220,38,38,0.3)' : 'rgba(255,255,255,0.1)', borderRadius: 8, padding: '3px 10px' }}>
+                            Left: {remaining}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="portal-card-body" style={{ padding: '16px 20px' }}>
+                        {/* Mini progress bar */}
+                        <div style={{ marginBottom: 14 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#8a9ab5', marginBottom: 4 }}>
+                            <span>Leave used</span><span>{pct}%</span>
+                          </div>
+                          <div style={{ height: 6, background: '#e5e9f0', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${pct}%`, background: pct >= 80 ? '#dc2626' : pct >= 60 ? '#d97706' : '#000033', borderRadius: 4, transition: 'width 0.4s' }}></div>
+                          </div>
+                        </div>
+
+                        {Object.entries(months).length === 0 ? (
+                          <div className="portal-empty" style={{ padding: '16px 0' }}>No data for selected period.</div>
+                        ) : (
+                          <div className="table-responsive">
+                            <table className="portal-table">
+                              <thead>
+                                <tr>
+                                  <th>Month</th>
+                                  <th className="text-center">Leave</th>
+                                  <th className="text-center">WFH</th>
+                                  <th className="text-center">Total</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {Object.entries(months).sort(([a], [b]) => a.localeCompare(b)).map(([month, s]) => (
+                                  <tr key={month}>
+                                    <td style={{ fontSize: '0.85rem' }}>{formatMonthYear(month)}</td>
+                                    <td className="text-center">{s.leave > 0 ? <span className="badge bg-danger">{s.leave}</span> : <span style={{ color: '#8a9ab5' }}>—</span>}</td>
+                                    <td className="text-center">{s.wfh > 0 ? <span className="badge bg-warning text-dark">{s.wfh}</span> : <span style={{ color: '#8a9ab5' }}>—</span>}</td>
+                                    <td className="text-center"><span className="badge" style={{ background: '#eef0ff', color: '#000033', fontWeight: 700 }}>{s.total}</span></td>
+                                  </tr>
+                                ))}
+                                <tr style={{ background: '#f1f4f9' }}>
+                                  <td className="fw-bold" style={{ fontSize: '0.85rem' }}>Total</td>
+                                  <td className="text-center"><span className="badge bg-danger">{usedLeave}</span></td>
+                                  <td className="text-center"><span className="badge bg-warning text-dark">{usedWfh}</span></td>
+                                  <td className="text-center"><span className="badge" style={{ background: '#000033', color: '#fff', fontWeight: 700 }}>{usedTotal}</span></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
         </div>
       </div>
     </div>

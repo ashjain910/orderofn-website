@@ -10,92 +10,86 @@ const UserPage = () => {
   const [summaryLoading, setSummaryLoading] = useState(true);
   const auth = JSON.parse(localStorage.getItem('auth'));
 
-  useEffect(() => {
-    setSummaryLoading(true);
+  const calcUsed = (data) => {
+    const currentYear = new Date().getFullYear();
+    let used = 0;
+    (Array.isArray(data) ? data : []).forEach(req => {
+      if (req.type === 'Leave') {
+        const start = new Date(req.startDate);
+        const end = req.endDate ? new Date(req.endDate) : new Date(req.startDate);
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          if (d.getFullYear() !== currentYear) continue;
+          if (d.getDay() === 0 || d.getDay() === 6) continue;
+          used += 1;
+        }
+      }
+    });
+    return used;
+  };
+
+  const loadData = (setSummary = true) => {
+    if (setSummary) setSummaryLoading(true);
     fetchUserLeaveRequests(auth.username)
-      .then(data => {
-        const currentYear = new Date().getFullYear();
-        let used = 0;
-        (Array.isArray(data) ? data : []).forEach(req => {
-          if (req.type === 'Leave') {
-            const start = new Date(req.startDate);
-            const end = req.endDate ? new Date(req.endDate) : new Date(req.startDate);
-            for (
-              let d = new Date(start);
-              d <= end;
-              d.setDate(d.getDate() + 1)
-            ) {
-              const day = d.getDay();
-              if (d.getFullYear() !== currentYear) continue;
-              if (day === 0 || day === 6) continue; // skip weekends
-              used += 1;
-            }
-          }
-        });
-        setLeaveCount({ used, total: 18 });
-        setSummaryLoading(false);
-      })
-      .catch(() => {
-        setLeaveCount({ used: 0, total: 18 });
-        setSummaryLoading(false);
-      });
-  }, [auth.username]);
+      .then(data => { setLeaveCount({ used: calcUsed(data), total: 18 }); setSummaryLoading(false); })
+      .catch(() => { setLeaveCount({ used: 0, total: 18 }); setSummaryLoading(false); });
+  };
+
+  useEffect(() => { loadData(); }, []); // eslint-disable-line
 
   const remaining = leaveCount.total - leaveCount.used;
 
-  // Handler to refresh leave count after leave submission
-  const refreshLeaveCount = () => {
-    setSummaryLoading(true);
-    fetchUserLeaveRequests(auth.username)
-      .then(data => {
-        const currentYear = new Date().getFullYear();
-        let used = 0;
-        (Array.isArray(data) ? data : []).forEach(req => {
-          if (req.type === 'Leave') {
-            const start = new Date(req.startDate);
-            const end = req.endDate ? new Date(req.endDate) : new Date(req.startDate);
-            for (
-              let d = new Date(start);
-              d <= end;
-              d.setDate(d.getDate() + 1)
-            ) {
-              const day = d.getDay();
-              if (d.getFullYear() !== currentYear) continue;
-              if (day === 0 || day === 6) continue; // skip weekends
-              used += 1;
-            }
-          }
-        });
-        setLeaveCount({ used, total: 18 });
-        setSummaryLoading(false);
-      })
-      .catch(() => {
-        setLeaveCount({ used: 0, total: 18 });
-        setSummaryLoading(false);
-      });
-  };
-
   return (
-    <div className="container-fluid px-2 px-md-4">
+    <div className="portal-page">
       {(loading || summaryLoading) && <PageLoader />}
-      <div className="row justify-content-center">
-        <div className="col-10 col-lg-8 mb-3">
-          <div className="d-flex align-items-center justify-content-center mb-2">
-            <i className="bi bi-info-circle-fill text-info me-2"></i>
-            <span className="fw-bold text-info">Info:</span>
-            <span className="ms-2 text-secondary">
-              <div className="mb-1">
-                You have used {leaveCount.used} out of your {leaveCount.total} available leave days. Only {remaining} leave days remain. After using all 18 leave days, any additional leave taken will be considered loss of pay.
+      <div className="row justify-content-center g-0">
+        <div className="col-12 col-lg-9 col-xl-8">
+
+          {/* Stat cards */}
+          <div className="row g-3 mb-4">
+            <div className="col-12 col-sm-4">
+              <div className="portal-stat-card used">
+                <div className="portal-stat-icon used"><i className="bi bi-calendar-x"></i></div>
+                <div>
+                  <div className="portal-stat-label">Used</div>
+                  <div className="portal-stat-value">{summaryLoading ? '—' : leaveCount.used}</div>
+                </div>
               </div>
-              {/* Submit your leave request using the form below. Track your leave status from the my status. */}
-            </span>
+            </div>
+            <div className="col-12 col-sm-4">
+              <div className="portal-stat-card remaining">
+                <div className="portal-stat-icon remaining"><i className="bi bi-calendar-check"></i></div>
+                <div>
+                  <div className="portal-stat-label">Remaining</div>
+                  <div className="portal-stat-value">{summaryLoading ? '—' : remaining}</div>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-sm-4">
+              <div className="portal-stat-card total">
+                <div className="portal-stat-icon total"><i className="bi bi-calendar2"></i></div>
+                <div>
+                  <div className="portal-stat-label">Total</div>
+                  <div className="portal-stat-value">{leaveCount.total}</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="d-flex align-items-center justify-content-center mb-2">
-            <span className="fw-bold text-dark">Leave Count: {leaveCount.total}/{leaveCount.used} ({remaining} remaining)</span><br />
-          </div>
-        </div>
-        <div className="col-12 col-lg-8">
-          <LeaveRequestForm setLoading={setLoading} onLeaveSubmitted={refreshLeaveCount} />
+
+          {/* Warning banner */}
+          {!summaryLoading && remaining <= 5 && (
+            <div className="portal-info-banner mb-4">
+              <i className="bi bi-info-circle-fill" style={{ fontSize: '1.1rem', marginTop: 1, flexShrink: 0 }}></i>
+              <span>
+                You have used <strong>{leaveCount.used}</strong> of your <strong>{leaveCount.total}</strong> leave days.{' '}
+                {remaining === 0
+                  ? 'You have no leave days left — any additional leave will be treated as loss of pay.'
+                  : `Only ${remaining} day${remaining === 1 ? '' : 's'} remaining.`}
+              </span>
+            </div>
+          )}
+
+          {/* Leave request form */}
+          <LeaveRequestForm setLoading={setLoading} onLeaveSubmitted={() => loadData(false)} />
         </div>
       </div>
     </div>

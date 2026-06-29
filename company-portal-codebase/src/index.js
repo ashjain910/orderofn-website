@@ -4,6 +4,7 @@ import App from './App';
 import { LoaderProvider } from './context/LoaderProvider.js';
 import { HashRouter as Router } from 'react-router-dom';
 import './styles/bootstrap-custom.css';
+import './styles/app.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

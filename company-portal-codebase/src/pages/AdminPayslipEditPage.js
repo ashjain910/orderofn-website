@@ -2,358 +2,203 @@ import React, { useState, useEffect } from 'react';
 import { getAllUsers, getPayslipForUser, updatePayslipForUser } from '../api/googleScriptApi';
 
 const initialState = {
-  username: '',
-  name: '',
-  employeeCode: '',
-  designation: '',
-  department: '',
-  employeeGroup: '',
-  doj: '',
-  panNo: '',
-  gender: '',
-  payPeriod: '',
-  location: '',
-  basic: '',
-  specialAllowance: '',
-  tds: '',
-  advance: '',
-  bank: '',
-  bankAccountNo: '',
-  uan: '',
-  houseRentAllowance: '',
-  lop: '', // was uan
+  username: '', name: '', employeeCode: '', designation: '', department: '',
+  employeeGroup: '', doj: '', panNo: '', gender: '', payPeriod: '', location: '',
+  basic: '', specialAllowance: '', tds: '', advance: '', bank: '', bankAccountNo: '',
+  uan: '', houseRentAllowance: '', lop: '',
 };
+
+function getFinancialYears(count = 2) {
+  const today = new Date();
+  let startYear = today.getMonth() + 1 < 4 ? today.getFullYear() - 1 : today.getFullYear();
+  return Array.from({ length: count }, (_, i) => {
+    const s = startYear + i, e = s + 1;
+    return { label: `April ${s} - March ${e}`, value: `${String(s).slice(-2)}-${String(e).slice(-2)}` };
+  });
+}
+
+const fieldGroups = [
+  {
+    title: 'Employee Info',
+    fields: [
+      { name: 'name', label: 'Name' },
+      { name: 'employeeCode', label: 'Employee Code' },
+      { name: 'designation', label: 'Designation' },
+      { name: 'department', label: 'Department' },
+      { name: 'employeeGroup', label: 'Employee Group' },
+      { name: 'doj', label: 'D.O.J' },
+      { name: 'panNo', label: 'PAN No' },
+      { name: 'gender', label: 'Gender' },
+      { name: 'payPeriod', label: 'Pay Period' },
+      { name: 'location', label: 'Location' },
+      { name: 'uan', label: 'UAN' },
+    ],
+  },
+  {
+    title: 'Salary Details',
+    fields: [
+      { name: 'basic', label: 'Basic', type: 'number' },
+      { name: 'houseRentAllowance', label: 'House Rent Allowance', type: 'number' },
+      { name: 'specialAllowance', label: 'Special Allowance', type: 'number' },
+      { name: 'tds', label: 'T.D.S', type: 'number' },
+      { name: 'advance', label: 'Advance', type: 'number' },
+      { name: 'leave', label: 'Leave', type: 'number' },
+      { name: 'lop', label: 'Loss of Pay (LOP)' },
+    ],
+  },
+];
 
 const AdminPayslipEditPage = () => {
   const [form, setForm] = useState(initialState);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
+  const [msgType, setMsgType] = useState('success');
   const [editMode, setEditMode] = useState(false);
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
 
-  // Financial year logic (dynamically calculated)
-  function getFinancialYears(count = 2) {
-    const today = new Date();
-    // If current month is Jan-Mar, financial year is previous year - current year
-    let startYear = today.getMonth() + 1 < 4 ? today.getFullYear() - 1 : today.getFullYear();
-    const years = [];
-    for (let i = 0; i < count; i++) {
-      const fyStart = startYear + i;
-      const fyEnd = fyStart + 1;
-      const label = `April ${fyStart} - March ${fyEnd}`;
-      const value = `${String(fyStart).slice(-2)}-${String(fyEnd).slice(-2)}`;
-      years.push({ label, value });
-    }
-    return years;
-  }
   const financialYears = getFinancialYears(2);
   const [selectedFY, setSelectedFY] = useState(financialYears[0].value);
+
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1, currentYear = today.getFullYear();
+  const visibleFY = financialYears.filter(fy =>
+    fy.value !== '26-27' || currentYear > 2026 || (currentYear === 2026 && currentMonth >= 4)
+  );
+
   useEffect(() => {
     setUsersLoading(true);
-    getAllUsers().then(res => {
-      if (res.success) setUsers(res.users);
-      setUsersLoading(false);
-    });
+    getAllUsers().then(res => { if (res.success) setUsers(res.users); setUsersLoading(false); });
   }, []);
 
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleFetch = async e => {
     e.preventDefault();
-    setLoading(true);
-    setMsg('');
+    setLoading(true); setMsg('');
     try {
       const res = await getPayslipForUser(form.username, selectedFY);
-      if (res.success) {
-        setForm({ ...initialState, ...res.data, username: form.username });
-        setEditMode(true);
-        setMsg('');
-      } else {
-        setMsg(res.message || 'Payslip not found');
-      }
-    } catch {
-      setMsg('Error fetching payslip');
-    }
+      if (res.success) { setForm({ ...initialState, ...res.data, username: form.username }); setEditMode(true); }
+      else { setMsg(res.message || 'Payslip not found'); setMsgType('error'); }
+    } catch { setMsg('Error fetching payslip'); setMsgType('error'); }
     setLoading(false);
   };
+
+  let formattedDoj = form.doj;
+  if (form.doj && typeof form.doj === 'string' && form.doj.includes('T')) {
+    const d = new Date(form.doj);
+    formattedDoj = `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+  }
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setLoading(true);
-    setMsg('');
-    const {
-      username,
-      name,
-      employeeCode,
-      designation,
-      department,
-      doj,
-      employeeGroup,
-      panNo,
-      payPeriod,
-      location,
-      basic,
-      houseRentAllowance,
-      specialAllowance,
-      tds,
-      leave,
-      advance,
-      lop,
-    } = form;
-
-    // Get current month/year
-    const today = new Date();
-    const currentMonth = today.getMonth() + 1;
-    const currentYear = today.getFullYear();
-
+    setLoading(true); setMsg('');
     try {
       const res = await updatePayslipForUser({
-        username,
-        financialYear: selectedFY,
-        name,
-        employeeCode,
-        designation,
-        department,
-        doj: formattedDoj,
-        employeeGroup,
-        panNo,
-        payPeriod,
-        lop,
-        location,
-        basic,
-        houseRentAllowance,
-        specialAllowance,
-        tds,
-        leave,
-        advance,
-        month: currentMonth,
-        year: currentYear
+        username: form.username, financialYear: selectedFY, name: form.name,
+        employeeCode: form.employeeCode, designation: form.designation, department: form.department,
+        doj: formattedDoj, employeeGroup: form.employeeGroup, panNo: form.panNo, payPeriod: form.payPeriod,
+        lop: form.lop, location: form.location, basic: form.basic, houseRentAllowance: form.houseRentAllowance,
+        specialAllowance: form.specialAllowance, tds: form.tds, leave: form.leave, advance: form.advance,
+        month: currentMonth, year: currentYear,
       });
-      setMsg(res.success ? 'Payslip updated!' : res.message || 'Error');
-    } catch {
-      setMsg('Error updating payslip');
-    }
+      setMsg(res.success ? 'Payslip updated successfully!' : res.message || 'Error');
+      setMsgType(res.success ? 'success' : 'error');
+    } catch { setMsg('Error updating payslip'); setMsgType('error'); }
     setLoading(false);
   };
 
-  // Format D.O.J to dd-mm-yyyy if it is an ISO string
-  let formattedDoj = form.doj;
-  if (form.doj && typeof form.doj === 'string' && form.doj.includes('T')) {
-    const dateObj = new Date(form.doj);
-    const dd = String(dateObj.getDate()).padStart(2, '0');
-    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const yyyy = dateObj.getFullYear();
-    formattedDoj = `${dd}-${mm}-${yyyy}`;
-  }
-
-  // Hide "April 2026 - March 2027" if today is before April 2026
-  const today = new Date();
-  const currentMonth = today.getMonth() + 1;
-  const currentYear = today.getFullYear();
-  const visibleFinancialYears = financialYears.filter(fy => {
-    if (fy.value === '26-27') {
-      // Only show if today is April 2026 or later
-      return currentYear > 2026 || (currentYear === 2026 && currentMonth >= 4);
-    }
-    return true;
-  });
-
   return (
-    <div className="container py-4">
-      <div className="row justify-content-center">
-        <div className="col-lg-10">
-          <div className="card shadow border-0">
-            <div className="card-header bg-primary text-white d-flex align-items-center">
-              <i className="bi bi-person-badge-fill me-2"></i>
-              <h2 className='mb-0' style={{fontSize: '24px'}}>Admin: Edit Payslip for User</h2>
+    <div className="portal-page">
+      <div className="row justify-content-center g-0">
+        <div className="col-12 col-xl-10">
+
+          <div className="mb-3">
+            <h4 style={{ fontWeight: 700, color: '#0d1b3e', margin: 0 }}>Edit Payslip</h4>
+            <p style={{ color: '#8a9ab5', fontSize: '0.88rem', margin: '2px 0 0' }}>Update salary details for a user</p>
+          </div>
+
+          {/* User + FY selection */}
+          <div className="portal-card mb-3">
+            <div className="portal-card-header">
+              <i className="bi bi-person-badge-fill" style={{ fontSize: '1.1rem' }}></i>
+              <h5>Select User & Financial Year</h5>
             </div>
-            <div className="card-body">
-              <form onSubmit={editMode ? handleSubmit : handleFetch} className="row g-3 align-items-end">
-                <div className="col-md-4">
-                  <label className="form-label">Select User</label>
-                  {usersLoading ? (
-                    <div className="form-control text-center py-2">
-                      <span className="spinner-border spinner-border-sm me-2"></span>
-                      Loading users...
-                    </div>
-                  ) : (
-                    <select
-                      name="username"
-                      className="form-select"
-                      value={form.username}
-                      onChange={handleChange}
-                      required
-                      disabled={editMode}
-                    >
-                      <option value="">-- Select User --</option>
-                      {users.map(u => (
-                        <option key={u.username} value={u.username}>
-                          {u.username}
-                        </option>
-                      ))}
+            <div className="portal-card-body" style={{ padding: 24 }}>
+              {msg && <div className={msgType === 'success' ? 'portal-alert-success' : 'portal-alert-error'}>{msg}</div>}
+              <form onSubmit={editMode ? handleSubmit : handleFetch}>
+                <div className="row g-3 align-items-end">
+                  <div className="col-12 col-md-5">
+                    <label className="portal-label">Select User</label>
+                    {usersLoading ? (
+                      <div className="portal-input d-flex align-items-center" style={{ color: '#8a9ab5' }}>
+                        <span className="spinner-border spinner-border-sm me-2"></span> Loading users…
+                      </div>
+                    ) : (
+                      <select name="username" className="portal-select" value={form.username} onChange={handleChange} required disabled={editMode}>
+                        <option value="">— Select User —</option>
+                        {users.map(u => <option key={u.username} value={u.username}>{u.username}</option>)}
+                      </select>
+                    )}
+                  </div>
+                  <div className="col-12 col-md-4">
+                    <label className="portal-label">Financial Year</label>
+                    <select className="portal-select" value={selectedFY} onChange={e => setSelectedFY(e.target.value)} disabled={editMode}>
+                      {visibleFY.map(fy => <option key={fy.value} value={fy.value}>{fy.label}</option>)}
                     </select>
-                  )}
-                </div>
-                <div className="col-md-4">
-                  <label className="form-label">Financial Year</label>
-                  <select
-                    className="form-select"
-                    value={selectedFY}
-                    onChange={e => setSelectedFY(e.target.value)}
-                    disabled={editMode}
-                  >
-                    {visibleFinancialYears.map(fy => (
-                      <option key={fy.value} value={fy.value}>{fy.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-md-4">
-                  {!editMode && (
-                    <button className="btn btn-success w-100" type="submit" disabled={loading || usersLoading || !form.username}>
-                      {loading ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
-                          Fetching...
-                        </>
-                      ) : (
-                        <>
-                          <i className="bi bi-search me-2"></i>
-                          Fetch Payslip
-                        </>
-                      )}
-                    </button>
-                  )}
-                  {editMode && (
-                    <button
-                      type="button"
-                      className="btn btn-outline-secondary w-100"
-                      onClick={() => {
-                        setForm(initialState);
-                        setEditMode(false);
-                        setMsg('');
-                      }}
-                    >
-                      <i className="bi bi-arrow-left me-2"></i>
-                      Edit Another User
-                    </button>
-                  )}
+                  </div>
+                  <div className="col-12 col-md-3">
+                    {!editMode ? (
+                      <button className="portal-btn portal-btn-success w-100" type="submit" disabled={loading || usersLoading || !form.username} style={{ justifyContent: 'center', height: 44 }}>
+                        {loading ? <><span className="spinner-border spinner-border-sm"></span> Fetching…</> : <><i className="bi bi-search"></i> Fetch Payslip</>}
+                      </button>
+                    ) : (
+                      <button type="button" className="portal-btn-outline w-100" style={{ height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                        onClick={() => { setForm(initialState); setEditMode(false); setMsg(''); }}>
+                        <i className="bi bi-arrow-left"></i> Edit Another
+                      </button>
+                    )}
+                  </div>
                 </div>
               </form>
-              {msg && <div className="alert alert-info mt-3">{msg}</div>}
-              {/* Edit Panel */}
-              {editMode && (
-                <div className="mt-4">
-                  <div className="card border-0 shadow-sm">
-                    <div className="card-header bg-light">
-                      <b>Payslip Details for: {form.username} ({selectedFY})</b>
-                    </div>
-                    <div className="card-body">
-                      <form onSubmit={handleSubmit} className="row g-3">
-                        <div className="col-md-4">
-                          <label className="form-label">Name</label>
-                          <input name="name" className="form-control" value={form.name} onChange={handleChange} />
+            </div>
+          </div>
+
+          {/* Edit form */}
+          {editMode && (
+            <form onSubmit={handleSubmit}>
+              {fieldGroups.map(group => (
+                <div className="portal-card mb-3" key={group.title}>
+                  <div className="portal-card-header">
+                    <h5>{group.title}</h5>
+                  </div>
+                  <div className="portal-card-body" style={{ padding: 24 }}>
+                    <div className="row g-3">
+                      {group.fields.map(f => (
+                        <div className="col-12 col-md-4" key={f.name}>
+                          <label className="portal-label">{f.label}</label>
+                          <input
+                            name={f.name}
+                            type={f.type || 'text'}
+                            className="portal-input"
+                            value={f.name === 'doj' ? formattedDoj : (form[f.name] || '')}
+                            onChange={handleChange}
+                            onWheel={f.type === 'number' ? e => e.target.blur() : undefined}
+                          />
                         </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Employee Code</label>
-                          <input name="employeeCode" className="form-control" value={form.employeeCode} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Designation</label>
-                          <input name="designation" className="form-control" value={form.designation} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Department</label>
-                          <input name="department" className="form-control" value={form.department} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Employee Group</label>
-                          <input name="employeeGroup" className="form-control" value={form.employeeGroup} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">D.O.J</label>
-                          <input name="doj" className="form-control" value={formattedDoj} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">PAN No</label>
-                          <input name="panNo" className="form-control" value={form.panNo} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Gender</label>
-                          <input name="gender" className="form-control" value={form.gender} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Pay Period</label>
-                          <input name="payPeriod" className="form-control" value={form.payPeriod} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Location</label>
-                          <input name="location" className="form-control" value={form.location} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Basic</label>
-                          <input name="basic" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.basic} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">House Rent Allowance</label>
-                          <input name="houseRentAllowance" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.houseRentAllowance} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Special Allowance</label>
-                          <input name="specialAllowance" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.specialAllowance} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">T.D.S</label>
-                          <input name="tds" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.tds} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Advance</label>
-                          <input name="advance" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.advance} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Leave</label>
-                          <input name="leave" type="number" onWheel={(e) => e.target.blur()} className="form-control" value={form.leave} onChange={handleChange} />
-                        </div>
-                        {/* <div className="col-md-4">
-                          <label className="form-label">Bank</label>
-                          <input name="bank" className="form-control" value={form.bank} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Bank Account No</label>
-                          <input name="bankAccountNo" className="form-control" value={form.bankAccountNo} onChange={handleChange} />
-                        </div> */}
-                        <div className="col-md-4">
-                          <label className="form-label">UAN</label>
-                          <input name="uan" className="form-control" value={form.uan} onChange={handleChange} />
-                        </div>
-                        <div className="col-md-4">
-                          <label className="form-label">Loss of Pay (LOP)</label>
-                          <input name="lop" className="form-control" value={form.lop} onChange={handleChange} />
-                        </div>
-                        <div className="col-12 text-end">
-                          <button className="btn btn-primary" type="submit" disabled={loading}>
-                            {loading ? (
-                              <>
-                                <span className="spinner-border spinner-border-sm me-2"></span>
-                                Saving...
-                              </>
-                            ) : (
-                              <>
-                                <i className="bi bi-save me-2"></i>
-                                Save Payslip
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </form>
+                      ))}
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
+              ))}
+              <div className="text-end">
+                <button className="portal-btn portal-btn-success" type="submit" disabled={loading} style={{ minWidth: 160, justifyContent: 'center', height: 46 }}>
+                  {loading ? <><span className="spinner-border spinner-border-sm me-2"></span> Saving…</> : <><i className="bi bi-save"></i> Save Payslip</>}
+                </button>
+              </div>
+            </form>
+          )}
+
         </div>
       </div>
     </div>

@@ -3,127 +3,95 @@ import { createUser } from '../api/googleScriptApi';
 import { useLoader } from '../context/LoaderProvider';
 
 const AdminCreateUser = () => {
-  const [username, setUsername] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [empCode, setEmpCode] = useState('');
-  const [designation, setDesignation] = useState('');
-  const [panNo, setPanNo] = useState('');
-  const [gender, setGender] = useState('MALE');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState({
+    username: '', fullName: '', empCode: '', designation: '',
+    department: '', panNo: '', gender: 'MALE', email: '', password: '',
+  });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [department, setDepartment] = useState('');
   const { loading, setLoading } = useLoader();
+
+  const set = field => e => setForm(f => ({ ...f, [field]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
-    setError('');
+    setMessage(''); setError('');
     setLoading(true);
     try {
       const res = await createUser(
-        username,
-        email,
-        password,
-        fullName,
-        empCode,
-        department, // <-- add this
-        designation,
-        panNo,
-        gender
+        form.username, form.email, form.password, form.fullName,
+        form.empCode, form.department, form.designation, form.panNo, form.gender
       );
       if (res.success) {
-        setMessage('User created and credentials sent to email.');
-        setUsername('');
-        setFullName('');
-        setEmpCode('');
-        setDesignation('');
-        setPanNo('');
-        setGender('MALE');
-        setEmail('');
-        setPassword('');
-        setDepartment('');
+        setMessage('User created — credentials sent to email.');
+        setForm({ username: '', fullName: '', empCode: '', designation: '', department: '', panNo: '', gender: 'MALE', email: '', password: '' });
       } else {
         setError(res.message || 'Failed to create user.');
       }
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <div
-      className="container-fluid d-flex justify-content-center align-items-center"
-      style={{ minHeight: '100vh', background: '#f8fafc' }}
-    >
-      <div className="card" style={{ minWidth: 350, maxWidth: 400, width: '100%' }}>
-        <div className="card-header bg-primary text-white">
-          <h2 className='mb-0' style={{fontSize: '24px'}}>Create New User</h2>
-        </div>
-        <div className="card-body">
-          {message && <div className="alert alert-success">{message}</div>}
-          {error && <div className="alert alert-danger">{error}</div>}
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label">Username</label>
-              <input
-                className="form-control"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                required
-                disabled={loading}
-              />
-              <div className="form-text">
-                Username must be unique and in small letters (e.g., <b>user</b>). This will be used everywhere to fetch the user.
+    <div className="portal-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '100%', maxWidth: 480 }}>
+        <div className="portal-card">
+          <div className="portal-card-header">
+            <i className="bi bi-person-plus-fill" style={{ fontSize: '1.1rem' }}></i>
+            <h5>Create New User</h5>
+          </div>
+          <div className="portal-card-body" style={{ padding: 28 }}>
+            {message && <div className="portal-alert-success">{message}</div>}
+            {error   && <div className="portal-alert-error">{error}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="portal-label">Username</label>
+                <input className="portal-input" value={form.username} onChange={set('username')} required disabled={loading} placeholder="e.g. john" />
+                <div style={{ fontSize: '0.78rem', color: '#8a9ab5', marginTop: 4 }}>Unique, lowercase, used everywhere to identify the user.</div>
               </div>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Full Name</label>
-              <input className="form-control" value={fullName} onChange={e => setFullName(e.target.value)} required disabled={loading} />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Employee Code</label>
-              <input className="form-control" value={empCode} onChange={e => setEmpCode(e.target.value)} required disabled={loading} />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Designation</label>
-              <input className="form-control" value={designation} onChange={e => setDesignation(e.target.value)} required disabled={loading} />
-            </div>
-                        <div className="mb-3">
-              <label className="form-label">Department</label>
-              <input
-                className="form-control"
-                value={department}
-                onChange={e => setDepartment(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">PAN No</label>
-              <input className="form-control" value={panNo} onChange={e => setPanNo(e.target.value)} required disabled={loading} />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Gender</label>
-              <select className="form-select" value={gender} onChange={e => setGender(e.target.value)} required disabled={loading}>
-                <option value="MALE">MALE</option>
-                <option value="FEMALE">FEMALE</option>
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Gmail</label>
-              <input className="form-control" type="email" value={email} onChange={e => setEmail(e.target.value)} required disabled={loading} />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Password</label>
-              <input className="form-control" type="text" value={password} onChange={e => setPassword(e.target.value)} required disabled={loading} />
-            </div>
-
-            <button className="btn btn-success w-100" type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Create User'}
-            </button>
-          </form>
+              <div className="row g-3 mb-3">
+                <div className="col-12">
+                  <label className="portal-label">Full Name</label>
+                  <input className="portal-input" value={form.fullName} onChange={set('fullName')} required disabled={loading} placeholder="Full name" />
+                </div>
+                <div className="col-6">
+                  <label className="portal-label">Employee Code</label>
+                  <input className="portal-input" value={form.empCode} onChange={set('empCode')} required disabled={loading} placeholder="EMP001" />
+                </div>
+                <div className="col-6">
+                  <label className="portal-label">Designation</label>
+                  <input className="portal-input" value={form.designation} onChange={set('designation')} required disabled={loading} placeholder="Developer" />
+                </div>
+                <div className="col-6">
+                  <label className="portal-label">Department</label>
+                  <input className="portal-input" value={form.department} onChange={set('department')} required disabled={loading} placeholder="Engineering" />
+                </div>
+                <div className="col-6">
+                  <label className="portal-label">PAN No</label>
+                  <input className="portal-input" value={form.panNo} onChange={set('panNo')} required disabled={loading} placeholder="ABCDE1234F" />
+                </div>
+                <div className="col-6">
+                  <label className="portal-label">Gender</label>
+                  <select className="portal-select" value={form.gender} onChange={set('gender')} required disabled={loading}>
+                    <option value="MALE">MALE</option>
+                    <option value="FEMALE">FEMALE</option>
+                  </select>
+                </div>
+                <div className="col-12">
+                  <label className="portal-label">Gmail</label>
+                  <input className="portal-input" type="email" value={form.email} onChange={set('email')} required disabled={loading} placeholder="user@gmail.com" />
+                </div>
+                <div className="col-12">
+                  <label className="portal-label">Password</label>
+                  <input className="portal-input" type="text" value={form.password} onChange={set('password')} required disabled={loading} placeholder="Initial password" />
+                </div>
+              </div>
+              <button className="portal-btn w-100" type="submit" disabled={loading} style={{ justifyContent: 'center', height: 48, fontSize: '0.95rem' }}>
+                {loading
+                  ? <><span className="spinner-border spinner-border-sm me-2"></span> Creating…</>
+                  : <><i className="bi bi-person-check-fill"></i> Create User</>}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

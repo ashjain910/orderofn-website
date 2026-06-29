@@ -9,82 +9,48 @@ const PayslipPage = () => {
   const [loadingData, setLoadingData] = useState(true);
   const auth = JSON.parse(localStorage.getItem('auth'));
 
-  // Calculate current and previous financial years (April-March)
   const today = new Date();
   const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth() + 1; // 1-based
-
-  // If before April, financial year started last year
+  const currentMonth = today.getMonth() + 1;
   const fyStartYear = currentMonth < 4 ? currentYear - 1 : currentYear;
   const fyEndYear = fyStartYear + 1;
-  const prevFyStartYear = fyStartYear - 1;
-  const prevFyEndYear = fyStartYear;
-
-  // Format as "24-25"
   const fyString = (start, end) => `${String(start).slice(-2)}-${String(end).slice(-2)}`;
 
-  // Dynamically generate financial years: current and next (April-March)
   const financialYears = [
-  {
-    label: `April ${fyStartYear} - March ${fyEndYear}`,
-    value: fyString(fyStartYear, fyEndYear)
-  },
-  {
-    label: `April ${fyStartYear - 1} - March ${fyStartYear}`,
-    value: fyString(fyStartYear - 1, fyStartYear)
-  }
-];
+    { label: `April ${fyStartYear} – March ${fyEndYear}`, value: fyString(fyStartYear, fyEndYear) },
+    { label: `April ${fyStartYear - 1} – March ${fyStartYear}`, value: fyString(fyStartYear - 1, fyStartYear) },
+  ];
 
-  // Default to current FY
-  React.useEffect(() => {
-    setSelectedFY(financialYears[0].value);
-    setLoadingData(false);
-    // eslint-disable-next-line
-  }, []);
+  React.useEffect(() => { setSelectedFY(financialYears[0].value); setLoadingData(false); }, []); // eslint-disable-line
 
   const handleDownload = async (month, year, idx) => {
-    setLoadingIdx(idx);
-    setError('');
+    setLoadingIdx(idx); setError('');
     try {
       await updatePayslipHeader(auth?.username, month, year, selectedFY);
       const res = await fetchPayslipPdf(auth?.username, selectedFY, auth?.token);
       if (res.success && res.filedata) {
         const pdfBytes = Uint8Array.from(atob(res.filedata), c => c.charCodeAt(0));
         const pdfDoc = await PDFDocument.load(pdfBytes);
-
-        // Crop the first page to 60% of its height from the top
         const page = pdfDoc.getPage(0);
         const { width, height } = page.getSize();
         const cropHeight = height * 0.6;
         page.setCropBox(0, height - cropHeight, width, cropHeight);
         page.setMediaBox(0, height - cropHeight, width, cropHeight);
-
         const croppedPdfBytes = await pdfDoc.save();
         const blob = new Blob([croppedPdfBytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
-
-        // Set filename as Payslip-username-month-year-fy.pdf
-        const monthStr = month.toString().padStart(2, '0');
-        const filename = `Payslip-${auth?.username}-${monthStr}-${year}-FY${selectedFY}.pdf`;
-
-        // Auto-download
         const link = document.createElement('a');
         link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        link.download = `Payslip-${auth?.username}-${String(month).padStart(2, '0')}-${year}-FY${selectedFY}.pdf`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
       } else {
         setError(res.message || 'Payslip not found');
         alert(res.message || 'Payslip not found');
       }
-    } catch {
-      setError('Error fetching payslip');
-    }
+    } catch { setError('Error fetching payslip'); }
     setLoadingIdx(null);
   };
 
-  // Generate months for selected FY
   const getMonthsForFY = (fy) => {
     const [start, end] = fy.split('-').map(y => Number('20' + y));
     const months = [];
@@ -93,72 +59,45 @@ const PayslipPage = () => {
     return months;
   };
 
-  // Filter months: for current FY, only up to previous month; for previous FY, show all
   const months = selectedFY ? getMonthsForFY(selectedFY) : [];
-const filteredMonths = months.filter(m => {
   const currentFY = fyString(fyStartYear, fyEndYear);
   const previousFY = fyString(fyStartYear - 1, fyStartYear);
 
-  if (selectedFY === currentFY) {
-    return (
-      m.year < currentYear ||
-      (m.year === currentYear && m.num < currentMonth)
-    );
-  }
-
-  if (selectedFY === previousFY) {
-    return m.year === fyStartYear && m.num === 3;
-  }
-
-  return false;
-});
-
-  // Hide "April 2026 - March 2027" if today is before April 2026
-  const visibleFinancialYears = financialYears.filter(fy => {
-    if (fy.value === '26-27') {
-      // Only show if today is April 2026 or later
-      return today.getFullYear() > 2026 || (today.getFullYear() === 2026 && currentMonth >= 4);
-    }
-    return true;
+  const filteredMonths = months.filter(m => {
+    if (selectedFY === currentFY) return m.year < currentYear || (m.year === currentYear && m.num < currentMonth);
+    if (selectedFY === previousFY) return m.year === fyStartYear && m.num === 3;
+    return false;
   });
 
   return (
-    <div className="container py-5">
-      <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-7">
-          <div className="card shadow-lg border-0" style={{ borderRadius: 18 }}>
-            <div className="card-header bg-primary text-white d-flex align-items-center" style={{ borderTopLeftRadius: 18, borderTopRightRadius: 18 }}>
-              <i className="bi bi-file-earmark-pdf-fill me-2 fs-4"></i>
-              <h4 className="mb-0 flex-grow-1">
-                Payslips: Financial Year&nbsp;
-                <select
-                  className="form-select form-select-sm d-inline-block w-auto ms-2"
-                  value={selectedFY || ''}
-                  onChange={e => setSelectedFY(e.target.value)}
-                  style={{ fontWeight: 600, minWidth: 220 }}
-                >
-                  {financialYears.map(fy => (
-                    <option key={fy.value} value={fy.value}>
-                      {fy.label}
-                    </option>
-                  ))}
-                </select>
-              </h4>
+    <div className="portal-page">
+      <div className="row justify-content-center g-0">
+        <div className="col-12 col-md-8 col-lg-6">
+          <div className="portal-card">
+            <div className="portal-card-header" style={{ flexWrap: 'wrap', gap: 12 }}>
+              <i className="bi bi-file-earmark-pdf-fill" style={{ fontSize: '1.2rem' }}></i>
+              <h5 style={{ flexGrow: 1 }}>Payslips</h5>
+              <select
+                className="portal-select"
+                value={selectedFY || ''}
+                onChange={e => setSelectedFY(e.target.value)}
+                style={{ height: 36, width: 'auto', minWidth: 200, fontSize: '0.85rem', background: 'rgba(255,255,255,0.12)', color: '#fff', borderColor: 'rgba(255,255,255,0.3)' }}
+              >
+                {financialYears.map(fy => <option key={fy.value} value={fy.value} style={{ color: '#000' }}>{fy.label}</option>)}
+              </select>
             </div>
-            <div className="card-body" style={{ background: '#f8fafc', borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>
-              {error && <div className="alert alert-danger">{error}</div>}
+            <div className="portal-card-body">
+              {error && <div className="portal-alert-error">{error}</div>}
               {loadingData ? (
-                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 180 }}>
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
+                <div className="portal-empty"><span className="spinner-border spinner-border-sm me-2"></span>Loading…</div>
+              ) : filteredMonths.length === 0 ? (
+                <div className="portal-empty"><i className="bi bi-file-earmark-x" style={{ fontSize: '2rem', display: 'block', marginBottom: 8 }}></i>No payslips available yet.</div>
               ) : (
                 <div className="table-responsive">
-                  <table className="table table-bordered table-hover align-middle mb-0">
-                    <thead className="table-light">
+                  <table className="portal-table">
+                    <thead>
                       <tr>
-                        <th className="text-start" style={{ width: '60%' }}>Month</th>
+                        <th>Month</th>
                         <th className="text-end">Download</th>
                       </tr>
                     </thead>
@@ -167,31 +106,14 @@ const filteredMonths = months.filter(m => {
                         const date = new Date(m.year, m.num - 1, 1);
                         const label = `${date.toLocaleString('default', { month: 'long' })} ${m.year}`;
                         return (
-                          <tr key={label} style={{ verticalAlign: 'middle' }}>
-                            <td className="text-start">
-                              <span className="fw-bold">
-                                <i className="bi bi-calendar-event me-2 text-primary"></i>
-                                {label}
-                              </span>
+                          <tr key={label}>
+                            <td>
+                              <i className="bi bi-calendar-event me-2" style={{ color: '#000033' }}></i>
+                              <span className="fw-semibold">{label}</span>
                             </td>
                             <td className="text-end">
-                              <button
-                                className="btn btn-success btn-sm px-3"
-                                onClick={() => handleDownload(m.num, m.year, idx)}
-                                disabled={loadingIdx === idx}
-                                style={{ fontWeight: 600, borderRadius: 8, minWidth: 120 }}
-                              >
-                                {loadingIdx === idx ? (
-                                  <>
-                                    <span className="spinner-border spinner-border-sm me-2"></span>
-                                    Downloading...
-                                  </>
-                                ) : (
-                                  <>
-                                    <i className="bi bi-download me-2"></i>
-                                    Download
-                                  </>
-                                )}
+                              <button className="portal-btn portal-btn-sm portal-btn-success" onClick={() => handleDownload(m.num, m.year, idx)} disabled={loadingIdx === idx}>
+                                {loadingIdx === idx ? <><span className="spinner-border spinner-border-sm"></span> Downloading…</> : <><i className="bi bi-download"></i> Download</>}
                               </button>
                             </td>
                           </tr>
